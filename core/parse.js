@@ -123,6 +123,8 @@ function new_clef(clef_def) {
 	return s
 }
 
+var note_pit = new Int8Array([0, 2, 4, 5, 7, 9, 11])
+
 // get a transposition value
 function get_transp(param,
 			type) {		// undefined or "instr"
