@@ -129,15 +129,16 @@ by the command line argument `-o`:
 ### Build
 
 If you want to build the **abc2svg** scripts in your machine,
-you must first get the files
-from [github](https://github.com/moinejf/abc2svg),
-either as a `tar.gz` or `.zip` file, or by cloning the repository:
+you must first get the files from
+[chisel](https://chiselapp.com/user/moinejf/repository/abc2svg),
+either as a tarball or a Zip archive
+(click `Timeline` and then in the top commit),
+or by cloning the repository in some directory:
 
 ```
-    git clone http://github.com/moinejf/abc2svg
+    fossil clone https://chiselapp.com/user/moinejf/repository/abc2svg abc2svg.fossil
+    fossil open abc2svg.fossil
 ```
-
-(you may use `--depth=1` if you don't want the full `git` history)
 
 Then, building is done using the tool [ninja](https://ninja-build.org/)
 or [samurai](https://github.com/michaelforney/samurai).  
