@@ -20,7 +20,7 @@ abc2svg.break = {
 			cfmt.break = []
 		for (n = 1; n < a.length; n++) {
 			b = a[n];
-			c = b.match(/(\d)([a-z]?)(:\d\/\d)?/)
+			c = b.match(/(\d+)([a-z]?)(:\d+\/\d+)?/)
 			if (!c) {
 				this.syntax(1, errs.bad_val, "%%break")
 				continue
@@ -34,7 +34,7 @@ abc2svg.break = {
 						sq: sq})
 				continue
 			}
-			d = c[3].match(/:(\d)\/(\d)/)
+			d = c[3].match(/:(\d+)\/(\d+)/)
 			if (!d || d[2] < 1) {
 				this.syntax(1, "Bad denominator in %%break")
 				continue

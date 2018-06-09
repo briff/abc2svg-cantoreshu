@@ -23,7 +23,7 @@ abc2svg.clip = {
 			sq = b[2].charCodeAt(0) - 0x61
 		if (!b[3])
 			return {m: b[1], t: 0, sq: sq}	// on measure bar
-		a = b[3].match(/:(\d)\/(\d)/)
+		a = b[3].match(/:(\d+)\/(\d+)/)
 		if (!a || a[2] < 1)
 			return
 		return {m: b[1], t: a[1] * BASE_LEN / a[2], sq: sq}
