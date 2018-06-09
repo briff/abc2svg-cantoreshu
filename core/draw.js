@@ -1319,7 +1319,7 @@ function setdoty(s, y_tb) {
 // get the x and y position of a note head
 // (when the staves are defined)
 function x_head(s, note) {
-	return s.x + note.shhd
+	return s.x + note.shhd * stv_g.scale
 }
 function y_head(s, note) {
 	return staff_tb[s.st].y + 3 * (note.pit - 18)
