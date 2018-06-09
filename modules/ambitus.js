@@ -19,6 +19,8 @@ abc2svg.ambitus = {
 
 	for (v = 0; v < voice_tb.length; v++) {
 		p_v = voice_tb[v];
+		if (p_v.second)
+			continue
 		min = 100;
 		max = -100
 
