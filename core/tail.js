@@ -51,6 +51,7 @@ Abc.prototype.get_top_v = function() { return par_sy.top_voice };
 Abc.prototype.get_tsfirst = function() { return tsfirst };
 Abc.prototype.get_voice_tb = function() { return voice_tb };
 Abc.prototype.info = function() { return info };
+Abc.prototype.set_cur_sy = function(sy) { cur_sy = sy };
 Abc.prototype.set_tsfirst = function(s) { tsfirst = s };
 Abc.prototype.set_xhtml = function(wt) {
     var wto = write_text;
