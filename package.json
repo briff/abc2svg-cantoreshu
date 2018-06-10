@@ -59,8 +59,8 @@
     "abc2svg": "./abc2svg"
   },
   "repository": {
-    "type": "git",
-    "url": "git+https://github.com/moinejf/abc2svg.git"
+    "type": "fossil",
+    "url": "https://chiselapp.com/user/moinejf/repository/abc2svg"
   },
   "keywords": [
     "ABC",
@@ -70,7 +70,7 @@
   "author": "Jean-François Moine",
   "license": "LGPL-3.0",
   "bugs": {
-    "url": "https://github.com/moinejf/abc2svg/issues"
+    "url": "https://chiselapp.com/user/moinejf/repository/abc2svg/reportlist"
   },
-  "homepage": "https://github.com/moinejf/abc2svg#readme"
+  "homepage": "https://chiselapp.com/user/moinejf/repository/abc2svg"
 }
