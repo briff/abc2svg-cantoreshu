@@ -82,34 +82,34 @@ build abc2svg-$MAJOR.js: jsc core/abc2svg.js core/deco.js core/draw.js $
  core/svg.js core/tune.js core/lyrics.js core/gchord.js core/tail.js $
  core/modules.js | package.json
 
-build ambitus-$MAJOR.js: jscu modules/ambitus.js | package.json
-build break-$MAJOR.js: jscu modules/break.js | package.json
-build capo-$MAJOR.js: jscu modules/capo.js | package.json
-build clip-$MAJOR.js: jscu modules/clip.js | package.json
-build combine-$MAJOR.js: jscu modules/combine.js | package.json
-build diag-$MAJOR.js: jscu modules/diag.js | package.json
-build grid-$MAJOR.js: jscu modules/grid.js | package.json
-build grid2-$MAJOR.js: jscu modules/grid2.js | package.json
-build MIDI-$MAJOR.js: jscu modules/MIDI.js | package.json
-build perc-$MAJOR.js: jscu modules/perc.js | package.json
-build psvg-$MAJOR.js: jscu modules/wps.js modules/psvg.js | package.json
-build sth-$MAJOR.js: jscu modules/sth.js | package.json
+build ambitus-$MAJOR.js: jscu modules/ambitus.js
+build break-$MAJOR.js: jscu modules/break.js
+build capo-$MAJOR.js: jscu modules/capo.js
+build clip-$MAJOR.js: jscu modules/clip.js
+build combine-$MAJOR.js: jscu modules/combine.js
+build diag-$MAJOR.js: jscu modules/diag.js
+build grid-$MAJOR.js: jscu modules/grid.js
+build grid2-$MAJOR.js: jscu modules/grid2.js
+build MIDI-$MAJOR.js: jscu modules/MIDI.js
+build perc-$MAJOR.js: jscu modules/perc.js
+build psvg-$MAJOR.js: jscu modules/wps.js modules/psvg.js
+build sth-$MAJOR.js: jscu modules/sth.js
 
 build edit-$MAJOR.css: cp editor/edit.css
 
-build abcdoc-$MAJOR.js: jscu util/abcdoc.js | package.json
-build abcemb-$MAJOR.js: jscu util/abcemb.js | package.json
-build follow-$MAJOR.js: jscu util/follow.js | package.json
-build json-$MAJOR.js: jscu util/json.js | package.json
-build setmidi-$MAJOR.js: jscu util/midi.js | package.json
+build abcdoc-$MAJOR.js: jscu util/abcdoc.js
+build abcemb-$MAJOR.js: jscu util/abcemb.js
+build follow-$MAJOR.js: jscu util/follow.js
+build json-$MAJOR.js: jscu util/json.js
+build setmidi-$MAJOR.js: jscu util/midi.js
 build play-$MAJOR.js: jscu util/play.js util/toaudio.js $
- util/toaudio5.js util/sf2-parser.js util/tomidi5.js | package.json
-build toaudio-$MAJOR.js: jscu util/toaudio.js | package.json
+ util/toaudio5.js util/sf2-parser.js util/tomidi5.js
+build toaudio-$MAJOR.js: jscu util/toaudio.js
 
 build edit-$MAJOR.xhtml: cpm editor/edit.xhtml
-build abckbd-$MAJOR.js: edit editor/abckbd.js | package.json
-build abckbd2-$MAJOR.js: edit editor/abckbd2.js | package.json
-build edit-$MAJOR.js: edit editor/edit.js | package.json
+build abckbd-$MAJOR.js: edit editor/abckbd.js
+build abckbd2-$MAJOR.js: edit editor/abckbd2.js
+build edit-$MAJOR.js: edit editor/edit.js
 
 build all: phony abc2svg-$MAJOR.js abcdoc-$MAJOR.js $
  abcemb-$MAJOR.js json-$MAJOR.js setmidi-$MAJOR.js $
