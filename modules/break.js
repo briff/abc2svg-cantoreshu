@@ -58,7 +58,7 @@ abc2svg.break = {
 			brk = cfmt.break[i];
 			m = brk.m
 			for (s = s1; s; s = s.next) {
-				if (s.bar_type && s.bar_num == m)
+				if (s.bar_num == m)
 					break
 			}
 			if (!s)
@@ -67,8 +67,7 @@ abc2svg.break = {
 			if (brk.sq) {
 				seq = brk.sq
 				for (s = s.ts_next; s; s = s.ts_next) {
-					if (s.bar_type
-					 && s.bar_num == m) {
+					if (s.bar_num == m) {
 						if (--seq == 0)
 							break
 					}
