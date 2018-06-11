@@ -20,13 +20,16 @@ rule font
    echo "\")'" >> font.js
 
 rule jsc
-  command = if [ -x /usr/bin/git -a -d .git ]; then$
-	VERSION=`git describe`;$
-	VERSION=$${VERSION#v};$
-	DATE=`git log -1 --pretty=format:%ci HEAD | cut -d' ' -f1`;$
-   else$
-	VERSION=`grep '"version"' package.json|cut -d'"' -f4`;$
-	DATE=`stat --printf=%y build.ninja | cut -d' ' -f1`;$
+  command = VERSION=`grep '"version"' package.json|cut -d'"' -f4`;$
+   if [ -x /usr/bin/fossil ]; then $
+	c=`fossil info | grep checkout:`;$
+	t=`fossil info | grep tags: | cut -d' ' -f3`;$
+	if [ "$${t#v}" != "$$VERSION" ]; then $
+		VERSION="$${VERSION}-$$(echo $$c | cut -d' ' -f2 | cut -c1-10)";$
+	fi;$
+	DATE=`echo $$c | cut -d' ' -f3`;$
+   else $
+	DATE=`stat --printf=%y package.json | cut -d' ' -f1`;$
    fi;$
    cp core/license $out;$
    echo "var abc2svg={version:\"$$VERSION\",vdate:\"$$DATE\"}" >> $out;$
