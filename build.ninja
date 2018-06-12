@@ -27,7 +27,7 @@ rule jsc
    type fossil &> /dev/null;$
    if [ $$? -eq 0 ]; then $
 	c=`fossil info | grep checkout:`;$
-	t=`fossil info | grep tags: | cut -d' ' -f3`;$
+	t=`fossil info | grep tags: | awk '{print $$NF}'`;$
 	if [ "$${t#v}" != "$$VERSION" ]; then $
 		VERSION="$${VERSION}-$$(echo $$c | cut -d' ' -f2 | cut -c1-10)";$
 	fi;$
