@@ -482,7 +482,7 @@ function tosvg(in_fname,		// file name
 		}
 
 		// music line (or free text)
-		if (line1 != ':') {
+		if (line1 != ':' || !/[A-Za-z+]/.test(line0)) {
 			last_info = undefined;
 			if (parse.state < 2)
 				continue
