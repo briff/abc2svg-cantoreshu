@@ -33,7 +33,7 @@ rule jsc
 	fi;$
 	DATE=`echo $$c | cut -d' ' -f3`;$
    else $
-	DATE=`stat --printf=%y package.json | cut -d' ' -f1`;$
+	DATE=`date '+%Y-%m-%d' -r package.json`;$
    fi;$
    cp core/license $out;$
    echo "var abc2svg={version:\"$$VERSION\",vdate:\"$$DATE\"}" >> $out;$
