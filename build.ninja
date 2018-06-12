@@ -5,6 +5,9 @@
 
 MAJOR=1
 
+# ninja tool
+tool=samu
+
 rule cp
   command = cp $in $out
 
@@ -117,13 +120,12 @@ build all: phony abc2svg-$MAJOR.js abcdoc-$MAJOR.js $
 
 default all
 
-# npm/git new release
-# (needs 'npm set git-tag-version false')
+# npm/fossil new release
 rule version
   command = npm version $out;$
-	tag=`grep '"version"' package.json|cut -d'"' -f4`;$
-	echo "New release v$$tag" | git commit -F- package.json;$
-	git tag -a v$$tag;$
-	echo "*** Don't forget: git push --follow-tags; ninja; npm publish"
+	$tool -v;$
+	tag=`ag '"version"' package.json|cut -d'"' -f4`;$
+	fossil commit -m "New release v$$tag" -tag v$$tag;$
+	npm publish
 build minor: version
 build patch: version
