@@ -41,7 +41,16 @@ function ToAudio() {
 
 // ToAudio
   return {
-// clear the playing events and return the old ones
+
+// clear the playing events and
+// return the old ones as an array of Float32Array:
+//	[0]: index of the note in the ABC source
+//	[1]: time in seconds
+//	[2]: MIDI instrument (MIDI GM number - 1)
+//	[3]: MIDI note pitch (with cents)
+//	[4]: duration
+//	[5]: volume (0..1)
+//	[6]: voice number
     clear: function() {
 	var a_pe = a_e;
 	a_e = null
@@ -248,12 +257,14 @@ function ToAudio() {
 		    var	note = s.notes[i]
 			if (note.ti2)
 				continue
-			a_e.push([
+			a_e.push(new Float32Array([
 				s.istart,
 				t,
 				instr[s.v],
 				pit2mid(s, i),
-				note.ti1 ? do_tie(s, note, d) : d])
+				note.ti1 ? do_tie(s, note, d) : d,
+				1,
+				s.v]))
 		}
 	} // gen_note()
 
