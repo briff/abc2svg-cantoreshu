@@ -44,7 +44,8 @@
 //		[2]: MIDI instrument (MIDI GM number - 1)
 //		[3]: MIDI note pitch (with cents)
 //		[4]: duration
-//		[5]: volume (0..1 - optional)
+//		[5]: volume (0..1)
+//		[6]: voice number
 //
 // stop() - stop playing
 
@@ -55,8 +56,7 @@ function Midi5(i_conf) {
 
 // MIDI variables
 	op,			// output port
-	instr,			// instrument -> channel
-	ch,			// channel allocation
+	v_i = [],		// voice (channel) to instrument
 
 // -- play the memorized events --
 	evt_idx,		// event index while playing
@@ -66,16 +66,16 @@ function Midi5(i_conf) {
 // create a note
 // @e[2] = instrument index
 // @e[3] = MIDI key + detune
+// @e[6] = voice (channel) number
 // @t = audio start time (ms)
 // @d = duration adjusted for speed (ms)
     function note_run(e, t, d) {
     var	k = e[3] | 0,
 	i = e[2],
-	c = instr[i]
+	c = e[6] & 0x0f		//fixme
 
-	if (c == undefined) {
-		c = ch++;
-		instr[i] = c;
+	if (i != v_i[c]) {			// if program change
+		v_i[c] = i
 		op.send(new Uint8Array([
 				0xb0 + c, 0, (i >> 14) & 0x7f,	// MSB bank
 				0xb0 + c, 32, (i >> 7) & 0x7f,	// LSB bank
@@ -179,8 +179,6 @@ function Midi5(i_conf) {
 
 		stime = window.performance.now() + 200	// start time + 0.2s
 			- a_e[evt_idx][1] * conf.speed * 1000;
-		instr = [];
-		ch = 0;
 		play_next(a_e)
 	}, // play()
 
