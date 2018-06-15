@@ -1865,7 +1865,7 @@ function new_note(grace, tp_fact) {
 		// ignore if in second voice
 		if (curvoice.second) {
 			curvoice.time += s.dur
-			return null
+			return //null
 		}
 		break
 	case 'y':
@@ -1913,7 +1913,7 @@ function new_note(grace, tp_fact) {
 					i = c.charCodeAt(0);
 					if (i >= 128) {
 						syntax(1, errs.not_ascii)
-						return null
+						return //null
 					}
 					type = char_tb[i]
 					switch (type[0]) {
