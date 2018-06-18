@@ -34,9 +34,8 @@ var	abc_images,			// image buffer
 	abc,				// Abc object
 	srcend,				// source symbol end index
 	elt_ref = {},			// pointers to page HTML elements
-	colcl = [],			// colorized classes
-	colcl_sav,			// (saved while playing/printing)
-	selrec = {},
+	selx = [0, 0],			// selected source indexes
+	selx_sav = [],			// (saved while playing/printing)
 	play = {},			// play data
 	pop,				// current popup message
 	texts = {			// language specific texts
@@ -217,9 +216,7 @@ function render() {
 	render2()
 }
 function render2() {
-    var	i,
-	target = document.getElementById("target"),
-	content = elt_ref.source.value
+    var	content = elt_ref.source.value
 
 	// load the required modules
 	if (!abc2svg.modules.load(content + elt_ref.src1.value, render2))
@@ -243,7 +240,7 @@ function render2() {
 //	document.body.style.cursor = "auto";
 
 	try {
-		target.innerHTML = abc_images
+		elt_ref.target.innerHTML = abc_images
 	} catch(e) {
 		alert(e.message + '\nabc2svg image bug - abort')
 		return
@@ -252,19 +249,6 @@ function render2() {
 	// show the 'Error' button if some error
 	document.getElementById("er").style.display =
 				elt_ref.diverr.innerHTML ? 'inline' : 'none';
-
-	// set the callbacks in the SVG images
-	setTimeout(function(){
-		var	elts = target.getElementsByClassName('abcr'),
-			i = elts.length,
-			elt
-		elts = target.getElementsByTagName("svg");
-		i = elts.length
-		while (--i >= 0) {
-			elt = elts[i];
-			elt.onmousedown = svgsel
-		}
-	}, 300)
 }
 
 // select a source ABC element
@@ -283,175 +267,106 @@ function gotoabc(l, c) {
 	}
 	c = Number(c) + idx;
 	s.focus();
-	s.setSelectionRange(c, c + 1)
+	s.setSelectionRange(c, srcend[c] || c + 1)
 }
 
-// highlight the music element on mouse over
-function m_over(elt) {
-	if (selrec.rect)
-		return
-	if (colcl.length > 1)
-		return
-	colorsel(false)
-	var cl = elt.getAttribute('class');
-	colcl = [cl.split(' ')[1]];	// cl[0]:'abcr', cl[1]:elt ref
-	colorsel(true)
-}
-
-// select elements in an image
+// click in the target
 function svgsel(evt) {
-var	pt, nr, i, elts, elt, x, y, cl,
-	svg = evt.target
+var	elt = evt.target,
+	cl = elt.getAttribute('class'),
+	ctxMenu = document.getElementById("ctxMenu");
 
-	while (svg.tagName != 'svg') {
-		svg = svg.parentNode
-		if (!svg)
-			return
+	play.loop = false;
+
+	evt.stopImmediatePropagation();
+	evt.preventDefault()
+
+	// remove the context menu if active
+	if (ctxMenu && ctxMenu.style.display == "block") {
+		ctxMenu.style.display = "none"
+		return false
 	}
 
-	switch (evt.type) {
-	case "mousedown":
-		if (selrec.rect) {
-			selrec.rect.parentNode.removeChild(selrec.rect);
-			selrec.rect = null
-		}
-		colorsel(false);
-		window.getSelection().removeAllRanges();
-		svg.onmousemove = svgsel;
-		svg.onmouseup = svgsel;
-		pt = svg.createSVGPoint();
-		pt.x = evt.clientX;
-		pt.y = evt.clientY;
-		cl = pt.matrixTransform(svg.getScreenCTM().inverse());
-		selrec.xs = cl.x;
-		selrec.ys = cl.y;
-
-		evt.stopImmediatePropagation();
-		evt.preventDefault()
-		break
-	case "mousemove":
-		pt = svg.createSVGPoint();
-		pt.x = evt.clientX;
-		pt.y = evt.clientY;
-		cl = pt.matrixTransform(svg.getScreenCTM().inverse());
-		selrec.x = cl.x;
-		selrec.y = cl.y
-
-		if (!selrec.rect) {
-			nr = true;
-			selrec.rect = document.createElementNS("http://www.w3.org/2000/svg",
-								'rect');
-			selrec.rect.setAttribute("x", selrec.xs);
-			selrec.rect.setAttribute("y", selrec.ys);
-		}
-		if (selrec.x > selrec.xs && selrec.y > selrec.ys) {
-			selrec.rect.setAttribute("width", selrec.x - selrec.xs);
-			selrec.rect.setAttribute("height",selrec.y - selrec.ys)
-		}
-		if (nr) {
-			selrec.rect.setAttribute("fill", "none");
-			selrec.rect.setAttribute("stroke", "blue");
-			svg.appendChild(selrec.rect)
-		}
-		evt.stopImmediatePropagation();
-		evt.preventDefault()
-		break
-	case "mouseup":
-//	case "mouseout":
-		svg.onmousemove = null;
-		svg.onmouseup = null
-		if (!selrec.rect) {
-			svg = evt.target
-			cl = svg.getAttribute('class')
-			if (cl && cl.substr(0, 4) == 'abcr')
-				m_over(svg)
-			break
-		}
-		svg.removeChild(selrec.rect);
-
-		// define the selection
-// (svg.getEnclosureList does not work)
-		elts = svg.getElementsByClassName("abcr");
-		i = elts.length
-		while (--i >= 0) {
-			elt = elts[i];
-			x = Number(elt.getAttribute("x"))
-			y = Number(elt.getAttribute("y"))
-			if (x < selrec.xs
-			 || y < selrec.ys
-			 || x + Number(elt.getAttribute("width")) > selrec.x
-			 || y + Number(elt.getAttribute("height")) > selrec.y)
-				continue
-			cl = elt.getAttribute("class");
-			colcl.push(cl.split(' ')[1])
-		}
-		selrec.rect = null;
-		colorsel(true);
-		evt.stopImmediatePropagation();
-		evt.preventDefault()
-		break
+	// stop playing
+	if (play.playing && !play.stop) {
+		play.stop = -1;
+		play.abcplay.stop()
+		return false
 	}
+
+	// highlight the clicked element or clear the selection start
+	if (cl && cl.substr(0, 4) == 'abcr')
+		setsel(0, Number(cl.slice(6, -1)))
+	else
+		setsel(0, 0);
+
+	// clear the selection stop
+	setsel(1, 0)
 }
 
-// colorize the selection
-function colorsel(on, nosel) {
-var	i, j, elts, d,
-	i1 = 1000000,	// (hope a ABC file is smaller than that!)
-	i2 = 0,
-	n = colcl.length
+// set/clear a selection
+function setsel(idx, v, seltxt) {
+    var i, elts, s,
+	old_v = selx[idx];
 
-	for (i = 0; i < n; i++) {
-		elts = document.getElementsByClassName(colcl[i]);
-		j = elts.length
-		while (--j >= 0)
-			elts[j].style.fillOpacity = on ? 0.4 : 0
-		if (on) {
-			d = colcl[i].split('_')
-			if (d[1] < i1)
-				i1 = d[1]
-			if (ref[d[1]] > i2)
-				i2 = ref[d[1]]
-		}
+	if (v == old_v)
+		return
+	if (old_v) {
+		elts = document.getElementsByClassName('_' + old_v + '_');
+		i = elts.length
+		while (--i >= 0)
+			elts[i].style.fillOpacity = 0
 	}
-	if (!nosel && i1 < i2) {
-		var s = elt_ref.source;
-		selsrc(0);
-		s.setSelectionRange(i1, i2);
-		s.blur();
-		s.focus()
+	if (v) {
+		elts = document.getElementsByClassName('_' + v + '_');
+		i = elts.length
+		while (--i >= 0)
+			elts[i].style.fillOpacity = 0.4
 	}
-	if (!on)
-		colcl = []
+
+	selx[idx] = v
+	if (idx != 0 || seltxt || !v)
+		return
+	s = elt_ref.source;
+	selsrc(0);
+	s.setSelectionRange(v, srcend[v]);
+	s.blur();
+	s.focus()
 }
 
 // source text selection callback
-function seltxt(elt) {
-	var	start, end, s, z, elts
-	if (colcl.length != 0)
-		colorsel(false);
-	if (elt.selectionStart == undefined)
-		return
-	start = elt.selectionStart;
+function seltxt(evt) {
+    var	s, elts,
+	e = 0,
+	elt = elt_ref.source,
+	start = elt.selectionStart,
 	end = elt.selectionEnd
-	if (start == 0
-	 && end == elt_ref.source.value.length)
+
+	play.loop = false
+
+	if (!start
+	 || end == elt.value.length)
 		return				// select all
+
 	if (srcend) {
-		srcend.forEach(function(e, o) {
-			if (o >= start && e <= end)
-				colcl.push('_' + o + '_')
+		srcend.forEach(function(ie, is) {
+			if (!s) {
+				if (is >= start)
+					s = is
+			} else if (ie <= end) {
+				e = is
+			}
 		})
 	}
-	if (colcl.length != 0) {
-		colorsel(true, true);
-		s = document.getElementById("dright");
-	  z = window.document.defaultView.getComputedStyle(s).getPropertyValue('z-index')
-		if (z != 10) {			// if select from textarea
-			elts = document.getElementsByClassName(colcl[0]);
-			if (elts[0])
-				elts[0].scrollIntoView() // move the element on the screen
-		}
-	}
+	if (!s)
+		return
+	if (selx[0] != s)
+		setsel(0, s, true)
+	if (selx[1] != e)
+		setsel(1, e);
+	elts = document.getElementsByClassName('_' + s + '_')
+	if (elts[0])
+		elts[0].scrollIntoView()	// move the element in the screen
 }
 
 // open a new window for file save
@@ -522,69 +437,234 @@ function set_vol(v) {
 	play.abcplay.set_vol(v)
 	storage(true, "volume", v == 0.7 ? 0 : v.toFixed(2))
 }
-//fixme: do tune/start-stop selection of what to play
 function notehlight(i, on) {
+	if (play.stop) {
+		if (on) {
+			if (play.stop < 0)	// if first stop
+				play.stop = i	// keep the last note reference
+			return
+		}
+		if (i == selx[1])		// if end selection
+			return			// don't remove highlight
+	}
 	var elts = document.getElementsByClassName('_' + i + '_');
 	if (elts && elts[0])
 		elts[0].style.fillOpacity = on ? 0.4 : 0
 }
 function endplay() {
-	document.getElementById("playbutton").innerHTML = texts.play;
-	play.playing = false;
-	colcl = colcl_sav;
-	colorsel(true)
-}
-function play_tune() {
-    var	pe
-
-	function build_pe() {
-	    var	i, e,
-		set = {}
-
-		pe = []
-		for (i = 0; i < colcl.length; i++) {
-			e = colcl[i].slice(1, -1)
-			set[e] = true
-		}
-		for (i = 0; i < play.a_pe.length; i++) {
-			e = play.a_pe[i]
-			if (set[e[0]])
-				pe.push(e)
-		}
-	} // build_pe()
-
-	if (play.playing) {
-		play.abcplay.stop();
+	if (play.loop) {
+		play.abcplay.play(play.si, play.ei, play.a_pe)
 		return
 	}
+	play.playing = false;
+	setsel(0, selx_sav[0]);
+	setsel(1, selx_sav[1])
+}
+
+// start playing
+//	-1: All
+//	0: Tune
+//	1: Selection
+//	2: Loop
+//	3: Continue
+function play_tune(what) {
+	if (play.playing) {
+		if (!play.stop) {
+			play.stop = -1;
+			play.abcplay.stop()
+		}
+		return
+	}
+
+	// search a playing event from a source index
+	function get_se(si) {			// get starting event
+	    var	i, ci, cs, s, tim,
+		sih = si + 16,
+		pa = play.a_pe
+
+		// search from top
+		for (i = 0; i < pa.length; i++) {
+			s = pa[i][0]
+			if (s == si)
+				break
+			if (s > si && s < sih) {
+				cs = s
+				break
+			}
+		}
+		if (i == pa.length)
+			return i;
+		ci = i
+
+		// get the next element closest to the searched source index
+		if (s != si) {
+			for (i++; i < pa.length; i++) {
+				s = pa[i][0]
+				if (s > cs)
+					break
+				if (s == si) {
+					ci = i
+					break
+				}
+				if (s > si && s < sih) {
+					ci = i
+					break
+				}
+			}
+		}
+
+		// go to the first voice at this time
+		tim = pa[ci][1]
+		while (--ci >= 0) {
+			if (pa[ci][1] != tim)
+				break
+		}
+		return ci + 1
+	} // get_se()
+
+	function get_ee(si) {			// get ending event
+	    var	i, ci, cs, s, tim,
+		sil = si - 16,
+		pa = play.a_pe;
+
+		// search from bottom
+		i = pa.length
+		while (--i >= 0) {
+			s = pa[i][0]
+			if (s == si)
+				break
+			if (s < si && s > sil) {
+				cs = s
+				break
+			}
+		}
+		if (i <= 0)
+			return 0;
+		ci = i
+
+		// get the previous element closest to the searched source index
+		if (s != si) {
+			while (--i >= 0) {
+				s = pa[i][0]
+				if (s < cs)
+					break
+				if (s == si) {
+					ci = i
+					break
+				}
+				if (s < si && s > sil) {
+					ci = i
+					break
+				}
+			}
+		}
+
+		// go to the last voice at this time
+		tim = pa[ci][1]
+		for (ci++; ci < pa.length; ci++) {
+			if (pa[ci][1] != tim)
+				break
+		}
+		return ci
+	} // get_ee()
+
+	// start playing
+	function play_start(si, ei) {
+		selx_sav[0] = selx[0];		// remove the colors
+		selx_sav[1] = selx[1];
+		setsel(0, 0);
+		setsel(1, 0);
+
+		play.stop = 0;
+		play.abcplay.play(si, ei, play.a_pe)	// start playing
+	}
+
+    var	abc, i, si, ei, elt, tim,
+	s = elt_ref.source.value,
+	ctxMenu = document.getElementById("ctxMenu");
+
+	ctxMenu.style.display = "none";	// remove the play menu
+
 	play.playing = true;
 	if (!play.a_pe) {		// if no playing event
 		user.img_out = null	// get the schema and stop SVG generation
-		user.get_abcmodel = play.abcplay.add	// inject the model in the play engine
+		user.get_abcmodel = play.abcplay.add // inject the model in the play engine
 
-		var abc = new abc2svg.Abc(user);
+		abc = new abc2svg.Abc(user);
 
 		play.abcplay.clear();
 		abc.tosvg("play", "%%play")
 		try {
-			abc.tosvg(abc_fname[0], elt_ref.source.value)
+			abc.tosvg(abc_fname[0], s)
 		} catch(e) {
 			alert(e.message + '\nabc2svg tosvg bug - stack:\n' + e.stack);
 			play.playing = false;
 			play.a_pe = null
 			return
 		}
-		play.a_pe = play.abcplay.clear()	// keep the playing events
-	}
-	document.getElementById("playbutton").innerHTML = texts.stop;
+		play.a_pe = play.abcplay.clear(); // keep the playing events
 
-	if (colcl.length <= 1)
-		pe = play.a_pe
-	else
-		build_pe();
-	colcl_sav = colcl;
-	colorsel(false);
-	play.abcplay.play(0, 1000000, pe)
+		play.si = play.ei = play.stop = 0;
+		play.loop = false
+	}
+
+	// play all
+	if (what < 0) {
+		play.loop = false;
+		play_start(0, play.a_pe.length)
+		return
+	}
+
+	// if loop again
+	if (what == 2 && play.loop) {
+		play_start(play.si, play.ei)
+		return
+	}
+
+	// get the starting and ending play indexes, and start playing
+	if (what == 3 && play.stop > 0) {	// if stopped and continue
+		play_start(get_se(play.stop), play.ei)
+		return
+	}
+	if (what != 0 && selx[0] && selx[1]) {	// if full selection
+		si = get_se(selx[0]);
+		ei = get_ee(selx[1])
+	} else if (what != 0 && selx[0]) {	// if selection without end
+		si = get_se(selx[0]);
+		i = s.indexOf('\nX:', selx[0]);
+		ei = i < 0 ? play.a_pe.length : get_ee(i)
+	} else if (what != 0 && selx[1]) {	// if selection without start
+		i = s.lastIndexOf('\nX:', selx[1]);
+		si = i < 0 ? 0 : get_se(i);
+		ei = get_ee(selx[1])
+	} else {				// no selection => tune
+		elt = play.svg.getElementsByClassName('abcr');
+		i = elt ? Number(elt[0].getAttribute('class').slice(6, -1)) : 0;
+		si = ei = 0
+		if (s[0] == 'X' && s[1] == ':')
+			si = 1
+		while (1) {		// search the start and end of the tune
+			ei = s.indexOf('\nX:', ei)
+			if (ei < 0 || ei > i)
+				break
+			si = ++ei
+		}
+		if (si == 0) {
+			play.playing = false
+			return		// no tune!
+		}
+
+		si = get_se(si);
+		ei = ei < 0 ? play.a_pe.length : get_ee(ei)
+	}
+
+	if (what != 3) {		// if not continue
+		play.si = si;
+		play.ei = ei;
+		play.loop = what == 2
+	}
+
+	play_start(si, ei)
 }
 
 // set the version and initialize the playing engine
@@ -631,29 +711,30 @@ function edit_init() {
 		'abc2svg-' + abc2svg.version + ' (' + abc2svg.vdate + ')'
 
 	// keep references on the page elements
-	var a = ["diverr", "source", "src1", "s0", "s1"]
+	var a = ["diverr", "source", "src1", "s0", "s1", "target"]
 	for (var i = 0; i < a.length; i++) {
 		var e = a[i];
 		elt_ref[e] = document.getElementById(e)
 	}
 
 	// set the callback functions
-	e = document.getElementById("saveas");
-	e.addEventListener("click", saveas);
-	e = elt_ref.s0;
-	e.addEventListener("click", function(){selsrc(0)});
-	e = elt_ref.s1;
-	e.addEventListener("click", function(){selsrc(1)})
+	document.getElementById("saveas").onclick = saveas;
+	elt_ref.s0.onclick = function(){selsrc(0)};
+	elt_ref.s1.onclick = function(){selsrc(1)};
+	elt_ref.target.onclick = svgsel;
+	elt_ref.source.onselect = seltxt;
 
 	// remove the selection on print
-	window.addEventListener("beforeprint", function() {
-		colcl_sav = colcl;
-		colorsel(false)
-	});
-	window.addEventListener("afterprint", function() {
-		colcl = colcl_sav;
-		colorsel(true)
-	})
+	window.onbeforeprint = function() {
+		selx_sav[0] = selx[0];		// remove the colors
+		selx_sav[1] = selx[1];
+		setsel(0, 0);
+		setsel(1, 0)
+	};
+	window.onafterprint = function() {
+		setsel(0, selx_sav[0]);
+		setsel(1, selx_sav[1])
+	}
 
 	// if playing is possible, load the playing script
 	if (window.AudioContext || window.webkitAudioContext
@@ -663,9 +744,6 @@ function edit_init() {
 					onend: endplay,
 					onnote:notehlight,
 					});
-			var e = document.getElementById("playbutton");
-			e.addEventListener("click", play_tune);
-			e.style.display = "inline-block";
 			document.getElementById("playdiv1").style.display =
 				document.getElementById("playdiv3").style.display =
 				document.getElementById("playdiv4").style.display =
@@ -679,6 +757,39 @@ function edit_init() {
 			document.getElementById("gvl").setAttribute("value",
 				(play.abcplay.set_vol() * 10).toFixed(2))
 		});
+
+		var e = elt_ref.target;
+		e.oncontextmenu = function(evt) {
+		    var	x, y,
+			elt = evt.target,
+			cl = elt.getAttribute('class');
+
+			evt.stopImmediatePropagation();
+			evt.preventDefault()
+
+			// if right click on an element, select it
+			if (cl && cl.substr(0, 4) == 'abcr') {
+				setsel(1, Number(cl.slice(6, -1)))
+				return false
+			}
+
+			// otherwise, display the play menu
+			while (elt.tagName != 'svg') {
+				elt = elt.parentNode
+//				if (!elt)
+//					return true
+			}
+			play.svg = elt;		// keep the SVG ref for 'play tune'
+
+			var ctxMenu = document.getElementById("ctxMenu");
+			ctxMenu.style.display = "block";
+			x = evt.pageX - elt_ref.target.parentNode.offsetLeft
+					+ elt_ref.target.parentNode.scrollLeft;
+			y = evt.pageY + elt_ref.target.parentNode.scrollTop;
+			ctxMenu.style.left = (x - 30) + "px";
+			ctxMenu.style.top = (y - 10) + "px"
+			return false
+		} // oncontextmenu
 	}
 	set_pref()	// set the preferences from local storage
 }
