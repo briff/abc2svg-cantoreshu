@@ -32,14 +32,12 @@ window.onerror = function(msg, url, line) {
 var	abc_images,			// image buffer
 	abc_fname = ["noname.abc", ""],	// file names
 	abc,				// Abc object
-	ref,				// source reference array
-	elt_ref = {},			// pointers to page elements
+	srcend,				// source symbol end index
+	elt_ref = {},			// pointers to page HTML elements
 	colcl = [],			// colorized classes
 	colcl_sav,			// (saved while playing/printing)
-	abcplay,			// play engine
-	a_pe,				// playing events
-	playing,
 	selrec = {},
+	play = {},			// play data
 	pop,				// current popup message
 	texts = {			// language specific texts
 		bad_nb: 'Bad line number',
@@ -83,7 +81,7 @@ var user = {
 	anno_stop: function(type, start, stop, x, y, w, h) {
 		if (["beam", "slur", "tuplet"].indexOf(type) >= 0)
 			return
-		ref[start] = stop;		// keep the source reference
+		srcend[start] = stop;	// source index of the end of the element
 
 		// create a rectangle
 		abc.out_svg('<rect class="abcr _' + start +
@@ -198,7 +196,7 @@ function render() {
     var	i, j,
 	content = elt_ref.source.value;
 
-	a_pe = null
+	play.a_pe = null
 	if (!content)
 		return			// empty source
 
@@ -235,7 +233,7 @@ function render2() {
 	abc.tosvg('edit', '%%bgcolor white');
 
 //	document.body.style.cursor = "wait";
-	ref = []
+	srcend = []
 	try {
 		abc.tosvg(abc_fname[0], content)
 	} catch(e) {
@@ -438,8 +436,8 @@ function seltxt(elt) {
 	if (start == 0
 	 && end == elt_ref.source.value.length)
 		return				// select all
-	if (ref) {
-		ref.forEach(function(e, o) {
+	if (srcend) {
+		srcend.forEach(function(e, o) {
 			if (o >= start && e <= end)
 				colcl.push('_' + o + '_')
 		})
@@ -506,7 +504,7 @@ function setfont() {
 // playing
 // set soundfont URL
 function set_sfu(v) {
-	abcplay.set_sfu(v)
+	play.abcplay.set_sfu(v)
 	storage(true, "sfu", v == "Scc1t2" ? 0 : v)
 }
 // set_speed value = 1..20, 10 = no change
@@ -514,14 +512,14 @@ function set_speed(iv) {
     var	spvl = document.getElementById("spvl"),
 	v = Math.pow(3,			// max 3 times lower/faster
 			(iv - 10) * .1);
-	abcplay.set_speed(v);
+	play.abcplay.set_speed(v);
 	spvl.innerHTML = v
 }
 // set volume
 function set_vol(v) {
     var	gvl = document.getElementById("gvl");
 	gvl.innerHTML = v.toFixed(2);
-	abcplay.set_vol(v)
+	play.abcplay.set_vol(v)
 	storage(true, "volume", v == 0.7 ? 0 : v.toFixed(2))
 }
 //fixme: do tune/start-stop selection of what to play
@@ -532,7 +530,7 @@ function notehlight(i, on) {
 }
 function endplay() {
 	document.getElementById("playbutton").innerHTML = texts.play;
-	playing = false;
+	play.playing = false;
 	colcl = colcl_sav;
 	colorsel(true)
 }
@@ -548,45 +546,45 @@ function play_tune() {
 			e = colcl[i].slice(1, -1)
 			set[e] = true
 		}
-		for (i = 0; i < a_pe.length; i++) {
-			e = a_pe[i]
+		for (i = 0; i < play.a_pe.length; i++) {
+			e = play.a_pe[i]
 			if (set[e[0]])
 				pe.push(e)
 		}
 	} // build_pe()
 
-	if (playing) {
-		abcplay.stop();
+	if (play.playing) {
+		play.abcplay.stop();
 		return
 	}
-	playing = true;
-	if (!a_pe) {			// if no playing event
+	play.playing = true;
+	if (!play.a_pe) {		// if no playing event
 		user.img_out = null	// get the schema and stop SVG generation
-		user.get_abcmodel = abcplay.add	// inject the model in the play engine
+		user.get_abcmodel = play.abcplay.add	// inject the model in the play engine
 
 		var abc = new abc2svg.Abc(user);
 
-		abcplay.clear();
+		play.abcplay.clear();
 		abc.tosvg("play", "%%play")
 		try {
 			abc.tosvg(abc_fname[0], elt_ref.source.value)
 		} catch(e) {
 			alert(e.message + '\nabc2svg tosvg bug - stack:\n' + e.stack);
-			playing = false;
-			a_pe = null
+			play.playing = false;
+			play.a_pe = null
 			return
 		}
-		a_pe = abcplay.clear()	// keep the playing events
+		play.a_pe = play.abcplay.clear()	// keep the playing events
 	}
 	document.getElementById("playbutton").innerHTML = texts.stop;
 
 	if (colcl.length <= 1)
-		pe = a_pe
+		pe = play.a_pe
 	else
 		build_pe();
 	colcl_sav = colcl;
 	colorsel(false);
-	abcplay.play(0, 1000000, pe)
+	play.abcplay.play(0, 1000000, pe)
 }
 
 // set the version and initialize the playing engine
@@ -661,7 +659,7 @@ function edit_init() {
 	if (window.AudioContext || window.webkitAudioContext
 	 || navigator.requestMIDIAccess) {
 		abc2svg.loadjs("play-@MAJOR@.js", function() {
-			abcplay = AbcPlay({
+			play.abcplay = AbcPlay({
 					onend: endplay,
 					onnote:notehlight,
 					});
@@ -673,13 +671,13 @@ function edit_init() {
 				document.getElementById("playdiv4").style.display =
 					"list-item";
 
-			document.getElementById("sfu").value = abcplay.set_sfu();
+			document.getElementById("sfu").value = play.abcplay.set_sfu();
 //			document.getElementById("spv").innerHTML =
-//				Math.log(abcplay.set_speed()) / Math.log(3);
+//				Math.log(play.abcplay.set_speed()) / Math.log(3);
 			document.getElementById("gvol").setAttribute("value",
-				abcplay.set_vol() * 10)
+				play.abcplay.set_vol() * 10)
 			document.getElementById("gvl").setAttribute("value",
-				(abcplay.set_vol() * 10).toFixed(2))
+				(play.abcplay.set_vol() * 10).toFixed(2))
 		});
 	}
 	set_pref()	// set the preferences from local storage
@@ -717,7 +715,7 @@ function dropped(evt) {
 var timer
 function src_change() {
 	clearTimeout(timer);
-	if (!playing)
+	if (!play.playing)
 		timer = setTimeout(render, 2000)
 }
 
