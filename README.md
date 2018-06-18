@@ -53,7 +53,7 @@ These files are:
 
 - `follow-1.js`
   This script may be used after `play-1.js` for highlighting the notes
-  while playing.
+  while playing.   
   See [this page](http://moinejf.free.fr/abcm2ps-doc/tabac.xhtml)
   for an example.
 
@@ -165,6 +165,9 @@ and run
 ```
     samu -v font.js
 ```
+
+If you cannot or don't want to install `ninja` or `samurai`, you may build
+the abc2svg files by `./build` which is a shell script.
 
 ### Batch
 
