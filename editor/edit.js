@@ -42,8 +42,6 @@ var	abc_images,			// image buffer
 		bad_nb: 'Bad line number',
 		fn: 'File name: ',
 		load: 'Please, load the included file ',
-		play: 'Play',
-		stop: 'Stop'
 	},
 	jsdir = document.currentScript ?
 		document.currentScript.src.match(/.*\//) :
