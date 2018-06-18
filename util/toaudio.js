@@ -390,8 +390,18 @@ function ToAudio() {
 				s.next.time -= dt;
 				d -= dt
 			}
+			d /= play_factor
 			if (s.type == NOTE)
-				gen_notes(s, p_time, d / play_factor)
+				gen_notes(s, p_time, d)
+			else
+				a_e.push(new Float32Array([
+					s.istart,
+					p_time,
+					0,
+					0,
+					d,
+					0,
+					s.v]))
 			break
 		case STAVES:
 			top_v = s.sy.top_voice
