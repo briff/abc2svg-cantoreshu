@@ -61,13 +61,10 @@ These files are:
   This is a simple web ABC editor/player.
 
 When looking at a ABC file in a web browser, you may also use
-the following bookmarklet and render the music
-(create a bookmark and paste the following javascript code
-into the address/location box).
-
-```
-javascript:(function(){d=document;b=d.body;b.innerHTML="\n%25abc-2.2\n%25<!--\n"+b.textContent+"%25-->\n";function%20f(u){s=d.createElement('script');s.setAttribute('src',u);b.appendChild(s);};f('http://moinejf.free.fr/js/abc2svg-1.js');f('http://moinejf.free.fr/js/abcemb-1.js');f('http://moinejf.free.fr/js/play-1.js');function%20t(){if(typeof%20dom_loaded=="function"){dom_loaded()}else{setTimeout(t,200)}};setTimeout(t,200)})();void(0)
-```
+this
+<a href="javascript:(function(){d=document;b=d.body;b.innerHTML=%22\n%25abc-2.2\n%25%3c!--\n%22+b.textContent+%22%25--%3e\n%22;function%20f(u){s=d.createElement('script');s.setAttribute('src',u);b.appendChild(s);};f('http://moinejf.free.fr/js/abc2svg-1.js');f('http://moinejf.free.fr/js/abcemb-1.js');f('http://moinejf.free.fr/js/play-1.js');function%20t(){if(typeof%20dom_loaded=='function'){dom_loaded()}else{setTimeout(t,200)}};setTimeout(t,200)})();void(0)">bookmarklet</a>
+and render the music
+(create a bookmark and copy the link location into the address/location box).
 
 ##### Notes:
 - The music is rendered as SVG images. There is one image per
@@ -77,8 +74,9 @@ javascript:(function(){d=document;b=d.body;b.innerHTML="\n%25abc-2.2\n%25<!--\n"
 ```
 %%fullsvg x
 ```
-  in the ABC file before rendering (see
-  http://moinejf.free.fr/abcm2ps-doc/fullsvg.xhtml for more information).
+  in the ABC file before rendering (see the
+  [fullsvg documentation](http://moinejf.free.fr/abcm2ps-doc/fullsvg.xhtml)
+  for more information).
 
 - Playing uses the HTML5 audio and/or midi APIs.
 
@@ -94,17 +92,12 @@ javascript:(function(){d=document;b=d.body;b.innerHTML="\n%25abc-2.2\n%25<!--\n"
 
 - The editor comes with different ways to enter the music from the keyboard.  
   If you have a US keyboard, you may try these bookmarklets:
-
-```
-javascript:(function(){if(typeof%20loadjs=='function'){loadjs('abckbd-1.js')}else{alert('use%20with%20abc2svg%20editor')}})();void(0)
-```
-
-```
-javascript:(function(){if(typeof%20loadjs=='function'){loadjs('abckbd2-1.js')}else{alert('use%20with%20abc2svg%20editor')}})();void(0)
-```
+<a href="javascript:(function(){if(typeof%20loadjs=='function'){loadjs('abckbd-1.js')}else{alert('use%20with%20abc2svg%20editor')}})();void(0)">keyboard 1</a>
+and
+<a href="javascript:(function(){if(typeof%20loadjs=='function'){loadjs('abckbd2-1.js')}else{alert('use%20with%20abc2svg%20editor')}})();void(0)">keyboard 2</a>
 
 - The .js and .xhtml file names have a suffix which is the version of
-  the core interface (actually `-1`).
+  the core interface (actually '`-1`').
 
 ### nodeJS usage
 
@@ -190,12 +183,9 @@ There are:
 - `toabc.js`   
   This script outputs back the (selected) ABC tunes of the ABC source file.   
   Transposition is applied.   
-  The resulting file does not contain the formatting parameters.
-  Example:
-
-```
-	abcjs24 toabc.js my_file.abc --select X:2 > tune_2.abc
-```
+  The resulting file does not contain the formatting parameters.   
+  Example:   
+  `abcjs24 toabc.js my_file.abc --select X:2 > tune_2.abc`
 
 - `toabw.js`   
   This script outputs a Abiword file (ABW+SVG) which may be read by some
@@ -203,11 +193,8 @@ There are:
   formats by the batch function of abiword.   
   The abc2svg music font (`abc2svf.woff` or `abc2svg.ttf`) must be installed
   in the local system for displaying and/or converting the .abw file.   
-  Example:
-
-```
-	abcv8 toabw.js my_file.abc > my_file.abw
-```
+  Example:   
+  `abcv8 toabw.js my_file.abc > my_file.abw`
 
 - `toodt.js`   
   This script creates an Open Document (ODT+SVG) which may be read by most
@@ -216,8 +203,5 @@ There are:
   `jszip` to be installed.   
   The output ODT document may be specified by the command line argument `-o`
   (default `abc.odt`).   
-  Example:
-
-```
-	abc2svg toodt.js my_file.abc -o my_file.odt
-```
+  Example:   
+  `abc2svg toodt.js my_file.abc -o my_file.odt`
