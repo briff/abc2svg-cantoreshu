@@ -571,11 +571,8 @@ function set_bar_num() {
 				s = s.ts_next
 			break
 		case BAR:
-			if (s.bar_num) {
-				bar_num = s.bar_num		/* (%%setbarnb) */
-				if (s.time < bar_time)
-					delete s.bar_num
-			}
+			if (s.bar_num)
+				bar_num = s.bar_num	// (%%setbarnb)
 			if (s.time < bar_time) {	// incomplete measure
 				if (s.text && s.text[0] == '1') {
 					bar_rep = bar_num;
