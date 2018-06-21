@@ -17,8 +17,11 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with abc2svg-core.  If not, see <http://www.gnu.org/licenses/>.
 
+// start of the abc2svg object
+abc2svg = {
+
 // start of the Abc object
-abc2svg.Abc = function(user) {
+  Abc: function(user) {
 	"use strict";
 
 	// mask some unsafe functions

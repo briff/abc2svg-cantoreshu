@@ -36,12 +36,12 @@ rule jsc
 	DATE=`date '+%Y-%m-%d' -r package.json`;$
    fi;$
    cp core/license $out;$
-   echo "var abc2svg={version:\"$$VERSION\",vdate:\"$$DATE\"}" >> $out;$
    if [ "x$$NOMIN" = "x" ]; then $
 	cat $in | uglifyjs >> $out;$
    else $
 	cat $in >> $out;$
-   fi
+   fi;$
+   echo "abc2svg.version=\"$$VERSION\";abc2svg.vdate=\"$$DATE\"" >> $out
 
 rule jscu
   command = cp core/license $out;$

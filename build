@@ -7,11 +7,11 @@ out=abc2svg-$MAJOR.js
 VERSION=`grep '"version"' package.json|cut -d'"' -f4`
 DATE=`date '+%Y-%m-%d' -r package.json`
 cp core/license $out
-echo "var abc2svg={version:\"$VERSION\",vdate:\"$DATE\"}" >> $out
 cat core/abc2svg.js core/deco.js core/draw.js\
  font.js core/format.js core/front.js core/music.js core/parse.js core/subs.js\
  core/svg.js core/tune.js core/lyrics.js core/gchord.js core/tail.js\
  core/modules.js >> $out
+ echo "abc2svg.version=\"$VERSION\";abc2svg.vdate=\"$DATE\"" >> $out
 
 cp modules/ambitus.js ambitus-$MAJOR.js
 cp modules/break.js break-$MAJOR.js

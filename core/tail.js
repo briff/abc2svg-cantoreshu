@@ -103,6 +103,8 @@ Abc.prototype.svg_flush = svg_flush;
 
 }	// end of Abc()
 
+} // end of abc2svg
+
 // compatibility
 var Abc = abc2svg.Abc
 
