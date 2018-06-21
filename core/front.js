@@ -246,7 +246,7 @@ function tosvg(in_fname,		// file name
 	// remove the comment at end of text
 	function uncomment(src, do_escape) {
 		if (src.indexOf('%') >= 0)
-			src = src.replace(/(.*[^\\])%.*/, '$1')
+			src = src.replace(/[^\\]%.*/, '')
 				 .replace(/\\%/g, '%');
 		src = src.replace(/\s+$/, '')
 		if (do_escape && src.indexOf('\\') >= 0)
@@ -482,7 +482,7 @@ function tosvg(in_fname,		// file name
 		}
 
 		// music line (or free text)
-		if (line1 != ':') {
+		if (line1 != ':' || !/[A-Za-z+]/.test(line0)) {
 			last_info = undefined;
 			if (parse.state < 2)
 				continue

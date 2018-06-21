@@ -18,10 +18,10 @@
 // along with abc2svg.  If not, see <http://www.gnu.org/licenses/>.
 
 // Audio5 creation
-// one argument:
+
 // @conf: configuration object - all items are optional:
-//	ac: audio context
-//	sfu: soundfont URL (sf2 base64 encoded)
+//	ac: audio context - (default: created on play start)
+//	sfu: soundfont URL (sf2 base64 encoded - default: "Scc1t2")
 //	onend: callback function called at end of playing
 //		(no arguments)
 //	onnote: callback function called on note start/stop playing
@@ -29,6 +29,11 @@
 //			i: start index of the note in the ABC source
 //			on: true on note start, false on note stop
 //	errmsg: function called on error (default: alert)
+//
+//  When playing, the following items must/may be set:
+//	gain: (mandatory) volume, must be set to [0..1]
+//	speed: (mandatory) must be set to 1
+//	new_speed: (optional) new speed value
 
 // Audio5 methods
 
@@ -37,10 +42,8 @@
 //
 // play() - start playing
 // @start_index -
-// @stop_index: play the notes found in ABC source between
-//		the start and stop indexes
-// @play_event: optional (default: previous generated events)
-//	array of array
+// @stop_index: indexes of the play_event array
+// @play_event: array of array
 //		[0]: index of the note in the ABC source
 //		[1]: time in seconds
 //		[2]: MIDI instrument (MIDI GM number - 1)
@@ -70,7 +73,7 @@ function Audio5(i_conf) {
 
 	// -- play the memorized events --
 		evt_idx,		// event index while playing
-		iend,			// source stop index
+		iend,			// play array stop index
 		stime			// start playing time
 
 	// base64 stuff
@@ -215,7 +218,7 @@ function Audio5(i_conf) {
 
 		for (i = evt_idx; ; i++) {
 			e = a_e[i]
-			if (!e || e[0] > iend)
+			if (!e || evt_idx >= iend)
 				break
 			instr = e[2]
 			if (!params[instr]) {
@@ -283,8 +286,7 @@ function Audio5(i_conf) {
 
 		// play the next events
 		e = a_e[evt_idx]
-		if (!e
-		 || e[0] > iend) {		// if source ref > source end
+		if (!e || evt_idx >= iend) {
 			onend()
 			return
 		}
@@ -306,16 +308,14 @@ function Audio5(i_conf) {
 			if (e[5] != 0)		// if not a rest
 				note_run(e, t + stime, d)
 
-			if (conf.follow) {
+			// follow the notes while playing
 			    var	i = e[0];
-
 				st = (t + stime - ac.currentTime) * 1000;
 				setTimeout(onnote, st, i, true);
 				setTimeout(onnote, st + d * 1000, i, false)
-			}
 
 			e = a_e[++evt_idx]
-			if (!e) {
+			if (!e || evt_idx >= iend) {
 				setTimeout(onend,
 					(t + stime - ac.currentTime + d) * 1000)
 				return
@@ -333,8 +333,10 @@ function Audio5(i_conf) {
 
 	// wait for all resources, then start playing
 	function play_start(a_e) {
-		if (iend == 0)		// play stop
+		if (iend == 0) {	// play stop
+			onend()
 			return
+		}
 
 		// wait for instruments
 		if (w_instr != 0) {
@@ -367,7 +369,7 @@ function Audio5(i_conf) {
 
 	// play the events
 	play: function(istart, i_iend, a_e) {
-		if (!a_e || !a_e.length) {
+		if (!a_e || istart >= a_e.length) {
 			onend()			// nothing to play
 			return
 		}
@@ -384,13 +386,7 @@ function Audio5(i_conf) {
 		}
 
 		iend = i_iend;
-		evt_idx = 0
-		while (a_e[evt_idx] && a_e[evt_idx][0] < istart)
-			evt_idx++
-		if (!a_e[evt_idx]) {
-			onend()			// nothing to play
-			return
-		}
+		evt_idx = istart;
 		load_res(a_e);
 		play_start(a_e)
 	}, // play()

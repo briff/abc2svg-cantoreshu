@@ -952,6 +952,7 @@ function bar_cnv(bar_type) {
 function draw_bar(s, bot, h) {
 	var	i, s2, yb, bar_type,
 		st = s.st,
+		p_staff = staff_tb[st],
 		x = s.x
 
 	bar_type = bar_cnv(s.bar_type)
@@ -964,15 +965,19 @@ function draw_bar(s, bot, h) {
 //fixme: 's.ts_prev.st != st - 1' when floating voice in lower staff
 //	 && (s.ts_prev.type != BAR || s.ts_prev.st != st - 1))
 	 && s.ts_prev.type != BAR)
-		h = staff_tb[st].topbar * staff_tb[st].staffscale;
+		h = p_staff.topbar * p_staff.staffscale;
 
 	s.ymx = s.ymn + h;
 	set_sscale(-1);
 	anno_start(s)
 
+	// compute the middle vertical offset of the staff
+	yb = p_staff.y + 12;
+	if (p_staff.stafflines != '|||||')
+		yb += (p_staff.topbar + p_staff.botbar) / 2 - 12	// bottom
+
 	/* if measure repeat, draw the '%' like glyphs */
 	if (s.bar_mrep) {
-		yb = staff_tb[st].y + 12;
 		set_sscale(st)
 		if (s.bar_mrep == 1) {
 			for (s2 = s.prev; s2.type != REST; s2 = s2.prev)
@@ -982,7 +987,7 @@ function draw_bar(s, bot, h) {
 			xygl(x, yb, "mrep2")
 			if (s.v == cur_sy.top_voice) {
 				set_font("annotation");
-				xy_str(x, yb + staff_tb[st].topbar - 9,
+				xy_str(x, yb + p_staff.topbar - 9,
 						s.bar_mrep.toString(), "c")
 			}
 		}
@@ -1004,7 +1009,7 @@ function draw_bar(s, bot, h) {
 		case ":":
 			x -= 2;
 			set_sscale(st);
-			xygl(x + 1, bot, "rdots")
+			xygl(x + 1, yb - 12, "rdots")
 			break
 		}
 		x -= 3
@@ -1021,7 +1026,7 @@ var rest_tb = [
 	"r2", "r1", "r0", "r00"]
 
 function draw_rest(s) {
-	var	s2, i, j, x, y, dotx, staffb, yb, yt, head,
+	var	s2, i, j, x, y, dotx, yb, yt, head,
 		p_staff = staff_tb[s.st]
 
 	/* don't display the rests of invisible staves */
@@ -1056,19 +1061,22 @@ function draw_rest(s) {
 	if (s.invis)
 		return
 
-	staffb = p_staff.y			/* bottom of staff */
+	yb = p_staff.y			// bottom of staff
 
 	if (s.rep_nb) {
 		set_sscale(s.st);
 		anno_start(s);
-		staffb += 12
+		if (p_staff.stafflines == '|||||')
+			yb += 12
+		else
+			yb += (p_staff.topbar + p_staff.botbar) / 2
 		if (s.rep_nb < 0) {
-			xygl(x, staffb, "srep")
+			xygl(x, yb, "srep")
 		} else {
-			xygl(x, staffb, "mrep")
+			xygl(x, yb, "mrep")
 			if (s.rep_nb > 2 && s.v == cur_sy.top_voice) {
 				set_font("annotation");
-				xy_str(x, staffb + p_staff.topbar - 9,
+				xy_str(x, yb + p_staff.topbar - 9,
 					s.rep_nb.toString(), "c")
 			}
 		}
@@ -1087,7 +1095,7 @@ function draw_rest(s) {
 		y -= 6				/* semibreve a bit lower */
 
 	// draw the rest
-	xygl(x, y + staffb, s.notes[0].head ? s.notes[0].head : rest_tb[i])
+	xygl(x, y + yb, s.notes[0].head ? s.notes[0].head : rest_tb[i])
 
 	/* output ledger line(s) when greater than minim */
 	if (i >= 6) {
@@ -1099,7 +1107,7 @@ function draw_rest(s) {
 			case '[':
 				break
 			default:
-				xygl(x, y + 6 + staffb, "hl1")
+				xygl(x, y + 6 + yb, "hl1")
 				break
 			}
 			if (i == 9) {			/* longa */
@@ -1118,12 +1126,12 @@ function draw_rest(s) {
 		case '[':
 			break
 		default:
-			xygl(x, y + staffb, "hl1")
+			xygl(x, y + yb, "hl1")
 			break
 		}
 	}
 	x += 8;
-	y += staffb + 3
+	y += yb + 3
 	for (i = 0; i < s.dots; i++) {
 		xygl(x, y, "dot");
 		x += 3.5
@@ -1311,7 +1319,7 @@ function setdoty(s, y_tb) {
 // get the x and y position of a note head
 // (when the staves are defined)
 function x_head(s, note) {
-	return s.x + note.shhd
+	return s.x + note.shhd * stv_g.scale
 }
 function y_head(s, note) {
 	return staff_tb[s.st].y + 3 * (note.pit - 18)
@@ -1405,7 +1413,7 @@ function draw_basic_note(x, s, m, y_tb) {
 			break
 		}
 	}
-	if (note.color)
+	if (note.color != undefined)
 		old_color = set_color(note.color)
 	else if (note.map && note.map[2])
 		old_color = set_color(note.map[2])
@@ -1442,7 +1450,7 @@ function draw_basic_note(x, s, m, y_tb) {
 			g_close()
 		}
 	}
-	if (old_color != false)
+	if (old_color != undefined)
 		set_color(old_color)
 }
 
@@ -2666,15 +2674,6 @@ function draw_note_ties(k1, k2, mhead1, mhead2, job) {
 		}
 
 		y = 3 * (p - 18)
-//fixme: clash when 2 ties on second interval chord
-//		if (p & 1)
-//			y += 2 * dir
-		if (job != 1 && job != 3) {
-			if (dir > 0) {
-				if (!(p & 1) && k1.dots)
-					y = 3 * (p - 18) + 6
-			}
-		}
 
 		h = (.04 * (x2 - x1) + 10) * dir;
 //		anno_start(k1, 'slur');

@@ -18,7 +18,7 @@
 // along with abc2svg.  If not, see <http://www.gnu.org/licenses/>.
 
 // Midi5 creation
-// one argument:
+
 // @conf: configuration object - all items are optional:
 //	onend: callback function called at end of playing
 //		(no arguments)
@@ -26,6 +26,10 @@
 //		Arguments:
 //			i: start index of the note in the ABC source
 //			on: true on note start, false on note stop
+
+//  When playing, the following items must/may be set:
+//	speed: (mandatory) must be set to 1
+//	new_speed: (optional) new speed value
 
 // Midi5 methods
 
@@ -35,16 +39,15 @@
 //
 // play() - start playing
 // @start_index -
-// @stop_index: play the notes found in ABC source between
-//		the start and stop indexes
-// @play_event: optional (default: previous generated events)
-//	array of array
+// @stop_index: indexes of the play_event array
+// @play_event: array of array
 //		[0]: index of the note in the ABC source
 //		[1]: time in seconds
 //		[2]: MIDI instrument (MIDI GM number - 1)
 //		[3]: MIDI note pitch (with cents)
 //		[4]: duration
 //		[5]: volume (0..1 - optional)
+//		[6]: voice number
 //
 // stop() - stop playing
 
@@ -55,27 +58,26 @@ function Midi5(i_conf) {
 
 // MIDI variables
 	op,			// output port
-	instr,			// instrument -> channel
-	ch,			// channel allocation
+	v_i = [],		// voice (channel) to instrument
 
 // -- play the memorized events --
 	evt_idx,		// event index while playing
-	iend,			// source stop index
+	iend,			// play array stop index
 	stime			// start playing time in ms
 
 // create a note
 // @e[2] = instrument index
 // @e[3] = MIDI key + detune
+// @e[6] = voice (channel) number
 // @t = audio start time (ms)
 // @d = duration adjusted for speed (ms)
     function note_run(e, t, d) {
     var	k = e[3] | 0,
 	i = e[2],
-	c = instr[i]
+	c = e[6] & 0x0f		//fixme
 
-	if (c == undefined) {
-		c = ch++;
-		instr[i] = c;
+	if (i != v_i[c]) {			// if program change
+		v_i[c] = i
 		op.send(new Uint8Array([
 				0xb0 + c, 0, (i >> 14) & 0x7f,	// MSB bank
 				0xb0 + c, 32, (i >> 7) & 0x7f,	// LSB bank
@@ -91,18 +93,12 @@ function Midi5(i_conf) {
     var	t, e, e2, maxt, st, d
 
 	// play the next events
-	if (!op) {
+	e = a_e[evt_idx]
+	if (!op || evt_idx >= iend || !e) {
 		onend()
 		return
 	}
 			
-	e = a_e[evt_idx]
-	if (!e
-	 || e[0] > iend) {		// if source ref > source end
-		onend()
-		return
-	}
-
 	// if speed change, shift the start time
 	if (conf.new_speed) {
 		stime = window-performance.now() -
@@ -119,14 +115,13 @@ function Midi5(i_conf) {
 		if (e[5] != 0)		// if not a rest
 			note_run(e, t + stime, d)
 
-		if (conf.follow) {
+		// follow the notes while playing
 			st = t + stime - window.performance.now();
 			setTimeout(onnote, st, e[0], true);
 			setTimeout(onnote, st + d, e[0], false)
-		}
 
 		e = a_e[++evt_idx]
-		if (!e) {
+		if (!e || evt_idx >= iend) {
 			setTimeout(onend,
 				t + stime - window.performance.now() + d)
 			return
@@ -165,23 +160,15 @@ function Midi5(i_conf) {
 
 	// play the events
 	play: function(istart, i_iend, a_e) {
-		if (!a_e || !a_e.length) {
+		if (!a_e || istart >= a_e.length) {
 			onend()			// nothing to play
 			return
 		}
 		iend = i_iend;
-		evt_idx = 0
-		while (a_e[evt_idx] && a_e[evt_idx][0] < istart)
-			evt_idx++
-		if (!a_e[evt_idx]) {
-			onend()			// nothing to play
-			return
-		}
+		evt_idx = istart;
 
 		stime = window.performance.now() + 200	// start time + 0.2s
 			- a_e[evt_idx][1] * conf.speed * 1000;
-		instr = [];
-		ch = 0;
 		play_next(a_e)
 	}, // play()
 

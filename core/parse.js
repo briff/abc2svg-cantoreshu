@@ -123,6 +123,8 @@ function new_clef(clef_def) {
 	return s
 }
 
+var note_pit = new Int8Array([0, 2, 4, 5, 7, 9, 11])
+
 // get a transposition value
 function get_transp(param,
 			type) {		// undefined or "instr"
@@ -556,19 +558,15 @@ function new_key(param) {
 	case 'H':				// bagpipe
 		switch (param[1]) {
 		case 'P':
-			s.k_bagpipe = "P";
-			i++
-			break
 		case 'p':
-			s.k_bagpipe = "p";
-			s.k_sf = 2;
+			s.k_bagpipe = param[1];
+			s.k_sf = param[1] == 'P' ? 0 : 2;
 			i++
 			break
 		default:
 			syntax(1, "Unknown bagpipe-like key")
 			break
 		}
-		key_end = true
 		break
 	case 'P':
 		s.k_drum = true;
@@ -593,6 +591,14 @@ function new_key(param) {
 		}
 		param = param.slice(i).trim()
 		switch (param.slice(0, 3).toLowerCase()) {
+		default:
+			if (param[0] != 'm'
+			 || (param[1] != ' ' && param[1] != '\t'
+			  && param[1] != '\n')) {
+				key_end = true
+				break
+			}
+			// fall thru ('m')
 		case "aeo":
 		case "m":
 		case "min": s.k_sf -= 3;
@@ -614,16 +620,6 @@ function new_key(param) {
 			break
 		case "phr": s.k_sf -= 4;
 			mode = 2
-			break
-		default:
-			if (param[0] == 'm'
-			 && (param[1] == ' ' || param[1] == '\t'
-			  || param[1] == '\n')) {
-				s.k_sf -= 3;
-				mode = 5
-				break
-			}
-			key_end = true
 			break
 		}
 		if (!key_end)
@@ -1869,7 +1865,7 @@ function new_note(grace, tp_fact) {
 		// ignore if in second voice
 		if (curvoice.second) {
 			curvoice.time += s.dur
-			return null
+			return //null
 		}
 		break
 	case 'y':
@@ -1917,7 +1913,7 @@ function new_note(grace, tp_fact) {
 					i = c.charCodeAt(0);
 					if (i >= 128) {
 						syntax(1, errs.not_ascii)
-						return null
+						return //null
 					}
 					type = char_tb[i]
 					switch (type[0]) {

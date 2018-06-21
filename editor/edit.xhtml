@@ -37,11 +37,6 @@
 					size="50"
 					onblur="set_sfu(this.value)"/>
 			</li>
-			<li id="playdiv2" style="display: none">
-				<label id="fo">Follow music</label>
-				 <input id="fol" type="checkbox" checked="false"
-					onclick="set_follow(this)"/>
-			</li>
 			<li id="playdiv3" style="display: none">
 				<label id="gv">Volume</label>
 				 <input id="gvol" type="range" min="1" max="10" value="7"
@@ -66,7 +61,6 @@
 		<li onclick="loadlang('pt_BR')">Português do Brasil</li>
 		</ul>
 	</li>
-	<li class="dropbutton" id="playbutton" style="display: none">Play</li>
 	<li class="dropbutton"><label id="h">Help</label>
 		<ul class="droplinks">
 			<li id="ha" onclick="popshow('help', true)">Help</li>
@@ -96,7 +90,6 @@
 </p>
 <textarea id="source" rows="40" cols="73" wrap="off"
 	style="font: 14px monospace"
-	onselect="seltxt(this)"
 	ondrop="dropped(event)" ondragenter="drag_over(event)"
 	ondragover="drag_over(event)"
 	oninput="src_change()"></textarea>
@@ -108,13 +101,23 @@
 <!-- right - needed for the scrollbars -->
 <div id="dright">
 
+<!-- context menu -->
+<div id="ctxMenu" title="Play">
+	<ul class="droplinks">
+	<li id="cmpa" onclick="play_tune(-1)">All</li>
+	<li id="cmpt" onclick="play_tune(0)">Tune</li>
+	<li id="cmps" onclick="play_tune(1)">Selection</li>
+	<li id="cmpl" onclick="play_tune(2)">Loop</li>
+	<li id="cmpc" onclick="play_tune(3)">Continue</li>
+	</ul>
+</div>
+
 <!-- rendering area -->
 <div id="target">
 <svg xmlns="http://www.w3.org/2000/svg"
 	xmlns:xlink="http://www.w3.org/1999/xlink"
 	xml:space="preserve"
 	width="8.3in" height="2in" viewBox="0 0 595 144">
-<title>(void)</title>
 <text x="250" y="100" font-family="serif" font-size="12">(void)</text>
 </svg>
 </div>
@@ -142,6 +145,12 @@
 <li>You may change at will the ABC code in the text area.<br/>
 	Rendering is done 2 seconds later.</li>
 <li>The 'Print' button of the browser outputs the rendering area.</li>
+<li>You may select part of the tunes either from the text area (click and move)
+	or from the rendering area.<br/>
+	In the latter case, a left click on a music element defines the
+	start of the selection, a right click defines the selection end.<br/>
+	If your browser supports playing, a right click outside the music
+	raises the play menu.</li>
 </ul>
 </div>
 

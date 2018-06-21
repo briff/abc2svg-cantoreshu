@@ -19,6 +19,8 @@ abc2svg.ambitus = {
 
 	for (v = 0; v < voice_tb.length; v++) {
 		p_v = voice_tb[v];
+		if (p_v.second)
+			continue
 		min = 100;
 		max = -100
 
@@ -63,6 +65,7 @@ abc2svg.ambitus = {
 		s.notes[0].pit += d;
 		s.notes[1].pit += d;
 		s.x -= 26;
+		this.set_scale(s);
 		this.draw_note(s)
 		if (s.notes[1].pit - s.notes[0].pit > 4) {
 			this.xypath(s.x, 3 * (s.notes[1].pit - 18) + staff_tb[s.st].y);
@@ -103,6 +106,7 @@ abc2svg.ambitus = {
 abc2svg.modules.hooks.push(
 // export
 	"draw_note",
+	"set_scale",
 // hooks
 	[ "draw_symbols", "abc2svg.ambitus.draw_symbols" ],
 	[ "output_music", "abc2svg.ambitus.output_music" ],

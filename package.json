@@ -1,6 +1,6 @@
 {
   "name": "abc2svg",
-  "version": "1.17.4",
+  "version": "1.17.5",
   "description": "ABC music notation translator",
   "devDependencies": {
     "uglify-js": "^2.5.0"
@@ -47,7 +47,6 @@
     "sth-1.js",
     "toabc.js",
     "toabw.js",
-    "toaudio-1.js",
     "toodt.js",
     "toxhtml.js"
   ],
@@ -59,8 +58,8 @@
     "abc2svg": "./abc2svg"
   },
   "repository": {
-    "type": "git",
-    "url": "git+https://github.com/moinejf/abc2svg.git"
+    "type": "fossil",
+    "url": "https://chiselapp.com/user/moinejf/repository/abc2svg"
   },
   "keywords": [
     "ABC",
@@ -70,7 +69,7 @@
   "author": "Jean-François Moine",
   "license": "LGPL-3.0",
   "bugs": {
-    "url": "https://github.com/moinejf/abc2svg/issues"
+    "url": "https://chiselapp.com/user/moinejf/repository/abc2svg/reportlist"
   },
-  "homepage": "https://github.com/moinejf/abc2svg#readme"
+  "homepage": "https://chiselapp.com/user/moinejf/repository/abc2svg"
 }
