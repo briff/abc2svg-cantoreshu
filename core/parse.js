@@ -41,7 +41,7 @@ function set_ref(s) {
 // clef definition (%%clef, K: and V:)
 function new_clef(clef_def) {
 	var	s = {
-			type: CLEF,
+			type: C.CLEF,
 			clef_line: 2,
 			clef_type: "t",
 			v: curvoice.v,
@@ -324,7 +324,7 @@ function get_st_lines(param) {
 // create a block symbol in the tune body
 function new_block(subtype) {
 	var	s = {
-			type: BLOCK,
+			type: C.BLOCK,
 			subtype: subtype,
 			dur: 0
 		}
@@ -538,7 +538,7 @@ function new_key(param) {
 	var	i, clef, key_end, c, tmp,
 		mode = 0,
 		s = {
-			type: KEY,
+			type: C.KEY,
 			k_delta: 0,
 			dur:0
 		}
@@ -662,7 +662,7 @@ function new_key(param) {
 // M: meter
 function new_meter(text) {
 	var	s = {
-			type: METER,
+			type: C.METER,
 			dur: 0,
 			a_meter: []
 		},
@@ -678,7 +678,7 @@ function new_meter(text) {
 
 	if (p.indexOf("none") == 0) {
 		i = 4;				/* no meter */
-		wmeasure = 1;	// simplify measure numbering and MREST conversion
+		wmeasure = 1;	// simplify measure numbering and C.MREST conversion
 	} else {
 		wmeasure = 0
 		while (i < text.length) {
@@ -763,7 +763,7 @@ function new_meter(text) {
 			if (!in_parenth) {
 				if (meter.bot)
 					m2 = parseInt(meter.bot);
-				wmeasure += m1 * BASE_LEN / m2
+				wmeasure += m1 * C.BLEN / m2
 			}
 			s.a_meter.push(meter);
 			meter = {}
@@ -782,7 +782,7 @@ function new_meter(text) {
 			syntax(1, "Bad duration '$1' in M:", p.substring(i))
 			return
 		}
-		wmeasure = BASE_LEN * val[1] / val[2]
+		wmeasure = C.BLEN * val[1] / val[2]
 	}
 	s.wmeasure = wmeasure
 
@@ -794,10 +794,10 @@ function new_meter(text) {
 			/* in the tune header, change the unit note length */
 			if (!glovar.ulen) {
 				if (wmeasure <= 1
-				 || wmeasure >= BASE_LEN * 3 / 4)
-					glovar.ulen = BASE_LEN / 8
+				 || wmeasure >= C.BLEN * 3 / 4)
+					glovar.ulen = C.BLEN / 8
 				else
-					glovar.ulen = BASE_LEN / 16
+					glovar.ulen = C.BLEN / 16
 			}
 			for (v = 0; v < voice_tb.length; v++) {
 				voice_tb[v].meter = s;
@@ -819,7 +819,7 @@ function new_meter(text) {
 function new_tempo(text) {
 	var	i = 0, j, c, nd, tmp,
 		s = {
-			type: TEMPO,
+			type: C.TEMPO,
 			dur: 0
 		}
 
@@ -853,7 +853,7 @@ function new_tempo(text) {
 		nd = parse_dur(tmp)
 		if (!s.tempo_notes)
 			s.tempo_notes = []
-		s.tempo_notes.push(BASE_LEN * nd[0] / nd[1])
+		s.tempo_notes.push(C.BLEN * nd[0] / nd[1])
 		while (1) {
 //			c = tmp.char()
 			c = text[tmp.index]
@@ -879,7 +879,7 @@ function new_tempo(text) {
 			s.tempo = tmp.get_int()
 		} else {
 			nd = parse_dur(tmp);
-			s.new_beat = BASE_LEN * nd[0] / nd[1]
+			s.new_beat = C.BLEN * nd[0] / nd[1]
 		}
 		c = text[tmp.index]
 		while (c == ' ')
@@ -931,14 +931,14 @@ function do_info(info_type, text) {
 			d1 = Number(a[1])
 			if (!d1 || (d1 & (d1 - 1)) != 0)
 				break
-			d1 = BASE_LEN / d1
+			d1 = C.BLEN / d1
 			if (a[2]) {
 				d2 = Number(a[4])
 				if (!d2 || (d2 & (d2 - 1)) != 0) {
 					d2 = 0
 					break
 				}
-				d2 = Number(a[3]) / d2 * BASE_LEN
+				d2 = Number(a[3]) / d2 * C.BLEN
 			} else {
 				d2 = d1
 			}
@@ -976,7 +976,7 @@ function do_info(info_type, text) {
 		if (cfmt.writefields.indexOf(info_type) < 0)
 			break
 		s = {
-			type: PART,
+			type: C.PART,
 			text: text,
 			dur: 0
 		}
@@ -990,7 +990,7 @@ function do_info(info_type, text) {
 		if (curvoice.v != p_voice.v) {
 			if (curvoice.time != p_voice.time)
 				break
-			if (p_voice.last_sym && p_voice.last_sym.type == PART)
+			if (p_voice.last_sym && p_voice.last_sym.type == C.PART)
 				break		// already a P:
 			var voice_sav = curvoice;
 			curvoice = p_voice;
@@ -1029,7 +1029,7 @@ function do_info(info_type, text) {
 		 || parse.state != 3)
 			break
 		s = {
-			type: REMARK,
+			type: C.REMARK,
 			text: text,
 			dur: 0
 		}
@@ -1053,10 +1053,10 @@ function adjust_dur(s) {
 		return;
 
 	/* the bar time is correct if there are multi-rests */
-	if (s2.type == MREST
-	 || s2.type == BAR)			/* in second voice */
+	if (s2.type == C.MREST
+	 || s2.type == C.BAR)			/* in second voice */
 		return
-	while (s2.type != BAR && s2.prev)
+	while (s2.type != C.BAR && s2.prev)
 		s2 = s2.prev;
 	time = s2.time;
 	auto_time = curvoice.time - time
@@ -1065,7 +1065,7 @@ function adjust_dur(s) {
 	if (time == 0) {
 		while (s2 && !s2.dur)
 			s2 = s2.next
-		if (s2 && s2.type == REST
+		if (s2 && s2.type == C.REST
 		 && s2.invis) {
 			time += s2.dur * curvoice.wmeasure / auto_time
 			if (s2.prev)
@@ -1087,7 +1087,7 @@ function adjust_dur(s) {
 		s2.dur = s2.dur * curvoice.wmeasure / auto_time;
 		s2.dur_orig = s2.dur_orig * curvoice.wmeasure / auto_time;
 		time += s2.dur
-		if (s2.type != NOTE && s2.type != REST)
+		if (s2.type != C.NOTE && s2.type != C.REST)
 			continue
 		for (i = 0; i <= s2.nhd; i++)
 			s2.notes[i].dur = s2.notes[i].dur
@@ -1109,7 +1109,7 @@ function new_bar() {
 	var	s2, c, bar_type,
 		line = parse.line,
 		s = {
-			type: BAR,
+			type: C.BAR,
 			fname: parse.fname,
 			istart: parse.bol + line.index,
 			dur: 0,
@@ -1224,9 +1224,9 @@ function new_bar() {
 		adjust_dur(s);
 
 	s2 = curvoice.last_sym
-	if (s2 && s2.type == SPACE) {
+	if (s2 && s2.type == C.SPACE) {
 		s2.time--		// keep the space at the right place
-	} else if (s2 && s2.type == BAR) {
+	} else if (s2 && s2.type == C.BAR) {
 //fixme: why these next lines?
 //		&& !s2.a_gch && !s2.a_dd
 //		&& !s.a_gch && !s.a_dd) {
@@ -1294,8 +1294,8 @@ function new_bar() {
 		curvoice.sym_restart = s
 
 	/* the bar must appear before a key signature */
-	if (s2 && s2.type == KEY
-	 && (!s2.prev || s2.prev.type != BAR)) {
+	if (s2 && s2.type == C.KEY
+	 && (!s2.prev || s2.prev.type != C.BAR)) {
 		curvoice.last_sym = s2.prev
 		if (!s2.prev)
 			curvoice.sym = s2.prev;	// null
@@ -1314,7 +1314,7 @@ function new_bar() {
 	 && curvoice.st > 0
 	 && !(par_sy.staves[curvoice.st - 1].flags & STOP_BAR)) {
 		s2 = {
-			type: BAR,
+			type: C.BAR,
 			fname: s.fname,
 			istart: s.istart,
 			iend: s.iend,
@@ -1485,7 +1485,7 @@ function identify_note(s, dur) {
 
 	if (dur % 12 != 0)
 		syntax(1, "Invalid note duration $1", dur);
-	dur /= 12			/* see BASE_LEN for values */
+	dur /= 12			/* see C.BLEN for values */
 	if (dur == 0)
 		syntax(1, "Note too short")
 	for (flags = 5; dur != 0; dur >>= 1, flags--) {
@@ -1505,23 +1505,23 @@ function identify_note(s, dur) {
 	flags -= dots
 //--fixme: is 'head' useful?
 	if (flags >= 0) {
-		head = FULL
+		head = C.FULL
 	} else switch (flags) {
 	default:
 		syntax(1, "Note too long");
 		flags = -4
 		/* fall thru */
 	case -4:
-		head = SQUARE
+		head = C.SQUARE
 		break
 	case -3:
-		head = cfmt.squarebreve ? SQUARE : OVALBARS
+		head = cfmt.squarebreve ? C.SQUARE : C.OVALBARS
 		break
 	case -2:
-		head = OVAL
+		head = C.OVAL
 		break
 	case -1:
-		head = EMPTY
+		head = C.EMPTY
 		break
 	}
 	return [head, dots, flags]
@@ -1686,16 +1686,16 @@ function parse_vpos() {
 		ti1 = 0
 
 	if (line.buffer[line.index - 1] == '.' && !a_dcn)
-		ti1 = SL_DOTTED
+		ti1 = C.SL_DOTTED
 	switch (line.next_char()) {
 	case "'":
 		line.index++
-		return ti1 + SL_ABOVE
+		return ti1 + C.SL_ABOVE
 	case ",":
 		line.index++
-		return ti1 + SL_BELOW
+		return ti1 + C.SL_BELOW
 	}
-	return ti1 + SL_AUTO
+	return ti1 + C.SL_AUTO
 }
 
 var	cde2fcg = new Int8Array([0, 2, 4, -1, 1, 3, 5]),
@@ -1829,7 +1829,7 @@ function new_note(grace, tp_fact) {
 	a_dcn = null;
 	parse.stemless = false;
 	s = {
-		type: NOTE,
+		type: C.NOTE,
 		fname: parse.fname,
 		stem: 0,
 		multi: 0,
@@ -1857,7 +1857,7 @@ function new_note(grace, tp_fact) {
 	case 'X':
 		s.invis = true
 	case 'Z':
-		s.type = MREST;
+		s.type = C.MREST;
 		c = line.next_char()
 		s.nmes = (c > '0' && c <= '9') ? line.get_int() : 1;
 		s.dur = curvoice.wmeasure * s.nmes
@@ -1869,7 +1869,7 @@ function new_note(grace, tp_fact) {
 		}
 		break
 	case 'y':
-		s.type = SPACE;
+		s.type = C.SPACE;
 		s.invis = true;
 		s.dur = 0;
 		c = line.next_char()
@@ -1881,7 +1881,7 @@ function new_note(grace, tp_fact) {
 	case 'x':
 		s.invis = true
 	case 'z':
-		s.type = REST;
+		s.type = C.REST;
 		line.index++;
 		nd = parse_dur(line);
 		s.dur_orig = ((curvoice.ulen < 0) ?
@@ -1948,7 +1948,7 @@ function new_note(grace, tp_fact) {
 				}
 			}
 			note = parse_basic_note(line,
-					s.grace ? BASE_LEN / 4 :
+					s.grace ? C.BLEN / 4 :
 					curvoice.ulen < 0 ?
 						15120 :	// 2*2*2*2*3*3*3*5*7
 						curvoice.ulen)
@@ -2024,7 +2024,7 @@ function new_note(grace, tp_fact) {
 		s.dur_orig = s.notes[0].dur;
 		s.dur = s.notes[0].dur * curvoice.dur_fact
 	}
-	if (s.grace && s.type != NOTE) {
+	if (s.grace && s.type != C.NOTE) {
 		syntax(1, "Not a note in grace note sequence")
 		return //null
 	}
@@ -2032,9 +2032,9 @@ function new_note(grace, tp_fact) {
 	if (s.notes) {				// if note or rest
 		if (!s.grace) {
 			switch (curvoice.pos.stm) {
-			case SL_ABOVE: s.stem = 1; break
-			case SL_BELOW: s.stem = -1; break
-			case SL_HIDDEN: s.stemless = true; break
+			case C.SL_ABOVE: s.stem = 1; break
+			case C.SL_BELOW: s.stem = -1; break
+			case C.SL_HIDDEN: s.stemless = true; break
 			}
 
 			// adjust the symbol duration
@@ -2093,7 +2093,7 @@ function new_note(grace, tp_fact) {
 		}
 
 		// set the symbol parameters
-		if (s.type == NOTE) {
+		if (s.type == C.NOTE) {
 			res = identify_note(s, s.dur_orig);
 			s.head = res[0];
 			s.dots = res[1];
@@ -2106,12 +2106,12 @@ function new_note(grace, tp_fact) {
 //--fixme: does not work in sample.abc because broken rhythm on measure bar
 			dur = s.dur_orig
 			if (dur == curvoice.wmeasure) {
-				if (dur < BASE_LEN * 2)
-					dur = BASE_LEN
-				else if (dur < BASE_LEN * 4)
-					dur = BASE_LEN * 2
+				if (dur < C.BLEN * 2)
+					dur = C.BLEN
+				else if (dur < C.BLEN * 4)
+					dur = C.BLEN * 2
 				else
-					dur = BASE_LEN * 4
+					dur = C.BLEN * 4
 			}
 			res = identify_note(s, dur);
 			s.head = res[0];
@@ -2123,7 +2123,7 @@ function new_note(grace, tp_fact) {
 
 	sym_link(s)
 
-	if (s.type == NOTE) {
+	if (s.type == C.NOTE) {
 		if (curvoice.vtransp)
 			note_transp(s)
 		if (curvoice.map
@@ -2403,9 +2403,9 @@ function parse_music_line() {
 				s = curvoice.last_sym
 				if (s) {
 					switch (s.type) {
-					case NOTE:
-					case REST:
-					case SPACE:
+					case C.NOTE:
+					case C.REST:
+					case C.SPACE:
 						break
 					default:
 						s = null
@@ -2454,7 +2454,7 @@ function parse_music_line() {
 			    var tie_pos = 0
 
 				if (!curvoice.last_note
-				 || curvoice.last_note.type != NOTE) {
+				 || curvoice.last_note.type != C.NOTE) {
 					syntax(1, "No note before '-'")
 					break
 				}
@@ -2502,7 +2502,7 @@ function parse_music_line() {
 				s = new_note(grace, tp_fact)
 				if (!s)
 					continue
-				if (s.type == NOTE) {
+				if (s.type == C.NOTE) {
 					if (slur_start) {
 						s.slur_start = slur_start;
 						slur_start = 0
@@ -2590,16 +2590,16 @@ function parse_music_line() {
 				a_dcn_sav = a_dcn;
 				a_dcn = undefined;
 				grace = {
-					type: GRACE,
+					type: C.GRACE,
 					fname: parse.fname,
 					istart: parse.bol + line.index,
 					dur: 0,
 					multi: 0
 				}
 				switch (curvoice.pos.gst) {
-				case SL_ABOVE: grace.stem = 1; break
-				case SL_BELOW: grace.stem = -1; break
-				case SL_HIDDEN:	grace.stem = 2; break	/* opposite */
+				case C.SL_ABOVE: grace.stem = 1; break
+				case C.SL_BELOW: grace.stem = -1; break
+				case C.SL_HIDDEN: grace.stem = 2; break	/* opposite */
 				}
 				sym_link(grace);
 				c = line.next_char()

@@ -61,7 +61,7 @@ function parse_gchord(type) {
 		iend = parse.bol + line.index + 1
 	}
 
-	if (curvoice.pos.gch == SL_HIDDEN)
+	if (curvoice.pos.gch == C.SL_HIDDEN)
 		return
 
 	i = 0;
@@ -295,7 +295,7 @@ function gch_build(s) {
 	/* split the chord indications / annotations
 	 * and initialize their vertical offsets */
 	var	gch, wh, xspc, ix,
-		pos = curvoice.pos.gch == SL_BELOW ? -1 : 1,
+		pos = curvoice.pos.gch == C.SL_BELOW ? -1 : 1,
 		y_above = 0,
 		y_below = 0,
 		y_left = 0,
@@ -499,9 +499,9 @@ function draw_gchord(s, gchy_min, gchy_max) {
 					switch (next.type) {
 					default:
 						continue
-					case NOTE:
-					case REST:
-					case BAR:
+					case C.NOTE:
+					case C.REST:
+					case C.BAR:
 						x = next.x
 						break
 					}

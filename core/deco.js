@@ -198,9 +198,9 @@ function y_set(st, up, x, w, y) {
 /* -- get the staff position of the dynamic and volume marks -- */
 function up_p(s, pos) {
 	switch (pos) {
-	case SL_ABOVE:
+	case C.SL_ABOVE:
 		return true
-	case SL_BELOW:
+	case C.SL_BELOW:
 		return false
 	}
 	if (s.multi && s.multi != 0)
@@ -209,7 +209,7 @@ function up_p(s, pos) {
 		return false
 
 	/* above if the lyrics are below the staff */
-	return s.pos.voc != SL_ABOVE
+	return s.pos.voc != C.SL_ABOVE
 }
 
 /* -- drawing functions -- */
@@ -220,18 +220,18 @@ function d_arp(de) {
 		dd = de.dd,
 		xc = 5
 
-	if (s.type == NOTE) {
+	if (s.type == C.NOTE) {
 		for (m = 0; m <= s.nhd; m++) {
 			if (s.notes[m].acc) {
 				dx = 5 + s.notes[m].shac
 			} else {
 				dx = 6 - s.notes[m].shhd
 				switch (s.head) {
-				case SQUARE:
+				case C.SQUARE:
 					dx += 3.5
 					break
-				case OVALBARS:
-				case OVAL:
+				case C.OVALBARS:
+				case C.OVAL:
 					dx += 2
 					break
 				}
@@ -352,7 +352,7 @@ function d_near(de) {
 		s.ymn = y;
 	de.y = y
 //	de.x = s.x + s.notes[s.stem >= 0 ? 0 : s.nhd].shhd
-	if (s.type == NOTE)
+	if (s.type == C.NOTE)
 		de.x += s.notes[s.stem >= 0 ? 0 : s.nhd].shhd
 	if (dd.name[0] == 'd'			/* if dot decoration */
 	 && s.nflags >= -1) {			/* on stem */
@@ -412,11 +412,11 @@ function d_slide(de) {
 		} else {
 			dx = 5 - s.notes[m].shhd
 			switch (s.head) {
-			case SQUARE:
+			case C.SQUARE:
 				dx += 3.5
 				break
-			case OVALBARS:
-			case OVAL:
+			case C.OVALBARS:
+			case C.OVAL:
 				dx += 2
 				break
 			}
@@ -464,7 +464,7 @@ function d_trill(de) {
 		}
 	} else {
 		w = s2.x - x - 6
-		if (s2.type == NOTE)
+		if (s2.type == C.NOTE)
 			w -= 6
 		if (w < 20) {
 			x -= (20 - w) * .5;
@@ -523,10 +523,10 @@ function d_upstaff(de) {
 		up = 0
 	} else if (s.pos) {
 		switch (s.pos.orn) {
-		case SL_ABOVE:
+		case C.SL_ABOVE:
 			up = 1
 			break
-		case SL_BELOW:
+		case C.SL_BELOW:
 			up = 0
 			break
 		}
@@ -725,14 +725,14 @@ function deco_cnv(a_dcn, s, prev) {
 		/* special decorations */
 		switch (dd.func) {
 		case 0:			// near
-			if (s.type == BAR && dd.name == "dot") {
+			if (s.type == C.BAR && dd.name == "dot") {
 				s.bar_dotted = true
 				break
 			}
 			// fall thru
 		case 1:			// slide
 		case 2:			// arp
-//			if (s.type != NOTE && s.type != REST) {
+//			if (s.type != C.NOTE && s.type != C.REST) {
 			if (!s.notes) {
 				error(1, s,
 					errs.must_note_rest, dd.name)
@@ -740,7 +740,7 @@ function deco_cnv(a_dcn, s, prev) {
 			}
 			break
 		case 8:			// gliss
-			if (s.type != NOTE) {
+			if (s.type != C.NOTE) {
 				error(1, s,
 					errs.must_note, dd.name)
 				continue
@@ -779,16 +779,16 @@ function deco_cnv(a_dcn, s, prev) {
 			s.invis = true
 			continue
 		case 33:		/* beamon */
-			if (s.type != BAR) {
+			if (s.type != C.BAR) {
 				error(1, s, "!beamon! must be on a bar")
 				continue
 			}
 			s.beam_on = true
 			continue
 		case 34:		/* trem1..trem4 */
-			if (s.type != NOTE
+			if (s.type != C.NOTE
 			 || !prev
-			 || prev.type != NOTE
+			 || prev.type != C.NOTE
 			 || s.nflags != prev.nflags) {
 				error(1, s,
 					"!$1! must be on the last of a couple of notes",
@@ -820,7 +820,7 @@ function deco_cnv(a_dcn, s, prev) {
 				prev.notes[j].dur *= 2
 			continue
 		case 35:		/* xstem */
-			if (s.type != NOTE) {
+			if (s.type != C.NOTE) {
 				error(1, s, "!xstem! must be on a note")
 				continue
 			}
@@ -828,7 +828,7 @@ function deco_cnv(a_dcn, s, prev) {
 			s.nflags = 0		// beam break
 			continue
 		case 36:		/* beambr1 / beambr2 */
-			if (s.type != NOTE) {
+			if (s.type != C.NOTE) {
 				error(1, s, errs.must_note, dd.name)
 				continue
 			}
@@ -841,7 +841,7 @@ function deco_cnv(a_dcn, s, prev) {
 			s.rbstop = 1	// open
 			continue
 		case 38:		/* /, // and /// = tremolo */
-			if (s.type != NOTE) {
+			if (s.type != C.NOTE) {
 				error(1, s, errs.must_note, dd.name)
 				continue
 			}
@@ -853,7 +853,7 @@ function deco_cnv(a_dcn, s, prev) {
 				s.nflags = s.ntrem
 			continue
 		case 39:		/* beam-accel/beam-rall */
-			if (s.type != NOTE) {
+			if (s.type != C.NOTE) {
 				error(1, s, errs.must_note, dd.name)
 				continue
 			}
@@ -907,7 +907,7 @@ function deco_width(s) {
 			break
 		}
 	}
-	if (wl != 0 && s.prev && s.prev.type == BAR)
+	if (wl != 0 && s.prev && s.prev.type == C.BAR)
 		wl -= 3
 	return wl
 }
@@ -1127,7 +1127,7 @@ function draw_deco_near() {
 				pos = s.pos.dyn
 				break
 			}
-			if (pos == SL_HIDDEN)
+			if (pos == C.SL_HIDDEN)
 				continue
 
 			de = {
@@ -1317,9 +1317,9 @@ function draw_deco_near() {
 	// update the long decorations started in the previous line
 	for (s = tsfirst ; s; s = s.ts_next) {
 		switch (s.type) {
-		case CLEF:
-		case KEY:
-		case METER:
+		case C.CLEF:
+		case C.KEY:
+		case C.METER:
 			continue
 		}
 		break
@@ -1329,13 +1329,13 @@ function draw_deco_near() {
 
 	for ( ; s; s = s.ts_next) {
 		switch (s.type) {
-		case BAR:
-		case MREST:
-		case NOTE:
-		case REST:
-		case SPACE:
+		case C.BAR:
+		case C.MREST:
+		case C.NOTE:
+		case C.REST:
+		case C.SPACE:
 			break
-		case GRACE:
+		case C.GRACE:
 			for (g = s.extra; g; g = g.next)
 				create_all(g)
 		default:
@@ -1382,7 +1382,7 @@ function draw_deco_staff() {
 		/* search the max y offset */
 		y = staff_tb[p_voice.st].topbar + 25	// 20 (vert bar) + 5 (room)
 		for (s = p_voice.sym; s; s = s.next) {
-			if (s.type != BAR)
+			if (s.type != C.BAR)
 				continue
 			if (!s.rbstart || s.norepbra)
 				continue
@@ -1439,7 +1439,7 @@ function draw_deco_staff() {
 			x = s1.x
 //			if (s1.bar_type[0] == ":")
 //				x -= 4;
-			if (s.type != BAR) {
+			if (s.type != C.BAR) {
 				w = s.rbstop ? 0 : s.x - realwidth + 4
 			} else if ((s.bar_type.length > 1	// if complex bar
 				 && s.bar_type != "[]")
@@ -1466,7 +1466,7 @@ function draw_deco_staff() {
 			 && !s.rbstop
 			 && !p_voice.bar_start) { // continue on next line
 				p_voice.bar_start = clone(s);
-				p_voice.bar_start.type = BAR;
+				p_voice.bar_start.type = C.BAR;
 				p_voice.bar_start.bar_type = "["
 				delete p_voice.bar_start.text;
 				p_voice.bar_start.rbstart = 1
@@ -1640,10 +1640,10 @@ function draw_measnb() {
 		} else if (bar_num % cfmt.measurenb == 0) {
 			for ( ; ; s = s.ts_next) {
 				switch (s.type) {
-				case METER:
-				case CLEF:
-				case KEY:
-				case STBRK:
+				case C.METER:
+				case C.CLEF:
+				case C.KEY:
+				case C.STBRK:
 					continue
 				}
 				break
@@ -1652,8 +1652,8 @@ function draw_measnb() {
 				s = s.ts_next
 
 			// don't display the number twice
-		     if (s.type != BAR || !s.bar_num) {
-			if (s.prev && s.prev.type != CLEF)
+		     if (s.type != C.BAR || !s.bar_num) {
+			if (s.prev && s.prev.type != C.CLEF)
 				s = s.prev;
 			x = s.x - s.wl;
 			any_nb = true;
@@ -1682,7 +1682,7 @@ function draw_measnb() {
 
 	for ( ; s; s = s.ts_next) {
 		switch (s.type) {
-		case STAVES:
+		case C.STAVES:
 			sy = s.sy
 			for (st = 0; st < nstaff; st++) {
 				if (sy.st_print[st])
@@ -1692,7 +1692,7 @@ function draw_measnb() {
 			continue
 		default:
 			continue
-		case BAR:
+		case C.BAR:
 			if (!s.bar_num)
 				continue
 			break
@@ -1714,7 +1714,7 @@ function draw_measnb() {
 		y = y_get(st, true, x, w)
 		if (y < staff_tb[st].topbar + 6)
 			y = staff_tb[st].topbar + 6
-		if (s.next.type == NOTE) {
+		if (s.next.type == C.NOTE) {
 			if (s.next.stem > 0) {
 				if (y < s.next.ys - gene.curfont.size)
 					y = s.next.ys - gene.curfont.size
@@ -1759,10 +1759,10 @@ function draw_notempo(s, x, y, dur, sc) {
 	out_XYAB('<g transform="translate(X,Y) scale(F)">\n',
 		x + 4, y + 5, sc)
 	switch (head) {
-	case OVAL:
+	case C.OVAL:
 		p = "HD"
 		break
-	case EMPTY:
+	case C.EMPTY:
 		p = "Hd"
 		break
 	default:
@@ -1776,14 +1776,14 @@ function draw_notempo(s, x, y, dur, sc) {
 		if (nflags > 0)
 			dotx += 4
 		switch (head) {
-		case SQUARE:
+		case C.SQUARE:
 			dotx += 3
 			break
-		case OVALBARS:
-		case OVAL:
+		case C.OVALBARS:
+		case C.OVAL:
 			dotx += 2
 			break
-		case EMPTY:
+		case C.EMPTY:
 			dotx += 1
 			break
 		}
@@ -1794,7 +1794,7 @@ function draw_notempo(s, x, y, dur, sc) {
 			dotx += 3.5
 		}
 	}
-	if (dur < BASE_LEN) {
+	if (dur < C.BLEN) {
 		if (nflags <= 0) {
 			out_stem(-posx, posy, 21)		// stem height
 		} else {
@@ -1876,7 +1876,7 @@ function draw_partempo(st, top) {
 		shift = 1,
 		x = 0
 	for (s = tsfirst; s; s = s.ts_next) {
-		if (s.type != TEMPO || s.del)
+		if (s.type != C.TEMPO || s.del)
 			continue
 		if (!some_tempo)
 			some_tempo = s;
@@ -1902,7 +1902,7 @@ function draw_partempo(st, top) {
 
 		/* draw the tempo indications */
 		for (s = some_tempo; s; s = s.ts_next) {
-			if (s.type != TEMPO
+			if (s.type != C.TEMPO
 			 || s.del)		// (displayed by %%titleformat)
 				continue
 			if (user.anno_start || user.anno_stop) {
@@ -1922,7 +1922,7 @@ function draw_partempo(st, top) {
 /*fixme: should reduce vertical space if parts don't overlap tempo...*/
 	ymin = staff_tb[st].topbar + 8
 	for (s = tsfirst; s; s = s.ts_next) {
-		if (s.type != PART)
+		if (s.type != C.PART)
 			continue
 		if (!some_part) {
 			some_part = s;
@@ -1941,7 +1941,7 @@ function draw_partempo(st, top) {
 			dy = ymin + h + ht - top
 
 		for (s = some_part; s; s = s.ts_next) {
-			if (s.type != PART)
+			if (s.type != C.PART)
 				continue
 			s.x -= 10;
 			if (user.anno_start || user.anno_stop) {

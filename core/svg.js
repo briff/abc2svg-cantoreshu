@@ -409,7 +409,7 @@ function anno_out(s, t, f) {
 		wr = s.wr || 2
 
 	if (s.grace)
-		type = GRACE
+		type = C.GRACE
 
 	f(t || anno_type[type], s.istart, s.iend,
 		s.x - wl - 2, staff_tb[s.st].y + s.ymn + h - 2,

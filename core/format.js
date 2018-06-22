@@ -266,14 +266,14 @@ function get_textopt(param) {
 
 /* -- position of a voice element -- */
 var posval = {
-	above: SL_ABOVE,
-	auto: 0,		// !! not SL_AUTO !!
-	below: SL_BELOW,
-	down: SL_BELOW,
-	hidden: SL_HIDDEN,
-	opposite: SL_HIDDEN,
-	under: SL_BELOW,
-	up: SL_ABOVE
+	above: C.SL_ABOVE,
+	auto: 0,		// !! not C.SL_AUTO !!
+	below: C.SL_BELOW,
+	down: C.SL_BELOW,
+	hidden: C.SL_HIDDEN,
+	opposite: C.SL_HIDDEN,
+	under: C.SL_BELOW,
+	up: C.SL_ABOVE
 }
 
 /* -- set the position of elements in a voice -- */

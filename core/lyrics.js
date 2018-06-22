@@ -56,7 +56,7 @@ function get_sym(p, cont) {
 			break
 		switch (c) {
 		case '|':
-			while (s && s.type != BAR)
+			while (s && s.type != C.BAR)
 				s = s.next
 			if (!s) {
 				syntax(1, "Not enough measure bars for symbol line")
@@ -95,7 +95,7 @@ function get_sym(p, cont) {
 		}
 
 		/* store the element in the next note */
-		while (s && (s.type != NOTE || s.grace))
+		while (s && (s.type != C.NOTE || s.grace))
 			s = s.next
 		if (!s) {
 			syntax(1, "Too many elements in symbol line")
@@ -127,7 +127,7 @@ function get_lyrics(text, cont) {
 
 	if (curvoice.ignore)
 		return
-	if (curvoice.pos.voc != SL_HIDDEN)
+	if (curvoice.pos.voc != C.SL_HIDDEN)
 		curvoice.have_ly = true
 
 	// get the starting symbol of the lyrics
@@ -166,7 +166,7 @@ function get_lyrics(text, cont) {
 		j = parse.istart + i + 2	// start index
 		switch (p[i]) { 
 		case '|':
-			while (s && s.type != BAR)
+			while (s && s.type != C.BAR)
 				s = s.next
 			if (!s) {
 				syntax(1, "Not enough measure bars for lyric line")
@@ -223,14 +223,14 @@ function get_lyrics(text, cont) {
 		}
 
 		/* store the word in the next note */
-		while (s && (s.type != NOTE || s.grace))
+		while (s && (s.type != C.NOTE || s.grace))
 			s = s.next
 		if (!s) {
 			syntax(1, "Too many words in lyric line")
 			return
 		}
 		if (word
-		 && s.pos.voc != SL_HIDDEN) {
+		 && s.pos.voc != C.SL_HIDDEN) {
 			if (word.match(/^\$\d/)) {
 				if (word[1] == '0')
 					set_font("vocal")
@@ -274,7 +274,7 @@ function ly_width(s, wlw) {
 		w = ly.w;
 		swfac = ly.font.swfac;
 		xx = w + 2 * cwid(' ') * swfac
-		if (s.type == GRACE) {			// %%graceword
+		if (s.type == C.GRACE) {			// %%graceword
 			shift = s.wl
 		} else if ((p[0] >= '0' && p[0] <= '9' && p.length > 2)
 		 || p[1] == ':'
@@ -311,8 +311,8 @@ function ly_width(s, wlw) {
 		shift = 2 * cwid(' ') * swfac
 		for (k = s.next; k; k = k.next) {
 			switch (k.type) {
-			case NOTE:
-			case REST:
+			case C.NOTE:
+			case C.REST:
 				if (!k.a_ly || !k.a_ly[i]
 				 || k.a_ly[i].w == 0)
 					xx -= 9
@@ -324,9 +324,9 @@ function ly_width(s, wlw) {
 				if (xx <= 0)
 					break
 				continue
-			case CLEF:
-			case METER:
-			case KEY:
+			case C.CLEF:
+			case C.METER:
+			case C.KEY:
 				xx -= 10
 				continue
 			default:
@@ -360,8 +360,8 @@ function draw_lyric_line(p_voice, j, y) {
 		p_voice.hy_st &= ~(1 << j)
 	}
 	for (s = p_voice.sym; /*s*/; s = s.next)
-		if (s.type != CLEF
-		 && s.type != KEY && s.type != METER)
+		if (s.type != C.CLEF
+		 && s.type != C.KEY && s.type != C.METER)
 			break
 	lastx = s.prev ? s.prev.x : tsfirst.x;
 	x0 = 0
@@ -372,8 +372,8 @@ function draw_lyric_line(p_voice, j, y) {
 			ly = null
 		if (!ly) {
 			switch (s.type) {
-			case REST:
-			case MREST:
+			case C.REST:
+			case C.MREST:
 				if (lflag) {
 					out_wln(lastx + 3, y, x0 - lastx);
 					lflag = false;
@@ -448,7 +448,7 @@ function draw_lyric_line(p_voice, j, y) {
 
 	/* see if any underscore in the next line */
 	for (p_voice.s_next ; s; s = s.next) {
-		if (s.type == NOTE) {
+		if (s.type == C.NOTE) {
 			if (!s.a_ly)
 				break
 			ly = s.a_ly[j]
@@ -573,7 +573,7 @@ function draw_all_lyrics() {
 		if (nly == 0)
 			continue
 		if (p_voice.pos.voc)
-			above_tb[v] = p_voice.pos.voc == SL_ABOVE
+			above_tb[v] = p_voice.pos.voc == C.SL_ABOVE
 		else if (voice_tb[v + 1]
 /*fixme:%%staves:KO - find an other way..*/
 		      && voice_tb[v + 1].st == st
