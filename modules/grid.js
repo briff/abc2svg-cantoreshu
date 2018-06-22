@@ -180,7 +180,7 @@ function build_grid(chords, bars, font) {
 		}
 		switch (s.type) {
 		case C.NOTE:
-		case C.REST<:
+		case C.REST:
 			if (s.a_gch) {		// search a chord symbol
 				for (i = 0; i < s.a_gch.length; i++) {
 					if (s.a_gch[i].type == 'g') {
