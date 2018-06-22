@@ -87,10 +87,11 @@ abc2svg.sth = {
     },
 
     new_note: function(of, grace, tp_fact) {
-    var	NOTE = 8		// constant from the abc2svg core
-    var	s = of(grace, tp_fact),
+    var	C = abc2svg.C,
+	s = of(grace, tp_fact),
 	curvoice = this.get_curvoice()
-	if (curvoice.sth && s && s.type == NOTE) {
+
+	if (curvoice.sth && s && s.type == C.NOTE) {
 		s.sth = curvoice.sth;
 		curvoice.sth = null
 	}

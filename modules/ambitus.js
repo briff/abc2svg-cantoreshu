@@ -9,12 +9,8 @@
 
 abc2svg.ambitus = {
     do_ambitus: function() {
-
-// constants from the abc2svg core
-    var	BASE_LEN = 1536,
-	NOTE = 8,
-	FULL = 0
-    var	s, v, p_v, min, max,
+    var	C = abc2svg.C,
+	s, v, p_v, min, max,
 	voice_tb = this.get_voice_tb()
 
 	for (v = 0; v < voice_tb.length; v++) {
@@ -26,7 +22,7 @@ abc2svg.ambitus = {
 
 		// search the top and bottom pitches
 		for (s = p_v.sym; s; s = s.next) {
-			if (s.type != NOTE)
+			if (s.type != C.NOTE)
 				continue
 			if (s.notes[s.nhd].pit > max)
 				max = s.notes[s.nhd].pit
@@ -38,15 +34,15 @@ abc2svg.ambitus = {
 
 		s = p_v.clef;
 		s.stem = 1;
-		s.head = FULL;
+		s.head = C.FULL;
 		s.stemless = true;
 		s.nhd = 1;
 		s.notes = [{
-				dur: BASE_LEN / 4,
+				dur: C.BLEN / 4,
 				pit: min,
 				shhd: 0
 			},{
-				dur: BASE_LEN / 4,
+				dur: C.BLEN / 4,
 				pit: max,
 				shhd: 0
 			}]

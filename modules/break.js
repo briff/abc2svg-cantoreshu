@@ -11,8 +11,8 @@ abc2svg.break = {
 
 	// get the %%break parameters
 	get_break: function(parm) {
-	    var	BASE_LEN = 1536		// constant from the abc2svg core
-	    var	b, c, d, sq,
+	    var	C = abc2svg.C,
+		b, c, d, sq,
 		a = parm.split(/[ ,]/),
 		cfmt = this.cfmt()
 
@@ -41,7 +41,7 @@ abc2svg.break = {
 			}
 			cfmt.break.push({
 					m: c[1],
-					t: d[1] * BASE_LEN / d[2],
+					t: d[1] * C.BLEN / d[2],
 					sq: sq})
 		}
 	}, // get_break()

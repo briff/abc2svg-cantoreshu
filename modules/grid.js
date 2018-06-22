@@ -12,29 +12,21 @@ abc2svg.grid = {
 
 // function called before tune generation
     do_grid: function() {
-    var	tsfirst = this.get_tsfirst(),
-	voice_tb = this.get_voice_tb()
-
-// constants from the abc2svg core
-    var	BASE_LEN = 1536,
-	BAR = 0,
-	METER = 6,
-	NOTE = 8,
-	REST = 10,
-	BLOCK = 16
-
-    var	img, font_cl, cls,
+    var	C = abc2svg.C,
+	tsfirst = this.get_tsfirst(),
+	voice_tb = this.get_voice_tb(),
+	img, font_cl, cls,
 	cfmt = this.cfmt()
 
 function get_beat(s) {
-    var	beat = BASE_LEN / 4
+    var	beat = C.BLEN / 4
 
 	if (!s.a_meter[0] || s.a_meter[0].top[0] == 'C' || !s.a_meter[0].bot)
 		return beat;
-	beat = BASE_LEN / s.a_meter[0].bot[0] |0
+	beat = C.BLEN / s.a_meter[0].bot[0] |0
 	if (s.a_meter[0].bot[0] == 8
 	 && s.a_meter[0].top[0] % 3 == 0)
-		beat = BASE_LEN / 8 * 3
+		beat = C.BLEN / 8 * 3
 	return beat
 } // get_beat()
 
@@ -187,8 +179,8 @@ function build_grid(chords, bars, font) {
 			cur_beat += beat
 		}
 		switch (s.type) {
-		case NOTE:
-		case REST:
+		case C.NOTE:
+		case C.REST<:
 			if (s.a_gch) {		// search a chord symbol
 				for (i = 0; i < s.a_gch.length; i++) {
 					if (s.a_gch[i].type == 'g') {
@@ -201,7 +193,7 @@ function build_grid(chords, bars, font) {
 				}
 			}
 			break
-		case BAR:
+		case C.BAR:
 			if (s.time < beat) {		// if anacrusis
 				bars[0] = s.bar_type;
 //				chord = [];
@@ -216,7 +208,7 @@ function build_grid(chords, bars, font) {
 			chord = [];
 			beat_i = 0
 			break
-		case METER:
+		case C.METER:
 			beat = get_beat(s)
 			break
 		}
@@ -240,7 +232,7 @@ function build_grid(chords, bars, font) {
 	// create the grid
 	p_voice = voice_tb[this.get_top_v()]
 	s = {
-		type: BLOCK,
+		type: C.BLOCK,
 		subtype: 'ml',
 		dur: 0,
 		time: 0,
