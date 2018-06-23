@@ -2283,7 +2283,7 @@ function draw_tuplet(s1,
 
 		/* search if a bracket is needed */
 		if (s1.tf[0] == 2		/* if 'when' == always */
-		 || s1.type != C.NOTE || s2.type != NOTE) {
+		 || s1.type != C.NOTE || s2.type != C.NOTE) {
 			nb_only = false
 		} else {
 			nb_only = true
