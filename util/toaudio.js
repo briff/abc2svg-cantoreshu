@@ -100,10 +100,11 @@ function ToAudio() {
 
 	    if (s.k_bagpipe) {
 		// detune for just intonation in A (C is C#, F is F# and G is Gnat)
-		bmap = new Float32Array([100-13.7, -2, 2, 100-15.6, -31.2, 0, 3.9])
-		for (i = 0; i < 7; i++)
-			bmap[i] = (bmap[i] + 150.6) / 100 // 'A' bagpipe = 480Hz
-				// 150.6 = (Math.log2(480/440) - 1)*1200
+//		bmap = new Float32Array([100-13.7, -2, 2, 100-15.6, -31.2, 0, 3.9])
+//		for (i = 0; i < 7; i++)
+//			bmap[i] = (bmap[i] + 150.6) / 100 // 'A' bagpipe = 480Hz
+//				// 150.6 = (Math.log2(480/440) - 1)*1200
+		bmap = new Float32Array([2.37, 1.49, 1.53, 2.35, 1.19, 1.51, 1.55])
 	    } else {
 		bmap = new Float32Array(7)
 		switch (s.k_sf) {
