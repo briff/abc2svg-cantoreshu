@@ -131,8 +131,7 @@ function ToAudio() {
 
 	// convert ABC pitch to MIDI index
 	function pit2mid(s, i) {
-		var	n, oct,
-			note = s.notes[i];
+		var	note = s.notes[i],
 			p = note.apit + 19, // pitch from C-1
 			a = note.acc
 
