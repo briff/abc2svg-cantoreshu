@@ -38,13 +38,7 @@
 
 // AbcMIDI creation
 function AbcMIDI() {
-
-	// constants from Abc
-	var	BAR = 0,
-		CLEF = 1,
-		GRACE = 4,
-		KEY = 5,
-		NOTE = 8
+    var	C = abc2svg.C
 
 	// add MIDI pitches
 	AbcMIDI.prototype.add = function(s,		// starting symbol
@@ -128,7 +122,7 @@ function AbcMIDI() {
 			if (s.dur)
 				vtime = s.time + s.dur
 			switch (s.type) {
-			case BAR:
+			case C.BAR:
 //fixme: pb when lack of measure bar (voice overlay, new voice)
 				// x times repeat
 				if (s.text) {
@@ -149,16 +143,16 @@ function AbcMIDI() {
 				if (!s.invis)
 					bar_map()
 				break
-			case CLEF:
+			case C.CLEF:
 				if (!s.clef_octave
 				 || s.clef_oct_transp)
 					transp = 0
 				else
 					transp = s.clef_octave
 				break
-			case GRACE:
+			case C.GRACE:
 				for (g = s.extra; g; g = g.next) {
-					if (!g.type != NOTE)
+					if (!g.type != C.NOTE)
 						continue
 					for (i = 0; i <= g.nhd; i++) {
 						note = g.notes[i];
@@ -167,10 +161,10 @@ function AbcMIDI() {
 					}
 				}
 				break
-			case KEY:
+			case C.KEY:
 				key_map(s)
 				break
-			case NOTE:
+			case C.NOTE:
 				for (i = 0; i <= s.nhd; i++) {
 					note = s.notes[i];
 					p = note.apit + 19 +	// pitch from C-1

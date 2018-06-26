@@ -20,16 +20,7 @@
 // ToAudio creation
 function ToAudio() {
 
-// constants from Abc
-  var	BAR = 0,
-	CLEF = 1,
-	GRACE = 4,
-	KEY = 5,
-	NOTE = 8,
-	REST = 10,
-	STAVES = 12,
-	TEMPO = 14,
-	BASE_LEN = 1536,
+  var	C = abc2svg.C,
 
 	scale = new Uint8Array([0, 2, 4, 5, 7, 9, 11]),	// note to pitch conversion
 
@@ -185,7 +176,7 @@ function ToAudio() {
 			}
 			if (s.time != end_time)
 				return d
-			if (s.type == NOTE)
+			if (s.type == C.NOTE)
 				break
 		}
 		n = s.notes.length
@@ -207,9 +198,9 @@ function ToAudio() {
 
 		// before beat
 		if (s.sappo) {
-			d = BASE_LEN / 16
-		} else if ((!next || next.type != NOTE)
-			&& s.prev && s.prev.type == NOTE) {
+			d = C.BLEN / 16
+		} else if ((!next || next.type != C.NOTE)
+			&& s.prev && s.prev.type == C.NOTE) {
 			d = s.prev.dur / 2
 
 		// on beat
@@ -239,12 +230,12 @@ function ToAudio() {
 		}
 		n = 0
 		for (g = s.extra; g; g = g.next)
-			if (g.type == NOTE)
+			if (g.type == C.NOTE)
 				n++;
 		d /= n * play_factor;
 		t = p_time
 		for (g = s.extra; g; g = g.next) {
-			if (g.type != NOTE)
+			if (g.type != C.NOTE)
 				continue
 			gen_notes(g, t, d);
 			t += d
@@ -275,15 +266,16 @@ function ToAudio() {
 	if (!a_e) {			// if first call
 		a_e = []
 		abc_time = rep_st_t = p_time = 0;
-		play_factor = BASE_LEN / 4 * 120 / 60	// default: Q:1/4=120
+		play_factor = C.BLEN / 4 * 120 / 60	// default: Q:1/4=120
 	} else if (s.time < abc_time) {
 		abc_time = rep_st_t = s.time
 	}
 
 	// loop on the symbols
 	while (s) {
-		if (s.type == TEMPO
-		 && s.tempo) {
+//		if (s.type == C.TEMPO
+//		 && s.tempo) {
+		if (s.tempo) {				// tempo change
 			d = 0;
 			n = s.tempo_notes.length
 			for (i = 0; i < n; i++)
@@ -304,7 +296,7 @@ function ToAudio() {
 
 		map = cmaps[s.v]
 		switch (s.type) {
-		case BAR:
+		case C.BAR:
 //fixme: does not work if different measures per voice
 			if (s.v != top_v)
 				break
@@ -359,39 +351,39 @@ function ToAudio() {
 				rep_en_s = s
 			}
 			break
-		case CLEF:
+		case C.CLEF:
 			transp[s.v] = (!s.clef_octave || s.clef_oct_transp) ?
 					0 : s.clef_octave
 			break
-		case GRACE:
+		case C.GRACE:
 			if (s.time == 0		// if before beat at start time
 			 && abc_time == 0) {
 				dt = 0
 				if (s.sappo)
-					dt = BASE_LEN / 16
-				else if (!s.next || s.next.type != NOTE)
+					dt = C.BLEN / 16
+				else if (!s.next || s.next.type != C.NOTE)
 					dt = d / 2;
 				abc_time -= dt
 			}
 			gen_grace(s)
 			break
-		case KEY:
+		case C.KEY:
 			key_map(s)
 			break
-		case REST:
-		case NOTE:
+		case C.REST:
+		case C.NOTE:
 			d = s.dur
-			if (s.next && s.next.type == GRACE) {
+			if (s.next && s.next.type == C.GRACE) {
 				dt = 0
 				if (s.next.sappo)
-					dt = BASE_LEN / 16
-				else if (!s.next.next || s.next.next.type != NOTE)
+					dt = C.BLEN / 16
+				else if (!s.next.next || s.next.next.type != C.NOTE)
 					dt = d / 2;
 				s.next.time -= dt;
 				d -= dt
 			}
 			d /= play_factor
-			if (s.type == NOTE)
+			if (s.type == C.NOTE)
 				gen_notes(s, p_time, d)
 			else
 				a_e.push(new Float32Array([
@@ -403,7 +395,7 @@ function ToAudio() {
 					0,
 					s.v]))
 			break
-		case STAVES:
+		case C.STAVES:
 			top_v = s.sy.top_voice
 			break
 		}
