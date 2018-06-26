@@ -295,7 +295,7 @@ function insert_clef(s, clef_type, clef_line) {
 		st = s.st
 
 	/* don't insert the clef between two bars */
-	if (s.type == C.BAR && s.prev && s.prev.type == BAR)
+	if (s.type == C.BAR && s.prev && s.prev.type == C.BAR)
 		s = s.prev;
 
 	/* create the symbol */
