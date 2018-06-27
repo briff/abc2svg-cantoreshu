@@ -54,6 +54,7 @@ function ToAudio() {
 	var	kmaps = [],		// accidentals per voice from key signature
 		cmaps = [],		// current accidental table
 		map,			// map of the current voice - 10 octaves
+		temper,			// temperament
 		i, n, dt, d, v,
 		top_v,			// top voice
 		rep_st_s,		// start of sequence to be repeated
@@ -70,6 +71,7 @@ function ToAudio() {
 	function set_voices() {
 	    var v, p_v, s, mi
 
+		temper = voice_tb[0].temper;	// (set by the module temper.js)
 		transp = new Int8Array(voice_tb.length)
 		for (v = 0; v < voice_tb.length; v++) {
 			p_v = voice_tb[v];
@@ -144,8 +146,13 @@ function ToAudio() {
 				a = (a < 0 ? -note.micro_n : note.micro_n) /
 						note.micro_d * 2;
 			map[p] = a
+		} else {
+			a = map[p]
 		}
-		return ((p / 7) | 0) * 12 + scale[p % 7] + map[p]
+		p = ((p / 7) | 0) * 12 + scale[p % 7] + a
+		if (!temper || a | 0 != a)	// if equal temperament or micro-tone
+			return p
+		return p + temper[p % 12]
 	} // pit2mid()
 
 	// handle the ties

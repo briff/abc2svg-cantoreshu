@@ -35,8 +35,9 @@ abc2svg.modules = {
 		MIDI: { fn: 'MIDI-1.js' },
 		percmap: { fn: 'perc-1.js' },
 	sth: { fn: 'sth-1.js' },
+	temperament: { fn: 'temper-1.js' },
 	all_m: new RegExp("ambitus|beginps|break|capo|clip|voicecombine|diagram|\
-grid2|grid|MIDI|percmap|sth", 'g'),
+grid2|grid|MIDI|percmap|sth|temperament", 'g'),
 	nreq: 0,
 	hooks: [],
 	g_hooks: [],
