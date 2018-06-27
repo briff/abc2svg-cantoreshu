@@ -282,6 +282,7 @@ var prn = {
 abc2svg.modules.hooks.push(
 // export
 	"errs",
+	"set_v_param",
 	"syntax",
 // hooks
 	[ "do_pscom", "abc2svg.perc.do_pscom" ],
