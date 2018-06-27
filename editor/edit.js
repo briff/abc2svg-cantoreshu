@@ -475,93 +475,75 @@ function play_tune(what) {
 	}
 
 	// search a playing event from a source index
-	function get_se(si) {			// get starting event
-	    var	i, ci, cs, s, tim,
-		sih = si + 16,
-		pa = play.a_pe
+	function get_se(si) {			// get highest starting event
+	    var	i, s, tim,
+		sih = 1000000,
+		pa = play.a_pe,
+		ci = 0
 
-		// search from top
-		for (i = 0; i < pa.length; i++) {
+		if (si <= pa[0][0])
+			return 0
+		if (si >= pa[pa.length - 1][0])
+			return pa.length
+
+		i = pa.length
+		while (--i > 0) {
 			s = pa[i][0]
-			if (s == si)
-				break
-			if (s > si && s < sih) {
-				cs = s
+			if (s < si)
+				continue
+			if (s == si) {
+				ci = i
 				break
 			}
-		}
-		if (i == pa.length)
-			return i;
-		ci = i
-
-		// get the next element closest to the searched source index
-		if (s != si) {
-			for (i++; i < pa.length; i++) {
-				s = pa[i][0]
-				if (s > cs)
-					break
-				if (s == si) {
-					ci = i
-					break
-				}
-				if (s > si && s < sih) {
-					ci = i
-					break
-				}
+			if (s < sih) {
+				ci = i;
+				sih = s
 			}
 		}
 
 		// go to the first voice at this time
-		tim = pa[ci][1]
-		while (--ci >= 0) {
-			if (pa[ci][1] != tim)
-				break
+		if (ci < pa.length) {
+			tim = pa[ci][1]
+			while (--ci >= 0) {
+				if (pa[ci][1] != tim)
+					break
+			}
 		}
 		return ci + 1
 	} // get_se()
 
-	function get_ee(si) {			// get ending event
-	    var	i, ci, cs, s, tim,
-		sil = si - 16,
-		pa = play.a_pe;
+	function get_ee(si) {			// get lowest ending event
+	    var	i, s, tim,
+		sil = 0,
+		pa = play.a_pe,
+		ci = 0
 
-		// search from bottom
-		i = pa.length
-		while (--i >= 0) {
+		if (si <= pa[0][0])
+			return 0
+		if (si >= pa[pa.length - 1][0])
+			return pa.length
+
+		for (i = 0; i < pa.length; i++) {
 			s = pa[i][0]
-			if (s == si)
-				break
-			if (s < si && s > sil) {
-				cs = s
+			if (s > si)
+				continue
+			if (s == si) {
+				ci = i
 				break
 			}
-		}
-		if (i <= 0)
-			return 0;
-		ci = i
-
-		// get the previous element closest to the searched source index
-		if (s != si) {
-			while (--i >= 0) {
-				s = pa[i][0]
-				if (s < cs)
-					break
-				if (s == si) {
-					ci = i
-					break
-				}
-				if (s < si && s > sil) {
-					ci = i
-					break
-				}
+			if (s > sil) {
+				ci = i;
+				sil = s
 			}
 		}
 
-		// go to the last voice at this time
-		tim = pa[ci][1]
-		for (ci++; ci < pa.length; ci++) {
-			if (pa[ci][1] != tim)
-				break
+		// go to after the last voice at this time
+		if (ci > 0) {
+			tim = pa[ci++][1]
+			for ( ; ci < pa.length; ci++) {
+				if (pa[ci][1] != tim)
+					break
+			}
 		}
 		return ci
 	} // get_ee()
@@ -647,9 +629,12 @@ function play_tune(what) {
 			ei = s.indexOf('\nX:', ei)
 			if (ei < 0 || ei > i)
 				break
-			si = ++ei
+			si = s.indexOf('\nK:', ++ei)
+			if (si < 0)
+				break
+			ei = si
 		}
-		if (si == 0) {
+		if (si <= 0) {
 			play.playing = false
 			return		// no tune!
 		}
