@@ -609,7 +609,9 @@ function play_tune(what) {
 	// play all
 	if (what < 0) {
 		play.loop = false;
-		play_start(0, play.a_pe.length)
+		play.si = 0;
+		play.ei = play.a_pe.length;
+		play_start(play.si, play.ei)
 		return
 	}
 
