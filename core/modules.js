@@ -36,8 +36,7 @@ abc2svg.modules = {
 		percmap: { fn: 'perc-1.js' },
 	sth: { fn: 'sth-1.js' },
 	temperament: { fn: 'temper-1.js' },
-	all_m: new RegExp("ambitus|beginps|break|capo|clip|voicecombine|diagram|\
-grid2|grid|MIDI|percmap|sth|temperament", 'g'),
+
 	nreq: 0,
 	hooks: [],
 	g_hooks: [],
@@ -63,24 +62,19 @@ grid2|grid|MIDI|percmap|sth|temperament", 'g'),
 		}
 
 		// test if some keyword in the file
-	    var	m, r, nreq_i,
-		all = file.match(this.all_m)
+	    var	m, r,
+		nreq_i = this.nreq,
+		ls = file.match(/(^|\n)%%.+?\b/g)
 
-		if (!all)
-			return true;
-		nreq_i = this.nreq;
+		if (!ls)
+			return true
 		this.cbf = relay ||		// (only one callback function)
 			function(){}
 		this.errmsg = errmsg || get_errmsg()
 
-		for (var i = 0; i < all.length; i++) {
-			m = abc2svg.modules[all[i]]
-			if (m.loaded)
-				continue
-
-			// check if really a command
-			r = new RegExp('(^|\\n)(%.|I:|\\[) *' + all[i] + '\\s')
-			if (!r.test(file))
+		for (var i = 0; i < ls.length; i++) {
+			m = abc2svg.modules[ls[i].replace(/\n?%%/, '')]
+			if (!m || m.loaded)
 				continue
 
 			m.loaded = true
