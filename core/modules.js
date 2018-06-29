@@ -30,6 +30,7 @@ abc2svg.modules = {
 		clip: { fn: 'clip-1.js' },
 		voicecombine: { fn: 'combine-1.js' },
 		diagram: { fn: 'diag-1.js' },
+	equalbars: { fn: 'equalbars-1.js' },
 		grid: { fn: 'grid-1.js' },
 		grid2: { fn: 'grid2-1.js' },
 		MIDI: { fn: 'MIDI-1.js' },
