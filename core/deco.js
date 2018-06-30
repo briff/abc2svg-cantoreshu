@@ -1584,7 +1584,7 @@ function draw_deco_staff() {
 			if (minmax[i].ymax < top + 4)
 				minmax[i].ymax = top + 4
 		}
-		set_sscale(-1)		/* restore the scale parameters */
+		set_dscale(-1)		/* restore the scale parameters */
 		for (s = first_gchord; s; s = s.ts_next) {
 			if (!s.a_gch)
 				continue
