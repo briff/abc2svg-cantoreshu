@@ -78,7 +78,7 @@ H "History: "',
 //		voc: 0,
 //		vol: 0
 //	},
-	"printmargin": 0,
+	printmargin: 0,
 	rightmargin: 1.4 * CM,
 	rbdbstop: true,
 	rbmax: 4,
