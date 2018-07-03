@@ -20,13 +20,13 @@ They are updated on release change.
 
 These files are:
 
-- `abc2svg-1.js`
+- `abc2svg-1.js`   
   This script is the **abc2svg** core.  
   It contains the ABC parser and the SVG generation engine.  
   It must be included in the (X)HTML header of the pages
   where ABC rendering is needed (in `<script src=` tags).
 
-- `abcemb-1.js`
+- `abcemb-1.js`   
   This script is to be used with the core in (X)HTML files.  
   It replaces the ABC sequences by SVG images of the music
   (the ABC sequences start on `X:` or `%abc` at start of line,
@@ -37,7 +37,7 @@ These files are:
   When the URL of the (X)HTML file ends with '#' followed by a string,
   only the tunes containing this string are displayed.
 
-- `abcdoc-1.js`
+- `abcdoc-1.js`   
   This script is also to be used in (X)HTML pages with the core.  
   Mainly used for ABC documentation, it lets the ABC source sequences
   in the page before the SVG images.  
@@ -45,19 +45,19 @@ These files are:
   [abcm2ps/abc2svg features](http://moinejf.free.fr/abcm2ps-doc/features.xhtml)
   for an example.
 
-- `play-1.js`
+- `play-1.js`   
   This script may be used with `abcemb-1.js` for playing the
   rendered ABC music.  
   See [this page](http://moinejf.free.fr/abcm2ps-doc/au_clair.xhtml)
   for an example.
 
-- `follow-1.js`
+- `follow-1.js`   
   This script may be used after `play-1.js` for highlighting the notes
   while playing.   
   See [this page](http://moinejf.free.fr/abcm2ps-doc/tabac.xhtml)
   for an example.
 
-- `edit-1.xhtml`
+- `edit-1.xhtml`   
   This is a simple web ABC editor/player.
 
 When looking at a ABC file in a web browser, you may also use
