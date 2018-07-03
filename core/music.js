@@ -882,6 +882,10 @@ function set_space(s) {
 		prev_time = s.ts_prev.time,
 		len = s.time - prev_time		/* time skip */
 
+	// hack: reduce spacing when in tuplet and previous note in other voice
+	if (s.in_tuplet && s.prev.time != prev_time)
+		len *= .5
+
 	if (len == 0) {
 		switch (s.type) {
 		case C.MREST:
