@@ -42,7 +42,7 @@ var cfmt = {
 	decoerr: true,
 	dynalign: true,
 	fullsvg: '',
-	gracespace: [6.5, 8, 12],	/* left, inside, right */
+	gracespace: new Float32Array([4, 8, 11]), // left, inside, right
 	graceslurs: true,
 	hyphencont: true,
 	indent: 0,
@@ -525,7 +525,15 @@ function set_format(cmd, param, lock) {
 		cfmt[cmd] = param
 		break
 	case "gracespace":
-		cfmt[cmd] = param.split(/\s+/)
+		v = param.split(/\s+/)
+		for (i = 0; i < 3; i++)
+			if (isNaN(Number(v[i]))) {
+				syntax(1, errs.bad_val, "%%gracespace")
+				break
+			}
+		for (i = 0; i < 3; i++)
+			cfmt[cmd] = Number(v[i])
+		break
 		break
 	case "tuplets":
 		cfmt[cmd] = param.split(/\s+/);

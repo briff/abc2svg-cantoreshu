@@ -417,9 +417,9 @@ function set_float() {
 /* -- set the x offset of the grace notes -- */
 function set_graceoffs(s) {
 	var	next, m, dx,
-		gspleft = Number(cfmt.gracespace[0]),
-		gspinside = Number(cfmt.gracespace[1]),
-		gspright = Number(cfmt.gracespace[2]),
+		gspleft = cfmt.gracespace[0],
+		gspinside = cfmt.gracespace[1],
+		gspright = cfmt.gracespace[2],
 		xx = 0,
 		g = s.extra;
 
