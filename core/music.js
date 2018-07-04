@@ -416,12 +416,15 @@ function set_float() {
 
 /* -- set the x offset of the grace notes -- */
 function set_graceoffs(s) {
-	var	next, m, dx,
+	var	next, m, dx, x,
 		gspleft = cfmt.gracespace[0],
 		gspinside = cfmt.gracespace[1],
 		gspright = cfmt.gracespace[2],
-		xx = 0,
 		g = s.extra;
+
+	if (s.prev && s.prev.type == C.BAR)
+		gspleft -= 3;
+	x = gspleft;
 
 	g.beam_st = true
 	for ( ; ; g = g.next) {
@@ -432,8 +435,8 @@ function set_graceoffs(s) {
 			if (g.notes[m].shac > dx)
 				dx = g.notes[m].shac
 		}
-		xx += dx;
-		g.x = xx
+		x += dx;
+		g.x = x
 
 		if (g.nflags <= 0) {
 			g.beam_st = true;
@@ -448,28 +451,28 @@ function set_graceoffs(s) {
 			g.beam_end = true
 		if (g.beam_end) {
 			next.beam_st = true;
-			xx += gspinside / 4
+			x += gspinside / 4
 		}
 		if (g.nflags <= 0)
-			xx += gspinside / 4
+			x += gspinside / 4
 		if (g.y > next.y + 8)
-			xx -= 1.5
-		xx += gspinside
+			x -= 1.5
+		x += gspinside
 	}
 
-	xx += gspleft + gspright;
 	next = s.next
 	if (next
 	 && next.type == C.NOTE) {	/* if before a note */
 		if (g.y >= 3 * (next.notes[next.nhd].pit - 18))
-			xx -= 1		/* above, a bit closer */
+			gspright -= 1		// above, a bit closer
 		else if (g.beam_st
-		      && g.y < 3 * (next.notes[0].pit - 18) - 7)
-			xx += 2		/* below with flag, a bit further */
+		      && g.y < 3 * (next.notes[next.nhd].pit - 18) - 4)
+			gspright += 2		// below with flag, a bit further
 	}
+	x += gspright;
 
 	/* return the whole width */
-	return xx
+	return x
 }
 
 /* -- compute the width needed by the guitar chords / annotations -- */
@@ -4360,9 +4363,8 @@ function set_sym_glue(width) {
 			continue
 		if (s.gr_shift)
 			x = s.prev.x + s.prev.wr
-				+ Number(cfmt.gracespace[0])
 		else
-			x = s.x - s.wl + Number(cfmt.gracespace[0])
+			x = s.x - s.wl
 		for (g = s.extra; g; g = g.next)
 			g.x += x
 	}
