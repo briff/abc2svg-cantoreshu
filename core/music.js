@@ -23,7 +23,7 @@ var	gene,
 	tsnext,			// next line when cut
 	realwidth,		// real staff width while generating
 	insert_meter,		// insert time signature (1) and indent 1st line (2)
-	beta_last,		// for last short short line..
+	spf_last,		// spacing for last short line
 
 /* width of notes indexed by log2(note_length) */
 	space_tb = new Float32Array([
@@ -4260,157 +4260,99 @@ function set_piece() {
 
 /* -- position the symbols along the staff -- */
 function set_sym_glue(width) {
-	var space, beta0, alfa, beta, min, g, spafac, xmax
+    var	s, g,
+	some_grace,
+	spf,			// spacing factor
+	xmin = 0,		// sigma shrink = minimum spacing
+	xx = 0,			// sigma natural spacing
+	x = 0,			// sigma expandable elements
+	xs = 0,			// sigma unexpandable elements with no space
+	xse = 0			// sigma unexpandable elements with space
 
 	/* calculate the whole space of the symbols */
-	var	some_grace,
-		s = tsfirst,
-		xmin = 0,
-		x = 0
-
-	while (1) {
+	for (s = tsfirst; s; s = s.ts_next) {
 		if (s.type == C.GRACE && !some_grace)
 			some_grace = s
 		if (s.seqst) {
-			space = s.space;
 			xmin += s.shrink
-			if (space < s.shrink)
-				space = s.shrink;
-			x += space
-//			if (cfmt.stretchstaff)
-//				space *= 1.8;
-//			xmax += space
+			if (s.space) {
+				if (s.space < s.shrink) {
+					xse += s.shrink;
+					xx += s.shrink
+				} else {
+					xx += s.space
+				}
+			} else {
+				xs += s.shrink
+			}
 		}
-		if (!s.ts_next)
-			break
-		s = s.ts_next
 	}
 
 	// can occur when bar alone in a staff system
-	if (x == 0) {
+	if (xx == 0) {
 		realwidth = 0
 		return
 	}
 
-	xmax = x
-	if (cfmt.stretchstaff)
-		xmax *= 1.8;
-	/* set max shrink and stretch */
-	beta0 = 1			/* max expansion before complaining */
-
-	/* memorize the glue for the last music line */
-	if (tsnext
-	 && blocks.length == 0 && tsnext.type != C.BLOCK) { // (abcm2ps compatibility)
-		if (x >= width) {
-			beta_last = 0
-		} else {
-			beta_last = (width - x) / (xmax - x)	/* stretch */
-			if (beta_last > beta0) {
-				if (cfmt.stretchstaff) {
-					if (cfmt.linewarn) {
-						error(0, s,
-							"Line underfull ($1pt of $2pt)",
-							(beta0 * xmax + (1 - beta0) * x).toFixed(2),
-							width.toFixed(2))
-					}
-				} else {
-					width = x;
-					beta_last = 0
-				}
-			}
-		}
-	} else {			/* if last music line */
-		if (x < width) {
-			beta = (width - x) / (xmax - x)	/* stretch */
-			if (beta >= beta_last) {
-				beta = beta_last * xmax + (1 - beta_last) * x
-
-				/* shrink underfull last line same as previous */
-				if (beta < width * (1. - cfmt.stretchlast))
-					width = beta
-			}
-		}
-	}
-
-	spafac = width / x;			/* space expansion factor */
-
-	/* define the x offsets of all starting symbols */
-	x = xmax = 0;
-	s = tsfirst
-	while (1) {
-		if (s.seqst) {
-			space = s.shrink
-			if (s.space != 0)
-				xmax += s.space * spafac * 1.8;
-			x += space;
-			xmax += space;
-			s.x = x;
-			s.xmax = xmax
-		}
-		if (!s.ts_next)
-			break
-		s = s.ts_next
-	}
-
-	/* calculate the exact glue */
-	if (x >= width) {
-		beta = 0
-		if (x == xmin) {
-			alfa = 1			// no extra space
-		} else {
-			alfa = (x - width) / (x - xmin)		/* shrink */
-			if (alfa > 1) {
-				error(1, s, "Line too much shrunk $1 $2 $3",
-					xmin.toFixed(2),
-					x.toFixed(2),
-					width.toFixed(2))
-// uncomment for staff greater than music line
-//				alfa = 1
-			}
-		}
-		realwidth = xmin * alfa + x * (1 - alfa)
-	} else {
-		alfa = 0
-		if (xmax > x)
-			beta = (width - x) / (xmax - x)		/* stretch */
-		else
-			beta = 1				/* (no note) */
-		if (beta > beta0) {
-			if (!cfmt.stretchstaff)
-				beta = 0
-		}
-		realwidth = xmax * beta + x * (1 - beta)
-	}
-
-	/* set the final x offsets */
-	s = tsfirst
-	if (alfa != 0) {
-		if (alfa < 1) {
-			x = xmin = 0
-			for (; s; s = s.ts_next) {
-				if (s.seqst) {
-					xmin += s.shrink * alfa;
-					x = xmin + s.x * (1 - alfa)
-				}
-				s.x = x
-			}
-		} else {
-			alfa = realwidth / x;
-			x = 0
-			for (; s; s = s.ts_next) {
-				if (s.seqst)
-					x = s.x * alfa;
-				s.x = x
-			}
-		}
-	} else {
+	// strong shrink
+	if (xmin >= width
+	 || xx == xse) {		// no space
+		if (xmin > width)
+			error(1, s, "Line too much shrunk $1 $2 $3",
+				xmin.toFixed(2),
+				xx.toFixed(2),
+				width.toFixed(2));
 		x = 0
-		for (; s; s = s.ts_next) {
+		for (s = tsfirst; s; s = s.ts_next) {
 			if (s.seqst)
-				x = s.xmax * beta + s.x * (1 - beta);
+				x += s.shrink;
+			s.x = x
+		}
+//		realwidth = width
+		spf_last = 0
+	} else if (xx + xs > width * (1 - cfmt.stretchlast)
+		 || (tsnext			// if not last line
+		  && blocks.length == 0		// and no following text
+		  && tsnext.type != C.BLOCK	//	(abcm2ps compatibility)
+		  && cfmt.stretchstaff)) {
+		for (var cnt = 4; --cnt >= 0; ) {
+			spf = (width - xs - xse) / (xx - xse);
+			xx = 0;
+			xse = 0;
+			x = 0
+			for (s = tsfirst; s; s = s.ts_next) {
+				if (s.seqst) {
+					if (s.space) {
+						if (s.space * spf <= s.shrink) {
+							xse += s.shrink;
+							xx += s.shrink;
+							x += s.shrink
+						} else {
+							xx += s.space;
+							x += s.space * spf
+						}
+					} else {
+						x += s.shrink
+					}
+				}
+				s.x = x
+			}
+			if (Math.abs(x - width) < 0.1)
+				break
+		}
+		spf_last = spf
+	} else {			// shorter line
+		spf = (width - xs - xse) / xx
+		if (spf_last < spf)
+			spf = spf_last
+		for (s = tsfirst; s; s = s.ts_next) {
+			if (s.seqst)
+				x += s.space * spf <= s.shrink ?
+						s.shrink : s.space * spf
 			s.x = x
 		}
 	}
+	realwidth = x
 
 	/* set the x offsets of the grace notes */
 	for (s = some_grace; s; s = s.ts_next) {
@@ -4518,7 +4460,7 @@ function output_music() {
 		cut_tune(lwidth, indent)
 	}
 
-	beta_last = 0.2
+	spf_last = 1.2				// last spacing factor
 	while (1) {				/* loop per music line */
 		set_piece();
 		set_sym_glue(lwidth - indent)
