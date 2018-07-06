@@ -879,36 +879,10 @@ function set_width(s) {
 	s.wl = s.wr = 0
 }
 
-/* -- set the natural space -- */
-function set_space(s) {
-	var	s2, i, l, space,
-		prev_time = s.ts_prev.time,
-		len = s.time - prev_time		/* time skip */
+// convert delta time to natural spacing
+function time2space(s, len) {
+    var i, l, space
 
-	// hack: reduce spacing when in tuplet and previous note in other voice
-	if (s.in_tuplet && s.prev.time != prev_time)
-		len *= .5
-
-	if (len == 0) {
-		switch (s.type) {
-		case C.MREST:
-			return s.wl
-///*fixme:do same thing at start of line*/
-//		case C.NOTE:
-//		case C.REST:
-//			if (s.ts_prev.type == C.BAR) {
-//				if (s.nflags < -2)
-//					return space_tb[0]
-//				return space_tb[2]
-//			}
-//			break
-		}
-		return 0
-	}
-	if (s.ts_prev.type == C.MREST)
-//		return s.ts_prev.wr + 16
-//				+ 3		// (bar wl=5 wr=8)
-		return 71	// 66 (mrest.wl) + 5 (bar.wl)
 	if (smallest_duration >= C.BLEN / 2) {
 		if (smallest_duration >= C.BLEN)
 			len /= 4
@@ -951,6 +925,38 @@ function set_space(s) {
 			space += (space_tb[i + 1] - space_tb[i]) * l / len
 		}
 	}
+	return space
+}
+
+/* -- set the natural space -- */
+function set_space(s) {
+	var	s2, space,
+		prev_time = s.ts_prev.time,
+		len = s.time - prev_time		/* time skip */
+
+	if (len == 0) {
+		switch (s.type) {
+		case C.MREST:
+			return s.wl
+///*fixme:do same thing at start of line*/
+//		case C.NOTE:
+//		case C.REST:
+//			if (s.ts_prev.type == C.BAR) {
+//				if (s.nflags < -2)
+//					return space_tb[0]
+//				return space_tb[2]
+//			}
+//			break
+		}
+		return 0
+	}
+	if (s.ts_prev.type == C.MREST)
+//		return s.ts_prev.wr + 16
+//				+ 3		// (bar wl=5 wr=8)
+		return 71	// 66 (mrest.wl) + 5 (bar.wl)
+
+	space = time2space(s, len)
+
 	while (!s.dur) {
 		switch (s.type) {
 		case C.BAR:
@@ -1007,6 +1013,23 @@ function set_space(s) {
 	return space
 }
 
+// set the fixed spacing inside tuplets
+function set_sp_tup(s, s2) {
+    var	tim = s.time,
+	ttim = s2.time - tim,
+	space = time2space(s, ttim / s.tq0) * s.tq0;
+
+	s = s.ts_next
+	while (1) {
+		if (s.seqst)
+			s.space = (s.time - tim) / ttim * space;
+		tim = s.time;
+		if (s == s2)
+			break
+		s = s.ts_next
+	}
+}
+
 // create an invisible bar for end of music lines
 function add_end_bar(s) {
 	return {
@@ -1035,10 +1058,12 @@ function add_end_bar(s) {
 /* this function is called once for the whole tune
  * then, once per music line up to the first sequence */
 function set_allsymwidth(last_s) {
-	var	new_val,
+	var	new_val, s_tupc, s_tupn,
 		s = tsfirst,
 		xa = 0,
-		xl = []
+		xl = [],
+		tupfl = 0,
+		ntup = 0
 
 	/* loop on all symbols */
 	while (1) {
@@ -1050,15 +1075,40 @@ function set_allsymwidth(last_s) {
 			new_val = (xl[s.st] || 0) + s.wl
 			if (new_val > maxx)
 				maxx = new_val;
+			if (s.tp0) {		// start of tuplet
+				if (++ntup == 1) {
+					s_tupn = s;
+					tupfl |= 1
+				}
+			} else if (s.te0) {	// end of tuplet
+				if (--ntup == 0)
+					tupfl = 4
+			}
 			s = s.ts_next
 		} while (s != last_s && !s.seqst);
 
-		/* set the spaces at start of sequence */
+		// set the spaces of the time sequence
 		s2.shrink = maxx - xa
-		if (s2.ts_prev)
-			s2.space = set_space(s2)
-		else
-			s2.space = 0
+
+		if (!(tupfl & 14)) {		// if not in a tuplet sequence
+			if (s2.ts_prev)
+				s2.space = set_space(s2)
+			else
+				s2.space = 0
+		}
+		if (tupfl) {
+			if (tupfl & 8) {
+				set_sp_tup(s_tupc, s2);
+				tupfl &= ~8
+			}
+			if (tupfl & 1) {
+				s_tupc = s_tupn;
+				tupfl++		// 1 => 2
+			}
+			if (tupfl & 4)
+				tupfl += 4	// 4 => 8
+		}
+
 		if (s2.shrink == 0 && s2.space == 0 && s2.type == C.CLEF) {
 			delete s2.seqst;		/* no space */
 			s2.time = s2.ts_prev.time
