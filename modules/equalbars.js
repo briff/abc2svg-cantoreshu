@@ -34,14 +34,14 @@ abc2svg.equalbars = {
 	if (!this.cfmt().equalbars)
 		return
 
-	// search the symbol before the first note/rest
-	for (s = tsfirst; s; s = s.ts_next) {
-		if (!s.seqst)
+	// search the first note/rest/bar
+	for (s2 = tsfirst; s2; s2 = s2.ts_next) {
+		if (!s2.seqst)
 			continue
-		switch (s.type) {
+		switch (s2.type) {
 		default:
-			s2 = s
 			continue
+		case C.BAR:
 		case C.GRACE:
 		case C.MREST:
 		case C.NOTE:
@@ -51,10 +51,11 @@ abc2svg.equalbars = {
 		}
 		break
 	}
-	if (!s)
+	if (!s2)
 		return
 
 	// build an array of the bars
+	s = s2.ts_next;
 	t0 = t = s.time
 	while (1) {
 		if (!s.ts_next) {
@@ -75,11 +76,7 @@ abc2svg.equalbars = {
 		return				// no bar!
 
 	// set the measure parameters
-	for (s = s2.ts_next; s; s = s.ts_next) {
-		if (s.seqst)
-			break			// first note/rest
-	}
-	x = s.type == C.GRACE ? s.extra.x : s.x;
+	x = s2.type == C.GRACE ? s2.extra.x : s2.x;
 	d = this.equalbars_d
 	if (!d)
 		d = this.equalbars_d = x;	// offset first note/rest
@@ -92,7 +89,7 @@ abc2svg.equalbars = {
 		f = w * bars[i][1] / (s.x - x)
 
 		// and update the x offsets
-		for (s2 = s2.ts_next; s2 != s; s2 = s2.ts_next) {
+		for ( ; s2 != s; s2 = s2.ts_next) {
 			if (s2.type == C.GRACE) {
 				for (g = s2.extra; g; g = g.next)
 					g.x = d + (g.x - x) * f
@@ -103,10 +100,10 @@ abc2svg.equalbars = {
 		d += w * bars[i][1];
 		x = s2.x
 		while (1) {
-			s2.x = d
-			if (!s2.ts_next || s2.ts_next.seqst)
-				break
+			s2.x = d;
 			s2 = s2.ts_next
+			if (!s2 || s2.seqst)
+				break
 		}
 		if (!s2)
 			break
