@@ -65,7 +65,7 @@ abc2svg.modules = {
 		// test if some keyword in the file
 	    var	m, r,
 		nreq_i = this.nreq,
-		ls = file.match(/(^|\n)%%.+?\b/g)
+		ls = file.match(/(^|\n)(%%|I:).+?\b/g)
 
 		if (!ls)
 			return true
@@ -74,7 +74,7 @@ abc2svg.modules = {
 		this.errmsg = errmsg || get_errmsg()
 
 		for (var i = 0; i < ls.length; i++) {
-			m = abc2svg.modules[ls[i].replace(/\n?%%/, '')]
+			m = abc2svg.modules[ls[i].replace(/\n?(%%|I:)/, '')]
 			if (!m || m.loaded)
 				continue
 
