@@ -142,6 +142,8 @@ function set_pstyle() {
 			pw = npw;
 		psty += 'width:' + (npw - nml - nmr).toFixed(2) + 'px;'
 	}
+	if (cfmt.scale != 1 && c_font)
+		psty += 'font-size:' + (c_font.size * cfmt.scale).toFixed(2) + 'px'
 
 	return psty
 }
