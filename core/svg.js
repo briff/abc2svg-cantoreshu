@@ -55,6 +55,7 @@ var tgls = {
   stclef: {x:-8, y:0, c:"\ue07a"},
   scclef: {x:-8, y:0, c:"\ue07b"},
   sbclef: {x:-7, y:0, c:"\ue07c"},
+  spclef: {x:-6, y:0, c:"\ue069"},
   meter0: {c:"\ue080"},
   meter1: {c:"\ue081"},
   meter2: {c:"\ue082"},
