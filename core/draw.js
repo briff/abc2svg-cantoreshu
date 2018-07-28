@@ -3440,7 +3440,7 @@ function set_staff() {
 
 /* -- draw the staff systems and the measure bars -- */
 function draw_systems(indent) {
-	var	s, s2, st, x, x2, res,
+	var	s, s2, st, x, x2, res, sy,
 		staves_bar, bar_force,
 		xstaff = [],
 		bar_bot = [],
@@ -3473,7 +3473,7 @@ function draw_systems(indent) {
 		var	w, ws, i, dy, ty,
 			y = 0,
 			ln = "",
-			stafflines = staff_tb[st].stafflines,
+			stafflines = cur_sy.staves[st].stafflines,
 			l = stafflines.length
 
 		if (!/[\[|]/.test(stafflines))
@@ -3547,7 +3547,8 @@ function draw_systems(indent) {
 		}
 		switch (s.type) {
 		case C.STAVES:
-			staves_bar = 0
+			staves_bar = s.ts_prev.type == C.BAR ? s.ts_prev.x : 0
+		    if (!staves_bar) {
 			for (s2 = s.ts_next; s2; s2 = s2.ts_next) {
 				if (s2.time != s.time)
 					break
@@ -3563,16 +3564,19 @@ function draw_systems(indent) {
 			}
 			if (!s2)
 				staves_bar = realwidth;
-			cur_sy = s.sy
+		    }
+			sy = s.sy
 			for (st = 0; st <= nstaff; st++) {
 				x = xstaff[st]
 				if (x < 0) {		// no staff yet
-					if (cur_sy.st_print[st])
-						xstaff[st] = s.ts_next.type == C.BAR ?
-							s.x : (s.x - s.wl - 2)
+					if (sy.st_print[st])
+						xstaff[st] = staves_bar ?
+							staves_bar : (s.x - s.wl - 2)
 					continue
 				}
-				if (cur_sy.st_print[st]) // if not staff stop
+				if (sy.st_print[st]	// if not staff stop
+				 && sy.staves[st].stafflines ==
+						cur_sy.staves[st].stafflines)
 					continue
 				if (staves_bar) {
 					x2 = staves_bar;
@@ -3582,29 +3586,16 @@ function draw_systems(indent) {
 					xstaff[st] = -1
 				}
 				draw_staff(st, x, x2)
+				if (sy.st_print[st])
+					xstaff[st] = x2
 			}
+			cur_sy = sy;
 			bar_set()
 			continue
 		case C.BAR:
 			st = s.st
 			if (s.second || s.invis)
 				break
-
-			// if the bar is not in the current staff system
-			// it may be in the next one
-			if (xstaff[st] < 0) {
-				for (s2 = s.ts_next;
-				     s2 && s2.time == s.time;
-				     s2 = s2.ts_next) {
-					if (s2.type == C.STAVES)
-						break
-				}
-				if (!s2 || s2.type != C.STAVES)
-					break
-				xstaff[st] = s.x;
-				bar_set()
-			}
-
 			draw_bar(s, bar_bot[st], bar_height[st]);
 			break
 		case C.STBRK:

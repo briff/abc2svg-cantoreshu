@@ -485,8 +485,6 @@ function new_syst(init) {
 		st = par_sy.voices[v].st
 		var	sy_staff = par_sy.staves[st],
 			p_voice = voice_tb[v]
-		if (p_voice.stafflines != undefined)
-			sy_staff.stafflines = p_voice.stafflines
 		if (p_voice.staffnonote != undefined)
 			sy_staff.staffnonote = p_voice.staffnonote
 		if (p_voice.staffscale)
@@ -2016,6 +2014,11 @@ function get_voice(parm) {
 			if (staves_found >= 0)
 				curvoice.ignore = true
 		}
+	}
+
+	if (curvoice.stafflines) {
+		par_sy.staves[curvoice.st].stafflines = curvoice.stafflines;
+		curvoice.stafflines = ''
 	}
 
 	if (!curvoice.filtered

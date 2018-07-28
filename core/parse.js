@@ -451,6 +451,8 @@ function set_vp(a) {
 			val = get_st_lines(a.shift())
 			if (val == undefined)
 				syntax(1, "Bad %%stafflines value")
+			else if (curvoice.st != undefined)
+				par_sy.staves[curvoice.st].stafflines = val
 			else
 				curvoice.stafflines = val
 			break
