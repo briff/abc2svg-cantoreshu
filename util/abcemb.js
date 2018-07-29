@@ -164,7 +164,7 @@ function dom_loaded() {
 	// check if a selection
 	if (select) {
 		select = decodeURIComponent(select);
-		select = page.indexOf(select)
+		select = page.search(select)
 		if (select < 0)
 			select = 0
 	}
