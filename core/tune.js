@@ -607,6 +607,11 @@ function set_bar_num() {
 			}
 			s.bar_num = bar_num;
 			bar_time = tim + wmeasure
+
+			// skip the bars of the other voices
+			while (s.ts_next
+			    && !s.ts_next.seqst)
+				s = s.ts_next
 			break
 		}
 	}
