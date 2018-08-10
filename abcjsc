@@ -70,5 +70,8 @@ Arguments:\n\
 	abc_cmd('abcjsc', args)
 }
 
+if (typeof arguments == 'undefined')
+	var arguments = ''
+
 main(arguments)
 " -- "$@"
