@@ -562,9 +562,9 @@ function d_upstaff(de) {
 		if (dd.glyph == "brth" && yc < s.ymx)
 			yc = s.ymx
 		for (s = s.ts_next; s; s = s.ts_next)
-			if (s.shrink)
+			if (s.seqst)
 				break
-		x += ((s ? s.x : realwidth) - x) * .4
+		x += ((s ? s.x : realwidth) - x) * .45
 		break
 	default:
 		if (dd.name.indexOf("invert") == 0)
@@ -904,6 +904,17 @@ function deco_width(s) {
 		case 2:			/* arpeggio */
 			if (wl < 14)
 				wl = 14
+			break
+		case 3:
+			switch (dd.glyph) {
+			case "brth":
+			case "lphr":
+			case "mphr":
+			case "sphr":
+				if (s.wr < 20)
+					s.wr = 20
+				break
+			}
 			break
 		}
 	}
