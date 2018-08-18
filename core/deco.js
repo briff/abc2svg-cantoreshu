@@ -572,13 +572,13 @@ function d_upstaff(de) {
 		if (dd.name != "invertedfermata"
 		 && (up > 0
 		  || (up < 0 && s.multi >= 0))) {
-			yc = y_get(s.st, true, s.x - dd.wl, w)
+			yc = y_get(s.st, true, s.x - dd.wl, w) + 2
 			if (yc < stafft)
 				yc = stafft;
 			y_set(s.st, true, s.x - dd.wl, w, yc + dd.h);
 			s.ymx = yc + dd.h
 		} else {
-			yc = y_get(s.st, false, s.x - dd.wl, w)
+			yc = y_get(s.st, false, s.x - dd.wl, w) - 2
 			if (yc > staffb)
 				yc = staffb;
 			yc -= dd.h;

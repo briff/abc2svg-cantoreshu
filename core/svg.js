@@ -46,7 +46,7 @@ var	output = "",		// output buffer
 // glyphs in music font
 var tgls = {
   brace: {x:0, y:0, c:"\ue000"},
-  sgno: {x:-6, y:4, c:"\ue047"},
+  sgno: {x:-6, y:0, c:"\ue047"},
   coda: {x:-12, y:6, c:"\ue048"},
   tclef: {x:-8, y:0, c:"\ue050"},
   cclef: {x:-8, y:0, c:"\ue05c"},
@@ -89,7 +89,7 @@ var tgls = {
   acc2: {x:-3, y:0, c:"\ue263"},
  "acc-2": {x:-3, y:0, c:"\ue264"},
  "acc-1_1_4": {x:-3, y:0, c:"\ue280"},
-  accent: {x:-3, y:0, c:"\ue4a0"},
+  accent: {x:-3, y:2, c:"\ue4a0"},
   marcato: {x:-3, y:0, c:"\ue4ac"},
   hld: {x:-7, y:0, c:"\ue4c0"},
   brth: {x:0, y:0, c:"\ue4ce"},
