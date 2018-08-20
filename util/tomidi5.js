@@ -74,7 +74,8 @@ function Midi5(i_conf) {
     function note_run(e, t, d) {
     var	k = e[3] | 0,
 	i = e[2],
-	c = e[6] & 0x0f		//fixme
+	c = e[6] & 0x0f,	//fixme
+	d = (e[3] * 100) % 100
 
 	if (i != v_i[c]) {			// if program change
 		v_i[c] = i
@@ -83,6 +84,22 @@ function Midi5(i_conf) {
 				0xb0 + c, 32, (i >> 7) & 0x7f,	// LSB bank
 				0xc0 + c, i & 0x7f		// program
 			]))
+	}
+	if (d && Midi5.ma.sysexEnabled) {	// if microtone
+// fixme: should cache the current microtone values
+		op.send(new Uint8Array([
+			0xf0, 0x7f,	// realtime SysEx
+			0x7f,		// all devices
+			0x08,		// MIDI tuning standard
+			0x02,		// note change
+			i & 0x7f,		// tuning prog number
+			0x01,		// number of notes
+				k,		// key
+				k,		// note
+				d / .78125,	// MSB fract
+				0,		// LSB fract
+			0xf7		// SysEx end
+			]), t);
 	}
 	op.send(new Uint8Array([0x90 + c, k, 127]), t);		// note on
 	op.send(new Uint8Array([0x80 + c, k, 0x40]), t + d - 20) // note off
@@ -166,6 +183,22 @@ function Midi5(i_conf) {
 		}
 		iend = i_iend;
 		evt_idx = istart;
+if (0) {
+// temperament
+	op.send(new Uint8Array([
+			0xf0, 0x7f,	// realtime SysEx
+			0x7f,		// all devices
+			0x08,		// MIDI tuning standard
+			0x02,		// note change
+			0x00,		// tuning prog number
+			0x01,		// number of notes
+				0x69,		// key
+				0x69,		// note
+				0x00,		// MSB fract
+				0,		// LSB fract
+			0xf7		// SysEx end
+			]), t);
+}
 
 		stime = window.performance.now() + 200	// start time + 0.2s
 			- a_e[evt_idx][1] * conf.speed * 1000;
@@ -187,8 +220,15 @@ function onMIDISuccess(access) {
 	Midi5.ma = access	// store the MIDI access in the Midi5 function
 } // onMIDISuccess()
 
-function onMIDIFailure(msg) {
-} // onMIDIFailure()
+// (no SysEx)
+function onMIDIFailure1(msg) {
+	navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure2)
+} // onMIDIFailure1()
 
+// (no MIDI access)
+function onMIDIFailure2(msg) {
+} // onMIDIFailure2()
+
+// (try SysEx)
 if (navigator.requestMIDIAccess)
-	navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure)
+	navigator.requestMIDIAccess({sysex: true}).then(onMIDISuccess, onMIDIFailure1)
