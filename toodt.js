@@ -276,7 +276,7 @@ function odt_out() {
  office:version="1.1">\n\
  <office:styles>\n\
   <style:default-style style:family="paragraph">\n\
-   <style:paragraph-properties fo:orphans="2" fo:widows="2"/>\n\
+   <style:paragraph-properties fo:orphans="5" fo:widows="5"/>\n\
    <style:text-properties style:use-window-font-color="true"\
  style:font-name="Liberation Serif" fo:font-size="12pt"/>\n\
   </style:default-style>\n\
