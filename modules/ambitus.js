@@ -51,15 +51,10 @@ abc2svg.ambitus = {
 
     draw_symbols: function(of, p_voice) {
 // constants from the abc2svg core
-    var	d,
-	delta_tb = this.get_delta_tb(),
-	staff_tb = this.get_staff_tb(),
+    var	staff_tb = this.get_staff_tb(),
 	s = p_voice.sym
 
 	if (s.clef_type != undefined && s.nhd > 0) {
-		d = delta_tb[s.clef_type] + s.clef_line * 2;
-		s.notes[0].pit += d;
-		s.notes[1].pit += d;
 		s.x -= 26;
 		this.set_scale(s);
 		this.draw_note(s)
@@ -75,10 +70,10 @@ abc2svg.ambitus = {
 	of(p_voice)
     }, // draw_symbols()
 
-    output_music: function(of) {
-	if (this.cfmt().ambitus)
+    set_pitch: function(of, last_s) {
+	of(last_s)
+	if (!last_s && this.cfmt().ambitus)
 		abc2svg.ambitus.do_ambitus.call(this)
-	of()
     },
 
     set_fmt: function(of, cmd, param, lock) {
@@ -105,7 +100,7 @@ abc2svg.modules.hooks.push(
 	"set_scale",
 // hooks
 	[ "draw_symbols", "abc2svg.ambitus.draw_symbols" ],
-	[ "output_music", "abc2svg.ambitus.output_music" ],
+	[ "set_pitch", "abc2svg.ambitus.set_pitch" ],
 	[ "set_format", "abc2svg.ambitus.set_fmt" ],
 	[ "set_width", "abc2svg.ambitus.set_width" ]
 )
