@@ -129,7 +129,7 @@ function AbcMIDI() {
 					if (s.text[0] == '1') {	// 1st time
 						rep_tie_map = [];
 						rep_tie_time = []
-						for (i in tie_map)
+						for (i = 0; i < tie_map.length; i++)
 							rep_tie_map[i] = tie_map[i]
 					} else if (rep_tie_map.length != 0) {
 						tie_map = []
