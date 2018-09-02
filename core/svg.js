@@ -89,7 +89,7 @@ var tgls = {
   acc2: {x:-3, y:0, c:"\ue263"},
  "acc-2": {x:-3, y:0, c:"\ue264"},
  "acc-1_1_4": {x:-3, y:0, c:"\ue280"},
-  accent: {x:-3, y:2, c:"\ue4a0"},
+  accent: {x:-3, y:0, c:"\ue4a0"},
   marcato: {x:-3, y:0, c:"\ue4ac"},
   hld: {x:-7, y:0, c:"\ue4c0"},
   brth: {x:0, y:0, c:"\ue4ce"},

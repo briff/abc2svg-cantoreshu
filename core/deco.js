@@ -55,8 +55,8 @@ var decos = {
 	"5": "3 fng 8 3 3 5",
 	plus: "3 dplus 7 3 3",
 	"+": "3 dplus 7 3 3",
-	accent: "3 accent 6 4 4",
-	">": "3 accent 6 4 4",
+	accent: "3 accent 7 4 4",
+	">": "3 accent 7 4 4",
 	marcato: "3 marcato 9 3 3",
 	"^": "3 marcato 9 3 3",
 	mordent: "3 lmrd 10 5 5",
@@ -539,7 +539,7 @@ function d_upstaff(de) {
 		 || (up < 0
 		  && (s.multi < 0
 		   || (!s.multi && s.stem > 0)))) {
-			yc = y_get(s.st, false, s.x - dd.wl, w)
+			yc = y_get(s.st, false, s.x - dd.wl, w) - 2
 			if (yc > staffb)
 				yc = staffb;
 			yc -= dd.h;
@@ -547,7 +547,7 @@ function d_upstaff(de) {
 			inv = true;
 			s.ymn = yc
 		} else {
-			yc = y_get(s.st, true, s.x, 0)
+			yc = y_get(s.st, true, s.x - dd.wl, w) + 2
 			if (yc < stafft)
 				yc = stafft;
 			y_set(s.st, true, s.x - dd.wl, w, yc + dd.h);
