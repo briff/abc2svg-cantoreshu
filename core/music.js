@@ -707,16 +707,7 @@ function set_width(s) {
 			case "|":
 				w = 7		// 4 + 3
 				break
-			case "|:":
-			case ":|":
-				w = 15		// 4 + 5 + 6
-				break
-			case "::":
-				w = 26		// 4 + 5 + 6 + 6 + 5
-				break
 			default:
-				if (!bar_type)
-					break
 				w = 4 + 3 * bar_type.length
 				for (i = 0; i < bar_type.length; i++) {
 					switch (bar_type[i]) {
@@ -2930,6 +2921,7 @@ function set_words(p_voice) {
 			start_flag = true
 			break
 		case C.BAR:
+			s.bar_type = bar_cnv(s.bar_type)
 			if (!s.beam_on)
 				start_flag = true
 			if (!s.next && s.prev
@@ -3953,6 +3945,7 @@ function set_stems() {
 }
 
 /* -- split up unsuitable bars at end of staff -- */
+// return true if the bar type has changed
 function check_bar(s) {
 	var	bar_type, i, b1, b2,
 		p_voice = s.p_v
@@ -3969,7 +3962,7 @@ function check_bar(s) {
 	if (s.type != C.BAR)
 		return
 
-	if (s.text != undefined) {			// if repeat bar
+	if (s.text != undefined) {		// if repeat bar
 		p_voice.bar_start = clone(s);
 		p_voice.bar_start.bar_type = "["
 		delete s.text
@@ -3979,16 +3972,16 @@ function check_bar(s) {
 	bar_type = s.bar_type
 	if (bar_type == ":")
 		return
-	if (bar_type.slice(-1) != ':')	// if not left repeat bar
+	if (bar_type.slice(-1) != ':')		// if not left repeat bar
 		return
 
 	if (!p_voice.bar_start)
 		p_voice.bar_start = clone(s)
-	if (bar_type[0] != ':') {			/* 'xx:' (not ':xx:') */
+	if (bar_type[0] != ':') {		// 'xx:' (not ':xx:')
 		if (bar_type == "||:") {
-			p_voice.bar_start.bar_type = "|:";
+			p_voice.bar_start.bar_type = "[|:";
 			s.bar_type = "||"
-			return
+			return true
 		}
 		p_voice.bar_start.bar_type = bar_type
 		if (s.prev && s.prev.type == C.BAR)
@@ -3997,33 +3990,28 @@ function check_bar(s) {
 			s.bar_type = "|"
 		return
 	}
-	if (bar_type == "::") {
-		p_voice.bar_start.bar_type = "|:";
-		s.bar_type = ":|"
-		return
-	}
 	if (bar_type == "||:") {
-		p_voice.bar_start.bar_type = "|:";
+		p_voice.bar_start.bar_type = "[|:";
 		s.bar_type = "||"
-		return
+		return true
 	}
 
-	// '::xx::' -> '::|' and '|::'
-//fixme: do the same in abcm2ps
+	// ':xx:' -> ':x|]' and '[|x:'
 	i = 0
 	while (bar_type[i] == ':')
 		i++
 	if (i < bar_type.length) {
-		s.bar_type = bar_type.slice(0, i) + '|';
+		s.bar_type = bar_type.slice(0, i) + '|]';
 		i = bar_type.length - 1
 		while (bar_type[i] == ':')
 			i--;
-		p_voice.bar_start.bar_type = '|' + bar_type.slice(i + 1)
+		p_voice.bar_start.bar_type = '[|' + bar_type.slice(i + 1)
 	} else {
 		i = (bar_type.length / 2) |0;			// '::::' !
-		s.bar_type = bar_type.slice(0, i) + '|';
-		p_voice.bar_start.bar_type = '|' + bar_type.slice(i)
+		s.bar_type = bar_type.slice(0, i) + '|]';
+		p_voice.bar_start.bar_type = '[|' + bar_type.slice(i)
 	}
+	return true
 }
 
 /* -- move the symbols of an empty staff to the next one -- */
@@ -4089,7 +4077,7 @@ function block_gen(s) {
 /* -- define the start and end of a piece of tune -- */
 /* tsnext becomes the beginning of the next line */
 function set_piece() {
-	var	s, last, p_voice, st, v, nst, nv,
+	var	s, last, p_voice, st, v, nst, nv, tmp,
 		non_empty = [],
 		non_empty_gl = [],
 		sy = cur_sy
@@ -4282,7 +4270,11 @@ function set_piece() {
 					if (s.v == v) {
 						p_voice.s_next = s.next;
 						s.next = null;
-						check_bar(s)
+						if (check_bar(s)) {
+							tmp = s.wl;
+							set_width(s);
+							s.shrink += s.wl - tmp
+						}
 						break
 					}
 				}

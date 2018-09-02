@@ -950,12 +950,12 @@ function bar_cnv(bar_type) {
 
 /* -- draw a measure bar -- */
 function draw_bar(s, bot, h) {
-	var	i, s2, yb, bar_type,
+	var	i, s2, yb,
+		bar_type = s.bar_type,
 		st = s.st,
 		p_staff = staff_tb[st],
 		x = s.x
 
-	bar_type = bar_cnv(s.bar_type)
 	if (!bar_type)
 		return				/* invisible */
 
