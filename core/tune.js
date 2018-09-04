@@ -2021,7 +2021,7 @@ function get_voice(parm) {
 		}
 	}
 
-	if (curvoice.stafflines) {
+	if (curvoice.stafflines && curvoice.st != undefined) {
 		par_sy.staves[curvoice.st].stafflines = curvoice.stafflines;
 		curvoice.stafflines = ''
 	}
