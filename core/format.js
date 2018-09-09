@@ -645,35 +645,34 @@ function font_init() {
 function style_font(fn) {		// 'font_name'.'size'
 	var	r = fn.split('.'),
 		sz = r[1],
-		i = fn.indexOf("Italic"),
-		j = 100,
-		o = fn.indexOf("Oblique"),
-		b = fn.indexOf("Bold");
+		i, j;
 
-	fn = r[0];
+	fn = r[0].toLowerCase();
 	r = ''
-	if (b > 0) {
-		r += "font-weight:bold; ";
-		j = b
+	i = fn.indexOf("-")
+	if (i < 0)
+		i = fn.length
+	j = fn.indexOf("italic")
+	if (j >= 0) {
+		r += "italic "
+		if (j < i)
+			i = j
 	}
-	if (i > 0 || o > 0) {
-		if (i > 0) {
-			r += "font-style:italic; "
-			if (i < j)
-				j = i
-		}
-		if (o > 0) {
-			r += "font-style:oblique; "
-			if (o < j)
-				j = o
-		}
+	j = fn.indexOf("oblique")
+	if (j >= 0) {
+		r += "oblique "
+		if (j < i)
+			i = j
 	}
-	if (j != 100) {
-		if (fn[j - 1] == '-')
-			j--;
-		fn = fn.slice(0, j)
+	j = fn.indexOf("bold")
+	if (j >= 0) {
+		r += "bold "
+		if (j < i)
+			i = j
 	}
-	return 'font-family:' + fn + '; ' + r + 'font-size:' + sz + 'px'
+	if (i > 0)
+		fn = fn.slice(0, i)
+	return 'font:' + r + sz + 'px ' + fn
 }
 Abc.prototype.style_font = style_font
 

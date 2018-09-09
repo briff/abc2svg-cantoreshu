@@ -243,19 +243,45 @@ abc2svg.abort = function(e) {
 	abc2svg.quit()
 }
 
+function font_bug(str) {
+	return str.replace(/{font:.*?(}|;)/g, function(s) {
+	    var	i,
+		w = s.slice(6).split(' '),
+		l = w.length,
+		r = '{font-family:' + w[--l].slice(0, -1) + ';font-size:' + w[--l]
+		while (--l >= 0) {
+			i = w[l]
+			switch (i) {
+			case 'italic':
+			case 'oblique':
+				r += ';font-style:' + i
+				break
+			case 'bold':
+				r += ';font-weight:' + i
+				break
+			}
+		}
+		return r + s.slice(-1)
+	})
+}
+
 function svg_out(str) {
     var	r, w, h,
 	cfmt = abc.cfmt()
 
 	switch (str.slice(0, 4)) {
 	case '<svg':
-		r = str.slice(0, 200).match(/.*width="(.*?)px" height="(.*?)px"/);
-		w = r[1] / 96;
-		h = r[2] / 96;
+//fixme: the shorthand 'font:' does not work in the library 'librsvg'
+// used by libreoffice and abiword
+// (https://gitlab.gnome.org/GNOME/librsvg/issues/34)
+		str = font_bug(str)
 		data += '<d name="g'+ (++seq).toString() +
 			'" mime-type="image/svg+xml" base64="no">\n\
 <![CDATA[' + str + ']]>\n\
 </d>\n';
+		r = str.slice(0, 200).match(/.*width="(.*?)px" height="(.*?)px"/);
+		w = r[1] / 96;
+		h = r[2] / 96;
 		section += '<p style="Normal" xid="'+
 			(seq + 1).toString() + '"><image dataid="g' +
 			seq.toString() + '" xid="' +seq.toString() +

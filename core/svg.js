@@ -176,14 +176,12 @@ var glyphs = {
 	d="m0 0v12"/>',
   sphr: '<path id="sphr" class="stroke" stroke-width="1.2"\n\
 	d="m0 0v6"/>',
-  sfz: '<text id="sfz" x="-5" y="-7" \
-style="font-family:serif; font-style:italic; font-size:14px">\n\
+  sfz: '<text id="sfz" x="-5" y="-7" style="font:italic 14px serif">\n\
 	s<tspan font-size="16" font-weight="bold">f</tspan>z</text>',
-  trl: '<text id="trl" x="-2" y="-4"\n\
-	style="font-family:serif; font-weight:bold; \
-font-style:italic; font-size:16px">tr</text>',
-  opend: '<circle id="opend" class="stroke"\n\
-	cx="0" cy="-3" r="2.5"/>',
+  trl: '<text id="trl" x="-2" y="-4"\
+ style="font:italic bold 16px serif">tr</text>',
+  opend: '<circle id="opend" class="stroke"\
+ cx="0" cy="-3" r="2.5"/>',
   snap: '<path id="snap" class="stroke" d="m-3 -6\n\
 	c0 -5 6 -5 6 0 0 5 -6 5 -6 0\n\
 	M0 -5v6"/>',
@@ -201,7 +199,7 @@ font-style:italic; font-size:16px">tr</text>',
 </g>',
   triangle: '<path id="triangle" class="fill" d="m-3.7 -3.2l7.4 0 -3.7 6.4 -3.7 -6.4"/>',
   diamond: '<path id="diamond" class="fill" d="m0 3.5l-3.7 -3.5 3.7 -3.5 3.7 3.5z"/>',
-  oct: '<text id="oct" style="font-family:serif; font-size:12px">8</text>'
+  oct: '<text id="oct" style="font:12px serif">8</text>'
 }
 
 // mark a glyph as used and add it in <defs>
@@ -566,7 +564,7 @@ function out_bar(x, y, h, dotted) {
 }
 // tuplet value - the staves are not defined
 function out_bnum(x, y, str) {
-	out_XYAB('<text style="font-family:serif; font-style:italic; font-size:12px"\n\
+	out_XYAB('<text style="font:italic 12px serif"\n\
 	x="X" y="Y" text-anchor="middle">A</text>\n',
 		x, y, str.toString())
 }
@@ -749,7 +747,7 @@ function out_tubrn(x, y, dx, dy, up, str) {
     var	sw = str.length * 10,
 	h = up ? -3 : 3;
 
-	out_XYAB('<text style="font-family:serif; font-style:italic; font-size:12px"\n\
+	out_XYAB('<text style="font:italic 12px serif"\n\
 	x="X" y="Y" text-anchor="middle">A</text>\n',
 		x + dx / 2, y + dy / 2, str);
 	dx /= stv_g.scale
@@ -778,12 +776,12 @@ var deco_str_style = {
 crdc:	{
 		dx: 0,
 		dy: 5,
-		style: 'font-family:serif; font-style:italic; font-size:14px'
+		style: 'font:italic 14px serif'
 	},
 dacs:	{
 		dx: 0,
 		dy: 3,
-		style: 'font-family:serif; font-size:16px',
+		style: 'font:16px serif',
 		anchor: ' text-anchor="middle"'
 	},
 fng:	{
@@ -795,12 +793,12 @@ fng:	{
 pf:	{
 		dx: 0,
 		dy: 5,
-		style: 'font-family:serif; font-weight:bold; font-style:italic; font-size:16px'
+		style: 'font:italic bold 16px serif'
 	},
 '@':	{
 		dx: 0,
 		dy: 5,
-		style: 'font-family:sans-serif; font-size:12px'
+		style: 'font: 12px sans-serif'
 	}
 }
 
@@ -866,7 +864,7 @@ function out_ltr(x, y, val) {
 function out_8va(x, y, val, defl) {
 	if (!defl.nost) {
 		out_XYAB('<text x="X" y="Y" \
-style="font-family:serif; font-weight:bold; font-style:italic; font-size:12px">8\
+style="font:italic bold 12px serif">8\
 <tspan dy="-4" style="font-size:10px">va</tspan></text>\n',
 			x - 8, y);
 		x += 12;
@@ -883,7 +881,7 @@ style="font-family:serif; font-weight:bold; font-style:italic; font-size:12px">8
 function out_8vb(x, y, val, defl) {
 	if (!defl.nost) {
 		out_XYAB('<text x="X" y="Y" \
-style="font-family:serif; font-weight:bold; font-style:italic; font-size:12px">8\
+style="font:italic bold 12px serif">8\
 <tspan dy="-4" style="font-size:10px">vb</tspan></text>\n',
 			x - 8, y);
 		x += 4;
@@ -900,7 +898,7 @@ style="font-family:serif; font-weight:bold; font-style:italic; font-size:12px">8
 function out_15ma(x, y, val, defl) {
 	if (!defl.nost) {
 		out_XYAB('<text x="X" y="Y" \
-style="font-family:serif; font-weight:bold; font-style:italic; font-size:12px">15\
+style="font:italic bold 12px serif">15\
 <tspan dy="-4" style="font-size:10px">ma</tspan></text>\n',
 			x - 10, y);
 		x += 20;
@@ -917,7 +915,7 @@ style="font-family:serif; font-weight:bold; font-style:italic; font-size:12px">1
 function out_15mb(x, y, val, defl) {
 	if (!defl.nost) {
 		out_XYAB('<text x="X" y="Y" \
-style="font-family:serif; font-weight:bold; font-style:italic; font-size:12px">15\
+style="font:italic bold 12px serif">15\
 <tspan dy="-4" style="font-size:10px">mb</tspan></text>\n',
 			x - 10, y);
 		x += 7;
@@ -1034,13 +1032,13 @@ function svg_flush() {
 		if (musicfont) {
 			if (musicfont.indexOf('(') > 0) {
 				head += '\n\
-.music {font-family: music; font-size: 24px; fill: currentColor}\n\
+.music {font:24px music; fill:currentColor}\n\
 @font-face {\n\
-  font-family: music;\n\
-  src: ' + musicfont + '}';
+  font-family:music;\n\
+  src:' + musicfont + '}';
 			} else {
 				head += '\n\
-.music {font-family: '+ musicfont +'; font-size: 24px; fill: currentColor}'
+.music {font:24px '+ musicfont +'; fill:currentColor}'
 			}
 		}
 		head += '\n</style>\n'

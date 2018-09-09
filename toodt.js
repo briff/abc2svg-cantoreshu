@@ -347,17 +347,50 @@ abc2svg.abort = function(e) {
 
 // convert a CSS font definition (in pixels) to ODT (in points)
 function def_font(font) {
-    var	ws = '',
-	css_font = abc.style_font(abc.cfmt()[font]),
-	r = css_font.match(/font-family:(.+?); (.*)font-size:(.+)px/)
+    var	css_font = abc.style_font(abc.cfmt()[font]).
+			slice(5).
+			split(' '),
+	l = css_font.length,
+	fo = 'fo:font-family="' + css_font[--l] + '"',
+	i = css_font[--l].slice(0, -2)
 
-// r[2] may be empty or
-// font-weight:bold, font-style:italic or font-style:oblique
-	if (r[2])
-		ws = r[2].replace(/(font-.+?):(.+?);/g,
-			'fo:$1="$2"')
-	return 'style:font-name="' + r[1] + '" ' + ws +
-		'fo:font-size="' + (r[3] * 72 / 96).toFixed(1) + 'pt"'
+	fo += ' fo:font-size="' +
+		(i * 72 / 96).toFixed(1) + 'pt"'
+	while (--l >= 0) {
+		i = css_font[l]
+		switch (i) {
+		case 'italic':
+		case 'oblique':
+			fo += ' fo:font-style="' + i + '"'
+			break
+		case 'bold':
+			fo += ' fo:font-weight="' + i + '"'
+			break
+		}
+	}
+	return fo
+}
+
+function font_bug(str) {
+	return str.replace(/{font:.*?(}|;)/g, function(s) {
+	    var	i,
+		w = s.slice(6).split(' '),
+		l = w.length,
+		r = '{font-family:' + w[--l].slice(0, -1) + ';font-size:' + w[--l]
+		while (--l >= 0) {
+			i = w[l]
+			switch (i) {
+			case 'italic':
+			case 'oblique':
+				r += ';font-style:' + i
+				break
+			case 'bold':
+				r += ';font-weight:' + i
+				break
+			}
+		}
+		return r + s.slice(-1)
+	})
 }
 
 function svg_out(str) {
@@ -378,6 +411,11 @@ function svg_out(str) {
 			footer = r ? gen_hf("footer", "Footer", r) : '';
 			footerfont = def_font("footerfont")
 		}
+
+//fixme: the shorthand 'font:' does not work in the library 'librsvg'
+// used by libreoffice and abiword
+// (https://gitlab.gnome.org/GNOME/librsvg/issues/34)
+		str = font_bug(str)
 
 		// save the image
 		img = 'Pictures/abc' + (++seq).toString() + '.svg';
