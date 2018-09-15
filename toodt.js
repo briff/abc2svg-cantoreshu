@@ -372,11 +372,11 @@ function def_font(font) {
 }
 
 function font_bug(str) {
-	return str.replace(/{font:.*?(}|;)/g, function(s) {
+	return str.replace(/font:.*?(}|;|")/g, function(s) {	//"
 	    var	i,
-		w = s.slice(6).split(' '),
+		w = s.slice(5).split(' '),
 		l = w.length,
-		r = '{font-family:' + w[--l].slice(0, -1) + ';font-size:' + w[--l]
+		r = 'font-family:' + w[--l].slice(0, -1) + ';font-size:' + w[--l]
 		while (--l >= 0) {
 			i = w[l]
 			switch (i) {
