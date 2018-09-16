@@ -1869,9 +1869,9 @@ function set_yval(s) {
 		s.ymn = -2
 		break
 	default:
-//		s.ymx = top + 2;
-		s.ymx = 24 + 2;
-		s.ymn = -2
+//		s.ymx = top;
+		s.ymx = 24;
+		s.ymn = 0
 		break
 	}
 }
