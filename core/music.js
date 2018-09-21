@@ -1004,18 +1004,53 @@ function set_space(s) {
 	return space
 }
 
-// set the fixed spacing inside tuplets
-function set_sp_tup(s, s2) {
-    var	tim = s.time,
-	ttim = s2.time - tim,
-	space = time2space(s, ttim / s.tq0) * s.tq0;
+// set a fixed spacing inside tuplets
+function set_sp_tup(s, s_et) {
+    var	dt, s2,
+	tim = s.time,
+	endtime = s_et.time + s_et.dur,
+	ttim = endtime - tim,
+	space = time2space(s, ttim / s.tq0) * s.tq0 / ttim
 
-	s = s.ts_next
+	// start on the second note/rest
+	do {
+		s = s.ts_next
+	} while (!s.seqst)
+	while (!s.dur)
+		s = s.ts_next
+	while (!s.seqst)
+		s = s.ts_prev
+
+	// stop outside the tuplet sequence
+	// and add a measure bar when at end of tune
+	do {
+		if (!s_et.ts_next) {
+			s2 = add_end_bar(s_et);
+			s_et = s2
+		} else {
+			s_et = s_et.ts_next
+		}
+	} while (!s_et.seqst)
+
+	// check the minimum spacing
+	s2 = s
 	while (1) {
-		if (s.seqst)
-			s.space = (s.time - tim) / ttim * space;
-		tim = s.time;
-		if (s == s2)
+		if (s2.dur
+		 && s2.dur * space < s2.shrink)
+			space = s2.shrink / s2.dur
+		if (s2 == s_et)
+			break
+		s2 = s2.ts_next
+	}
+
+	// set the space values
+	while (1) {
+		if (s.seqst) {
+			dt = (s.time - tim) * space;
+			tim = s.time
+		}
+		s.space = dt
+		if (s == s_et)
 			break
 		s = s.ts_next
 	}
@@ -1023,7 +1058,7 @@ function set_sp_tup(s, s2) {
 
 // create an invisible bar for end of music lines
 function add_end_bar(s) {
-	return {
+    var	bar = {
 		type: C.BAR,
 		bar_type: "|",
 		fname: s.fname,
@@ -1040,82 +1075,95 @@ function add_end_bar(s) {
 		notes: [{
 			pit: s.notes[0].pit
 		}],
-		wl:0,
-		wr:0
+		wl: 0,
+		wr: 0,
+		prev: s,
+		ts_prev: s,
+		shrink: s.wr + 3
 	}
+	s.next = s.ts_next = bar
+	return bar
 }
 
 /* -- set the width and space of all symbols -- */
 /* this function is called once for the whole tune
  * then, once per music line up to the first sequence */
-function set_allsymwidth(last_s) {
-	var	new_val, s_tupc, s_tupn,
-		s = tsfirst,
-		xa = 0,
-		xl = [],
-		tupfl = 0,
-		ntup = 0
+function set_allsymwidth() {
+    var	maxx, new_val, s_tupc, s_tupn, st,
+	s = tsfirst,
+	s2 = s,
+	xa = 0,
+	xl = [],
+	wr = [],
+	ntup = 0
 
 	/* loop on all symbols */
 	while (1) {
-		var	maxx = xa,
-			s2 = s
-
+		maxx = xa
 		do {
 			set_width(s);
-			new_val = (xl[s.st] || 0) + s.wl
+			st = s.st
+			if (xl[st] == undefined)
+				xl[st] = 0
+			if (wr[st] == undefined)
+				wr[st] = 0;
+			new_val = xl[st] + wr[st] + s.wl
 			if (new_val > maxx)
 				maxx = new_val;
-			if (s.tp0) {		// start of tuplet
-				if (++ntup == 1) {
-					s_tupn = s;
-					tupfl |= 1
-				}
-			} else if (s.te0) {	// end of tuplet
-				if (--ntup == 0)
-					tupfl = 4
-			}
 			s = s.ts_next
-		} while (s != last_s && !s.seqst);
+		} while (s && !s.seqst);
 
 		// set the spaces of the time sequence
 		s2.shrink = maxx - xa
-
-		if (!(tupfl & 14)) {		// if not in a tuplet sequence
-			if (s2.ts_prev)
-				s2.space = set_space(s2)
-			else
-				s2.space = 0
-		}
-		if (tupfl) {
-			if (tupfl & 8) {
-				set_sp_tup(s_tupc, s2);
-				tupfl &= ~8
-			}
-			if (tupfl & 1) {
-				s_tupc = s_tupn;
-				tupfl++		// 1 => 2
-			}
-			if (tupfl & 4)
-				tupfl += 4	// 4 => 8
-		}
+		if (!ntup)			// if not inside a tuplet sequence
+			s2.space = s2.ts_prev ? set_space(s2) : 0
 
 		if (s2.shrink == 0 && s2.space == 0 && s2.type == C.CLEF) {
 			delete s2.seqst;		/* no space */
 			s2.time = s2.ts_prev.time
 		}
-		if (s == last_s)
+		if (!s)
 			break
 
 		// update the min left space per staff
-		xa = maxx;
-		s = s2
+		for (st = 0; st < wr.length; st++)
+			wr[st] = 0;
+		xa = maxx
 		do {
-			if (!xl[s.st] || xl[s.st] < xa + s.wr)
-				xl[s.st] = xa + s.wr;
-			s = s.ts_next
-		} while (!s.seqst)
+			st = s2.st;
+			xl[st] = xa
+			if (s2.wr > wr[st])
+				wr[st] = s2.wr
+			if (s2.tp0		// start of tuplet
+			 && ++ntup == 1
+			 && !s_tupc)
+				s_tupc = s2;	// keep the first tuplet address
+			if (s2.te0)		// end of tuplet
+				ntup--;
+			s2 = s2.ts_next
+		} while (!s2.seqst)
 	}
+
+	// adjust the spacing inside the tuplets
+	s = s_tupc
+	if (!s)
+		return
+	do {
+		s2 = s;			// start of tuplet
+		ntup = 1
+		do {			// search the end of the tuplet sequence
+			s = s.ts_next
+			if (s.tp0)
+				ntup++
+			if (s.te0)
+				ntup--
+		} while (ntup != 0);
+
+		set_sp_tup(s2, s)
+
+		while (s && !s.tp0)	// search next tuplet
+			s = s.ts_next
+	} while (s)
 }
 
 /* change a symbol into a rest */
@@ -2723,7 +2771,7 @@ function new_sym(type, p_voice,
 
 /* -- init the symbols at start of a music line -- */
 function init_music_line() {
-	var	p_voice, s, s2, last_s, v, st,
+	var	p_voice, s, s2, s3, last_s, v, st, shr, shrmx,
 		nv = voice_tb.length
 
 	/* initialize the voices */
@@ -2885,7 +2933,7 @@ function init_music_line() {
 			s2.seqst = true;
 		if (last_s && last_s.type == s2.type && s2.v != last_s.v) {
 			delete last_s.seqst;
-			last_s.shrink = 0
+//			last_s.shrink = 0
 		}
 	}
 
@@ -2900,7 +2948,40 @@ function init_music_line() {
 			break
 		}
 	}
-	set_allsymwidth(s)	/* set the width of the added symbols */
+
+	// set the spacing of the added symbols
+	while (last_s) {
+		if (last_s.seqst) {
+			do {
+				last_s = last_s.ts_next
+			} while (last_s && !last_s.seqst)
+			break
+		}
+		last_s = last_s.ts_next
+	}
+
+	s = tsfirst
+	while (1) {
+		s2 = s;
+		shrmx = 0
+		do {
+			set_width(s);
+			shr = s.wl
+			for (s3 = s.prev; s3; s3 = s3.prev) {
+				if (w_tb[s3.type] != 0) {
+					shr += s3.wr
+					break
+				}
+			}
+			if (shr > shrmx)
+				shrmx = shr;
+			s = s.ts_next
+		} while (!s.seqst);
+		s2.shrink = shrmx;
+		s2.space = 0
+		if (s == last_s)
+			break
+	}
 }
 
 /* -- set a pitch in all symbols and the start/stop of the beams -- */
@@ -4289,9 +4370,6 @@ function set_piece() {
 	// if the last symbol is not a bar, add an invisible bar
 	if (last.type != C.BAR) {
 		s = add_end_bar(last);
-		s.prev = s.ts_prev = last;
-		last.ts_next = last.next = s;
-		s.shrink = last.wr + 2;	// just a small space before end of staff
 		s.space = set_space(s)
 		if (s.space < s.shrink
 		 && last.type != C.KEY)
@@ -4484,7 +4562,7 @@ function output_music() {
 	}
 	set_acc_shft();			// set the horizontal offset of accidentals
 
-	set_allsymwidth(null);		/* set the width of all symbols */
+	set_allsymwidth();		/* set the width of all symbols */
 
 	indent = set_indent(true)
 
