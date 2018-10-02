@@ -1605,6 +1605,7 @@ function get_vover(type) {
 		delete p_voice.ly_a_h;
 		delete p_voice.sym_restart
 		delete p_voice.sym_cont
+		delete p_voice.have_ly
 
 		voice_tb.push(p_voice)
 		return p_voice
