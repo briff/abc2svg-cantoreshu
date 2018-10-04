@@ -29,6 +29,7 @@ function loadtxt() {
 
 	for (var k in text_kv)
 		document.getElementById(k).innerHTML = text_kv[k];
+	document.getElementById('ctxMenu').title = 'Suonare';
 
 	document.getElementById("hlp").outerHTML = '<ul id="hlp">\n\
 <li>Opzioni:\n\
