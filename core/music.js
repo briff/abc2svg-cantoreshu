@@ -2904,6 +2904,8 @@ function init_music_line() {
 
 	/* add bar if needed (for repeat bracket) */
 	for (v = 0; v < nv; v++) {
+		s2 = p_voice.bar_start;
+		p_voice.bar_start = null
 
 		// if bar already, keep it in sequence
 		p_voice = voice_tb[v];
@@ -2913,10 +2915,8 @@ function init_music_line() {
 			continue
 		}
 
-		s2 = p_voice.bar_start
 		if (!s2)
 			continue
-		p_voice.bar_start = null
 		if (cur_sy.voices[v].range < 0
 		 || !cur_sy.st_print[cur_sy.voices[v].st])
 			continue
