@@ -4,12 +4,15 @@ function loadtxt() {
 		bad_nb: 'Número de linha incorreto',
 		fn: 'Nome do arquivo: ',
 		load: 'Por favor, inclua o arquivo ',
-		play: 'Tocar',
-		stop: 'Parar',
 	}
 	var text_kv = {
 		a: 'Sobre',
 		b: 'Arquivos ABC:',
+		cmpa: 'Todo',
+		cmpt: 'Peça',
+		cmps: 'Selecção',
+		cmpl: 'Loop',
+		cmpc: 'Continua',
 //		df: 'abc2svg features',
 //		dp: 'abc2svg parameters',
 		er: 'Erros',
