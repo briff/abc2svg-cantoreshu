@@ -38,11 +38,7 @@ var	abc_images,			// image buffer
 	selx_sav = [],			// (saved while playing/printing)
 	play = {},			// play data
 	pop,				// current popup message
-	texts = {			// language specific texts
-		bad_nb: 'Bad line number',
-		fn: 'File name: ',
-		load: 'Please, load the included file ',
-	},
+	texts = {},			// language specific texts
 	jsdir = document.currentScript ?
 		document.currentScript.src.match(/.*\//) :
 		(function() {
@@ -687,9 +683,8 @@ function edit_init() {
 			document.getElementById("fontsize").value =
 					Number(v)
 		}
-		v = storage(true, "lang")
-		if (v)
-			loadlang(v, true)
+		v = storage(true, "lang");
+		loadlang(v || 'en', true)
 	}
 
 	document.getElementById("abc2svg").innerHTML =
