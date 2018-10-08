@@ -23,7 +23,6 @@ function loadtxt() {
 		h: 'Aiuto',
 		ha: 'Aiuto',
 		lg: 'Lingua',
-		playbutton: 'Suona',
 		pr: 'Preferenze',
 		saveas: 'Salva il file',
 		sful: 'URL del Soundfont',
@@ -46,5 +45,11 @@ function loadtxt() {
 	<li>Puoi modificare il codice ABC nell\'area di testo;<br/>\n\
 	dopo 2 secondi la musica viene visualizzata o aggiornata.</li>\n\
 	<li>L\'opzione \'Stampa\' del browser stampa la musica.</li>\n\
+<li>Puoi selezionare parte di un brano sia nell\'area di testo\
+	(fai click e seleziona), o nell\'area dello spartito.<br/>\n\
+	In questo caso, un click su un elemento musicale inizia la selezione,\
+	mentre un click col tasto destro la termina.<br/>\
+	Inoltre, se il browser può suonare la musica, un click col tasto destro\
+	al di fuori della musica mostra il menu Suonare.</li>\
 </ul>'
 }
