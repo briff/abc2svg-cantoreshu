@@ -1626,25 +1626,28 @@ function parse_acc_pit(line) {
 	return note
 }
 
+// convert a note pitch to ABC text
+function note2abc(note) {
+    var	i,
+	abc = 'abcdefg'[(note.pit + 77) % 7]
+
+//fixme: treat microtone
+	if (note.acc)
+		abc = ['__', '_', '', '^', '^^', '='][note.acc + 2] + abc
+	for (i = note.pit; i >= 30; i -= 7)	// down to 'c'
+		abc += "'"
+	for (i = note.pit; i < 23; i += 7)	// up to 'C'
+		abc += ","
+	return abc
+}
+
 /* set the mapping of a note */
 function set_map(note) {
-	var	bn, an, nn, i,
-		map = maps[curvoice.map]	// never null
-
-	bn = 'abcdefg'[(note.pit + 77) % 7]
-	if (note.acc)
-		an = ['__', '_', '', '^', '^^', '='][note.acc + 2]
-	else
-		an = ''
-//fixme: treat microtone
-	nn = an + bn
-	for (i = note.pit; i >= 28; i -= 7)
-		nn += "'"
-	for (i = note.pit; i < 21; i += 7)
-		nn += ",";
+    var	map = maps[curvoice.map],	// never null
+	nn = note2abc(note)
 
 	if (!map[nn]) {
-		nn = 'octave,' + an + bn		// octave
+		nn = 'octave,' + nn.replace(/[',]/g, '')	// octave '
 		if (!map[nn]) {
 			nn = 'key,' +			// 'key,'
 				'abcdefg'[(note.pit + 77 -

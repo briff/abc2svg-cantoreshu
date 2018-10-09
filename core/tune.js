@@ -648,13 +648,7 @@ function get_map(text) {
 			syntax(1, "Bad note in %%map")
 			return
 		}
-		ns = 'abcdefg'[(note.pit + 77) % 7]
-		if (note.acc)
-			ns = ['__', '_', '', '^', '^^', '='][note.acc + 2] + ns
-		for (i = note.pit; i >= 28; i -= 7)
-			ns += "'"
-		for (i = note.pit; i < 21; i += 7)
-			ns += ","
+		ns = note2abc(note)
 	}
 
 	notes = maps[a[0]]
