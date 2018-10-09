@@ -1450,7 +1450,7 @@ function draw_basic_note(x, s, m, y_tb) {
 			g_close()
 		}
 	}
-	if (old_color != undefined)
+	if (old_color != false)
 		set_color(old_color)
 }
 
