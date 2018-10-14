@@ -19,7 +19,6 @@ abc2svg.grid2 = {
 		p_v = voice_tb[v]
 		if (!p_v.grid2)
 			continue
-		p_v.stafflines = '...';		// no staff lines
 		p_v.clef.invis = true;		// no clef
 		p_v.key.k_sf = p_v.key.k_a_acc = 0; // no key signature
 		p_v.staffnonote = 2		// draw the staff
@@ -63,8 +62,10 @@ abc2svg.grid2 = {
     set_fmt: function(of, cmd, param, lock) {
 	if (cmd == "grid2") {
 	    var	curvoice = this.get_curvoice()
-		if (curvoice)
+		if (curvoice) {
+			this.set_v_param("stafflines", "...");	// no staff lines
 			curvoice.grid2 = param
+		}
 		return
 	}
 	of(cmd, param, lock)
