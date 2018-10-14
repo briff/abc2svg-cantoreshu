@@ -1024,7 +1024,7 @@ function draw_all_deco() {
 		}
 
 		// check if user PS definition
-		if (psdeco(f, x, y, de))
+		if (self.psdeco(f, x, y, de))
 			continue
 
 		anno_start(s, 'deco')
@@ -1599,7 +1599,7 @@ function draw_deco_staff() {
 		for (s = first_gchord; s; s = s.ts_next) {
 			if (!s.a_gch)
 				continue
-			draw_gchord(s, minmax[s.st].ymin, minmax[s.st].ymax)
+			self.draw_gchord(s, minmax[s.st].ymin, minmax[s.st].ymax)
 		}
 	}
 

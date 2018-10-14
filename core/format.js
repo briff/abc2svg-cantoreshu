@@ -281,7 +281,7 @@ function set_pos(k, v) {		// keyword, value
 	k = k.slice(0, 3)
 	if (k == "ste")
 		k = "stm"
-	set_v_param("pos", k + ' ' + v)
+	self.set_v_param("pos", k + ' ' + v)
 }
 
 // set/unset the fields to write
@@ -305,9 +305,10 @@ function set_writefields(parm) {
 }
 
 // set a voice specific parameter
+// (possible hook)
 function set_v_param(k, v) {
 	if (curvoice) {
-		set_vp([k + '=', v])
+		self.set_vp([k + '=', v])
 		return
 	}
 	k = [k + '=', v];
@@ -341,6 +342,7 @@ function set_page() {
 } // set_page()
 
 // set a format parameter
+// (possible hook)
 function set_format(cmd, param, lock) {
 	var f, f2, v, box, i
 
@@ -395,7 +397,7 @@ function set_format(cmd, param, lock) {
 			syntax(1, errs.bad_val, "%%" + cmd)
 			break
 		}
-		set_v_param("uscale", f)
+		self.set_v_param("uscale", f)
 		break
 	case "bgcolor":
 	case "dblrepbar":
@@ -606,10 +608,10 @@ function set_format(cmd, param, lock) {
 		syntax(1, "%%combinevoices is deprecated - use %%voicecombine instead")
 		break
 	case "voicemap":
-		set_v_param("map", param)
+		self.set_v_param("map", param)
 		break
 	case "voicescale":
-		set_v_param("scale", param)
+		self.set_v_param("scale", param)
 		break
 	default:		// memorize all global commands
 		if (parse.state == 0)		// (needed for modules)

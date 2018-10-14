@@ -22,7 +22,7 @@ abc2svg.break = {
 			b = a[n];
 			c = b.match(/(\d+)([a-z]?)(:\d+\/\d+)?/)
 			if (!c) {
-				this.syntax(1, errs.bad_val, "%%break")
+				this.syntax(1, this.errs.bad_val, "%%break")
 				continue
 			}
 			if (c[2])
@@ -102,17 +102,15 @@ abc2svg.break = {
 	of()
 	if (this.cfmt().break)
 		abc2svg.break.do_break.call(this)
+    },
+
+    set_hooks: function(abc) {
+	abc.do_pscom = abc2svg.break.do_pscom.bind(abc, abc.do_pscom);
+	abc.set_bar_num = abc2svg.break.set_bar_num.bind(abc, abc.set_bar_num)
     }
 } // break
 
-abc2svg.modules.hooks.push(
-// export
-	"errs",
-	"syntax",
-// hooks
-	[ "do_pscom", "abc2svg.break.do_pscom" ],
-	[ "set_bar_num", "abc2svg.break.set_bar_num" ]
-);
+abc2svg.modules.hooks.push(abc2svg.break.set_hooks);
 
 // the module is loaded
 abc2svg.modules.break.loaded = true

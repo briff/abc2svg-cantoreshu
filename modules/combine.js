@@ -204,20 +204,17 @@ function do_combine(s) {
 		}
 	}
 	of(a)
+    },
+
+    set_hooks: function(abc) {
+	abc.do_pscom = abc2svg.combine.do_pscom.bind(abc, abc.do_pscom);
+	abc.new_note = abc2svg.combine.new_note.bind(abc, abc.new_note);
+	abc.set_stem_dir = abc2svg.combine.set_stem_dir.bind(abc, abc.set_stem_dir);
+	abc.set_vp = abc2svg.combine.set_vp.bind(abc, abc.set_vp)
     }
 } // combine
 
-abc2svg.modules.hooks.push(
-// export
-	"set_v_param",
-	"sort_pitch",
-	"unlksym",
-// hooks
-	[ "do_pscom", "abc2svg.combine.do_pscom" ],
-	[ "new_note", "abc2svg.combine.new_note" ],
-	[ "set_stem_dir", "abc2svg.combine.set_stem_dir" ],
-	[ "set_vp", "abc2svg.combine.set_vp" ]
-);
+abc2svg.modules.hooks.push(abc2svg.combine.set_hooks);
 
 // the module is loaded
 abc2svg.modules.voicecombine.loaded = true

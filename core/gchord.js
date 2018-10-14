@@ -290,6 +290,7 @@ function gch_transp(s) {
 }
 
 // -- build the chord indications / annotations --
+// (possible hook)
 function gch_build(s) {
 
 	/* split the chord indications / annotations
@@ -423,6 +424,7 @@ function gch_build(s) {
 // -- draw the chord symbols and annotations
 // (the staves are not yet defined)
 // (unscaled delayed output)
+// (possible hook)
 function draw_gchord(s, gchy_min, gchy_max) {
 	var	gch, gch2, text, ix, x, y, y2, i, j, hbox, h
 

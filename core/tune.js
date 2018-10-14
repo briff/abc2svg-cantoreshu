@@ -37,7 +37,7 @@ function voice_filter() {
 		 || sel.test(curvoice.nm)) {
 			for (i in parse.voice_opts[opt])
 			    if (parse.voice_opts[opt].hasOwnProperty(i))
-				do_pscom(parse.voice_opts[opt][i])
+				self.do_pscom(parse.voice_opts[opt][i])
 		}
 	}
 }
@@ -502,6 +502,7 @@ function new_syst(init) {
 }
 
 /* -- set the bar numbers -- */
+// (possible hook)
 function set_bar_num() {
 	var	s, s2, tim, bar_time, bar_num, rep_dtime,
 		v = cur_sy.top_voice,
@@ -775,6 +776,7 @@ function set_ottava(dcn) {
 }
 
 /* -- process a pseudo-comment (%% or I:) -- */
+// (possible hook)
 function do_pscom(text) {
 	var	h1, val, s, cmd, param, n, k, b,
 		lock = false
@@ -1039,7 +1041,7 @@ function do_pscom(text) {
 	case "stafflines":
 	case "staffscale":
 	case "staffnonote":
-		set_v_param(cmd, param)
+		self.set_v_param(cmd, param)
 		return
 	case "staves":
 	case "score":
@@ -1141,10 +1143,11 @@ function do_pscom(text) {
 		}
 		break
 	}
-	set_format(cmd, param, lock)
+	self.set_format(cmd, param, lock)
 }
 
 // treat the %%beginxxx / %%endxxx sequences
+// (posible hook)
 function do_begin_end(type,
 			opt,
 			text) {
@@ -1220,7 +1223,7 @@ function generate() {
 	sort_all()			/* define the time / vertical sequences */
 	if (!tsfirst)
 		return
-	set_bar_num()
+	self.set_bar_num()
 	if (!tsfirst)
 		return				/* no more symbol */
 
@@ -1229,7 +1232,7 @@ function generate() {
 		user.get_abcmodel(tsfirst, voice_tb, anno_type, info)
 
 	if (user.img_out)		// if SVG generation
-		output_music()
+		self.output_music()
 
 	/* reset the parser */
 	for (v = 0; v < voice_tb.length; v++) {

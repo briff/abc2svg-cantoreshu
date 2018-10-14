@@ -91,19 +91,17 @@ abc2svg.ambitus = {
 	} else {
 		of(s)
 	}
+    },
+
+    set_hooks: function(abc) {
+	abc.draw_symbols = abc2svg.ambitus.draw_symbols.bind(abc, abc.draw_symbols);
+	abc.set_pitch = abc2svg.ambitus.set_pitch.bind(abc, abc.set_pitch);
+	abc.set_format = abc2svg.ambitus.set_fmt.bind(abc, abc.set_format);
+	abc.set_width = abc2svg.ambitus.set_width.bind(abc, abc.set_width)
     }
 } // ambitus
 
-abc2svg.modules.hooks.push(
-// export
-	"draw_note",
-	"set_scale",
-// hooks
-	[ "draw_symbols", "abc2svg.ambitus.draw_symbols" ],
-	[ "set_pitch", "abc2svg.ambitus.set_pitch" ],
-	[ "set_format", "abc2svg.ambitus.set_fmt" ],
-	[ "set_width", "abc2svg.ambitus.set_width" ]
-)
+abc2svg.modules.hooks.push(abc2svg.ambitus.set_hooks);
 
 // the module is loaded
 abc2svg.modules.ambitus.loaded = true

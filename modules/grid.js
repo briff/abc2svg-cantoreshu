@@ -274,20 +274,15 @@ function build_grid(chords, bars, font) {
 		return
 	}
 	of(cmd, param, lock)
+    },
+
+    set_hooks: function(abc) {
+	abc.output_music = abc2svg.grid.output_music.bind(abc, abc.output_music);
+	abc.set_format = abc2svg.grid.set_fmt.bind(abc, abc.set_format)
     }
 } // grid
 
-abc2svg.modules.hooks.push(
-// export
-	"font_class",
-	"get_font",
-	"param_set_font",
-	"set_font",
-	"strwh",
-// hooks
-	[ "output_music", "abc2svg.grid.output_music" ],
-	[ "set_format", "abc2svg.grid.set_fmt" ]
-)
+abc2svg.modules.hooks.push(abc2svg.grid.set_hooks);
 
 // the module is loaded
 abc2svg.modules.grid.loaded = true

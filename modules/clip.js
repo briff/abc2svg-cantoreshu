@@ -189,18 +189,15 @@ abc2svg.clip = {
 	of()
 	if (this.cfmt().clip)
 		abc2svg.clip.do_clip.call(this)
+    },
+
+    set_hooks: function(abc) {
+	abc.do_pscom = abc2svg.clip.do_pscom.bind(abc, abc.do_pscom);
+	abc.set_bar_num = abc2svg.clip.set_bar_num.bind(abc, abc.set_bar_num)
     }
 } // clip
 
-abc2svg.modules.hooks.push(
-// export
-	"clone",
-	"errs",
-	"syntax",
-// hooks
-	[ "do_pscom", "abc2svg.clip.do_pscom" ],
-	[ "set_bar_num", "abc2svg.clip.set_bar_num" ]
-);
+abc2svg.modules.hooks.push(abc2svg.clip.set_hooks);
 
 // the module is loaded
 abc2svg.modules.clip.loaded = true

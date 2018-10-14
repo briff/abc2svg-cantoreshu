@@ -93,6 +93,7 @@ var min_tb = [
 		STEM_CH_MIN2, STEM_CH_MIN3, STEM_CH_MIN4, STEM_CH_MIN4]
 ]
 
+// (possible hook)
 function calculate_beam(bm, s1) {
 	var	s, s2, notes, nflags, st, v, two_staves, two_dir,
 		x, y, ys, a, b, stem_err, max_stem_err,
@@ -1150,7 +1151,7 @@ function draw_gracenotes(s) {
 //	bm.s2 = undefined			/* (draw flags) */
 	for (g = s.extra; g; g = g.next) {
 		if (g.beam_st && !g.beam_end) {
-			if (calculate_beam(bm, g))
+			if (self.calculate_beam(bm, g))
 				draw_beams(bm)
 		}
 		anno_start(g);
@@ -1418,7 +1419,7 @@ function draw_basic_note(x, s, m, y_tb) {
 	else if (note.map && note.map[2])
 		old_color = set_color(note.map[2])
 	if (p) {
-		if (!psxygl(x_note, y_note, p))
+		if (!self.psxygl(x_note, y_note, p))
 			xygl(x_note, y_note, p)
 	}
 
@@ -3064,14 +3065,14 @@ function draw_sym_near() {
 			case C.GRACE:
 				for (g = s.extra; g; g = g.next) {
 					if (g.beam_st && !g.beam_end)
-						calculate_beam(bm, g)
+						self.calculate_beam(bm, g)
 				}
 				break
 			case C.NOTE:
 				if ((s.beam_st && !s.beam_end)
 				 || (first_note && !s.beam_st)) {
 					first_note = false;
-					calculate_beam(bm, s)
+					self.calculate_beam(bm, s)
 				}
 				break
 			}
@@ -3654,6 +3655,7 @@ function draw_systems(indent) {
 }
 
 /* -- draw remaining symbols when the staves are defined -- */
+// (possible hook)
 function draw_symbols(p_voice) {
 	var	bm = {},
 		s, g, x, y, st;
@@ -3677,7 +3679,7 @@ function draw_symbols(p_voice) {
 //--fixme: recall set_scale if different staff
 			set_scale(s)
 			if (s.beam_st && !s.beam_end) {
-				if (calculate_beam(bm, s))
+				if (self.calculate_beam(bm, s))
 					draw_beams(bm)
 			}
 			if (!s.invis) {
@@ -3798,7 +3800,7 @@ function draw_all_sym() {
 		p_voice = voice_tb[v]
 		if (p_voice.sym
 		 && p_voice.sym.x != undefined)
-			draw_symbols(p_voice)
+			self.draw_symbols(p_voice)
 	}
 
 	draw_all_deco();

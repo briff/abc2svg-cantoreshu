@@ -60,7 +60,7 @@ abc2svg.grid2 = {
 	of()
     },
 
-    set_format: function(of, cmd, param, lock) {
+    set_fmt: function(of, cmd, param, lock) {
 	if (cmd == "grid2") {
 	    var	curvoice = this.get_curvoice()
 		if (curvoice)
@@ -68,20 +68,16 @@ abc2svg.grid2 = {
 		return
 	}
 	of(cmd, param, lock)
+    },
+
+    set_hooks: function(abc) {
+	abc.draw_gchord = abc2svg.grid2.draw_gchord.bind(abc, abc.draw_gchord);
+	abc.output_music = abc2svg.grid2.output_music.bind(abc, abc.output_music);
+	abc.set_format = abc2svg.grid2.set_fmt.bind(abc, abc.set_format)
     }
 } // grid2
 
-abc2svg.modules.hooks.push(
-// export
-	"set_dscale",
-	"set_font",
-	"use_font",
-	"xy_str",
-// hooks
-	[ "draw_gchord",  "abc2svg.grid2.draw_gchord" ],
-	[ "output_music", "abc2svg.grid2.output_music" ],
-	[ "set_format", "abc2svg.grid2.set_format" ]
-);
+abc2svg.modules.hooks.push(abc2svg.grid2.set_hooks);
 
 // the module is loaded
 abc2svg.modules.grid2.loaded = true

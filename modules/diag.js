@@ -488,16 +488,15 @@ M-10.2 -31h20.4"/>';
 		return
 	}
 	of(cmd, param, lock)
+    },
+
+    set_hooks: function(abc) {
+	abc.output_music = abc2svg.diag.output_music.bind(abc, abc.output_music);
+	abc.set_format = abc2svg.diag.set_fmt.bind(abc, abc.set_format)
     }
 } // diag
 
-abc2svg.modules.hooks.push(
-// export
-	"deco_cnv",
-// hooks
-	[ "output_music", "abc2svg.diag.output_music" ],
-	[ "set_format", "abc2svg.diag.set_fmt" ]
-);
+abc2svg.modules.hooks.push(abc2svg.diag.set_hooks);
 
 // the module is loaded
 abc2svg.modules.diagram.loaded = true

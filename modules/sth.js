@@ -113,20 +113,17 @@ abc2svg.sth = {
     set_stems: function(of) {
 	of();
 	abc2svg.sth.set_sth.call(this)
-    }
+    },
 
+    set_hooks: function(abc) {
+	abc.calculate_beam = abc2svg.sth.calculate_beam.bind(abc, abc.calculate_beam);
+	abc.new_note = abc2svg.sth.new_note.bind(abc, abc.new_note);
+	abc.set_format = abc2svg.sth.set_format.bind(abc, abc.set_format);
+	abc.set_stems = abc2svg.sth.set_stems.bind(abc, abc.set_stems)
+    }
 } // sth
 
-abc2svg.modules.hooks.push(
-// export
-	"goto_tune",
-	"parse",
-// hooks
-	[ "calculate_beam", "abc2svg.sth.calculate_beam" ],
-	[ "new_note", "abc2svg.sth.new_note" ],
-	[ "set_format", "abc2svg.sth.set_format" ],
-	[ "set_stems", "abc2svg.sth.set_stems" ]
-);
+abc2svg.modules.hooks.push(abc2svg.sth.set_hooks);
 
 // the module is loaded
 abc2svg.modules.sth.loaded = true

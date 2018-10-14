@@ -549,6 +549,7 @@ function gchord_width(s, wlnote, wlw) {
 /* This routine sets the minimal left and right widths wl,wr
  * so that successive symbols are still separated when
  * no extra glue is put between them */
+// (possible hook)
 function set_width(s) {
 	var s2, i, m, xx, w, wlnote, wlw, acc
 
@@ -1101,7 +1102,7 @@ function set_allsymwidth() {
 	while (1) {
 		maxx = xa
 		do {
-			set_width(s);
+			self.set_width(s);
 			st = s.st
 			if (xl[st] == undefined)
 				xl[st] = 0
@@ -1252,7 +1253,7 @@ function set_repeat(s) {	// first note
 			s.dur = s.notes[0].dur = dur;
 			s.rep_nb = -1;		// single repeat
 			s.beam_st = true;
-			set_width(s)
+			self.set_width(s)
 			if (s.seqst)
 				s.space = set_space(s);
 			s.head = C.SQUARE;
@@ -1342,7 +1343,7 @@ function set_repeat(s) {	// first note
 		to_rest(s3);
 		s3.dur = s3.notes[0].dur = dur;
 		s3.invis = true;
-		set_width(s3)
+		self.set_width(s3)
 		if (s3.seqst)
 			s3.space = set_space(s3)
 		if (s2.seqst)
@@ -1556,9 +1557,9 @@ function get_ck_width() {
     var	r0, r1,
 	p_voice = voice_tb[0]
 
-	set_width(p_voice.clef);
-	set_width(p_voice.key);
-	set_width(p_voice.meter)
+	self.set_width(p_voice.clef);
+	self.set_width(p_voice.key);
+	self.set_width(p_voice.meter)
 	return [p_voice.clef.wl + p_voice.clef.wr +
 			p_voice.key.wl + p_voice.key.wr,
 		p_voice.meter.wl + p_voice.meter.wr]
@@ -2302,6 +2303,7 @@ var rest_sp = [
 	[10, 10]
 ]
 
+// (possible hook)
 function set_pitch(last_s) {
 	var	s, s2, g, st, delta, m, pitch, note,
 		dur = C.BLEN,
@@ -2404,6 +2406,7 @@ function set_pitch(last_s) {
 
 /* -- set the stem direction when multi-voices -- */
 /* this function is called only once per tune */
+// (possible hook)
 function set_stem_dir() {
 	var	t, u, i, st, rvoice, v,
 		v_st,			// voice -> staff 1 & 2
@@ -2939,7 +2942,7 @@ function init_music_line() {
 
 	/* if initialization of a new music line, compute the spacing,
 	 * including the first (old) sequence */
-	set_pitch(last_s);
+	self.set_pitch(last_s)
 	for (s = last_s; s; s = s.ts_next) {
 		if (s.seqst) {
 			for (s = s.ts_next; s; s = s.ts_next)
@@ -2965,7 +2968,7 @@ function init_music_line() {
 		s2 = s;
 		shrmx = 0
 		do {
-			set_width(s);
+			self.set_width(s);
 			shr = s.wl
 			for (s3 = s.prev; s3; s3 = s3.prev) {
 				if (w_tb[s3.type] != 0) {
@@ -3174,7 +3177,7 @@ function set_global() {
 
 	// set the clefs and adjust the pitches of all symbol
 	set_clefs();
-	set_pitch(null)
+	self.set_pitch(null)
 }
 
 /* -- return the left indentation of the staves -- */
@@ -3886,6 +3889,7 @@ function set_overlap() {
 
 /* -- set the stem height -- */
 /* this routine is called only once per tune */
+// (possible hook)
 function set_stems() {
 	var s, s2, g, slen, scale,ymn, ymx, nflags, ymin, ymax
 
@@ -4120,7 +4124,7 @@ function block_gen(s) {
 	case "scale":
 	case "staffwidth":
 		svg_flush();
-		set_format(s.subtype, s.param);
+		self.set_format(s.subtype, s.param)
 		break
 	case "ml":
 		svg_flush();
@@ -4353,7 +4357,7 @@ function set_piece() {
 						s.next = null;
 						if (check_bar(s)) {
 							tmp = s.wl;
-							set_width(s);
+							self.set_width(s);
 							s.shrink += s.wl - tmp
 						}
 						break
@@ -4378,6 +4382,7 @@ function set_piece() {
 }
 
 /* -- position the symbols along the staff -- */
+// (possible hook)
 function set_sym_glue(width) {
     var	s, g,
 	some_grace,
@@ -4540,6 +4545,7 @@ function gen_init() {
 }
 
 /* -- generate the music -- */
+// (possible hook)
 function output_music() {
 	var v, lwidth, indent, line_height
 
@@ -4547,14 +4553,13 @@ function output_music() {
 	if (!tsfirst)
 		return
 	set_global()
-	if (voice_tb.length > 1) {	/* if many voices */
-		set_stem_dir()		/* set the stems direction in 'multi' */
-	}
+	if (voice_tb.length > 1)	/* if many voices */
+		self.set_stem_dir()	// set the stems direction in 'multi'
 
 	for (v = 0; v < voice_tb.length; v++)
 		set_beams(voice_tb[v].sym);	/* decide on beams */
 
-	set_stems()			/* set the stem lengths */
+	self.set_stems()		// set the stem lengths
 	if (voice_tb.length > 1) {	/* if many voices */
 		set_rest_offset();	/* set the vertical offset of rests */
 		set_overlap();		/* shift the notes on voice overlap */
@@ -4581,7 +4586,7 @@ function output_music() {
 	spf_last = 1.2				// last spacing factor
 	while (1) {				/* loop per music line */
 		set_piece();
-		set_sym_glue(lwidth - indent)
+		self.set_sym_glue(lwidth - indent)
 		if (realwidth != 0) {
 			if (indent != 0)
 				posx += indent;

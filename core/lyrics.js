@@ -112,7 +112,7 @@ function get_sym(p, cont) {
 			a_gch = s.a_gch;
 			parse_gchord(d)
 			if (a_gch)
-				gch_build(s)
+				self.gch_build(s)
 			break
 		}
 		s = s.next;

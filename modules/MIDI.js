@@ -66,7 +66,7 @@ abc2svg.MIDI = {
 		n = norm(a[2]);
 		v = tonote(a[3]);
 		if (!n || !v) {
-			this.syntax(1, abc.errs.bad_val, "%%MIDI drummap")
+			this.syntax(1, this.errs.bad_val, "%%MIDI drummap")
 			break
 		}
 		if (!maps.MIDIdrum)
@@ -137,18 +137,15 @@ abc2svg.MIDI = {
     set_vp: function(of, a) {
 	abc2svg.MIDI.set_midi.call(this, a);
 	of(a)
+    },
+
+    set_hooks: function(abc) {
+	abc.do_pscom = abc2svg.MIDI.do_pscom.bind(abc, abc.do_pscom);
+	abc.set_vp = abc2svg.MIDI.set_vp.bind(abc, abc.set_vp)
     }
 } // MIDI
 
-abc2svg.modules.hooks.push(
-// export
-	"errs",
-	"set_v_param",
-	"syntax",
-// hooks
-	[ "do_pscom", "abc2svg.MIDI.do_pscom" ],
-	[ "set_vp", "abc2svg.MIDI.set_vp" ]
-);
+abc2svg.modules.hooks.push(abc2svg.MIDI.set_hooks);
 
 // the module is loaded
 abc2svg.modules.MIDI.loaded = true

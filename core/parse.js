@@ -339,6 +339,7 @@ function new_block(subtype) {
 }
 
 // set the voice parameters
+// (possible hook)
 function set_vp(a) {
     var	s, item, pos, val, clefpit
 
@@ -518,7 +519,7 @@ function set_kv_parm(a) {	// array of items
 		}
 	}
 	if (a.length != 0)
-		set_vp(a)
+		self.set_vp(a)
 } // set_kv_parm()
 
 // memorize the K:/V: parameters
@@ -922,7 +923,7 @@ function do_info(info_type, text) {
 
 	// info fields in any state
 	case 'I':
-		do_pscom(text)
+		self.do_pscom(text)
 		break
 	case 'L':
 //fixme: ??
@@ -1148,7 +1149,7 @@ function new_bar() {
 
 	// set the guitar chord and the decorations
 	if (a_gch)
-		gch_build(s)
+		self.gch_build(s)
 	if (a_dcn) {
 		deco_cnv(a_dcn, s);
 		a_dcn = null
@@ -1824,6 +1825,7 @@ function sort_pitch(s) {
 			return n1.pit - n2.pit
 		})
 }
+// (possible hook)
 function new_note(grace, tp_fact) {
 	var	note, s, in_chord, c, dcn, type,
 		i, n, s2, nd, res, num, dur,
@@ -1850,7 +1852,7 @@ function new_note(grace, tp_fact) {
 		s.grace = true
 	} else {
 		if (a_gch)
-			gch_build(s)
+			self.gch_build(s)
 		if (parse.repeat_n) {
 			s.repeat_n = parse.repeat_n;
 			s.repeat_k = parse.repeat_k;
@@ -2504,7 +2506,7 @@ function parse_music_line() {
 				}
 				// fall thru ('[' is start of chord)
 			case 'n':				// note/rest
-				s = new_note(grace, tp_fact)
+				s = self.new_note(grace, tp_fact)
 				if (!s)
 					continue
 				if (s.type == C.NOTE) {

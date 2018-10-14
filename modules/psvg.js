@@ -741,7 +741,7 @@ systemdict/def{currentdict 2 index 2 index put pop pop}put\n\
 
 } // Psvg()
 
-abc2svg.modules.psvg = {
+abc2svg.psvg = {
 	do_begin_end: function(of, type, opt, text) {
 		if (type != "ps") {
 			of(type, opt, text)
@@ -762,21 +762,16 @@ abc2svg.modules.psvg = {
 		if (!this.psvg)
 			return false
 		return this.psvg.psxygl.call(this.psvg, x, y, gl)
-	}
-}
+	},
 
-abc2svg.modules.hooks.push(
-// export
-	"out_arp",
-	"out_deco_str",
-	"out_deco_val",
-	"out_ltr",
-	"xygl",
-// hooks
-	[ "do_begin_end", "abc2svg.modules.psvg.do_begin_end" ],
-	[ "psdeco", "abc2svg.modules.psvg.psdeco" ],
-	[ "psxygl", "abc2svg.modules.psvg.psxygl" ]
-);
+    set_hooks: function(abc) {
+	abc.do_begin_end = abc2svg.psvg.do_begin_end.bind(abc, abc.do_begin_end);
+	abc.psdeco = abc2svg.psvg.psdeco.bind(abc, abc.psdeco);
+	abc.psxygl = abc2svg.psvg.psxygl.bind(abc, abc.psxygl)
+    }
+} // psvg
+
+abc2svg.modules.hooks.push(abc2svg.psvg.set_hooks);
 
 // the module is loaded
 abc2svg.modules.beginps.loaded = true

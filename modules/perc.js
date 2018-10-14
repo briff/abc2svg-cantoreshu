@@ -219,7 +219,7 @@ var prn = {
 
 	n = norm(a[1])
 	if (!n) {
-		this.syntax(1, abc.errs.bad_val, "%%percmap")
+		this.syntax(1, this.errs.bad_val, "%%percmap")
 		return
 	}
 	if (this.cfmt().sound != "play") {		// !play
@@ -229,7 +229,7 @@ var prn = {
 			maps.MIDIdrum = {}
 		v = tonote(n)
 		if (!v) {
-			this.syntax(1, abc.errs.bad_val, "%%percmap")
+			this.syntax(1, this.errs.bad_val, "%%percmap")
 			return
 		}
 		delete v.acc
@@ -237,7 +237,7 @@ var prn = {
 	} else {					// play
 		v = tonote(a[2])
 		if (!v) {
-			this.syntax(1, abc.errs.bad_val, "%%percmap")
+			this.syntax(1, this.errs.bad_val, "%%percmap")
 			return
 		}
 		if (!maps.MIDIdrum)
@@ -276,18 +276,15 @@ var prn = {
     set_vp: function(of, a) {
 	abc2svg.perc.set_perc.call(this, a);
 	of(a)
+    },
+
+    set_hooks: function(abc) {
+	abc.do_pscom = abc2svg.perc.do_pscom.bind(abc, abc.do_pscom);
+	abc.set_vp = abc2svg.perc.set_vp.bind(abc, abc.set_vp)
     }
 } // perc
 
-abc2svg.modules.hooks.push(
-// export
-	"errs",
-	"set_v_param",
-	"syntax",
-// hooks
-	[ "do_pscom", "abc2svg.perc.do_pscom" ],
-	[ "set_vp", "abc2svg.perc.set_vp" ]
-);
+abc2svg.modules.hooks.push(abc2svg.perc.set_hooks);
 
 // the module is loaded
 abc2svg.modules.percmap.loaded = true

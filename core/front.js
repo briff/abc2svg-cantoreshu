@@ -388,7 +388,7 @@ function tosvg(in_fname,		// file name
 					parse.eol = eof
 					continue
 				}
-				do_begin_end(b, a[1],
+				self.do_begin_end(b, a[1],
 					file.slice(eol + 1, i).replace(
 						new RegExp('^' + line0 + line1, 'gm'),
 										''));
@@ -478,7 +478,7 @@ function tosvg(in_fname,		// file name
 				parse.eol = bol - 1
 				continue
 			}
-			do_pscom(uncomment(text, true))
+			self.do_pscom(uncomment(text, true))
 			continue
 		}
 

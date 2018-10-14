@@ -55,22 +55,20 @@ abc2svg.temper = {
 				return
 			}
 		}
-		this.syntax(1, errs.bad_val, "%%temperament")
+		this.syntax(1, this.errs.bad_val, "%%temperament")
 		return
 	}
 	of(cmd, param, lock)
-    }
+    },
 
+    set_hooks: function(abc) {
+	abc.set_bar_num = abc2svg.temper.set_bar_num.bind(abc, abc.set_bar_num);
+	abc.set_format = abc2svg.temper.set_fmt.bind(abc, abc.set_format)
+    }
 } // temper
 
 
-abc2svg.modules.hooks.push(
-// export
-	"syntax",
-// hooks
-	[ "set_bar_num", "abc2svg.temper.set_bar_num" ],
-	[ "set_format", "abc2svg.temper.set_fmt" ]
-)
+abc2svg.modules.hooks.push(abc2svg.temper.set_hooks);
 
 // the module is loaded
 abc2svg.modules.temperament.loaded = true

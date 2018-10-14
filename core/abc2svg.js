@@ -70,8 +70,6 @@ abc2svg = {
 	write = empty_function,
 	XMLHttpRequest = empty_function;
 
-	this.user = user
-
 // -- constants --
 
 // staff system
@@ -108,7 +106,8 @@ var errs = {
 	not_ascii: "Not an ASCII character"
 }
 
-var	glovar = {
+    var	self = this,				// needed for modules
+	glovar = {
 		meter: {
 			type: C.METER,		// meter in tune header
 			wmeasure: 1,		// no M:

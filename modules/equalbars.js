@@ -108,18 +108,16 @@ abc2svg.equalbars = {
 		if (!s2)
 			break
 	}
-    } // set_sym_glue()
+    }, // set_sym_glue()
+
+    set_hooks: function(abc) {
+	abc.output_music = abc2svg.equalbars.output_music.bind(abc, abc.output_music);
+	abc.set_format = abc2svg.equalbars.set_fmt.bind(abc, abc.set_format);
+	abc.set_sym_glue = abc2svg.equalbars.set_sym_glue.bind(abc, abc.set_sym_glue)
+    }
 } // equalbars
 
-
-abc2svg.modules.hooks.push(
-// export
-	"get_bool",
-// hooks
-	[ "output_music", "abc2svg.equalbars.output_music" ],
-	[ "set_format", "abc2svg.equalbars.set_fmt" ],
-	[ "set_sym_glue", "abc2svg.equalbars.set_sym_glue" ]
-)
+abc2svg.modules.hooks.push(abc2svg.equalbars.set_hooks);
 
 // the module is loaded
 abc2svg.modules.equalbars.loaded = true
