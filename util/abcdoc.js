@@ -116,7 +116,7 @@ function dom_loaded() {
 
 		// get the end of the ABC sequence
 		// including the %%beginxxx/%%endxxx sequences
-		re_stop.lastIndex = j
+		re_stop.lastIndex = ++j
 		while (1) {
 			res = re_stop.exec(page)
 			if (!res || res[0] == "\n<")
@@ -131,7 +131,7 @@ function dom_loaded() {
 			k = page.length
 		else
 			k = re_stop.lastIndex - 2;
-		tune = page.slice(j + 1, k);
+		tune = page.slice(j, k);
 		new_page += '<pre style="display:inline-block; vertical-align: top">' +
 				clean_txt(tune) +
 				'</pre>\n\
@@ -144,10 +144,10 @@ function dom_loaded() {
 				"\nStack:\n" + e.stack)
 		}
 		if (errtxt) {
-			i = page.indexOf("\n", j + 1);
+			i = page.indexOf("\n", j);
 			i = page.indexOf("\n", i + 1);
 			alert("Errors in\n" +
-				page.slice(j + 1, i) +
+				page.slice(j, i) +
 				"\n...\n\n" + errtxt);
 			errtxt = ""
 		}
