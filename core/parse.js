@@ -392,8 +392,7 @@ function set_vp(a) {
 			curvoice.transp = get_transp(a.shift(), 'instr')
 			break
 		case "map=":			// %%voicemap
-			if (cfmt.sound != "play")
-				curvoice.map = a.shift()
+			curvoice.map = a.shift()
 			break
 		case "name=":
 		case "nm=":
@@ -1662,7 +1661,7 @@ function set_map(note) {
 	}
 	note.map = map[nn]
 	if (note.map[1]) {
-		note.apit = note.pit = note.map[1].pit;	// print
+		note.pit = note.map[1].pit;	// print
 		note.acc = note.map[1].acc
 	}
 }
