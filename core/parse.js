@@ -572,6 +572,7 @@ function new_key(param) {
 		}
 		break
 	case 'P':
+		syntax(1, "K:P is deprecated");
 		s.k_drum = true;
 		key_end = true
 		break
