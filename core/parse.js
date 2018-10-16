@@ -96,7 +96,8 @@ function new_clef(clef_def) {
 	case 'P':				// perc
 		s.clef_type = "p";
 		s.clef_line = 3;
-		curvoice.key.k_sf = 0		// no accidental
+		curvoice.key.k_sf = 0;		// no accidental
+		curvoice.ckey.k_drum = true	// no transpose
 		break
 	default:
 		syntax(1, "Unknown clef '$1'", clef_def)

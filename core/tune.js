@@ -1811,7 +1811,8 @@ function get_key(parm) {
 	if (a.length != 0)
 		set_kv_parm(a);
 
-	transp = (cfmt.transp || 0) +
+	if (!curvoice.ckey.k_bagpipe && !curvoice.ckey.k_drum)
+	    transp = (cfmt.transp || 0) +
 		(curvoice.transp || 0) +
 		(curvoice.shift || 0)
 
