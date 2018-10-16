@@ -1791,7 +1791,6 @@ function get_key(parm) {
 			p_voice.okey = clone(s_key);
 			p_voice.ckey = clone(s_key)
 		}
-		parse.okey = clone(s_key);
 		parse.ckey = s_key
 		if (a.length != 0)
 			memo_kv_parm('*', a)
@@ -1902,9 +1901,9 @@ function new_voice(id) {
 //		cst: 0,
 		ulen: glovar.ulen,
 		dur_fact: 1,
-		key: clone(parse.ckey),
-		ckey: clone(parse.ckey),
-		okey: clone(parse.okey),
+		key: clone(parse.ckey),	// key at start of tune (parse) / line (gene)
+		ckey: clone(parse.ckey),	// current key (parse)
+		okey: clone(parse.ckey),	// key without transposition (parse)
 		meter: clone(glovar.meter),
 		wmeasure: glovar.meter.wmeasure,
 		clef: {
