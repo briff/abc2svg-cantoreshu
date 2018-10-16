@@ -2089,7 +2089,7 @@ function new_note(grace, tp_fact) {
 					s2.time = curvoice.time
 			}
 		} else {		/* grace note - adjust its duration */
-			var div = curvoice.key.k_bagpipe ? 8 : 4
+			var div = curvoice.ckey.k_bagpipe ? 8 : 4
 
 			for (i = 0; i <= s.nhd; i++)
 				s.notes[i].dur /= div;
@@ -2640,7 +2640,7 @@ function parse_music_line() {
 				curvoice.last_sym = grace;
 				grace = null
 				if (!s.prev			// if one grace note
-				 && !curvoice.key.k_bagpipe) {
+				 && !curvoice.ckey.k_bagpipe) {
 					for (i = 0; i <= s.nhd; i++)
 						s.notes[i].dur *= 2;
 					s.dur *= 2;
