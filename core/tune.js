@@ -684,6 +684,8 @@ function get_map(text) {
 			map[0] = a[++i].split(',')
 			break
 		case "print=":
+			if (cfmt.sound == "play")
+				break
 			tmp = new scanBuf();
 			tmp.buffer = a[++i];
 			map[1] = parse_acc_pit(tmp)

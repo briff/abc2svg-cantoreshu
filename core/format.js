@@ -501,7 +501,8 @@ function set_format(cmd, param, lock) {
 		img.chg = true
 		break
 	case "concert-score":
-		cfmt.sound = "concert"
+		if (cfmt.sound != "play")
+			cfmt.sound = "concert"
 		break
 	case "writefields":
 		set_writefields(param)
@@ -574,7 +575,8 @@ function set_format(cmd, param, lock) {
 		set_pos(cmd[0], cmd[1])
 		break
 	case "sounding-score":
-		cfmt.sound = "sounding"
+		if (cfmt.sound != "play")
+			cfmt.sound = "sounding"
 		break
 	case "staffwidth":
 		v = get_unit(param)

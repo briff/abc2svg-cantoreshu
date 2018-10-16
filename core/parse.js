@@ -1661,7 +1661,7 @@ function set_map(note) {
 	}
 	note.map = map[nn]
 	if (note.map[1]) {
-		note.pit = note.map[1].pit;	// print
+		note.apit = note.pit = note.map[1].pit;	// print/play
 		note.acc = note.map[1].acc
 	}
 }
