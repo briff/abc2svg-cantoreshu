@@ -213,7 +213,7 @@ function tosvg(in_fname,		// file name
 		file,			// file content
 		bol, eof) {		// beginning/end of file
 	var	i, c, bol, eol, end,
-		ext, select,
+		select,
 		line0, line1,
 		last_info, opt, text, a, b, s,
 		cfmt_sav, info_sav, char_tb_sav, glovar_sav, maps_sav,
@@ -371,9 +371,7 @@ function tosvg(in_fname,		// file name
 				parse.prefix = a[1]
 				continue
 			case "abc-include":
-				ext = a[1].match(/.*\.(.*)/)
-				if (ext && ext[1] == "abc")
-					do_include(a[1])
+				do_include(a[1])
 				continue
 			}
 
