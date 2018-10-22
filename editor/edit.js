@@ -463,7 +463,8 @@ function notehlight(i, on) {
 	}
 	var elts = document.getElementsByClassName('_' + i + '_');
 	if (elts && elts[0]) {
-		do_scroll(elts[0]);
+		if (on)
+			do_scroll(elts[0]);
 		elts[0].style.fillOpacity = on ? 0.4 : 0
 	}
 }
