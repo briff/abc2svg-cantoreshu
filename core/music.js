@@ -2907,11 +2907,11 @@ function init_music_line() {
 
 	/* add bar if needed (for repeat bracket) */
 	for (v = 0; v < nv; v++) {
+		p_voice = voice_tb[v];
 		s2 = p_voice.bar_start;
 		p_voice.bar_start = null
 
 		// if bar already, keep it in sequence
-		p_voice = voice_tb[v];
 		if (last_s && last_s.v == v && last_s.type == C.BAR) {
 			p_voice.last_sym = last_s;
 			last_s = last_s.ts_next
