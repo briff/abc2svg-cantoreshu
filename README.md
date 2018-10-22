@@ -169,6 +169,7 @@ sheets from the command line as you did with `abcm2ps`, thanks to the
 following shell scripts (the result goes to stdout):  
 
 - `abcjs24` with `js24` (Mozilla JavaScript shell - Spidermonkey)
+- `abcjs52` with `js52` (Mozilla JavaScript shell - Spidermonkey)
 - `abcjsc` with `jsc-1` (webkitgtk2)
 - `abcnode` with `node` (nodeJS)
 - `abcv8` with `d8` (Google libv8)
@@ -185,7 +186,7 @@ There are:
   Transposition is applied.   
   The resulting file does not contain the formatting parameters.   
   Example:   
-  `abcjs24 toabc.js my_file.abc --select X:2 > tune_2.abc`
+  `abcjs52 toabc.js my_file.abc --select X:2 > tune_2.abc`
 
 - `toabw.js`   
   This script outputs a Abiword file (ABW+SVG) which may be read by some
