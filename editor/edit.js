@@ -328,6 +328,26 @@ function setsel(idx, v, seltxt) {
 	s.focus()
 }
 
+function do_scroll(elt) {
+    var	r,
+	dr = elt_ref.target.parentElement,		// <div> 'dright'
+	drh = dr.getBoundingClientRect().height,	// height of the view
+	ty = elt_ref.target.getBoundingClientRect().y	// y offset of <div> 'target'
+
+	while (elt.tagName != 'svg')
+		elt = elt.parentNode;
+	r = elt.getBoundingClientRect()
+// upper -> top, lower -> bottom
+	if (r.y < 0)				// y offset of the svg container
+		dr.scrollTo(0, r.y - ty)
+	else if (r.y + r.height > drh)
+		dr.scrollTo(0, r.y - ty - drh + r.height)
+// in the middle
+//	if (r.y < 0				// y offset of the svg container
+//	 || r.y + r.height > drh)
+//		dr.scrollTo(0, r.y - ty - drh / 2 + r.height)
+}
+
 // source text selection callback
 function seltxt(evt) {
     var	s, elts,
@@ -360,11 +380,11 @@ function seltxt(evt) {
 		setsel(1, e);
 	elts = document.getElementsByClassName('_' + s + '_')
 	if (elts[0])
-		elts[0].scrollIntoView()	// move the element in the screen
+		do_scroll(elts[0])	// move the element in the screen
 }
 
 // open a new window for file save
-function saveas() {      
+function saveas() {
 	var	s = srcidx == 0 ? "source" : "src1",
 		source = elt_ref[s].value,
 		uriContent = "data:text/plain;charset=utf-8," +
@@ -377,7 +397,7 @@ function saveas() {
 		link.download =
 			abc_fname[srcidx] =
 				prompt(texts.fn, abc_fname[srcidx]);
-	link.innerHTML = "Hidden Link";	
+	link.innerHTML = "Hidden Link";
 	link.href = uriContent;
 
 	// open in a new tab
@@ -392,7 +412,7 @@ function saveas() {
 
 	// add the link to the DOM
 	document.body.appendChild(link);
-    
+
 	// click the new link
 	link.click()
 }
@@ -442,8 +462,10 @@ function notehlight(i, on) {
 			return			// don't remove highlight
 	}
 	var elts = document.getElementsByClassName('_' + i + '_');
-	if (elts && elts[0])
+	if (elts && elts[0]) {
+		do_scroll(elts[0]);
 		elts[0].style.fillOpacity = on ? 0.4 : 0
+	}
 }
 function endplay() {
 	if (play.loop) {
