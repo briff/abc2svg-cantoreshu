@@ -4049,7 +4049,7 @@ function check_bar(s) {
 
 	if (s.text != undefined) {		// if repeat bar
 		p_voice.bar_start = clone(s);
-		p_voice.bar_start.bar_type = "["
+		p_voice.bar_start.bar_type = ""
 		delete s.text
 		delete s.a_gch
 //		return
