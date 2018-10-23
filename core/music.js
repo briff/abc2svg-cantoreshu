@@ -4384,7 +4384,7 @@ function set_piece() {
 /* -- position the symbols along the staff -- */
 // (possible hook)
 function set_sym_glue(width) {
-    var	s, g,
+    var	s, g, ll,
 	some_grace,
 	spf,			// spacing factor
 	xmin = 0,		// sigma shrink = minimum spacing
@@ -4418,6 +4418,11 @@ function set_sym_glue(width) {
 		return
 	}
 
+	// last line?
+	ll = !tsnext ||			// yes
+		tsnext.type == C.BLOCK	// no, but followed by %%command
+		|| blocks.length	//	(abcm2ps compatibility)
+
 	// strong shrink
 	if (xmin >= width
 	 || xx == xse) {		// no space
@@ -4434,12 +4439,8 @@ function set_sym_glue(width) {
 		}
 //		realwidth = width
 		spf_last = 0
-	} else if (!tsnext && xx + xs > width * (1 - cfmt.stretchlast)
-		 || (tsnext			// if not last line
-		  && blocks.length == 0		// and no following text
-		  && tsnext.type != C.BLOCK	//	(abcm2ps compatibility)
-		  && (xx + xs > width
-		   || cfmt.stretchstaff))) {
+	} else if ((ll && xx + xs > width * (1 - cfmt.stretchlast))
+		 || (!ll && (xx + xs > width || cfmt.stretchstaff))) {
 		for (var cnt = 4; --cnt >= 0; ) {
 			spf = (width - xs - xse) / (xx - xse);
 			xx = 0;
