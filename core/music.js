@@ -4434,11 +4434,12 @@ function set_sym_glue(width) {
 		}
 //		realwidth = width
 		spf_last = 0
-	} else if (xx + xs > width * (1 - cfmt.stretchlast)
+	} else if (!tsnext && xx + xs > width * (1 - cfmt.stretchlast)
 		 || (tsnext			// if not last line
 		  && blocks.length == 0		// and no following text
 		  && tsnext.type != C.BLOCK	//	(abcm2ps compatibility)
-		  && cfmt.stretchstaff)) {
+		  && (xx + xs > width
+		   || cfmt.stretchstaff))) {
 		for (var cnt = 4; --cnt >= 0; ) {
 			spf = (width - xs - xse) / (xx - xse);
 			xx = 0;
