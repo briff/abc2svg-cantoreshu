@@ -368,7 +368,7 @@ function d_near(de) {
 
 /* 6: dynamic marks */
 function d_pf(de) {
-	var	dd2, x2, str, x, up,
+	var	dd2, x2, x, up,
 		s = de.s,
 		dd = de.dd,
 		de_prev;
@@ -1892,6 +1892,8 @@ function draw_partempo(st, top) {
 		if (!some_tempo)
 			some_tempo = s;
 		w = tempo_width(s);
+		if (s.time == 0)	// at start of tune,
+			s.x = 40;	// shift the tempo over the key signature
 		y = y_get(st, true, s.x - 16, w)
 		if (y > ymin)
 			ymin = y
