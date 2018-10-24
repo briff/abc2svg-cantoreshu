@@ -3721,7 +3721,7 @@ function draw_symbols(p_voice) {
 					if (s.clef_small)
 						y -= 1
 				} else {
-					y += s.ymn + 2
+					y += s.ymn + 6
 					if (s.clef_small)
 						y += 1
 				}

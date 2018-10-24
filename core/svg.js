@@ -46,16 +46,27 @@ var	output = "",		// output buffer
 // glyphs in music font
 var tgls = {
   brace: {x:0, y:0, c:"\ue000"},
-  sgno: {x:-6, y:0, c:"\ue047"},
-  coda: {x:-12, y:6, c:"\ue048"},
+  hl: {x:-4, y:0, c:"\ue022"},
+  hl1: {x:-6, y:0, c:"\ue023"},
+  hl2: {x:-6, y:0, c:"\ue023"},
+  ghl: {x:-4, y:0, c:"\ue024"},
+  lphr: {x:0, y:24, c:"\ue030"},
+  mphr: {x:0, y:24, c:"\ue038"},
+  sphr: {x:0, y:27, c:"\ue039"},
+  rdots: {x:-1, y:0, c:"\ue043"},	// repeat dots
+  dsgn: {x:-4, y:-4, c:"\ue045"},	// D.S.
+  dcap: {x:-4, y:-4, c:"\ue046"},	// D.C.
+  sgno: {x:-6, y:0, c:"\ue047"},	// segno
+  coda: {x:-12, y:-6, c:"\ue048"},
   tclef: {x:-8, y:0, c:"\ue050"},
   cclef: {x:-8, y:0, c:"\ue05c"},
   bclef: {x:-8, y:0, c:"\ue062"},
   pclef: {x:-6, y:0, c:"\ue069"},
+  spclef: {x:-6, y:0, c:"\ue069"},
   stclef: {x:-8, y:0, c:"\ue07a"},
   scclef: {x:-8, y:0, c:"\ue07b"},
   sbclef: {x:-7, y:0, c:"\ue07c"},
-  spclef: {x:-6, y:0, c:"\ue069"},
+  oct: {x:0, y:2, c:"\ue07d"},		// 8 for clefs
   meter0: {c:"\ue080"},
   meter1: {c:"\ue081"},
   meter2: {c:"\ue082"},
@@ -69,33 +80,41 @@ var tgls = {
   "meter+": {c:"\ue08c"},
   "meter(": {c:"\ue094"},
   "meter)": {c:"\ue095"},
-  csig: {x:0, y:0, c:"\ue08a"},
-  ctsig: {x:0, y:0, c:"\ue08b"},
+  csig: {x:0, y:0, c:"\ue08a"},		// common time
+  ctsig: {x:0, y:0, c:"\ue08b"},	// cut time
   HDD: {x:-7, y:0, c:"\ue0a0"},
   breve: {x:-6, y:0, c:"\ue0a1"},
   HD: {x:-5.2, y:0, c:"\ue0a2"},
   Hd: {x:-3.8, y:0, c:"\ue0a3"},
   hd: {x:-3.7, y:0, c:"\ue0a4"},
-  ghd: {x:2, y:0, c:"\ue0a4", sc:.66},
+  ghd: {x:2, y:0, c:"\ue0a4", sc:.66},	// grace note head
   pshhd: {x:-3.7, y:0, c:"\ue0a9"},
   pfthd: {x:-3.7, y:0, c:"\ue0b3"},
-  x: {x:-3.7, y:0, c:"\ue0a9"},
-  "circle-x": {x:-3.7, y:0, c:"\ue0b3"},
+  x: {x:-3.7, y:0, c:"\ue0a9"},		// 'x' note head
+  "circle-x": {x:-3.7, y:0, c:"\ue0b3"}, // 'circle-x' note head
   srep: {x:-5, y:0, c:"\ue101"},
+  diamond: {x:-4, y:0, c:"\ue1b9"},
+  triangle: {x:-4, y:0, c:"\ue1bb"},
   dot: {x:-2, y:0, c:"\ue1e7"},
- "acc-1": {x:-3, y:0, c:"\ue260"},
-  acc3: {x:-2, y:0, c:"\ue261"},
-  acc1: {x:-3, y:0, c:"\ue262"},
-  acc2: {x:-3, y:0, c:"\ue263"},
- "acc-2": {x:-3, y:0, c:"\ue264"},
- "acc-1_1_4": {x:-3, y:0, c:"\ue280"},
+ "acc-1": {x:-3, y:0, c:"\ue260"},	// flat
+  acc3: {x:-2, y:0, c:"\ue261"},	// natural
+  acc1: {x:-3, y:0, c:"\ue262"},	// sharp
+  acc2: {x:-3, y:0, c:"\ue263"},	// double sharp
+ "acc-2": {x:-3, y:0, c:"\ue264"},	// double flat
+ "acc-1_1_4": {x:-3, y:0, c:"\ue280"},	// quarter-tone flat
+ "acc-1_3_4": {x:-4, y:0, c:"\ue281"},	// three-quarter-tones flat
+  acc1_1_4: {x:-2, y:0, c:"\ue282"},	// quarter-tone sharp
+  acc1_3_4: {x:-4, y:0, c:"\ue283"},	// three-quarter-tones sharp
   accent: {x:-3, y:0, c:"\ue4a0"},
+  stc: {x:-1, y:-2, c:"\ue4a2"},	// staccato
+  emb: {x:-4, y:-2, c:"\ue4a4"},
+  wedge: {x:-1, y:0, c:"\ue4a8"},
   marcato: {x:-3, y:0, c:"\ue4ac"},
-  hld: {x:-7, y:0, c:"\ue4c0"},
+  hld: {x:-7, y:0, c:"\ue4c0"},		// fermata
   brth: {x:0, y:0, c:"\ue4ce"},
   r00: {x:-1.5, y:0, c:"\ue4e1"},
   r0: {x:-1.5, y:0, c:"\ue4e2"},
-  r1: {x:-3.5, y:6, c:"\ue4e3"},
+  r1: {x:-3.5, y:-6, c:"\ue4e3"},
   r2: {x:-3.2, y:0, c:"\ue4e4"},
   r4: {x:-3, y:0, c:"\ue4e5"},
   r8: {x:-3, y:0, c:"\ue4e6"},
@@ -106,100 +125,44 @@ var tgls = {
   mrest: {x:-10, y:0, c:"\ue4ee"},
   mrep: {x:-6, y:0, c:"\ue500"},
   mrep2: {x:-9, y:0, c:"\ue501"},
-  turn: {x:-5, y:4, c:"\ue567"},
-  turnx: {x:-5, y:4, c:"\ue569"},
-  umrd: {x:-7, y:2, c:"\ue56c"},
-  lmrd: {x:-7, y:2, c:"\ue56d"},
+  p: {x:-4, y:-6, c:"\ue520"},
+  f: {x:-4, y:-6, c:"\ue522"},
+  pppp: {x:-4, y:-6, c:"\ue529"},
+  ppp: {x:-4, y:-6, c:"\ue52a"},
+  pp: {x:-4, y:-6, c:"\ue52b"},
+  mp: {x:-4, y:-6, c:"\ue52c"},
+  mf: {x:-4, y:-6, c:"\ue52d"},
+  ff: {x:-4, y:-6, c:"\ue52f"},
+  fff: {x:-4, y:-6, c:"\ue530"},
+  ffff: {x:-4, y:-6, c:"\ue531"},
+  sfz: {x:-4, y:-6, c:"\ue539"},
+  trl: {x:-4, y:-4, c:"\ue566"},	// trill
+  turn: {x:-5, y:-4, c:"\ue567"},
+  turnx: {x:-5, y:-4, c:"\ue569"},
+  umrd: {x:-7, y:-2, c:"\ue56c"},
+  lmrd: {x:-7, y:-2, c:"\ue56d"},
+  dplus: {x:-4, y:10, c:"\ue582"},	// plus
+  sld: {x:-8, y:12, c:"\ue5d4"},	// slide
+  grm: {x:-2, y:0, c:"\ue5e2"},		// grace mark
+  dnb: {x:-4, y:0, c:"\ue610"},		// down bow
+  upb: {x:-3, y:0, c:"\ue612"},		// up bow
+  opend: {x:-2, y:0, c:"\ue614"},	// harmonic
+  roll: {x:0, y:0, c:"\ue618"},
+  thumb: {x:0, y:0, c:"\ue624"},
+  snap: {x:-2, y:0, c:"\ue630"},
   ped: {x:-10, y:0, c:"\ue650"},
   pedoff: {x:-5, y:0, c:"\ue655"},
-  longa: {x:-6, y:0, c:"\ue95c"}
+  pMsig: {x:-6, y:-12, c:"\ue910"},	// M:o.
+  pmsig: {x:-6, y:-12, c:"\ue911"},	// M:o
+  iMsig: {x:-6, y:-12, c:"\ue914"},	// M:c.
+  imsig: {x:-6, y:-12, c:"\ue915"},	// M:c
+  longa: {x:-6, y:0, c:"\ue95c"},
+  custos: {x:-4, y:3, c:"\uea02"},
+  ltr: {x:2, y:6, c:"\ueaa4"}		// long trill element
 }
 
 // glyphs to put in <defs>
 var glyphs = {
-  acc1_1_4: '<g id="acc1_1_4">\n\
-	<path d="m0 7.8v-15.4" class="stroke"/>\n\
-	<path class="fill" d="M-1.8 2.7l3.6 -1.1v2.2l-3.6 1.1v-2.2z\n\
-		M-1.8 -3.7l3.6 -1.1v2.2l-3.6 1.1v-2.2"/>\n\
-</g>',
-  acc1_3_4: '<g id="acc1_3_4">\n\
-	<path d="m-2.5 8.7v-15.4M0 7.8v-15.4M2.5 6.9v-15.4" class="stroke"/>\n\
-	<path class="fill" d="m-3.7 3.1l7.4 -2.2v2.2l-7.4 2.2v-2.2z\n\
-		M-3.7 -3.2l7.4 -2.2v2.2l-7.4 2.2v-2.2"/>\n\
-</g>',
- "acc-1_3_4": '<g id="acc-1_3_4">\n\
-    <path class="fill" d="m0.6 -2.7\n\
-	c-5.7 -3.1 -5.7 3.6 0 6.7c-3.9 -4 -4 -7.6 0 -5.8\n\
-	M1 -2.7c5.7 -3.1 5.7 3.6 0 6.7c3.9 -4 4 -7.6 0 -5.8"/>\n\
-    <path d="m1.6 3.5v-13M0 3.5v-13" class="stroke" stroke-width=".6"/>\n\
-</g>',
-  pmsig: '<path id="pmsig" class="stroke" stroke-width="0.8"\n\
-	d="m0 -7a5 5 0 0 1 0 -10a5 5 0 0 1 0 10"/>',
-  pMsig: '<g id="pMsig">\n\
-	<use xlink:href="#pmsig"/>\n\
-	<path class="fill" d="m0 -10a2 2 0 0 1 0 -4a2 2 0 0 1 0 4"/>\n\
-</g>',
-  imsig: '<path id="imsig" class="stroke" stroke-width="0.8"\n\
-	d="m3 -8a5 5 0 1 1 0 -8"/>',
-  iMsig: '<g id="iMsig">\n\
-	<use xlink:href="#imsig"/>\n\
-	<path class="fill" d="m0 -10a2 2 0 0 1 0 -4a2 2 0 0 1 0 4"/>\n\
-</g>',
-  hl: '<path id="hl" class="stroke" stroke-width="1" d="m-6 0h12"/>',
-  hl1: '<path id="hl1" class="stroke" stroke-width="1" d="m-7 0h14"/>',
-  hl2: '<path id="hl2" class="stroke" stroke-width="1" d="m-9 0h18"/>',
-  ghl: '<path id="ghl" class="stroke" d="m-3.5 0h7"/>',
-  rdots: '<g id="rdots" class="fill">\n\
-	<circle cx="0" cy="-9" r="1.2"/>\n\
-	<circle cx="0" cy="-15" r="1.2"/>\n\
-</g>',
-  grm: '<path id="grm" class="fill" d="m-5 -2.5\n\
-	c5 -8.5 5.5 4.5 10 -2 -5 8.5 -5.5 -4.5 -10 2"/>',
-  stc: '<circle id="stc" class="fill" cx="0" cy="-3" r="1.2"/>',
-  sld: '<path id="sld" class="fill" d="m-7.2 4.8\n\
-	c1.8 .7 4.5 -.2 7.2 -4.8 -2.1 5 -5.4 6.8 -7.6 6"/>',
-  emb: '<path id="emb" class="stroke" stroke-width="1.2" stroke-linecap="round"\n\
-	d="m-2.5 -3h5"/>',
-  roll: '<path id="roll" class="fill" d="m-6 0\n\
-	c0.4 -7.3 11.3 -7.3 11.7 0 -1.3 -6 -10.4 -6 -11.7 0"/>',
-  upb: '<path id="upb" class="stroke" d="m-2.6 -9.4\n\
-	l2.6 8.8 2.6 -8.8"/>',
-  dnb: '<g id="dnb">\n\
-	<path d="M-3.2 -2v-7.2m6.4 0v7.2" class="stroke"/>\n\
-	<path d="M-3.2 -6.8v-2.4l6.4 0v2.4" class="fill"/>\n\
-</g>',
-  dplus: '<path id="dplus" class="stroke" stroke-width="1.7"\n\
-	d="m0 -.5v-6m-3 3h6"/>',
-  lphr: '<path id="lphr" class="stroke" stroke-width="1.2"\n\
-	d="m0 0v18"/>',
-  mphr: '<path id="mphr" class="stroke" stroke-width="1.2"\n\
-	d="m0 0v12"/>',
-  sphr: '<path id="sphr" class="stroke" stroke-width="1.2"\n\
-	d="m0 0v6"/>',
-  sfz: '<text id="sfz" x="-5" y="-7" style="font:italic 14px serif">\n\
-	s<tspan font-size="16" font-weight="bold">f</tspan>z</text>',
-  trl: '<text id="trl" x="-2" y="-4"\
- style="font:italic bold 16px serif">tr</text>',
-  opend: '<circle id="opend" class="stroke"\
- cx="0" cy="-3" r="2.5"/>',
-  snap: '<path id="snap" class="stroke" d="m-3 -6\n\
-	c0 -5 6 -5 6 0 0 5 -6 5 -6 0\n\
-	M0 -5v6"/>',
-  thumb: '<path id="thumb" class="stroke" d="m-2.5 -7\n\
-	c0 -6 5 -6 5 0 0 6 -5 6 -5 0\n\
-	M-2.5 -9v4"/>',
-  wedge: '<path id="wedge" class="fill" d="m0 -1l-1.5 -5h3l-1.5 5"/>',
-  ltr: '<path id="ltr" class="fill"\n\
-	d="m0 -.4c2 -1.5 3.4 -1.9 3.9 .4 0.2 .8 .7 .7 2.1 -.4\n\
-	v0.8c-2 1.5 -3.4 1.9 -3.9 -.4 -.2 -.8 -.7 -.7 -2.1 .4z"/>',
-  custos: '<g id="custos">\n\
-	<path class="fill" d="m-4 0l2 2.5 2 -2.5 2 2.5 2 -2.5\n\
-		-2 -2.5 -2 2.5 -2 -2.5 -2 2.5"/>\n\
-	<path class="stroke" d="m3.5 0l5 -7"/>\n\
-</g>',
-  triangle: '<path id="triangle" class="fill" d="m-3.7 -3.2l7.4 0 -3.7 6.4 -3.7 -6.4"/>',
-  diamond: '<path id="diamond" class="fill" d="m0 3.5l-3.7 -3.5 3.7 -3.5 3.7 3.5z"/>',
-  oct: '<text id="oct" style="font:12px serif">8</text>'
 }
 
 // mark a glyph as used and add it in <defs>
@@ -479,7 +442,7 @@ function sx(x) {
 Abc.prototype.sx = sx
 function sy(y) {
 	if (stv_g.g)
-		return y
+		return -y
 	if (stv_g.scale == 1)
 		return posy - y
 	if (stv_g.st < 0)
@@ -526,7 +489,7 @@ function xygl(x, y, gl) {
 	var 	tgl = tgls[gl]
 	if (tgl && !glyphs[gl]) {
 		x += tgl.x * stv_g.scale;
-		y += tgl.y
+		y -= tgl.y
 		if (tgl.sc)
 			out_XYAB('<text transform="translate(X,Y) scale(F)">B</text>\n',
 				x, y, tgl.sc, tgl.c);
@@ -826,10 +789,9 @@ function out_deco_str(x, y, name, str) {
 function out_arp(x, y, val) {
 	g_open(x, y, 270);
 	x = 0;
-	y = -4;
 	val = Math.ceil(val / 6)
 	while (--val >= 0) {
-		xygl(x, y, "ltr");
+		xygl(x, 6, "ltr");
 		x += 6
 	}
 	g_close()
@@ -951,7 +913,7 @@ function out_glisq(x2, y2, de) {
 	var	de1 = de.start,
 		x1 = de1.x,
 		y1 = de1.y + staff_tb[de1.st].y,
-		ar = -Math.atan2(y2 - y1, x2 - x1),
+		ar = Math.atan2(y1 - y2, x2 - x1),
 		a = ar / Math.PI * 180,
 		len = (x2 - x1) / Math.cos(ar);
 
