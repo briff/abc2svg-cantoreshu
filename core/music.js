@@ -551,7 +551,8 @@ function gchord_width(s, wlnote, wlw) {
  * no extra glue is put between them */
 // (possible hook)
 function set_width(s) {
-	var s2, i, m, xx, w, wlnote, wlw, acc
+    var	s2, i, m, xx, w, wlnote, wlw, acc,
+	bar_type, meter, last_acc, n1, n2, esp, tmp
 
 	switch (s.type) {
 	case C.NOTE:
@@ -584,7 +585,7 @@ function set_width(s) {
 					wlnote = -xx + 5
 			}
 			if (s.notes[m].acc) {
-				var tmp = s.notes[m].shac +
+				tmp = s.notes[m].shac +
 					(s.notes[m].micro ? 5.5 : 3.5)
 				if (wlnote < tmp)
 					wlnote = tmp
@@ -701,9 +702,7 @@ function set_width(s) {
 	case C.BAR:
 		if (s.norepbra)
 			break
-		if (!s.invis) {
-			var bar_type = s.bar_type
-
+		bar_type = s.bar_type
 			switch (bar_type) {
 			case "|":
 				w = 7		// 4 + 3
@@ -739,9 +738,7 @@ function set_width(s) {
 					break
 				}
 			}
-		} else {
-			s.wl = s.wr = 0
-		}
+
 		if (s.a_dd)
 			s.wl += deco_width(s)
 
@@ -761,8 +758,6 @@ function set_width(s) {
 		s.wl = s.wr = s.clef_small ? 8 : 12
 		return
 	case C.KEY:
-		var n1, n2, esp;
-
 		s.wl = 3;
 		esp = 4
 		if (!s.k_a_acc) {
@@ -787,7 +782,7 @@ function set_width(s) {
 		} else {
 			n1 = n2 = s.k_a_acc.length
 			if (n2)
-			    var	last_acc = s.k_a_acc[0].acc
+				last_acc = s.k_a_acc[0].acc
 			for (i = 1; i < n2; i++) {
 				acc = s.k_a_acc[i]
 				if (acc.pit > s.k_a_acc[i - 1].pit + 6
@@ -804,7 +799,7 @@ function set_width(s) {
 		wlw = 0;
 		s.x_meter = []
 		for (i = 0; i < s.a_meter.length; i++) {
-			var meter = s.a_meter[i]
+			meter = s.a_meter[i]
 			if (meter.top[0] == "C") {
 				s.x_meter[i] = wlw + 6;
 				wlw += 12
