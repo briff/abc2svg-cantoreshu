@@ -4486,6 +4486,21 @@ function set_sym_glue(width) {
 		for (g = s.extra; g; g = g.next)
 			g.x += x
 	}
+
+	// shift the x offset of the invisible bars at start of line
+	for (s = tsfirst; s; s = s.ts_next) {
+		switch (s.type) {
+		case C.CLEF:
+		case C.KEY:
+		case C.METER:
+			continue
+		case C.BAR:
+			if (!s.text)		// if not repeat
+				s.x = tsfirst.x - tsfirst.wl
+			continue
+		}
+		break
+	}
 }
 
 // set the starting symbols of the voices for the new music line
