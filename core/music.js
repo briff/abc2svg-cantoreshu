@@ -4487,7 +4487,7 @@ function set_sym_glue(width) {
 			g.x += x
 	}
 
-	// shift the x offset of the invisible bars at start of line
+	// shift the x offset of the invisible bars at start of staff
 	for (s = tsfirst; s; s = s.ts_next) {
 		switch (s.type) {
 		case C.CLEF:
@@ -4495,7 +4495,7 @@ function set_sym_glue(width) {
 		case C.METER:
 			continue
 		case C.BAR:
-			if (!s.text)		// if not repeat
+			if (!s.bar_type && !s.text)	// if not repeat
 				s.x = tsfirst.x - tsfirst.wl
 			continue
 		}
