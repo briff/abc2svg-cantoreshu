@@ -2974,7 +2974,7 @@ function init_music_line() {
 			if (shr > shrmx)
 				shrmx = shr;
 			s = s.ts_next
-		} while (!s.seqst);
+		} while (s != last_s && !s.seqst);
 		s2.shrink = shrmx;
 		s2.space = 0
 		if (s == last_s)
