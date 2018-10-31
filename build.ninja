@@ -99,6 +99,7 @@ build edit-$MAJOR.css: cp editor/edit.css
 
 build abcdoc-$MAJOR.js: jscu util/abcdoc.js
 build abcemb-$MAJOR.js: jscu util/abcemb.js
+build abcemb2-$MAJOR.js: jscu util/abcemb2.js
 build follow-$MAJOR.js: jscu util/follow.js
 build json-$MAJOR.js: jscu util/json.js
 build setmidi-$MAJOR.js: jscu util/midi.js

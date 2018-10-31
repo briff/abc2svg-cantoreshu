@@ -35,8 +35,20 @@ These files are:
   [%%beginml documentation](http://moinejf.free.fr/abcm2ps-doc/beginml.xhtml)
   for an example.   
   When the URL of the (X)HTML file ends with '#' followed by a string,
-  only the tunes containing this string are displayed.
+  only the first tune containing this string is displayed.   
+  Note that, if the ABC sequence contains the characters '<', '>' or '&',
+  it must be enclosed in a XML comment (starting after the first `X:` or `%abc`).
 
+- `abcemb2-1.js`   
+  This script is also to be used with the core in (X)HTML files.  
+  The differences with the previous script are
+  - the ABC sequences are replaced in HTML elements with the class `abc`,
+  - the string after '#' in the URL does a real %%select (i.e. this may
+    select many tunes),
+  - if the ABC sequences contain the characters '<', '>' or '&',
+    either these sequences must be enclosed in a XML comment, or the characters
+    must be replaced by their XML counterparts ('&amp;lt;', '&amp;gt;' or '&amp;amp;').
+  
 - `abcdoc-1.js`   
   This script is also to be used in (X)HTML pages with the core.  
   Mainly used for ABC documentation, it lets the ABC source sequences

@@ -32,6 +32,7 @@ cp editor/edit.css edit-$MAJOR.css
 
 cp util/abcdoc.js abcdoc-$MAJOR.js
 cp util/abcemb.js abcemb-$MAJOR.js
+cp util/abcemb2.js abcemb2-$MAJOR.js
 cp util/follow.js follow-$MAJOR.js
 cp util/json.js json-$MAJOR.js
 cp util/midi.js setmidi-$MAJOR.js
