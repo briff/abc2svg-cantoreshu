@@ -4493,10 +4493,14 @@ function set_sym_glue(width) {
 		case C.CLEF:
 		case C.KEY:
 		case C.METER:
+		case C.PART:
 			continue
 		case C.BAR:
-			if (!s.bar_type && !s.text)	// if not repeat
+			if (!s.bar_type && !s.text) {	// if not repeat
 				s.x = tsfirst.x - tsfirst.wl
+				if (s.prev && s.prev.type == C.PART)
+					s.prev.x = s.x + 10
+			}
 			continue
 		}
 		break
