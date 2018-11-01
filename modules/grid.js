@@ -160,7 +160,7 @@ function build_grid(chords, bars, font) {
 	return line + '</svg>'
 } // build_grid()
 
-    var	s, beat, cur_beat, i, beat_i, p_voice, n, font,
+    var	s, beat, cur_beat, i, beat_i, p_voice, n, font, wm,
 	bars = [],
 	chords = [],
 	chord = []
@@ -169,6 +169,7 @@ function build_grid(chords, bars, font) {
 
 	// get the beat
 	beat = get_beat(voice_tb[0].meter);
+	wm = voice_tb[0].meter.wmeasure;
 
 	// scan the tune
 	cur_beat = beat_i = n = 0;
@@ -194,22 +195,26 @@ function build_grid(chords, bars, font) {
 			}
 			break
 		case C.BAR:
-			if (s.time < beat) {		// if anacrusis
-				bars[0] = s.bar_type;
-//				chord = [];
-				beat_i = 0;
-				cur_beat = s.time	// re-synchronize
-				break
+			if (s.time < wm) {		// if anacrusis
+				if (chord.length) {
+					chords.push(chord);
+					bars.push(s.bar_type)
+				} else {
+					bars[0] = s.bar_type
+				}
+			} else {
+				if (!s.bar_num)		// if not normal measure bar
+					break
+				chords.push(chord);
+				bars.push(s.bar_type)
 			}
-			if (s.time != cur_beat)		// if out of time
-				break
-			chords.push(chord);
-			bars.push(s.bar_type);
 			chord = [];
+			cur_beat = s.time;	// synchronize in case of error
 			beat_i = 0
 			break
 		case C.METER:
 			beat = get_beat(s)
+			wm = s.wmeasure
 			break
 		}
 	}
