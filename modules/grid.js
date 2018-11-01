@@ -143,7 +143,7 @@ function build_grid(chords, bars, font) {
 				(x - 5).toFixed(2) +
 				'" y="' + y.toFixed(2) +
 				'" style="font-weight:bold;font-size:' +
-			(font.size + 2).toFixed(2) + '">:|</text>\n'
+			(font.size + 2).toFixed(2) + '">:</text>\n'
 		if (i % nc == 0) {
 			y += hr;			// new row
 			x = x0
@@ -153,7 +153,7 @@ function build_grid(chords, bars, font) {
 				(x + 5).toFixed(2) +
 				'" y="' + y.toFixed(2) +
 				'" style="font-weight:bold;font-size:' +
-			(font.size + 2).toFixed(2) + '">|:</text>\n'
+			(font.size + 2).toFixed(2) + '">:</text>\n'
 		x += wmx
 	}
 
