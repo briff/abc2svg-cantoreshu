@@ -156,7 +156,7 @@ function AbcMIDI() {
 						continue
 					for (i = 0; i <= g.nhd; i++) {
 						note = g.notes[i];
-						p = note.apit + 19 + transp;
+						p = note.pit + 19 + transp;
 						note.midi = pit2midi(p, note.acc)
 					}
 				}
@@ -167,7 +167,7 @@ function AbcMIDI() {
 			case C.NOTE:
 				for (i = 0; i <= s.nhd; i++) {
 					note = s.notes[i];
-					p = note.apit + 19 +	// pitch from C-1
+					p = note.pit + 19 +	// pitch from C-1
 							transp
 					if (tie_map[p]) {
 						if (s.time > tie_time[p]) {

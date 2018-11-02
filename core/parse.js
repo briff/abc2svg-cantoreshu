@@ -1613,7 +1613,6 @@ function parse_acc_pit(line) {
 	}
 	note = {
 		pit: pit,
-		apit: pit,
 		shhd: 0,
 		shac: 0,
 		ti1: 0
@@ -1663,7 +1662,7 @@ function set_map(note) {
 	}
 	note.map = map[nn]
 	if (note.map[1]) {
-		note.apit = note.pit = note.map[1].pit;	// print/play
+		note.pit = note.map[1].pit;		// print/play
 		note.acc = note.map[1].acc
 	}
 }
@@ -1727,7 +1726,6 @@ function note_transp(s) {
 		// pitch
 		n = note.pit;
 		note.pit += dp;
-		note.apit = note.pit;
 
 		// accidental
 		i1 = cde2fcg[(n + 5 + 16 * 7) % 7];	/* fcgdaeb */
@@ -1795,7 +1793,6 @@ function note_transp(s) {
 			case 2:			// double sharp
 				if (n > d / 2) {
 					note.pit += 1;
-					note.apit = note.pit;
 					n -= d / 2
 				} else {
 					n += d / 2
@@ -1806,7 +1803,6 @@ function note_transp(s) {
 			case -2:		// double flat
 				if (n >= d / 2) {
 					note.pit -= 1;
-					note.apit = note.pit;
 					n -= d / 2
 				} else {
 					n += d / 2
@@ -1965,7 +1961,7 @@ function new_note(grace, tp_fact) {
 
 			// transpose
 			if (curvoice.octave)
-				note.apit = note.pit += curvoice.octave * 7
+				note.pit += curvoice.octave * 7
 			if (curvoice.ottava)
 				note.pit += curvoice.ottava
 			if (sl1) {

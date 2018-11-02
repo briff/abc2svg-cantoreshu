@@ -134,7 +134,7 @@ function ToAudio() {
 	// convert ABC pitch to MIDI index
 	function pit2mid(s, i) {
 		var	note = s.notes[i],
-			p = note.apit + 19, // pitch from C-1
+			p = note.pit + 19,	// pitch from C-1
 			a = note.acc
 
 		if (transp[s.v])
@@ -159,7 +159,7 @@ function ToAudio() {
 	function do_tie(s, note, d) {
 		var	n,
 			end_time = s.time + s.dur,
-			pit = note.apit,
+			pit = note.pit,
 			p = pit + 19,
 			a = note.acc
 
@@ -189,7 +189,7 @@ function ToAudio() {
 		n = s.notes.length
 		for (i = 0; i < n; i++) {
 			note = s.notes[i]
-			if (note.apit == pit) {
+			if (note.pit == pit) {
 				d += s.dur / play_factor;
 				note.ti2 = true
 				return note.ti1 ? do_tie(s, note, d) : d

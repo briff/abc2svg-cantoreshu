@@ -2691,7 +2691,7 @@ function draw_ties(k1, k2,
 				// 1: no starting note
 				// 2: no ending note
 				// 3: no start for clef or staff change
-	var	k3, i, j, m1, pit, tie2,
+	var	k3, i, j, m1, pit, pit2, tie2,
 		mhead1 = [],
 		mhead2 = [],
 		mhead3 = [],
@@ -2713,9 +2713,10 @@ function draw_ties(k1, k2,
 		if (!k1.notes[i].ti1)
 			continue
 		tie2 = -1;
-		pit = k1.notes[i].apit
+		pit = k1.notes[i].opit || k1.notes[i].pit
 		for (m1 = k2.nhd; m1 >= 0; m1--) {
-			switch (k2.notes[m1].apit - pit) {
+			pit2 = k2.notes[m1].opit || k2.notes[m1].pit
+			switch (pit2 - pit) {
 			case 1:			/* maybe ^c - _d */
 			case -1:		/* _d - ^c */
 				if (k1.notes[i].acc != k2.notes[m1].acc)
@@ -2756,9 +2757,10 @@ function draw_ties(k1, k2,
 		mhead2.length = 0
 		for (i = mhead3.length; --i >= 0; ) {
 			j = mhead3[i];
-			pit = k1.notes[j].apit
+			pit = k1.notes[j].opit || k1.notes[j].pit
 			for (m1 = k3.nhd; m1 >= 0; m1--) {
-				if (k3.notes[m1].apit == pit) {
+				pit2 = k3.notes[m1].opit || k3.notes[m1].pit
+				if (pit2 == pit) {
 					mhead1.push(j);
 					mhead2.push(m1);
 					mhead3[i] = mhead3.pop()

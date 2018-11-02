@@ -26,8 +26,7 @@ abc2svg.MIDI = {
 	pit = pit % 12;			// in octave
 	p += pits[pit]
 	note = {
-		pit: p,
-		apit: p,
+		pit: p
 	}
 	if (accs[pit])
 		note.acc = accs[pit]

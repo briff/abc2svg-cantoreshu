@@ -135,8 +135,7 @@ var prn = {
 				break
 			}
 			note = {
-				pit: i,
-				apit: i
+				pit: i
 			}
 			switch (s[1]) {
 			case '^': note.acc = 1; break
@@ -190,8 +189,7 @@ var prn = {
 	pit = pit % 12;			// in octave
 	p += pits[pit];
 	note = {
-		pit: p,
-		apit: p
+		pit: p
 	}
 	if (accs[pit])
 		note.acc = accs[pit]

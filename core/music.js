@@ -2379,8 +2379,10 @@ function set_pitch(last_s) {
 			delta = staff_delta[st]
 			if (delta != 0
 			 && !s.p_v.key.k_drum) {
-				for (m = s.nhd; m >= 0; m--)
+				for (m = s.nhd; m >= 0; m--) {
+					s.notes[m].opit = s.notes[m].pit;
 					s.notes[m].pit += delta
+				}
 			}
 			if (s.type == C.NOTE) {
 				s.ymx = 3 * (s.notes[s.nhd].pit - 18) + 4;
