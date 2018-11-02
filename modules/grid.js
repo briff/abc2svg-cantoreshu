@@ -5,7 +5,11 @@
 // This module is loaded when "%%grid" appears in a ABC source.
 //
 // Parameters
-//	%%grid 1 | -1	(above the tune | below the tune)
+//	%%grid <n> [include=<list>] [norepeat]
+//		<n> = number of columns (1: auto)
+//			> 0: above the tune, < 0: under the tune
+//		<list> = comma separated list of (continuous) measure numbers
+//		'norepeat' omits the ':' indications
 //	%%gridfont font_name size (default: 'serif 16')
 
 abc2svg.grid = {
@@ -16,7 +20,8 @@ abc2svg.grid = {
 	tsfirst = this.get_tsfirst(),
 	voice_tb = this.get_voice_tb(),
 	img, font_cl, cls,
-	cfmt = this.cfmt()
+	cfmt = this.cfmt(),
+	grid = cfmt.grid
 
 function get_beat(s) {
     var	beat = C.BLEN / 4
@@ -32,20 +37,16 @@ function get_beat(s) {
 
 // generate the grid
 function build_grid(chords, bars, font) {
-    var	i, j, nr, line, bar, bar2, chord, cell, w, hr, x0, x, y,
-	wmx = 0,
+    var	i, j, k, l, nr, line, bar, bar2, cell, w, hr, x0, x, y,
+	wmx = 0,			// max width of the cells
 	cells = [],
-	nc = chords.length % 6 == 0 ? 6 : 8;	// number of columns
+	nc = grid.n
 
-	if (nc > chords.length)
-		nc = chords.length;
-
-	// build the content of the cells
-	nr = 0
-	for (i = 0; i < chords.length; i++) {
-		if (i % nc == 0)
-			nr++;			// number of rows
+	// build a grid cell
+	function build_cell(i) {
+	    var	j,
 		chord = chords[i]
+
 		if (chord.length == 0) {
 			cell = '%'
 		} else {
@@ -72,11 +73,41 @@ function build_grid(chords, bars, font) {
 		if (bar[bar.length - 1] == ':')
 			cell += '  '
 		if (bar2 && bar2[0] == ':')
-			cell += '  ';
-		w = this.strwh(cell)[0]
-		if (w > wmx)
-			wmx = w
+			cell += '  '
+	} // build_cell
+
+	// build the content of the cells
+	if (!grid.ls) {
+		for (i = 0; i < chords.length; i++) {
+			build_cell(i);
+			w = this.strwh(cell)[0]
+			if (w > wmx)
+				wmx = w
+		}
+	} else {				// with list of mesure numbers
+		for (i = 0; i < grid.ls.length; i++) {
+			l = grid.ls[i]
+			if (l.indexOf('-') < 0)
+				l = [l, l]
+			else
+				l = l.split('-')
+			for (k = l[0] - 1; k < l[1]; k++)
+				build_cell(k);
+			w = this.strwh(cell)[0]
+			if (w > wmx)
+				wmx = w
+		}
 	}
+
+	// get the number of columns and rows
+	if (nc < 0)
+		nc = -nc
+	if (nc < 3)
+		nc = cells.length % 6 == 0 ? 6 : 8
+	if (nc > cells.length)
+		nc = cells.length;
+	nr = ((cells.length + nc - 1) / nc) |0
+
 	if (wmx < 20)
 		wmx = 20;
 	w = wmx * nc
@@ -160,10 +191,10 @@ function build_grid(chords, bars, font) {
 	return line + '</svg>'
 } // build_grid()
 
-    var	s, beat, cur_beat, i, beat_i, p_voice, n, font, wm,
+    var	s, beat, cur_beat, i, beat_i, p_voice, n, font, wm, bt,
 	bars = [],
 	chords = [],
-	chord = []
+	chord = [];
 
 	img = this.get_img();
 
@@ -195,18 +226,19 @@ function build_grid(chords, bars, font) {
 			}
 			break
 		case C.BAR:
+			bt = grid.norep ? '|' : s.bar_type
 			if (s.time < wm) {		// if anacrusis
 				if (chord.length) {
 					chords.push(chord);
-					bars.push(s.bar_type)
+					bars.push(bt)
 				} else {
-					bars[0] = s.bar_type
+					bars[0] = bt
 				}
 			} else {
 				if (!s.bar_num)		// if not normal measure bar
 					break
 				chords.push(chord);
-				bars.push(s.bar_type)
+				bars.push(bt)
 			}
 			chord = [];
 			cur_beat = s.time;	// synchronize in case of error
@@ -227,7 +259,7 @@ function build_grid(chords, bars, font) {
 	}
 
 	// set the text style
-	if (!this.cfmt().gridfont)
+	if (!cfmt.gridfont)
 		this.param_set_font("gridfont", "serif 16");
 	font = this.get_font('grid');
 	font_cl = this.font_class(font)
@@ -247,7 +279,7 @@ function build_grid(chords, bars, font) {
 	}
 
 	// and insert it in the tune
-	if (cfmt.grid < 0) {		// below
+	if (cfmt.grid.n < 0) {		// below
 		for (var s2 = tsfirst; s2.ts_next; s2 = s2.ts_next)
 			;
 		s.time = s2.time;
@@ -273,12 +305,26 @@ function build_grid(chords, bars, font) {
 	of()
     },
 
-    set_fmt: function(of, cmd, param, lock) {
+    set_fmt: function(of, cmd, parm, lock) {
 	if (cmd == "grid") {
-		this.cfmt().grid = param
+		if (!parm)
+			parm = "1";
+		parm = parm.split(/\s+/)
+//printErr('parm '+parm)
+		var grid = this.cfmt().grid = {n: Number(parm.shift())}
+		if (isNaN(grid.n))
+			grid.n = 1
+		while (parm.length) {
+			var item = parm.shift()
+//printErr('item '+item)
+			if (item == "norepeat")
+				grid.norep = true
+			else if (item.slice(0, 8) == "include=")
+				grid.ls = item.slice(8).split(',')
+		}
 		return
 	}
-	of(cmd, param, lock)
+	of(cmd, parm, lock)
     },
 
     set_hooks: function(abc) {
