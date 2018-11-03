@@ -104,6 +104,7 @@ function build_grid(chords, bars, font) {
 			cell += '  '
 		if (bar2 && bar2[0] == ':')
 			cell += '  '
+		cell += '  '
 	} // build_cell
 
 	// build the content of the cells
@@ -149,7 +150,7 @@ function build_grid(chords, bars, font) {
 	}
 
 	// build the SVG image
-	hr = font.size + 8;		// vert: 4 - cell - 4
+	hr = font.size + 12;		// vert: 6 - cell - 6
 	line = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"\n\
 	xmlns:xlink="http://www.w3.org/1999/xlink"\n\
 	color="black" width="' + img.width.toFixed(0) +
