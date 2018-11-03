@@ -420,7 +420,7 @@ break
 							note.micro_n / note.micro_d,
 						true)
 		}
-		p = note.apit
+		p = note.pit
 		if (p >= 23) {
 			line += "abcdefg"[p % 7]
 			if (p >= 30) {
