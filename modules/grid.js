@@ -121,11 +121,12 @@ function build_grid(chords, bars, font) {
 				l = [l, l]
 			else
 				l = l.split('-')
-			for (k = l[0] - 1; k < l[1]; k++)
+			for (k = l[0] - 1; k < l[1]; k++) {
 				build_cell(k);
-			w = this.strwh(cell)[0]
-			if (w > wmx)
-				wmx = w
+				w = this.strwh(cell)[0]
+				if (w > wmx)
+					wmx = w
+			}
 		}
 	}
 
