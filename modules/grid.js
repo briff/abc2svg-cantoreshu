@@ -37,29 +37,59 @@ function get_beat(s) {
 
 // generate the grid
 function build_grid(chords, bars, font) {
-    var	i, j, k, l, nr, line, bar, bar2, cell, w, hr, x0, x, y,
+    var	i, j, k, l, nr, line, bar, bar2, w, hr, x0, x, y,
+	cell = '',
+	pcell = '',
 	wmx = 0,			// max width of the cells
 	cells = [],
 	nc = grid.n
 
 	// build a grid cell
 	function build_cell(i) {
-	    var	j,
+	    var	j, k,
 		chord = chords[i]
 
 		if (chord.length == 0) {
-			cell = '%'
+			if (i == 0) {
+				cell = '-'
+			} else {
+				for (k = chords[i - 1].length; --k >= 0; ) {
+					if (chords[i - 1][k]) {
+						cell = chords[i - 1][k]
+						break
+					}
+				}
+			}
 		} else {
 			cell = ''
 			for (j = 0; j < chord.length; j++) {
 				if (chord[j]) {
-					if (j != 0)
-						cell += ' / ';
+					if (j != 0) {
+						if (j & 1)
+							cell += ' \\ ';
+						else
+							cell += ' / ';
+					}
 					cell += chord[j]
 				} else if (j == 0) {
-					cell += '%'
+					if (i == 0) {
+						cell = '-'
+					} else {
+						for (k = chords[i - 1].length; --k >= 0; ) {
+							if (chords[i - 1][k]) {
+								cell = chords[i - 1][k]
+								break
+							}
+						}
+						if (!cell)
+							cell = '-'
+					}
 				}
 			}
+			if (chord.length > 1 && cell == pcell)
+				cell = '%'
+			else
+				pcell = cell
 		}
 		bar = bars[i];
 		if (bar[bar.length - 1] == ':')
