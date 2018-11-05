@@ -123,7 +123,7 @@ var prn = {
 	pit = Number(p)
 
 	if (isNaN(pit)) {
-		s = p.match(/^([_^]*)([A-Ga-g])([,']*)$/)	// '
+		s = p.match(/^([_^=]*)([A-Ga-g])([,']*)$/)	// '
 		if (s) {				// note name
 			i = "CDEFGABcdefgab".indexOf(s[2]) + 16
 			switch(s[3]) {

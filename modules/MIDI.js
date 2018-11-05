@@ -35,7 +35,7 @@ abc2svg.MIDI = {
 
     // normalize a note for mapping
     function norm(p) {
-    var	a = p.match(/^([_^]*)([A-Ga-g])([,']*)$/)	// '
+    var	a = p.match(/^([_^=]*)([A-Ga-g])([,']*)$/)	// '
 	if (!a)
 		return
 	if (p.match(/[A-Z]/)) {
