@@ -89,6 +89,8 @@ function build_grid(chords, bars, font, wmx) {
 			else
 				l = l.split('-')
 			for (k = l[0] - 1; k < l[1]; k++) {
+				if (!chords[k])		// error
+					break
 				cells.push(chords[k]);
 				bars.push(bar[k])
 			}
