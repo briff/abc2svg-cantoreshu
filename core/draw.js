@@ -2893,7 +2893,7 @@ function draw_all_ties(p_voice) {
 		for (s2 = s1.next; s2; s2 = s2.next) {
 			if (s2.dur)
 				break
-			if (s2.text) {			// repeat bar
+			if (s2.type == C.BAR && s2.text) {	// repeat bar
 				if (s2.text[0] != '1')
 					break
 				s_rtie = s1		/* 1st repeat bar */
