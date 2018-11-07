@@ -234,7 +234,8 @@ function calculate_beam(bm, s1) {
 			a = BEAM_SLOPE * a / (BEAM_SLOPE - a);
 	}
 
-	b = y - a * s1.xs;
+	// pivot around the middle of the beam
+	b = (y + s2.ys + staff_tb[s2.st].y) / 2 - a * (s2.xs + s1.xs) / 2
 
 /*fixme: have a look again*/
 	/* have room for the symbols in the staff */
