@@ -1892,7 +1892,7 @@ function draw_partempo(st, top) {
 		if (!some_tempo)
 			some_tempo = s;
 		w = tempo_width(s);
-		if (s.time == 0)	// at start of tune,
+		if (s.time == 0 && s.x > 40)	// at start of tune and no %%soloffs,
 			s.x = 40;	// shift the tempo over the key signature
 		y = y_get(st, true, s.x - 16, w)
 		if (y > ymin)

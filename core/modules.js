@@ -35,6 +35,7 @@ abc2svg.modules = {
 		grid2: { fn: 'grid2-1.js' },
 		MIDI: { fn: 'MIDI-1.js' },
 		percmap: { fn: 'perc-1.js' },
+	soloffs: { fn: 'soloffs-1.js' },
 	sth: { fn: 'sth-1.js' },
 	temperament: { fn: 'temper-1.js' },
 

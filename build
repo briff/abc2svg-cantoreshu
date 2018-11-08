@@ -25,6 +25,7 @@ cp modules/grid2.js grid2-$MAJOR.js
 cp modules/MIDI.js MIDI-$MAJOR.js
 cp modules/perc.js perc-$MAJOR.js
 cat modules/wps.js modules/psvg.js > psvg-$MAJOR.js
+cp modules/soloffs.js soloffs-$MAJOR.js
 cp modules/sth.js sth-$MAJOR.js
 cp modules/temper.js temper-$MAJOR.js
 
