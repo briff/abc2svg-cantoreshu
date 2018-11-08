@@ -4488,25 +4488,6 @@ function set_sym_glue(width) {
 		for (g = s.extra; g; g = g.next)
 			g.x += x
 	}
-
-	// shift the x offset of the invisible bars at start of staff
-	for (s = tsfirst; s; s = s.ts_next) {
-		switch (s.type) {
-		case C.CLEF:
-		case C.KEY:
-		case C.METER:
-		case C.PART:
-			continue
-		case C.BAR:
-			if (!s.bar_type && !s.text) {	// if not repeat
-				s.x = tsfirst.x - tsfirst.wl
-				if (s.prev && s.prev.type == C.PART)
-					s.prev.x = s.x + 10
-			}
-			continue
-		}
-		break
-	}
 }
 
 // set the starting symbols of the voices for the new music line
