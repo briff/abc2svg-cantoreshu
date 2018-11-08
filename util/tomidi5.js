@@ -77,7 +77,9 @@ function Midi5(i_conf) {
 	c = e[6] & 0x0f,	//fixme
 	d = (e[3] * 100) % 100
 
-	if (i != v_i[c]) {			// if program change
+	if (i == 16384) {			// if bank 128
+		c = 9				// channel 10 (percussion)
+	} else if (i != v_i[c]) {		// if program change
 		v_i[c] = i
 		op.send(new Uint8Array([
 				0xb0 + c, 0, (i >> 14) & 0x7f,	// MSB bank
