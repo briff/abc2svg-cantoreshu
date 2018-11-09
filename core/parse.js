@@ -185,8 +185,6 @@ function get_transp(param,
 			val += note.acc;
 		pit[i] = val
 	}
-	if (cfmt.sound)
-		pit[0] = 252;			// 'c'
 
 	val = (pit[1] - pit[0]) * 3
 	if (note) {
