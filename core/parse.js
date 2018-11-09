@@ -174,7 +174,7 @@ function get_transp(param,
 	tmp = new scanBuf();
 	tmp.buffer = param
 	for (i = 0; i < 2; i++) {
-		note = parse_acc_pit(tmp)
+		note = tmp.buffer[tmp.index] ? parse_acc_pit(tmp) : null
 		if (!note) {
 			syntax(1, "Bad transpose value")
 			return
