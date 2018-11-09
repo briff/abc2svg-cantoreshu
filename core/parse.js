@@ -695,14 +695,22 @@ function new_meter(text) {
 					meter.top += p[i++];
 				m1 = 4;
 				m2 = 4
+				if (p[i] && p[i] != '=') {
+					syntax(1, "Bad char '$1' in M:", p[i])
+					return
+				}
 				break
 			case 'c':
 			case 'o':
 				m1 = p[i] == 'c' ? 4 : 3;
 				m2 = 4;
 				meter.top = p[i++]
-				if (p[i] == '.')
+				if (p[i] == '.' || p[i] == '|')
 					meter.top += p[i++]
+				if (p[i] && p[i] != '=') {
+					syntax(1, "Bad char '$1' in M:", p[i])
+					return
+				}
 				break
 			case '(':
 				if (p[i + 1] == '(') {	/* "M:5/4 ((2+3)/4)" */
