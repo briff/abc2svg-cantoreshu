@@ -1879,6 +1879,16 @@ function new_note(grace, tp_fact) {
 			curvoice.time += s.dur
 			return //null
 		}
+
+		// convert 'Z'/'Z1' to a whole measure rest
+		if (s.nmes == 1) {
+			s.type = C.REST;
+			s.dur_orig = s.dur;
+			s.notes = [{
+				pit: 18,
+				dur: s.dur
+			}]
+		}
 		break
 	case 'y':
 		s.type = C.SPACE;
