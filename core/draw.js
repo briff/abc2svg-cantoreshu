@@ -999,7 +999,7 @@ function draw_bar(s, bot, h) {
 		switch (bar_type[i]) {
 		case "|":
 			set_sscale(-1);
-			out_bar(x, bot, h, s.bar_dotted)
+			out_bar(x, bot, h, s.bar_dotted ? p_staff.staffscale : 0)
 			break
 		default:
 //		case "[":

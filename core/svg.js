@@ -517,10 +517,16 @@ function out_acciac(x, y, dx, dy, up) {
 	out_XYAB('<path class="stroke" d="mX YlF G"/>\n',
 		x, y, dx, -dy)
 }
-// simple /dotted measure bar
+// simple / dotted measure bar
+// when present, 'dotted' is the staff scale
 function out_bar(x, y, h, dotted) {
-	output += '<path class="stroke" stroke-width="1" ' +
-		(dotted ? 'stroke-dasharray="5,5" ' : '') +
+	if (dotted) {
+	    var	w = (5 * dotted).toFixed(2);
+		dotted = 'stroke-dasharray="' + w + ',' + w + '" '
+	} else {
+		dotted = ''
+	}
+	output += '<path class="stroke" stroke-width="1" ' + dotted +
 		'd="m' + (x + posx).toFixed(2) +
 		' ' + (posy - y).toFixed(2) + 'v' + (-h).toFixed(2) +
 		'"/>\n'
