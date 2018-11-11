@@ -2097,7 +2097,5 @@ function goto_tune(is_K) {
 	p_voice = curvoice;
 	curvoice = voice_tb[par_sy.top_voice];
 	sym_link(s)
-	if (staves_found < 0)
-		s.default = true;
 	curvoice = p_voice
 }
