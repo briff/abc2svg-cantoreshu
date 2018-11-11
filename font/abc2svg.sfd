@@ -3,6 +3,8 @@ FontName: abc2svg
 FullName: abc2svg
 FamilyName: abc2svg
 Weight: Regular
+Copyright: Copyright \\251 2018 Jean-Francois Moine. This font is licensed under the SIL Open Font License \\(http://scripts.sil.org/OFL\\).
+Version: 
 ItalicAngle: 0
 UnderlinePosition: 0
 UnderlineWidth: 0
@@ -17,7 +19,7 @@ OS2Version: 0
 OS2_WeightWidthSlopeOnly: 0
 OS2_UseTypoMetrics: 0
 CreationTime: 1433498007
-ModificationTime: 1539971977
+ModificationTime: 1541849730
 PfmFamily: 17
 TTFWeight: 400
 TTFWidth: 5
@@ -38,7 +40,9 @@ HheadAOffset: 1
 HheadDescent: 0
 HheadDOffset: 1
 OS2Vendor: 'PfEd'
+MarkAttachClasses: 1
 DEI: 91125
+LangName: 1033
 Encoding: Custom
 Compacted: 1
 UnicodeInterp: none
@@ -46,8 +50,11 @@ NameList: Adobe Glyph List
 DisplaySize: -96
 AntiAlias: 1
 FitToEm: 1
-WinInfo: 32 8 2
-BeginChars: 113 113
+WinInfo: 104 8 2
+BeginPrivate: 0
+EndPrivate
+TeXData: 1 0 0 346030 173015 115343 0 1048576 115343 783286 444596 497025 792723 393216 433062 380633 303038 157286 324010 404750 52429 2506097 1059062 262144
+BeginChars: 115 115
 
 StartChar: .nodef
 Encoding: 0 0 0
@@ -1265,9 +1272,7 @@ EndChar
 StartChar: uniE0A1
 Encoding: 37 57505 37
 Width: 540
-Flags: W
-HStem: -170 100<25 515> 70 100<25 515>
-VStem: 0 25<-220 -170 -70 70 170 220> 515 25<-220 -170 -70 70 170 220>
+Flags: MW
 LayerCount: 2
 Fore
 SplineSet
@@ -3657,8 +3662,37 @@ SplineSet
 EndSplineSet
 EndChar
 
+StartChar: uniE912
+Encoding: 108 59666 108
+Width: 500
+Flags: HMW
+LayerCount: 2
+Fore
+SplineSet
+228 350 m 1
+ 273 350 l 1
+ 273 248.963441291 l 1
+ 400.232348773 237.438045417 500 131.189979112 500 0 c 0
+ 500 -130.297101415 401.0457811 -237.415737142 273 -248.968094215 c 1
+ 273 -350 l 5
+ 228 -350 l 5
+ 228 -249.043834917 l 1
+ 100.290798921 -237.892613726 -1.42108547152e-14 -130.587203166 0 0 c 0
+ 0 131.582733878 99.4697872715 238.073989885 228 249.064406208 c 1
+ 228 350 l 1
+228 -203.826663616 m 1
+ 228 203.826663616 l 1
+ 125.298009966 192.809355922 45 105.569124751 45 0 c 0
+ 45 -105.569124751 125.298009966 -192.809355922 228 -203.826663616 c 1
+273 -203.716902537 m 1
+ 375.222749877 -192.242459755 455 -105.22624212 455 0 c 0
+ 455 105.22624212 375.222749877 192.242459755 273 203.716902537 c 1
+ 273 -203.716902537 l 1
+EndSplineSet
+EndChar
+
 StartChar: uniE914
-Encoding: 108 59668 108
+Encoding: 109 59668 109
 Width: 500
 Flags: HMW
 LayerCount: 2
@@ -3686,7 +3720,7 @@ EndSplineSet
 EndChar
 
 StartChar: uniE915
-Encoding: 109 59669 109
+Encoding: 110 59669 110
 Width: 500
 Flags: HMW
 LayerCount: 2
@@ -3708,12 +3742,42 @@ SplineSet
 EndSplineSet
 EndChar
 
+StartChar: uniE918
+Encoding: 111 59672 111
+Width: 500
+Flags: HMW
+LayerCount: 2
+Fore
+SplineSet
+273 249.175175402 m 1
+ 273 350 l 1
+ 228 350 l 1
+ 228 249.064406208 l 1
+ 99.4697872715 238.073989885 -1.42108547152e-14 131.582733878 0 0 c 0
+ 0 -130.587203166 100.290798921 -237.892613726 228 -249.043834917 c 1
+ 228 -350 l 5
+ 273 -350 l 5
+ 273 -249.277362462 l 1
+ 360.825115524 -243.61725315 423.375973921 -204.640607266 463 -130 c 0
+ 468 -120 467 -106 454 -99 c 0
+ 442 -93 426 -99 420 -110 c 0
+ 389.357528088 -167.679947129 340.845554559 -198.555641835 273 -204.091163532 c 1
+ 273 203.908523218 l 1
+ 336.112527347 197.819158875 389.627371255 166.278694439 420 110 c 0
+ 431 95 444 93 454 99 c 0
+ 464 105 468 120 463 130 c 0
+ 423.564992616 203.367455598 356.375007599 243.092514066 273 249.175175402 c 1
+228 -203.826663616 m 1
+ 125.298009966 -192.809355922 45 -105.569124751 45 0 c 0
+ 45 105.569124751 125.298009966 192.809355922 228 203.826663616 c 1
+ 228 -203.826663616 l 1
+EndSplineSet
+EndChar
+
 StartChar: uniE95C
-Encoding: 110 59740 110
+Encoding: 112 59740 112
 Width: 540
-Flags: W
-HStem: -170 100<25 515> 70 100<25 515>
-VStem: 0 25<-220 -170 -70 70 170 220> 515 25<-540 -170 -70 70 170 220>
+Flags: MW
 LayerCount: 2
 Fore
 SplineSet
@@ -3740,7 +3804,7 @@ Validated: 1
 EndChar
 
 StartChar: uniEA02
-Encoding: 111 59906 111
+Encoding: 113 59906 113
 Width: 250
 Flags: HMW
 LayerCount: 2
@@ -3763,7 +3827,7 @@ EndSplineSet
 EndChar
 
 StartChar: uniEAA4
-Encoding: 112 60068 112
+Encoding: 114 60068 114
 Width: 250
 Flags: HMW
 LayerCount: 2

@@ -800,10 +800,14 @@ function set_width(s) {
 		s.x_meter = []
 		for (i = 0; i < s.a_meter.length; i++) {
 			meter = s.a_meter[i]
-			if (meter.top[0] == "C") {
+			switch (meter.top[0]) {
+			case 'C':
+			case 'c':
+			case 'o':
 				s.x_meter[i] = wlw + 6;
 				wlw += 12
-			} else {
+				break
+			default:
 				w = 0
 				if (!meter.bot
 				 || meter.top.length > meter.bot.length)

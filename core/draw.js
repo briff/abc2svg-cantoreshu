@@ -701,7 +701,7 @@ function draw_lstaff(x) {
 function draw_meter(x, s) {
 	if (!s.a_meter)
 		return
-	var	dx, i, j, tmp1, tmp2,
+	var	dx, i, j, tmp1, tmp2, meter,
 		st = s.st,
 		p_staff = staff_tb[st],
 		y = p_staff.y;
@@ -711,9 +711,7 @@ function draw_meter(x, s) {
 		y += (p_staff.topbar + p_staff.botbar) / 2 - 12	// bottom
 
 	for (i = 0; i < s.a_meter.length; i++) {
-		var	f,
-			meter = s.a_meter[i]
-
+		meter = s.a_meter[i];
 		x = s.x + s.x_meter[i]
 
 		if (meter.bot) {
@@ -727,30 +725,40 @@ function draw_meter(x, s) {
 	<text>B</text>\n\
 </g>\n', x, y + 6, tmp1, tmp2)
 		} else {
-			switch (meter.top[0]) {
+			switch (meter.top) {
 			case 'C':
-				f = meter.top[1] != '|' ? "csig" : "ctsig";
-				x -= 5;
-				y += 12
+			case 'C|':
+				tmp1 = meter.top[1] != '|' ?
+						tgls.csig.c : tgls.ctsig.c
 				break
 			case 'c':
-				f = meter.top[1] != '.' ? "imsig" : "iMsig"
+				tmp1 = tgls.imsig.c
+				break
+			case 'c.':
+				tmp1 = tgls.iMsig.c
+				break
+			case 'c|':
+				tmp1 = tgls.imsig3.c
 				break
 			case 'o':
-				f = meter.top[1] != '.' ? "pmsig" : "pMsig"
+				tmp1 = tgls.pmsig.c
+				break
+			case 'o.':
+				tmp1 = tgls.pMsig.c
+				break
+			case 'o|':
+				tmp1 = tgls.pmsig1.c
 				break
 			default:
 				tmp1 = ''
 				for (j = 0; j < meter.top.length; j++)
 					tmp1 += tgls["meter" + meter.top[j]].c;
-				out_XYAB('\
-<text x="X" y="Y" text-anchor="middle">A</text>\n',
-					x, y + 12, tmp1)
 				break
 			}
+			out_XYAB('\
+<text x="X" y="Y" text-anchor="middle">A</text>\n',
+					x, y + 12, tmp1)
 		}
-		if (f)
-			xygl(x, y, f)
 	}
 }
 

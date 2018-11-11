@@ -77,11 +77,11 @@ var tgls = {
   meter7: {c:"\ue087"},
   meter8: {c:"\ue088"},
   meter9: {c:"\ue089"},
+  csig: {c:"\ue08a"},			// common time
+  ctsig: {c:"\ue08b"},			// cut time
   "meter+": {c:"\ue08c"},
   "meter(": {c:"\ue094"},
   "meter)": {c:"\ue095"},
-  csig: {x:0, y:0, c:"\ue08a"},		// common time
-  ctsig: {x:0, y:0, c:"\ue08b"},	// cut time
   HDD: {x:-7, y:0, c:"\ue0a0"},
   breve: {x:-6, y:0, c:"\ue0a1"},
   HD: {x:-5.2, y:0, c:"\ue0a2"},
@@ -152,11 +152,13 @@ var tgls = {
   snap: {x:-2, y:0, c:"\ue630"},
   ped: {x:-10, y:0, c:"\ue650"},
   pedoff: {x:-5, y:0, c:"\ue655"},
-  pMsig: {x:-6, y:-12, c:"\ue910"},	// M:o.
-  pmsig: {x:-6, y:-12, c:"\ue911"},	// M:o
-  iMsig: {x:-6, y:-12, c:"\ue914"},	// M:c.
-  imsig: {x:-6, y:-12, c:"\ue915"},	// M:c
-  longa: {x:-6, y:0, c:"\ue95c"},
+  pMsig: {c:"\ue910"},			// M:o.	perfect perfect (9/8)
+  pmsig: {c:"\ue911"},			// M:o  perfect imperfect (3/4)
+  pmsig1: {c:"\ue912"},			// M:o| perfect imperfect -1 (3/8)
+  iMsig: {c:"\ue914"},			// M:c. imperfect perfect (6/8)
+  imsig: {c:"\ue915"},			// M:c  imperfect imperfect (2/4)
+  imsig3: {c:"\ue918"},			// M:c| imperfect imperfect -3 (2/2)
+  longa: {x:-6, y:0, c:"\ue95c"},	// (not used anymore)
   custos: {x:-4, y:3, c:"\uea02"},
   ltr: {x:2, y:6, c:"\ueaa4"}		// long trill element
 }
