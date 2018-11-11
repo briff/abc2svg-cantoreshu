@@ -2008,7 +2008,7 @@ function get_voice(parm) {
 			par_sy.voices[v].st = nstaff;
 			par_sy.voices[v].range = v;
 			par_sy.staves[nstaff] = {
-				stafflines: "|||||",
+				stafflines: curvoice.stafflines || "|||||",
 				staffscale: 1
 			}
 		}
@@ -2019,11 +2019,6 @@ function get_voice(parm) {
 			if (staves_found >= 0)
 				curvoice.ignore = true
 		}
-	}
-
-	if (curvoice.stafflines && curvoice.st != undefined) {
-		par_sy.staves[curvoice.st].stafflines = curvoice.stafflines;
-		curvoice.stafflines = ''
 	}
 
 	if (!curvoice.filtered
@@ -2051,7 +2046,7 @@ function goto_tune(is_K) {
 
 	// if no voice yet, create the default voice
 	if (voice_tb.length == 0) {
-		curvoice = new_voice("1");
+		get_voice("1");
 		curvoice.clef.istart = curvoice.key.istart;
 		curvoice.clef.iend = curvoice.key.iend;
 //		nstaff = 0;
@@ -2086,7 +2081,7 @@ function goto_tune(is_K) {
 				par_sy.voices[v].st =
 					par_sy.voices[v].range = v;
 			par_sy.staves[v] = {
-				stafflines: '|||||',
+				stafflines: p_voice.stafflines || "|||||",
 				staffscale: 1
 			}
 		}
