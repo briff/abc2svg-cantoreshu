@@ -725,36 +725,9 @@ function draw_meter(x, s) {
 	<text>B</text>\n\
 </g>\n', x, y + 6, tmp1, tmp2)
 		} else {
-			switch (meter.top) {
-			case 'C':
-			case 'C|':
-				tmp1 = meter.top[1] != '|' ?
-						tgls.csig.c : tgls.ctsig.c
-				break
-			case 'c':
-				tmp1 = tgls.imsig.c
-				break
-			case 'c.':
-				tmp1 = tgls.iMsig.c
-				break
-			case 'c|':
-				tmp1 = tgls.imsig3.c
-				break
-			case 'o':
-				tmp1 = tgls.pmsig.c
-				break
-			case 'o.':
-				tmp1 = tgls.pMsig.c
-				break
-			case 'o|':
-				tmp1 = tgls.pmsig1.c
-				break
-			default:
-				tmp1 = ''
-				for (j = 0; j < meter.top.length; j++)
-					tmp1 += tgls["meter" + meter.top[j]].c;
-				break
-			}
+			tmp1 = ''
+			for (j = 0; j < meter.top.length; j++)
+				tmp1 += tgls["meter" + meter.top[j]].c;
 			out_XYAB('\
 <text x="X" y="Y" text-anchor="middle">A</text>\n',
 					x, y + 12, tmp1)
