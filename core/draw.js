@@ -1381,7 +1381,7 @@ function draw_basic_note(x, s, m, y_tb) {
 			}
 			// fall thru
 		case C.SQUARE:
-			p = "breve"
+			p = note.dur < C.BLEN * 4 ? "breve" : "longa"
 
 			/* don't display dots on last note of the tune */
 			if (!tsnext && s.next
@@ -1486,12 +1486,7 @@ function draw_note(s,
 				else
 					slen += 1
 			}
-			if (s.dur < C.BLEN * 4)		// if not longa
-				out_stem(x, y, slen, s.grace)
-			else if (s.stem > 0)
-				out_stem(x + 3, y, 12)
-			else
-				out_stem(x + 10, y, -12)
+			out_stem(x, y, slen, s.grace)
 		} else {				/* stem and flags */
 			out_stem(x, y, slen, s.grace,
 				 nflags, cfmt.straightflags)
