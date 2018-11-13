@@ -159,7 +159,7 @@ var tgls = {
   "meterc.": {c:"\ue914"},		// M:c. imperfect perfect (6/8)
   meterc: {c:"\ue915"},			// M:c  imperfect imperfect (2/4)
   "meterc|": {c:"\ue918"},		// M:c| imperfect imperfect -3 (2/2)
-  longa: {x:-6, y:0, c:"\ue95c"},	// (not used anymore)
+  longa: {x:-6, y:0, c:"\ue95d"},
   custos: {x:-4, y:3, c:"\uea02"},
   ltr: {x:2, y:6, c:"\ueaa4"}		// long trill element
 }
