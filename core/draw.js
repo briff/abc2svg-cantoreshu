@@ -1312,7 +1312,7 @@ function y_head(s, note) {
 /* (the staves are defined) */
 // sets {x,y}_note
 function draw_basic_note(x, s, m, y_tb) {
-	var	i, k, p, yy, dotx, doty,
+	var	i, k, p, yy, dotx, doty, inv,
 		old_color = false,
 		note = s.notes[m],
 		staffb = staff_tb[s.st].y,	/* bottom of staff */
@@ -1381,7 +1381,12 @@ function draw_basic_note(x, s, m, y_tb) {
 			}
 			// fall thru
 		case C.SQUARE:
-			p = note.dur < C.BLEN * 4 ? "breve" : "longa"
+			if (note.dur < C.BLEN * 4) {
+				p = "breve"
+			} else {
+				p =  "longa"
+				inv = s.stem > 0
+			}
 
 			/* don't display dots on last note of the tune */
 			if (!tsnext && s.next
@@ -1401,8 +1406,14 @@ function draw_basic_note(x, s, m, y_tb) {
 	else if (note.map && note.map[2])
 		old_color = set_color(note.map[2])
 	if (p) {
+		if (inv) {
+			g_open(x_note, y_note, 0, 1, -1);
+			x_note = y_note = 0
+		}
 		if (!self.psxygl(x_note, y_note, p))
 			xygl(x_note, y_note, p)
+		if (inv)
+			g_close()
 	}
 
 	/* draw the dots */
