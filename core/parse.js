@@ -2392,6 +2392,10 @@ function parse_music_line() {
 								syntax(1, "Invalid 'r' in tuplet")
 								continue
 							}
+							if (rplet == 1) {
+								syntax(1, "Invalid 'r' in tuplet")
+								continue
+							}
 						}
 					}
 					if (qplet == 0 || qplet == undefined)
