@@ -148,8 +148,12 @@ function dom_loaded() {
 	page = document.body.innerHTML;
 
 	// load the required modules
-	if (!abc2svg.modules.load(page, dom_loaded))
-		return
+	if (abc2svg.modules.load(page, render))
+		render()
+}
+
+function render() {
+	page = document.body.innerHTML;
 
 	// search the ABC tunes,
 	// replace them by SVG images with play on click
@@ -157,7 +161,7 @@ function dom_loaded() {
 		seq = 0,
 		re = /\n%abc|\nX:/g,
 		re_stop = /\nX:|\n<|\n%.begin/g,
-		select = window.location.hash.slice(1)
+		select = window.location.hash.slice(1);
 
 	abc = new abc2svg.Abc(user)
 
