@@ -1493,8 +1493,10 @@ function info_split(text) {
 }
 
 /* -- get head type, dots, flags of note/rest for a duration -- */
-function identify_note(s, dur) {
-	var head, dots, flags
+function identify_note(s, dur_o) {
+    var	head, dots, flags,
+	dots = 0,
+	dur = dur_o
 
 	if (dur % 12 != 0)
 		syntax(1, "Invalid note duration $1", dur);
@@ -1507,16 +1509,16 @@ function identify_note(s, dur) {
 	}
 	dur >>= 1
 	switch (dur) {
-	case 0: dots = 0; break
+	case 0: break
 	case 1: dots = 1; break
 	case 3: dots = 2; break
-//	case 7: dots = 3; break
+	case 7: dots = 3; break
 	default:
-		dots = 3
+		syntax(1, "Invalid note duration $1", dur_o);
+		dots = 4
 		break
 	}
 	flags -= dots
-//--fixme: is 'head' useful?
 	if (flags >= 0) {
 		head = C.FULL
 	} else switch (flags) {
