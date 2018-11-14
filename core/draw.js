@@ -1113,11 +1113,13 @@ function draw_rest(s) {
 			break
 		}
 	}
-	x += 8;
-	y += yb + 3
-	for (i = 0; i < s.dots; i++) {
-		xygl(x, y, "dot");
-		x += 3.5
+	if (s.dots) {
+		x += 8;
+		y += yb + 3
+		for (i = 0; i < s.dots; i++) {
+			xygl(x, y, "dot");
+			x += 3.5
+		}
 	}
 	anno_stop(s)
 }
