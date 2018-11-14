@@ -136,8 +136,8 @@ function dom_loaded() {
 		return s.replace(/&gt;/g, '>')
 			.replace(/&lt;/g, '<')
 			.replace(/&amp;/g, '&')
-			.replace(/[ \t](%%)/g, '$1')
-			.replace(/[ \t](.:)/g, '$1')
+			.replace(/[ \t]+(%%)/g, '$1')
+			.replace(/[ \t]+(.:)/g, '$1')
 	}
 
 // function to load javascript files
