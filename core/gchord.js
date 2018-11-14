@@ -482,7 +482,7 @@ function draw_gchord(s, gchy_min, gchy_max) {
 		case '>':			/* right */
 			if (s.xmx)
 				x += s.xmx
-			if (s.dots > 0)
+			if (s.dots)
 				x += 1.5 + 3.5 * s.dots;
 			y = gch.y + yav - h / 2
 			break

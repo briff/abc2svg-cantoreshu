@@ -614,7 +614,7 @@ function set_width(s) {
 		}
 
 		/* leave room for dots and set their offset */
-		if (s.dots > 0) {
+		if (s.dots) {
 		  if (s.wl == undefined)	// don't recompute if new music line
 			switch (s.head) {
 			case C.SQUARE:
@@ -3423,9 +3423,9 @@ function same_head(s1, s2) {
 			l2 = s1.dur
 		}
 		if (l1 < C.BLEN / 2) {
-			if (s2.dots > 0)
+			if (s2.dots)
 				head = 2
-			else if (s1.dots > 0)
+			else if (s1.dots)
 				head = 1
 		} else if (l2 < C.BLEN / 4) {	/* (l1 >= C.BLEN / 2) */
 //			if ((s1.shiftunison && s1.shiftunison == 2)
