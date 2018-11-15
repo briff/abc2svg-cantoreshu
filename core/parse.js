@@ -1515,6 +1515,7 @@ function identify_note(s, dur_o) {
 	case 7: dots = 3; break
 	default:
 		syntax(1, "Invalid note duration $1", dur_o);
+		flags += ((11 - dur) / 4) | 0;
 		dots = 4
 		break
 	}
