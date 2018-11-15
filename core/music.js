@@ -1153,16 +1153,21 @@ function set_allsymwidth() {
 		ntup = 1
 		do {			// search the end of the tuplet sequence
 			s = s.ts_next
+			if (!s)
+				break
 			if (s.tp0)
 				ntup++
 			if (s.te0)
 				ntup--
 		} while (ntup != 0);
+		if (!s)
+			break
 
 		set_sp_tup(s2, s)
 
-		while (s && !s.tp0)	// search next tuplet
+		do {			// search next tuplet
 			s = s.ts_next
+		} while (s && !s.tp0)
 	} while (s)
 }
 
