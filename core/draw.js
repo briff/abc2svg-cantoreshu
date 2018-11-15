@@ -701,7 +701,7 @@ function draw_lstaff(x) {
 function draw_meter(x, s) {
 	if (!s.a_meter)
 		return
-	var	dx, i, j, tmp1, tmp2, meter,
+    var	dx, i, j, meter,
 		st = s.st,
 		p_staff = staff_tb[st],
 		y = p_staff.y;
@@ -715,22 +715,15 @@ function draw_meter(x, s) {
 		x = s.x + s.x_meter[i]
 
 		if (meter.bot) {
-			tmp1 = tmp2 = ''
-			for (j = 0; j < meter.top.length; j++)
-				tmp1 += tgls["meter" + meter.top[j]].c
-			for (j = 0; j < meter.bot.length; j++)
-				tmp2 += tgls["meter" + meter.bot[j]].c;
-			out_XYAB('<g transform="translate(X,Y)" text-anchor="middle">\n\
+			out_XYAB('\
+<g transform="translate(X,Y)" text-anchor="middle">\n\
 	<text y="-12">A</text>\n\
 	<text>B</text>\n\
-</g>\n', x, y + 6, tmp1, tmp2)
+</g>\n', x, y + 6, m_gl(meter.top), m_gl(meter.bot))
 		} else {
-			tmp1 = ''
-			for (j = 0; j < meter.top.length; j++)
-				tmp1 += tgls["meter" + meter.top[j]].c;
 			out_XYAB('\
 <text x="X" y="Y" text-anchor="middle">A</text>\n',
-					x, y + 12, tmp1)
+				x, y + 12, m_gl(meter.top))
 		}
 	}
 }

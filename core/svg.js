@@ -45,7 +45,6 @@ var	output = "",		// output buffer
 
 // glyphs in music font
 var tgls = {
-  "meter ": {c:"\u0020"},		// space
   brace: {x:0, y:0, c:"\ue000"},
   hl: {x:-4, y:0, c:"\ue022"},
   hl1: {x:-6, y:0, c:"\ue023"},
@@ -68,21 +67,6 @@ var tgls = {
   scclef: {x:-8, y:0, c:"\ue07b"},
   sbclef: {x:-7, y:0, c:"\ue07c"},
   oct: {x:0, y:2, c:"\ue07d"},		// 8 for clefs
-  meter0: {c:"\ue080"},
-  meter1: {c:"\ue081"},
-  meter2: {c:"\ue082"},
-  meter3: {c:"\ue083"},
-  meter4: {c:"\ue084"},
-  meter5: {c:"\ue085"},
-  meter6: {c:"\ue086"},
-  meter7: {c:"\ue087"},
-  meter8: {c:"\ue088"},
-  meter9: {c:"\ue089"},
-  meterC: {c:"\ue08a"},			// common time
-  "meterC|": {c:"\ue08b"},		// cut time
-  "meter+": {c:"\ue08c"},
-  "meter(": {c:"\ue094"},
-  "meter)": {c:"\ue095"},
   HDD: {x:-7, y:0, c:"\ue0a0"},
   breve: {x:-6, y:0, c:"\ue0a1"},
   HD: {x:-5.2, y:0, c:"\ue0a2"},
@@ -153,12 +137,6 @@ var tgls = {
   snap: {x:-2, y:0, c:"\ue630"},
   ped: {x:-10, y:0, c:"\ue650"},
   pedoff: {x:-5, y:0, c:"\ue655"},
-  "metero.": {c:"\ue910"},		// M:o.	perfect perfect (9/8)
-  metero: {c:"\ue911"},			// M:o  perfect imperfect (3/4)
-  "metero|": {c:"\ue912"},		// M:o| perfect imperfect -1 (3/8)
-  "meterc.": {c:"\ue914"},		// M:c. imperfect perfect (6/8)
-  meterc: {c:"\ue915"},			// M:c  imperfect imperfect (2/4)
-  "meterc|": {c:"\ue918"},		// M:c| imperfect imperfect -3 (2/2)
   longa: {x:-6, y:0, c:"\ue95d"},
   custos: {x:-4, y:3, c:"\uea02"},
   ltr: {x:2, y:6, c:"\ueaa4"}		// long trill element
@@ -167,6 +145,42 @@ var tgls = {
 // glyphs to put in <defs>
 var glyphs = {
 }
+
+// meter glyphs
+var mgls = {
+  " ": "\u0020",	// space
+  "0": "\ue080",
+  "1": "\ue081",
+  "2": "\ue082",
+  "3": "\ue083",
+  "4": "\ue084",
+  "5": "\ue085",
+  "6": "\ue086",
+  "7": "\ue087",
+  "8": "\ue088",
+  "9": "\ue089",
+   C:  "\ue08a",	// common time
+  "C|": "\ue08b",	// cut time
+  "+":  "\ue08c",
+  "(":  "\ue094",
+  ")":  "\ue095",
+  "o.": "\ue910",	// M:o.	perfect perfect (9/8)
+   o:   "\ue911",	// M:o  perfect imperfect (3/4)
+  "o|": "\ue912",	// M:o| perfect imperfect -1 (3/8)
+  "c.": "\ue914",	// M:c. imperfect perfect (6/8)
+   c:   "\ue915",	// M:c  imperfect imperfect (2/4)
+  "c|": "\ue918",	// M:c| imperfect imperfect -3 (2/2)
+}
+
+// convert a meter string to a SmuFL encoded string
+function m_gl(s) {
+	return s.replace(/[Cco]\||[co]\.|./g,
+		function(e) {
+			return mgls[e]
+		})
+}
+
+
 
 // mark a glyph as used and add it in <defs>
 function def_use(gl) {
