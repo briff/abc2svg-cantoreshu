@@ -246,7 +246,7 @@ function render2() {
 				elt_ref.diverr.innerHTML ? 'inline' : 'none';
 }
 
-// select a source ABC element
+// select a source ABC element on error
 function gotoabc(l, c) {
 	var	s = elt_ref.source,
 		idx = 0;
@@ -266,8 +266,9 @@ function gotoabc(l, c) {
 }
 
 // click in the target
-function svgsel(evt) {
-var	elt = evt.target,
+function selsvg(evt) {
+    var	v,
+	elt = evt.target,
 	cl = elt.getAttribute('class'),
 	ctxMenu = document.getElementById("ctxMenu");
 
@@ -290,17 +291,19 @@ var	elt = evt.target,
 	}
 
 	// highlight the clicked element or clear the selection start
-	if (cl && cl.substr(0, 4) == 'abcr')
-		setsel(0, Number(cl.slice(6, -1)))
-	else
-		setsel(0, 0);
-
-	// clear the selection stop
-	setsel(1, 0)
+	s = elt_ref.source;
+	if (cl && cl.substr(0, 4) == 'abcr') {
+		v = Number(cl.slice(6, -1));
+		s.setSelectionRange(v, srcend[v])
+	} else {
+		s.setSelectionRange(0, 0)
+	}
+	s.blur();
+	s.focus()
 }
 
 // set/clear a selection
-function setsel(idx, v, seltxt) {
+function setsel(idx, v) {
     var i, elts, s,
 	old_v = selx[idx];
 
@@ -320,13 +323,6 @@ function setsel(idx, v, seltxt) {
 	}
 
 	selx[idx] = v
-	if (idx != 0 || seltxt || !v)
-		return
-	s = elt_ref.source;
-	selsrc(0);
-	s.setSelectionRange(v, srcend[v]);
-	s.blur();
-	s.focus()
 }
 
 function do_scroll(elt) {
@@ -359,9 +355,13 @@ function seltxt(evt) {
 
 	play.loop = false
 
-	if (!start
-	 || end == elt.value.length)
-		return				// select all
+	if (!start) {
+		if (end == elt.value.length)
+			return			// select all
+		setsel(0, 0);			// clear selection
+		setsel(1, 0)
+		return
+	}
 
 	if (srcend) {
 		srcend.forEach(function(ie, is) {
@@ -376,7 +376,7 @@ function seltxt(evt) {
 	if (!s)
 		return
 	if (selx[0] != s)
-		setsel(0, s, true)
+		setsel(0, s)
 	if (selx[1] != e)
 		setsel(1, e);
 	elts = document.getElementsByClassName('_' + s + '_')
@@ -475,6 +475,9 @@ function endplay() {
 		return
 	}
 	play.playing = false;
+
+	// redisplay the selection
+	selx[0] = selx[1] = 0;
 	setsel(0, selx_sav[0]);
 	setsel(1, selx_sav[1])
 }
@@ -725,7 +728,7 @@ function edit_init() {
 	document.getElementById("saveas").onclick = saveas;
 	elt_ref.s0.onclick = function(){selsrc(0)};
 	elt_ref.s1.onclick = function(){selsrc(1)};
-	elt_ref.target.onclick = svgsel;
+	elt_ref.target.onclick = selsvg;
 	elt_ref.source.onselect = seltxt;
 
 	// remove the selection on print
