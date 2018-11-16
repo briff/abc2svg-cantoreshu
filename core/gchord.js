@@ -142,6 +142,7 @@ function parse_gchord(type) {
 					break
 				}
 				if (c == ';') {
+					i++;
 					gch.text += c
 					continue
 				}
