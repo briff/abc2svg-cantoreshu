@@ -4,7 +4,7 @@
 //
 // Parameters
 //	%%soloffs <type>=<offset> [<type>=<offset>]*
-//		<type> is one of 'bar', 'part' or 'meter
+//		<type> is one of 'part', 'tempo' or 'space'
 //		<offset> is the X offset from the start of staff
 
 abc2svg.soloffs = {
