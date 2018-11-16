@@ -207,6 +207,7 @@ function render() {
 		}
 	}
 	elt_ref.diverr.innerHTML = '';
+	selx[0] = selx[1] = 0;
 	render2()
 }
 function render2() {
