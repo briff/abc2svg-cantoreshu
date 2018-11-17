@@ -2568,12 +2568,18 @@ function parse_music_line() {
 					tp.r--
 					if (tp.r == 0) {
 						if (tpn-- == 0) {
-							s.te0 = true;
+							if (s.tp0)	// if one note
+								s.tp0 = false
+							else
+								s.te0 = true;
 							tp_fact = 1;
 							curvoice.time = Math.round(curvoice.time);
 							s.dur = curvoice.time - s.time
 						} else {
-							s.te1 = true;
+							if (s.tp1)	// if one note
+								s.tp1 = false
+							else
+								s.te1 = true;
 							tp = tp_a[0]
 							if (tp.r == 0) {
 								tpn--;
