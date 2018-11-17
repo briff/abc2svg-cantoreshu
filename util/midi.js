@@ -49,6 +49,7 @@ function AbcMIDI() {
 			bmap = new Int8Array(7),	// measure base map
 			map = new Int8Array(70),	// current map - 10 octaves
 			tie_map,			// index = MIDI pitch
+			tie_time,
 			v,
 			transp				// clef transpose
 
@@ -87,7 +88,7 @@ function AbcMIDI() {
 			if (a)
 				map[p] = a == 3 ? 0 : a; // (3 = natural)
 			return ((p / 7) | 0) * 12 + scale[p % 7] +
-						(tie_map[p] ||  map[p])
+					(tie_time[p] ? tie_map[p] :  map[p])
 		} // pit2midi()
 
 		// initialize the clefs and keys
@@ -110,10 +111,10 @@ function AbcMIDI() {
 		var	i, g, p, note,
 			s = voice_tb[v].sym,
 			vtime = s.time,		// next time
-			tie_time = [],
 			rep_tie_map = []
 
 		tie_map = []
+		tie_time = []
 		while (s) {
 			if (s.time > vtime) {	// if time skip
 				bar_map()	// force a measure bar
@@ -169,7 +170,7 @@ function AbcMIDI() {
 					note = s.notes[i];
 					p = note.pit + 19 +	// pitch from C-1
 							transp
-					if (tie_map[p]) {
+					if (tie_time[p]) {
 						if (s.time > tie_time[p]) {
 							delete tie_map[p]
 							delete tie_time[p]
