@@ -15,16 +15,18 @@ abc2svg.sth = {
 // function called after beam calculation
     recal_beam: function(bm, s) {
     var staff_tb = this.get_staff_tb(),
-	st = s.st,
-	s2 = bm.s2
+	y = staff_tb[s.st].y,
+	s2 = bm.s2,
+	y2 = staff_tb[s2.st].y
+
 	if (s.sth)
 		s.ys = s.sth
 	if (s2.sth)
 		s2.ys = s2.sth;
-	bm.a = (s.ys- s2.ys) / (s.xs - s2.xs);
-	bm.b = s.ys - s.xs * bm.a + staff_tb[st].y
+	bm.a = (s.ys + y - s2.ys - y2) / (s.xs - s2.xs);
+	bm.b = s.ys - s.xs * bm.a + y
 	while (1) {
-		s.ys = bm.a * s.xs + bm.b - staff_tb[st].y
+		s.ys = bm.a * s.xs + bm.b - y
 		if (s.stem > 0)
 			s.ymx = s.ys + 2.5
 		else
@@ -81,7 +83,7 @@ abc2svg.sth = {
 
     calculate_beam: function(of, bm, s1) {
     var	done = of(bm, s1)
-	if (done && bm.s2 && s1.sth)
+	if (done && bm.s2 && (s1.sth || bm.s2.sth))
 		abc2svg.sth.recal_beam.call(this, bm, s1)
 	return done
     },
@@ -93,7 +95,7 @@ abc2svg.sth = {
 
 	if (curvoice.sth && s && s.type == C.NOTE) {
 		s.sth = curvoice.sth;
-		curvoice.sth = null
+		curvoice.sth = null	// some stem widths in this voice
 	}
 	return s
     },
