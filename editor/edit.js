@@ -509,6 +509,8 @@ function play_tune(what) {
 		if (si >= pa[pa.length - 1][0])
 			return pa.length
 
+		si = go_note(si);
+
 		i = pa.length
 		while (--i > 0) {
 			s = pa[i][0]
@@ -535,8 +537,8 @@ function play_tune(what) {
 		return ci + 1
 	} // get_se()
 
-	function get_ee(si) {			// get lowest ending event
-	    var	i, s, tim,
+	function get_ee(si, i) {		// get lowest ending event
+	    var	s, tim,
 		sil = 0,
 		pa = play.a_pe,
 		ci = 0
@@ -546,7 +548,9 @@ function play_tune(what) {
 		if (si >= pa[pa.length - 1][0])
 			return pa.length
 
-		for (i = 0; i < pa.length; i++) {
+		si = go_note(si)
+
+		for ( ; i < pa.length; i++) {
 			s = pa[i][0]
 			if (s > si)
 				continue
@@ -582,9 +586,21 @@ function play_tune(what) {
 		play.abcplay.play(si, ei, play.a_pe)	// start playing
 	}
 
+	// play tune()
     var	abc, i, si, ei, elt, tim,
 	s = elt_ref.source.value,
 	ctxMenu = document.getElementById("ctxMenu");
+
+	// search a note/rest in the source from a selection
+	function go_note(si) {
+		for (var i = si; ; i++) {
+			if (!s[i])
+				return si
+			if ('ABCDEFGabcdefg[^_='.indexOf(s[i]) >= 0)
+				break
+		}
+		return i
+	}
 
 	ctxMenu.style.display = "none";	// remove the play menu
 
@@ -633,15 +649,15 @@ function play_tune(what) {
 	}
 	if (what != 0 && selx[0] && selx[1]) {	// if full selection
 		si = get_se(selx[0]);
-		ei = get_ee(selx[1])
+		ei = get_ee(selx[1], si)
 	} else if (what != 0 && selx[0]) {	// if selection without end
 		si = get_se(selx[0]);
 		i = s.indexOf('\nX:', selx[0]);
-		ei = i < 0 ? play.a_pe.length : get_ee(i)
+		ei = i < 0 ? play.a_pe.length : get_ee(i, si)
 	} else if (what != 0 && selx[1]) {	// if selection without start
 		i = s.lastIndexOf('\nX:', selx[1]);
 		si = i < 0 ? 0 : get_se(i);
-		ei = get_ee(selx[1])
+		ei = get_ee(selx[1], si)
 	} else {				// no selection => tune
 		elt = play.svg.getElementsByClassName('abcr');
 		i = elt ? Number(elt[0].getAttribute('class').slice(6, -1)) : 0;
@@ -655,7 +671,7 @@ function play_tune(what) {
 			si = s.indexOf('\nK:', ++ei)
 			if (si < 0)
 				break
-			ei = si
+			ei = s.indexOf('\n', si + 1) + 1
 		}
 		if (si <= 0) {
 			play.playing = false
@@ -663,7 +679,7 @@ function play_tune(what) {
 		}
 
 		si = get_se(si);
-		ei = ei < 0 ? play.a_pe.length : get_ee(ei)
+		ei = ei < 0 ? play.a_pe.length : get_ee(ei, si)
 	}
 
 	if (what != 3) {		// if not continue
