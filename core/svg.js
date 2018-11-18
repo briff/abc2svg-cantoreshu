@@ -159,17 +159,19 @@ var mgls = {
   "7": "\ue087",
   "8": "\ue088",
   "9": "\ue089",
-   C:  "\ue08a",	// common time
-  "C|": "\ue08b",	// cut time
+   C:  "\ue08a",	// common time (4/4)
+//  "C|": "\ue08b",	// cut time (2/2) (unused)
   "+":  "\ue08c",
   "(":  "\ue094",
   ")":  "\ue095",
-  "o.": "\ue910",	// M:o.	perfect perfect (9/8)
-   o:   "\ue911",	// M:o  perfect imperfect (3/4)
-  "o|": "\ue912",	// M:o| perfect imperfect -1 (3/8)
-  "c.": "\ue914",	// M:c. imperfect perfect (6/8)
-   c:   "\ue915",	// M:c  imperfect imperfect (2/4)
-  "c|": "\ue918",	// M:c| imperfect imperfect -3 (2/2)
+//  "o.": "\ue910",	// (unused)
+   o:   "\ue911",	// tempus perfectum
+//  "o|": "\ue912",	// (unused)
+//  "c.": "\ue914",	// (unused)
+   c:   "\ue915",	// tempus imperfectum
+//  "c|": "\ue918",	// (unused)
+  ".":  "\ue920",	// prolatione perfecta
+  "|":  "\ue925"	// (twice as fast)
 }
 
 // convert a meter string to a SmuFL encoded string

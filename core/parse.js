@@ -689,8 +689,6 @@ function new_meter(text) {
 			switch (p[i]) {
 			case 'C':
 				meter.top = p[i++]
-				if (p[i] == '|')
-					meter.top += p[i++];
 				if (!m1) {
 					m1 = 4;
 					m2 = 4
@@ -699,19 +697,28 @@ function new_meter(text) {
 			case 'c':
 			case 'o':
 				meter.top = p[i++]
-				if (p[i] == '.' || p[i] == '|')
-					meter.top += p[i++]
 				if (!m1) {
-					switch (meter.top) {
-					case 'c': m1 = 2; m2 = 4; break
-					case 'c.': m1 = 6; m2 = 8; break
-					case 'c|': m1 = 2; m2 = 2; break
-					case 'o': m1 = 3; m2 = 4; break
-					case 'o.': m1 = 9; m2 = 8; break
-					default:
-					case 'o|': m1 = 3; m2 = 8; break
+					if (p[-1] == 'c') {
+						m1 = 2;
+						m2 = 4
+					} else {
+						m1 = 3;
+						m2 = 4
+					}
+					switch (p[i]) {
+					case '|':
+						m2 /= 2
+						break
+					case '.':
+						m1 *= 3;
+						m2 *= 2
+						break
 					}
 				}
+				break
+			case '.':
+			case '|':
+				meter.top = p[i++]
 				break
 			case '(':
 				if (p[i + 1] == '(') {	/* "M:5/4 ((2+3)/4)" */

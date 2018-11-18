@@ -807,6 +807,10 @@ function set_width(s) {
 				s.x_meter[i] = wlw + 6;
 				wlw += 12
 				break
+			case '.':
+			case '|':
+				s.x_meter[i] = s.x_meter[i - 1]
+				break
 			default:
 				w = 0
 				if (!meter.bot
