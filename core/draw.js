@@ -95,7 +95,7 @@ var min_tb = [
 
 // (possible hook)
 function calculate_beam(bm, s1) {
-	var	s, s2, notes, nflags, st, v, two_staves, two_dir,
+    var	s, s2, g, notes, nflags, st, v, two_staves, two_dir,
 		x, y, ys, a, b, stem_err, max_stem_err,
 		p_min, p_max, s_closest,
 		stem_xoff, scale,
@@ -180,7 +180,7 @@ function calculate_beam(bm, s1) {
 //		if (!two_staves && !s1.grace) {
 		if (!two_staves) {
 			bm.s1 = s1;	/* beam already calculated */
-			bm.a = (s1.ys- s2.ys) / (s1.xs - s2.xs);
+			bm.a = (s1.ys - s2.ys) / (s1.xs - s2.xs);
 			bm.b = s1.ys - s1.xs * bm.a + staff_tb[st].y;
 			bm.nflags = nflags
 			return true
@@ -246,10 +246,9 @@ function calculate_beam(bm, s1) {
 		ys = ((s1.grace ? 3.5 : BEAM_SHIFT) * (nflags - 1) +
 			BEAM_DEPTH) * .5
 		if (s1.stem != s2.stem && s1.nflags < s2.nflags)
-			ys *= s2.stem
+			b += ys * s2.stem
 		else
-			ys *= s1.stem;
-		b += ys
+			b += ys * s1.stem
 	} else if (!s1.grace) {		/* normal notes */
 		var beam_h = BEAM_DEPTH + BEAM_SHIFT * (nflags - 1)
 //--fixme: added for abc2svg
@@ -342,7 +341,6 @@ function calculate_beam(bm, s1) {
 /*fixme: test*/
     if (!two_staves && !two_dir)
 	for (s = s1.next; ; s = s.next) {
-		var g
 		switch (s.type) {
 		case C.REST:		/* cannot move rests in multi-voices */
 			g = s.ts_next
