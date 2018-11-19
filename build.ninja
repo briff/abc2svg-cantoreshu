@@ -126,9 +126,9 @@ default all
 # npm/fossil new release
 rule version
   command = npm version $out;$
-	$tool -v;$
 	tag=`ag '"version"' package.json|cut -d'"' -f4`;$
 	fossil commit -m "New release v$$tag" -tag v$$tag;$
+	$tool -v;$
 	npm publish
 build minor: version
 build patch: version
