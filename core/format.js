@@ -535,8 +535,7 @@ function set_format(cmd, param, lock) {
 				break
 			}
 		for (i = 0; i < 3; i++)
-			cfmt[cmd] = Number(v[i])
-		break
+			cfmt[cmd][i] = Number(v[i])
 		break
 	case "tuplets":
 		cfmt[cmd] = param.split(/\s+/);
