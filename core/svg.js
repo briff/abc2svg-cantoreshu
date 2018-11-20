@@ -18,9 +18,14 @@
 // along with abc2svg-core.  If not, see <http://www.gnu.org/licenses/>.
 
 var	output = "",		// output buffer
-	style = '\n.fill {fill: currentColor}\
-\n.stroke {stroke: currentColor; fill: none}\
-\n.music text, .music tspan {fill:currentColor}',
+	style = '\n.fill{fill:currentColor}\
+\n.stroke{stroke:currentColor;fill:none}\
+\n.bW{stroke-width:1}\
+\n.bthW{stroke-width:3}\
+\n.slW{stroke-width:.7}\
+\n.slthW{stroke-width:1.5}\
+\n.sW{stroke-width:.7}\
+\n.music text, .music tspan{fill:currentColor}',
 	font_style = '',
 	posx = cfmt.leftmargin / cfmt.scale,	// default x offset of the images
 	posy = 0,		// y offset in the block
@@ -545,7 +550,7 @@ function out_bar(x, y, h, dotted) {
 	} else {
 		dotted = ''
 	}
-	output += '<path class="stroke" stroke-width="1" ' + dotted +
+	output += '<path class="stroke bW" ' + dotted +
 		'd="m' + (x + posx).toFixed(2) +
 		' ' + (posy - y).toFixed(2) + 'v' + (-h).toFixed(2) +
 		'"/>\n'
@@ -608,7 +613,7 @@ function out_stem(x, y, h, grace,
 	x += dx * stv_g.scale
 	if (stv_g.st < 0)
 		slen /= stv_g.scale;
-	out_XYAB('<path class="stroke" d="mX YvF"/>\n',	// stem
+	out_XYAB('<path class="stroke sW" d="mX YvF"/>\n',	// stem
 		x, y, slen)
 	if (!nflags)
 		return
@@ -703,7 +708,7 @@ function out_stem(x, y, h, grace,
 function out_thbar(x, y, h) {
 	x += posx + 1.5;
 	y = posy - y;
-	output += '<path class="stroke" stroke-width="3" d="m' +
+	output += '<path class="stroke bthW" d="m' +
 		x.toFixed(2) + ' ' + y.toFixed(2) +
 		'v' + (-h).toFixed(2) + '"/>\n'
 }

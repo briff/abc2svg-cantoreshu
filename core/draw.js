@@ -3030,7 +3030,7 @@ function draw_all_slurs(p_voice) {
  *   - decorations tied to the notes
  *   - slurs
  * - not scaled
- *   - guitar chords
+ *   - chord symbols
  *   - staff decorations
  *   - lyrics
  *   - measure numbers
@@ -3495,10 +3495,9 @@ function draw_systems(indent) {
 				if (ty != undefined)
 					ln += '"/>\n';
 				ty = stafflines[i]
-				ln += '<path class="stroke"'
-				if (ty == '[')
-					ln += ' stroke-width="1.5"';
-				ln += ' d="m0 ' + y + 'h' + ws.toFixed(2);
+				ln += '<path class="stroke ' +
+					(ty == '[' ? 'slthW' : 'slW') +
+					'" d="m0 ' + y + 'h' + ws.toFixed(2);
 				dy = 0
 			}
 			ln += '"/>\n'
