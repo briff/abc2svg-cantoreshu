@@ -2105,7 +2105,7 @@ function new_note(grace, tp_fact) {
 				s2.head = res[0];
 				s2.dots = res[1];
 				s2.nflags = res[2]
-				if (s2.nflags <= -2)
+				if (s2.nflags <= -2 || curvoice.pos.stm == C.SL_HIDDEN)
 					s2.stemless = true
 				else
 					delete s2.stemless
