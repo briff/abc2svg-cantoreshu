@@ -3967,10 +3967,10 @@ function set_stems() {
 		/* set height of stem end */
 		slen = cfmt.stemheight
 		switch (nflags) {
-		case 2: slen += 2; break
-		case 3:	slen += 5; break
-		case 4:	slen += 10; break
-		case 5:	slen += 16; break
+		case 2: slen += 1; break
+		case 3:	slen += 4; break
+		case 4:	slen += 8; break
+		case 5:	slen += 11; break
 		}
 		if ((scale = s.p_v.scale) != 1)
 			slen *= (scale + 1) * .5;

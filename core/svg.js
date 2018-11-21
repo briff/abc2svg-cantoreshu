@@ -618,23 +618,17 @@ function out_stem(x, y, h, grace,
 	if (!nflags)
 		return
 
-	output += '<path class="fill"\n\
-	d="';
 	y += h
 	if (h > 0) {				// up
 		if (!straight) {
 			if (!grace) {
-				if (nflags == 1) {
-					out_XYAB('MX Yc0.6 5.6 9.6 9 5.6 18.4\n\
-	1.6 -6 -1.3 -11.6 -5.6 -12.8\n', x, y)
-				} else {
-					while (--nflags >= 0) {
-						out_XYAB('MX Yc0.9 3.7 9.1 6.4 6 12.4\n\
-	1 -5.4 -4.2 -8.4 -6 -8.4\n', x, y);
-						y -= 5.4
-					}
-				}
+				if (--nflags > 1)
+					y -= 4 + 3.5 * (nflags - 2);
+				out_XYAB('<text x="X" y="Y">A</text>\n',
+					x - .3, y, String.fromCharCode(0xe240 + nflags * 2))
+				return
 			} else {		// grace
+				output += '<path class="fill" d="'
 				if (nflags == 1) {
 					out_XYAB('MX Yc0.6 3.4 5.6 3.8 3 10\n\
 	1.2 -4.4 -1.4 -7 -3 -7\n', x, y)
@@ -647,6 +641,8 @@ function out_stem(x, y, h, grace,
 				}
 			}
 		} else {			// straight
+			output += '<path class="fill" d="'
+//fixme: to do
 			if (!grace) {
 //fixme: check endpoints
 				y += 1
@@ -666,17 +662,13 @@ function out_stem(x, y, h, grace,
 	} else {				// down
 		if (!straight) {
 			if (!grace) {
-				if (nflags == 1) {
-					out_XYAB('MX Yc0.6 -5.6 9.6 -9 5.6 -18.4\n\
-	1.6 6 -1.3 11.6 -5.6 12.8\n', x, y)
-				} else {
-					while (--nflags >= 0) {
-						out_XYAB('MX Yc0.9 -3.7 9.1 -6.4 6 -12.4\n\
-	1 5.4 -4.2 8.4 -6 8.4\n', x, y);
-						y += 5.4
-					}
-				}
+				if (--nflags > 1)
+					y += 4 + 3.5 * (nflags - 2);
+				out_XYAB('<text x="X" y="Y">A</text>\n',
+					x - .3, y, String.fromCharCode(0xe241 + nflags * 2))
+				return
 			} else {		// grace
+				output += '<path class="fill" d="'
 				if (nflags == 1) {
 					out_XYAB('MX Yc0.6 -3.4 5.6 -3.8 3 -10\n\
 	1.2 4.4 -1.4 7 -3 7\n', x, y)
@@ -689,6 +681,7 @@ function out_stem(x, y, h, grace,
 				}
 			}
 		} else {			// straight
+			output += '<path class="fill" d="'
 			if (!grace) {
 //fixme: check endpoints
 				y += 1
