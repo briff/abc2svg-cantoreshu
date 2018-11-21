@@ -27,6 +27,8 @@ abc2svg.grid2 = {
 				s.invis = true;	//  as invisible
 				delete s.sl1;	//  with no slur
 				s.ti1 = 0	//  and no tie
+				if (s.tf)	// don't show the tuplets
+					s.tf[0] = 1
 			}
 		}
 	}
