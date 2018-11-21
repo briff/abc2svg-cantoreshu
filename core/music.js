@@ -4634,9 +4634,9 @@ function output_music() {
 				posx += indent;
 			draw_sym_near();		// delayed output
 			line_height = set_staff();
-			delayed_update();
 			draw_systems(indent);
 			draw_all_sym();
+			delayed_update();
 			vskip(line_height)
 			if (indent != 0) {
 				posx -= indent;
