@@ -101,8 +101,6 @@ function mrest_expand(s) {
 	var a_dd = s.a_dd;
 	s.type = C.REST;
 	s.dur = dur;
-	s.head = C.FULL;
-	s.nflags = -2;
 
 	/* add the bar(s) and rest(s) */
 	next = s.next;
@@ -118,8 +116,6 @@ function mrest_expand(s) {
 		if (s.invis)
 			s2.invis = true;
 		s2.dur = dur;
-		s2.head = C.FULL;
-		s2.nflags = -2;
 		p_voice.time += dur
 	}
 	s2.next = next

@@ -1112,14 +1112,6 @@ function adjust_dur(s) {
 		for (i = 0; i <= s2.nhd; i++)
 			s2.notes[i].dur = s2.notes[i].dur
 					 * curvoice.wmeasure / auto_time;
-		res = identify_note(s2, s2.dur_orig);
-		s2.head = res[0];
-		s2.dots = res[1];
-		s2.nflags = res[2]
-		if (s2.nflags <= -2)
-			s2.stemless = true
-		else
-			delete s2.stemless
 	}
 	curvoice.time = s.time = time
 }
@@ -1918,7 +1910,7 @@ function new_note(grace, tp_fact) {
 		line.index++;
 		nd = parse_dur(line);
 		s.dur_orig = ((curvoice.ulen < 0) ?
-					15120 :	// 2*2*2*2*3*3*3*5*7
+					C.BLEN :
 					curvoice.ulen) * nd[0] / nd[1];
 		s.dur = s.dur_orig * curvoice.dur_fact;
 		s.notes = [{
@@ -1983,7 +1975,7 @@ function new_note(grace, tp_fact) {
 			note = parse_basic_note(line,
 					s.grace ? C.BLEN / 4 :
 					curvoice.ulen < 0 ?
-						15120 :	// 2*2*2*2*3*3*3*5*7
+						C.BLEN :
 						curvoice.ulen)
 			if (!note)
 				return //null
@@ -2101,14 +2093,6 @@ function new_note(grace, tp_fact) {
 							s2.notes[i].dur * n / num
 				}
 				curvoice.time = s2.time + s2.dur;
-				res = identify_note(s2, s2.dur_orig);
-				s2.head = res[0];
-				s2.dots = res[1];
-				s2.nflags = res[2]
-				if (s2.nflags <= -2 || curvoice.pos.stm == C.SL_HIDDEN)
-					s2.stemless = true
-				else
-					delete s2.stemless
 
 				// adjust the time of the grace notes, bars...
 				for (s2 = s2.next; s2; s2 = s2.next)
@@ -2125,32 +2109,23 @@ function new_note(grace, tp_fact) {
 				s.stem = grace.stem
 		}
 
-		// set the symbol parameters
-		if (s.type == C.NOTE) {
-			res = identify_note(s, s.dur_orig);
-			s.head = res[0];
-			s.dots = res[1];
-			s.nflags = res[2]
-			if (s.nflags <= -2)
-				s.stemless = true
-		} else {					// rest
+		// adjust the duration
+		dur = s.dur_orig
+		if (curvoice.ulen < 0) {
+			dur = C.BLEN
+		} else if (s.type == C.REST
 
 			/* change the figure of whole measure rests */
-//--fixme: does not work in sample.abc because broken rhythm on measure bar
-			dur = s.dur_orig
-			if (dur == curvoice.wmeasure) {
-				if (dur < C.BLEN * 2)
-					dur = C.BLEN
-				else if (dur < C.BLEN * 4)
-					dur = C.BLEN * 2
-				else
-					dur = C.BLEN * 4
-			}
-			res = identify_note(s, dur);
-			s.head = res[0];
-			s.dots = res[1];
-			s.nflags = res[2]
+//--fixme: does not work in abcm2ps sample.abc because broken rhythm on measure bar
+			&& dur == curvoice.wmeasure) {
+			if (dur < C.BLEN * 2)
+				dur = C.BLEN
+			else if (dur < C.BLEN * 4)
+				dur = C.BLEN * 2
+			else
+				dur = C.BLEN * 4
 		}
+
 		curvoice.last_note = s
 	}
 
@@ -2677,10 +2652,6 @@ function parse_music_line() {
 						s.notes[i].dur *= 2;
 					s.dur *= 2;
 					s.dur_orig *= 2
-					var res = identify_note(s, s.dur_orig);
-					s.head = res[0];
-					s.dots = res[1];
-					s.nflags = res[2]
 				}
 				curvoice.last_note = last_note_sav;
 				a_dcn = a_dcn_sav

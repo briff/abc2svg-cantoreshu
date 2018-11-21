@@ -226,12 +226,17 @@ function ToAudio() {
 				}
 			}
 
-			if (!next.dots)
-				d = next.dur / 2
-			else if (next.dots == 1)
-				d = next.dur / 3
+//			if (!next.dots)
+//				d = next.dur / 2
+//			else if (next.dots == 1)
+//				d = next.dur / 3
+//			else
+//				d = next.dur * 2 / 7;
+			d = next.dur / 12
+			if (d & (d - 1) == 0)
+				d = next.dur / 2	// no dot
 			else
-				d = next.dur * 2 / 7;
+				d = next.dur / 3;
 			next.time += d;
 			next.dur -= d
 		}

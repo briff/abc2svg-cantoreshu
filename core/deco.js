@@ -789,7 +789,7 @@ function deco_cnv(a_dcn, s, prev) {
 			if (s.type != C.NOTE
 			 || !prev
 			 || prev.type != C.NOTE
-			 || s.nflags != prev.nflags) {
+			 || s.dur != prev.dur) {
 				error(1, s,
 					"!$1! must be on the last of a couple of notes",
 					dd.name)
@@ -798,22 +798,9 @@ function deco_cnv(a_dcn, s, prev) {
 			s.trem2 = true;
 			s.beam_end = true;
 //			s.beam_st = false;
-			prev.trem2 = true;
 			prev.beam_st = true;
 //			prev.beam_end = false;
 			s.ntrem = prev.ntrem = Number(dd.name[4]);
-			prev.nflags = --s.nflags;
-			prev.head = ++s.head
-			if (s.nflags > 0) {
-				s.nflags += s.ntrem;
-			} else {
-				if (s.nflags <= -2) {
-					s.stemless = true;
-					prev.stemless = true
-				}
-				s.nflags = s.ntrem;
-			}
-			prev.nflags = s.nflags
 			for (j = 0; j <= s.nhd; j++)
 				s.notes[j].dur *= 2;
 			for (j = 0; j <= prev.nhd; j++)
@@ -825,7 +812,6 @@ function deco_cnv(a_dcn, s, prev) {
 				continue
 			}
 			s.xstem = true;
-			s.nflags = 0		// beam break
 			continue
 		case 36:		/* beambr1 / beambr2 */
 			if (s.type != C.NOTE) {
@@ -847,10 +833,6 @@ function deco_cnv(a_dcn, s, prev) {
 			}
 			s.trem1 = true;
 			s.ntrem = dd.name.length	/* 1, 2 or 3 */
-			if (s.nflags > 0)
-				s.nflags += s.ntrem
-			else
-				s.nflags = s.ntrem
 			continue
 		case 39:		/* beam-accel/beam-rall */
 			if (s.type != C.NOTE) {
