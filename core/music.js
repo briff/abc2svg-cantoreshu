@@ -3037,6 +3037,8 @@ function set_words(p_voice) {
 				else
 					s.nflags = s.ntrem
 			}
+			if (s.next && s.next.trem2)
+				break
 			if (s.trem2) {
 				s.prev.trem2 = true;
 				s.prev.nflags = --s.nflags;
