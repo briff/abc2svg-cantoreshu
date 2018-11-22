@@ -50,6 +50,7 @@ var	output = "",		// output buffer
 
 // glyphs in music font
 var tgls = {
+ "mtr ": {x:0, y:0, c:"\u0020"},	// space
   brace: {x:0, y:0, c:"\ue000"},
   hl: {x:-4, y:0, c:"\ue022"},
   hl1: {x:-6, y:0, c:"\ue023"},
@@ -72,6 +73,21 @@ var tgls = {
   scclef: {x:-8, y:0, c:"\ue07b"},
   sbclef: {x:-7, y:0, c:"\ue07c"},
   oct: {x:0, y:2, c:"\ue07d"},		// 8 for clefs
+  mtr0: {x:0, y:0, c:"\ue080"},		// meters
+  mtr1: {x:0, y:0, c:"\ue081"},
+  mtr2: {x:0, y:0, c:"\ue082"},
+  mtr3: {x:0, y:0, c:"\ue083"},
+  mtr4: {x:0, y:0, c:"\ue084"},
+  mtr5: {x:0, y:0, c:"\ue085"},
+  mtr6: {x:0, y:0, c:"\ue086"},
+  mtr7: {x:0, y:0, c:"\ue087"},
+  mtr8: {x:0, y:0, c:"\ue088"},
+  mtr9: {x:0, y:0, c:"\ue089"},
+  mtrC: {x:0, y:0, c:"\ue08a"},		// common time (4/4)
+//  "mtrC|": {x:0, y:0, c:"\ue08b"},	// cut time (2/2) (unused)
+  "mtr+":  {x:0, y:0, c:"\ue08c"},
+  "mtr(":  {x:0, y:0, c:"\ue094"},
+  "mtr)":  {x:0, y:0, c:"\ue095"},
   HDD: {x:-7, y:0, c:"\ue0a0"},
   breve: {x:-6, y:0, c:"\ue0a1"},
   HD: {x:-5.2, y:0, c:"\ue0a2"},
@@ -152,6 +168,14 @@ var tgls = {
   snap: {x:-2, y:0, c:"\ue630"},
   ped: {x:-10, y:0, c:"\ue650"},
   pedoff: {x:-5, y:0, c:"\ue655"},
+// "mtro.": {x:0, y:0, c:"\ue910"},	// (unused)
+  mtro:   {x:0, y:0, c:"\ue911"},		// tempus perfectum
+// "mtro|": {x:0, y:0, c:"\ue912"},	// (unused)
+// "mtrc.": {x:0, y:0, c:"\ue914"},	// (unused)
+  mtrc:   {x:0, y:0, c:"\ue915"},	// tempus imperfectum
+// "mtrc|": {x:0, y:0, c:"\ue918"},	// (unused)
+ "mtr.":  {x:0, y:0, c:"\ue920"},	// prolatione perfecta
+ "mtr|":  {x:0, y:0, c:"\ue925"},	// (twice as fast)
   longa: {x:-6, y:0, c:"\ue95d"},
   custos: {x:-4, y:3, c:"\uea02"},
   ltr: {x:2, y:6, c:"\ueaa4"}		// long trill element
@@ -161,43 +185,18 @@ var tgls = {
 var glyphs = {
 }
 
-// meter glyphs
-var mgls = {
-  " ": "\u0020",	// space
-  "0": "\ue080",
-  "1": "\ue081",
-  "2": "\ue082",
-  "3": "\ue083",
-  "4": "\ue084",
-  "5": "\ue085",
-  "6": "\ue086",
-  "7": "\ue087",
-  "8": "\ue088",
-  "9": "\ue089",
-   C:  "\ue08a",	// common time (4/4)
-//  "C|": "\ue08b",	// cut time (2/2) (unused)
-  "+":  "\ue08c",
-  "(":  "\ue094",
-  ")":  "\ue095",
-//  "o.": "\ue910",	// (unused)
-   o:   "\ue911",	// tempus perfectum
-//  "o|": "\ue912",	// (unused)
-//  "c.": "\ue914",	// (unused)
-   c:   "\ue915",	// tempus imperfectum
-//  "c|": "\ue918",	// (unused)
-  ".":  "\ue920",	// prolatione perfecta
-  "|":  "\ue925"	// (twice as fast)
-}
-
 // convert a meter string to a SmuFL encoded string
 function m_gl(s) {
 	return s.replace(/[Cco]\||[co]\.|./g,
 		function(e) {
-			return mgls[e]
+		    var	m = tgls["mtr" + e]
+			if (!m.x && !m.y)
+				return m.c
+			return '<tspan dx="'+ m.x.toFixed(2) +
+				'" dy="' + m.y.toFixed(2) + '">' +
+				m.c + '</tspan>'
 		})
 }
-
-
 
 // mark a glyph as used and add it in <defs>
 function def_use(gl) {
