@@ -41,7 +41,6 @@ abc2svg.equalbars = {
 		switch (s2.type) {
 		default:
 			continue
-		case C.BAR:
 		case C.GRACE:
 		case C.MREST:
 		case C.NOTE:
@@ -55,25 +54,21 @@ abc2svg.equalbars = {
 		return
 
 	// build an array of the bars
-	s = s2.ts_next;
-	t0 = t = s.time
-	while (1) {
-		if (!s.ts_next) {
-			bars.push([s, s.time - t]);
-			t = s.time
-			if (s.dur)
-				t += s.dur
-			break
-		}
+	t0 = t = s2.time
+	for (s = s2; s.ts_next; s = s.ts_next) {
 		if (s.type == C.BAR && s.seqst) {
 			bars.push([s, s.time - t]);
 			t = s.time
 		}
-		s = s.ts_next
 	}
+	bars.push([s, s.time - t]);
+	t = s.time
+	if (s.dur)
+		t += s.dur;
+
 	n = bars.length
-	if (n == 0)
-		return				// no bar!
+	if (n <= 1)
+		return				// one or no bar
 
 	// set the measure parameters
 	x = s2.type == C.GRACE ? s2.extra.x : s2.x;
