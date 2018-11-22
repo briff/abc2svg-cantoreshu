@@ -86,6 +86,16 @@ var tgls = {
   diamond: {x:-4, y:0, c:"\ue1b9"},
   triangle: {x:-4, y:0, c:"\ue1bb"},
   dot: {x:-2, y:0, c:"\ue1e7"},
+  flu1: {x:-.3, y:0, c:"\ue240"},	// flags
+  fld1: {x:-.3, y:0, c:"\ue241"},
+  flu2: {x:-.3, y:0, c:"\ue242"},
+  fld2: {x:-.3, y:0, c:"\ue243"},
+  flu3: {x:-.3, y:3.5, c:"\ue244"},
+  fld3: {x:-.3, y:-4, c:"\ue245"},
+  flu4: {x:-.3, y:8, c:"\ue246"},
+  fld4: {x:-.3, y:-9, c:"\ue247"},
+  flu5: {x:-.3, y:12.5, c:"\ue248"},
+  fld5: {x:-.3, y:-14, c:"\ue249"},
  "acc-1": {x:-3, y:0, c:"\ue260"},	// flat
   acc3: {x:-2, y:0, c:"\ue261"},	// natural
   acc1: {x:-3, y:0, c:"\ue262"},	// sharp
@@ -608,10 +618,7 @@ function out_stem(x, y, h, grace,
 	if (h > 0) {				// up
 		if (!straight) {
 			if (!grace) {
-				if (--nflags > 1)
-					y -= 4 + 3.5 * (nflags - 2);
-				out_XYAB('<text x="X" y="Y">A</text>\n',
-					x - .3, y, String.fromCharCode(0xe240 + nflags * 2))
+				xygl(x, y, "flu" + nflags)
 				return
 			} else {		// grace
 				output += '<path class="fill" d="'
@@ -648,10 +655,7 @@ function out_stem(x, y, h, grace,
 	} else {				// down
 		if (!straight) {
 			if (!grace) {
-				if (--nflags > 1)
-					y += 4 + 3.5 * (nflags - 2);
-				out_XYAB('<text x="X" y="Y">A</text>\n',
-					x - .3, y, String.fromCharCode(0xe241 + nflags * 2))
+				xygl(x, y, "fld" + nflags)
 				return
 			} else {		// grace
 				output += '<path class="fill" d="'
