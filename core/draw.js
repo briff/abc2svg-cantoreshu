@@ -922,76 +922,6 @@ function bar_cnv(bar_type) {
 	return bar_type
 }
 
-/* -- draw a measure bar -- */
-function draw_bar(s, bot, h) {
-	var	i, s2, yb,
-		bar_type = s.bar_type,
-		st = s.st,
-		p_staff = staff_tb[st],
-		x = s.x
-
-	if (!bar_type)
-		return				/* invisible */
-
-	/* don't put a line between the staves if there is no bar above */
-	if (st != 0
-	 && s.ts_prev
-//fixme: 's.ts_prev.st != st - 1' when floating voice in lower staff
-//	 && (s.ts_prev.type != C.BAR || s.ts_prev.st != st - 1))
-	 && s.ts_prev.type != C.BAR)
-		h = p_staff.topbar * p_staff.staffscale;
-
-	s.ymx = s.ymn + h;
-	set_sscale(-1);
-	anno_start(s)
-
-	// compute the middle vertical offset of the staff
-	yb = p_staff.y + 12;
-	if (p_staff.stafflines != '|||||')
-		yb += (p_staff.topbar + p_staff.botbar) / 2 - 12	// bottom
-
-	/* if measure repeat, draw the '%' like glyphs */
-	if (s.bar_mrep) {
-		set_sscale(st)
-		if (s.bar_mrep == 1) {
-			for (s2 = s.prev; s2.type != C.REST; s2 = s2.prev)
-				;
-			xygl(s2.x, yb, "mrep")
-		} else {
-			xygl(x, yb, "mrep2")
-			if (s.v == cur_sy.top_voice) {
-				set_font("annotation");
-				xy_str(x, yb + p_staff.topbar - 9,
-						s.bar_mrep.toString(), "c")
-			}
-		}
-	}
-
-	for (i = bar_type.length; --i >= 0; ) {
-		switch (bar_type[i]) {
-		case "|":
-			set_sscale(-1);
-			out_bar(x, bot, h, s.bar_dotted ? p_staff.staffscale : 0)
-			break
-		default:
-//		case "[":
-//		case "]":
-			x -= 3;
-			set_sscale(-1);
-			out_thbar(x, bot, h)
-			break
-		case ":":
-			x -= 2;
-			set_sscale(st);
-			xygl(x + 1, yb - 12, "rdots")
-			break
-		}
-		x -= 3
-	}
-	set_sscale(-1);
-	anno_stop(s)
-}
-
 /* -- draw a rest -- */
 /* (the staves are defined) */
 var rest_tb = [
@@ -3433,7 +3363,12 @@ function draw_systems(indent) {
 		staves_bar, bar_force,
 		xstaff = [],
 		bar_bot = [],
-		bar_height = []
+		bar_height = [],
+		sb = [],
+		db = [],
+		thb = [],
+		gl = [],
+		rn = []
 
 	/* -- set the bottom and height of the measure bars -- */
 	function bar_set() {
@@ -3517,6 +3452,129 @@ function draw_systems(indent) {
 		out_XYAB('<g transform="translate(X, Y)">\n' + ln + '</g>\n', x1, y)
 	} // draw_staff()
 
+	// draw a measure bar
+	function draw_bar(s, bot, h) {
+	    var	i, s2, yb,
+		bar_type = s.bar_type,
+		st = s.st,
+		p_staff = staff_tb[st],
+		x = s.x
+
+		// don't put a line between the staves if there is no bar above
+		if (st != 0
+		 && s.ts_prev
+//fixme: 's.ts_prev.st != st - 1' when floating voice in lower staff
+//	 && (s.ts_prev.type != C.BAR || s.ts_prev.st != st - 1))
+		 && s.ts_prev.type != C.BAR)
+			h = p_staff.topbar * p_staff.staffscale;
+
+		s.ymx = s.ymn + h;
+		set_sscale(-1);
+		anno_start(s)
+
+		// compute the middle vertical offset of the staff
+		yb = p_staff.y + 12;
+		if (p_staff.stafflines != '|||||')
+			yb += (p_staff.topbar + p_staff.botbar) / 2 - 12 // bottom
+
+		// if measure repeat, draw the '%' like glyphs
+		if (s.bar_mrep) {
+			set_sscale(st)
+			if (s.bar_mrep == 1) {
+				for (s2 = s.prev; s2.type != C.REST; s2 = s2.prev)
+					;
+				gl.push([s2.x, yb, st, "mrep"])
+			} else {
+				gl.push([x, yb, st, "mrep2"])
+				if (s.v == cur_sy.top_voice)
+					rn.push([x, yb + p_staff.topbar - 9,
+						st, s.bar_mrep.toString()])
+			}
+		}
+
+		for (i = bar_type.length; --i >= 0; ) {
+			switch (bar_type[i]) {
+			case "|":
+				if (s.bar_dotted)
+					db.push(new Float32Array([x, bot, h,
+						p_staff.staffscale]))
+				else
+					sb.push(new Float32Array([x, bot, h]))
+				break
+			default:
+//			case "[":
+//			case "]":
+				x -= 3;
+				thb.push(new Float32Array([x, bot, h]))
+				break
+			case ":":
+				x -= 2;
+				gl.push([x + 1, yb - 12, st, "rdots"])
+				break
+			}
+			x -= 3
+		}
+		set_sscale(-1);
+		anno_stop(s)
+	} // draw_bar()
+
+	// output all the bars
+	function out_bars() {
+	    var	i, b, w,
+		l = sb.length;
+
+		set_sscale(-1)
+		if (l) {			// single bars [x, y, h]
+			output += '<path class="stroke bW" d="'
+			for (i = 0; i < l; i++) {
+				b = sb[i];
+				out_XYAB('MX Yv-F', b[0], b[1], b[2])
+			}
+			output += '"/>\n'
+		}
+
+		l = db.length
+		if (l) {			// dotted bars [x, y, h, scale]
+			for (i = 0; i < l; i++) {
+				b = db[i];
+				w = (5 * b[3]).toFixed(2);
+				out_XYAB('<path class="stroke bW" ' +
+					'stroke-dasharray="' + w + ',' + w + '" d="' +
+					'MX Yv-F', b[0], b[1], b[2])
+			}
+		}
+
+		l = thb.length
+		if (l) {			// thick bars [x, y, h]
+			output += '<path class="stroke bthW" d="'
+			for (i = 0; i < l; i++) {
+				b = thb[i];
+				out_XYAB('MX Yv-F', b[0], b[1], b[2])
+			}
+			output += '"/>\n'
+		}
+
+		l = gl.length
+		if (l) {			// glyphs [x, y, staff, glyph]
+			for (i = 0; i < l; i++) {
+				b = gl[i];
+				set_sscale(b[2]);
+				xygl(b[0], b[1], b[3])
+			}
+		}
+			
+		l = rn.length
+		if (l) {			// repeat number [x, y, staff, number]
+			set_font("annotation");
+			for (i = 0; i < l; i++) {
+				b = rn[i];
+				set_sscale(b[2]);
+				xy_str(b[0], b[1], b[3], "c")
+			}
+		}
+	} // out_bars()
+
+	// draw_systems()
 	draw_vname(indent)
 
 	/* draw the staff, skipping the staff breaks */
@@ -3581,10 +3639,10 @@ function draw_systems(indent) {
 			bar_set()
 			continue
 		case C.BAR:
-			st = s.st
-			if (s.second || s.invis)
+			if (s.second || s.invis || !s.bar_type)
 				break
-			draw_bar(s, bar_bot[st], bar_height[st]);
+			st = s.st;
+			draw_bar(s, bar_bot[st], bar_height[st])
 			break
 		case C.STBRK:
 			if (cur_sy.voices[s.v].range == 0) {
@@ -3638,7 +3696,10 @@ function draw_systems(indent) {
 			continue
 		draw_staff(st, x, realwidth)
 	}
-//	set_sscale(-1)
+
+	// and the bars
+	out_bars()
+	set_sscale(-1)
 }
 
 /* -- draw remaining symbols when the staves are defined -- */

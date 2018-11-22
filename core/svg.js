@@ -541,20 +541,6 @@ function out_acciac(x, y, dx, dy, up) {
 	out_XYAB('<path class="stroke" d="mX YlF G"/>\n',
 		x, y, dx, -dy)
 }
-// simple / dotted measure bar
-// when present, 'dotted' is the staff scale
-function out_bar(x, y, h, dotted) {
-	if (dotted) {
-	    var	w = (5 * dotted).toFixed(2);
-		dotted = 'stroke-dasharray="' + w + ',' + w + '" '
-	} else {
-		dotted = ''
-	}
-	output += '<path class="stroke bW" ' + dotted +
-		'd="m' + (x + posx).toFixed(2) +
-		' ' + (posy - y).toFixed(2) + 'v' + (-h).toFixed(2) +
-		'"/>\n'
-}
 // tuplet value - the staves are not defined
 function out_bnum(x, y, str) {
 	out_XYAB('<text style="font:italic 12px serif"\n\
@@ -696,14 +682,6 @@ function out_stem(x, y, h, grace,
 		}
 	}
 	output += '"/>\n'
-}
-// thick measure bar
-function out_thbar(x, y, h) {
-	x += posx + 1.5;
-	y = posy - y;
-	output += '<path class="stroke bthW" d="m' +
-		x.toFixed(2) + ' ' + y.toFixed(2) +
-		'v' + (-h).toFixed(2) + '"/>\n'
 }
 // tremolo
 function out_trem(x, y, ntrem) {
