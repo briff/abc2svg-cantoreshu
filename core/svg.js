@@ -515,7 +515,7 @@ function xygl(x, y, gl) {
 		x += tgl.x * stv_g.scale;
 		y -= tgl.y
 		if (tgl.sc)
-			out_XYAB('<text transform="translate(X,Y) scale(F)">B</text>\n',
+			out_XYAB('<text transform="translate(X,Y) scale(A)">B</text>\n',
 				x, y, tgl.sc, tgl.c);
 		else
 			out_XYAB('<text x="X" y="Y">A</text>\n', x, y, tgl.c)
