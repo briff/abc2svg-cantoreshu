@@ -3505,7 +3505,7 @@ function draw_systems(indent) {
 //			case "[":
 //			case "]":
 				x -= 3;
-				thb.push(new Float32Array([x, bot, h]))
+				thb.push(new Float32Array([x + 1.5, bot, h]))
 				break
 			case ":":
 				x -= 2;
