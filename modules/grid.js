@@ -61,6 +61,7 @@ function build_grid(chords, bars, font, wmx) {
 			}
 			if (ch.length == 2) {
 				ch[2] = ch[1];
+				ch[1] = null;
 				pch = ch[2]
 				continue
 			}
