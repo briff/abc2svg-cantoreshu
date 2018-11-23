@@ -5,10 +5,11 @@
 // This module is loaded when "%%grid" appears in a ABC source.
 //
 // Parameters
-//	%%grid <n> [include=<list>] [norepeat]
+//	%%grid <n> [include=<list>] [nomusic] [norepeat]
 //		<n> = number of columns (1: auto)
 //			> 0: above the tune, < 0: under the tune
 //		<list> = comma separated list of (continuous) measure numbers
+//		'nomusic' displays only the grid
 //		'norepeat' omits the ':' indications
 //	%%gridfont font_name size (default: 'serif 16')
 
@@ -128,7 +129,7 @@ function build_grid(chords, bars, font, wmx) {
 	line += '>\n<style type="text/css">\n\
 .mid {text-anchor:middle}\n'
 
-	if (cfmt.fullsvg)
+	if (cfmt.fullsvg || grid.nomusic)
 		line += '\
 .stroke {stroke: currentColor; fill: none}\n\
 .' + font_cl + ' {' + this.style_font(font.name + '.' + font.size) +  '}\n';
@@ -268,7 +269,7 @@ function build_grid(chords, bars, font, wmx) {
 	cls = font_cl + " mid";
 	this.set_font('grid');		// (for strwh())
 
-	// scan the tune
+	// scan the first voice of the tune
 	cur_beat = beat_i = n = wmx = 0;
 	bars.push('|')
 	for (s = voice_tb[0].sym; s; s = s.next) {
@@ -343,6 +344,11 @@ function build_grid(chords, bars, font, wmx) {
 		text: build_grid.call(this, chords, bars, font, wmx)
 	}
 
+	if (grid.nomusic) {		// if no music
+		this.set_tsfirst(s)
+		return
+	}
+
 	// and insert it in the tune
 	if (cfmt.grid.n < 0) {		// below
 		for (var s2 = tsfirst; s2.ts_next; s2 = s2.ts_next)
@@ -357,7 +363,6 @@ function build_grid(chords, bars, font, wmx) {
 		s.next = p_voice.sym;
 		s.ts_next = tsfirst;
 		tsfirst.ts_prev = s;
-		tsfirst = s;
 		this.set_tsfirst(s);
 		p_voice.sym.prev = s;
 		p_voice.sym = s
@@ -382,6 +387,8 @@ function build_grid(chords, bars, font, wmx) {
 			var item = parm.shift()
 			if (item == "norepeat")
 				grid.norep = true
+			else if (item == "nomusic")
+				grid.nomusic = true
 			else if (item.slice(0, 8) == "include=")
 				grid.ls = item.slice(8).split(',')
 		}
