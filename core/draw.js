@@ -3540,7 +3540,7 @@ function draw_systems(indent) {
 				w = (5 * b[3]).toFixed(2);
 				out_XYAB('<path class="stroke bW" ' +
 					'stroke-dasharray="' + w + ',' + w + '" d="' +
-					'MX Yv-F', b[0], b[1], b[2])
+					'MX Yv-F"/>\n', b[0], b[1], b[2])
 			}
 		}
 
