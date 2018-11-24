@@ -984,7 +984,7 @@ function do_pscom(text) {
 		return
 	case "setbarnb":
 		val = parseInt(param)
-		if (isNaN(val))
+		if (isNaN(val) || val < 1)
 			syntax(1, "Bad %%setbarnb value")
 		else if (parse.state >= 2)
 			glovar.new_nbar = val
