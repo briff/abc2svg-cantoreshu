@@ -662,7 +662,7 @@ function new_key(param) {
 }
 
 // M: meter
-function new_meter(text) {
+function new_meter(p) {
 	var	s = {
 			type: C.METER,
 			dur: 0,
@@ -673,7 +673,6 @@ function new_meter(text) {
 		m1 = 0, m2,
 		i = 0, j,
 		wmeasure,
-		p = text,
 		in_parenth;
 
 	set_ref(s)
@@ -683,7 +682,7 @@ function new_meter(text) {
 		wmeasure = 1;	// simplify measure numbering and C.MREST conversion
 	} else {
 		wmeasure = 0
-		while (i < text.length) {
+		while (i < p.length) {
 			if (p[i] == '=')
 				break
 			switch (p[i]) {
@@ -728,7 +727,7 @@ function new_meter(text) {
 					meter = {}
 				}
 				j = i + 1
-				while (j < text.length) {
+				while (j < p.length) {
 					if (p[j] == ')' || p[j] == '/')
 						break
 					j++
@@ -772,7 +771,7 @@ function new_meter(text) {
 					}
 					if (p[i] != ' ' && p[i] != '+')
 						break
-					if (i >= text.length
+					if (i >= p.length
 					 || p[i + 1] == '(')	/* "M:5 (2/4+3/4)" */
 						break
 					meter.top += p[i++]
@@ -806,8 +805,11 @@ function new_meter(text) {
 	}
 	s.wmeasure = wmeasure
 
+	if (cfmt.writefields.indexOf('M') < 0)
+		s.a_meter = []
+
 	if (parse.state != 3) {
-		info.M = text;
+		info.M = p;
 		glovar.meter = s
 		if (parse.state >= 1) {
 
