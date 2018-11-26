@@ -1500,10 +1500,10 @@ function identify_note(s, dur_o) {
 	dur = dur_o
 
 	if (dur % 12 != 0)
-		syntax(1, "Invalid note duration $1", dur);
+		error(1, s, "Invalid note duration $1", dur);
 	dur /= 12			/* see C.BLEN for values */
 	if (dur == 0)
-		syntax(1, "Note too short")
+		error(1, s, "Note too short")
 	for (flags = 5; dur != 0; dur >>= 1, flags--) {
 		if (dur & 1)
 			break
@@ -1515,7 +1515,7 @@ function identify_note(s, dur_o) {
 	case 3: dots = 2; break
 	case 7: dots = 3; break
 	default:
-		syntax(1, "Invalid note duration $1", dur_o);
+		error(1, s, "Invalid note duration $1", dur_o);
 		flags += ((11 - dur) / 4) | 0;
 		dots = 4
 		break
@@ -1525,7 +1525,7 @@ function identify_note(s, dur_o) {
 		head = C.FULL
 	} else switch (flags) {
 	default:
-		syntax(1, "Note too long");
+		error(1, s, "Note too long");
 		flags = -4
 		/* fall thru */
 	case -4:
