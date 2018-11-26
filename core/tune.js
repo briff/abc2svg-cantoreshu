@@ -100,7 +100,7 @@ function mrest_expand(s) {
 	/* change the multi-rest (type bar) to a single rest */
 	var a_dd = s.a_dd;
 	s.type = C.REST;
-	s.dur = dur;
+	s.dur = s.dur_orig = dur;
 
 	/* add the bar(s) and rest(s) */
 	next = s.next;
@@ -115,7 +115,7 @@ function mrest_expand(s) {
 		s2 = sym_add(p_voice, C.REST);
 		if (s.invis)
 			s2.invis = true;
-		s2.dur = dur;
+		s2.dur = s2.dur_orig = dur;
 		p_voice.time += dur
 	}
 	s2.next = next
