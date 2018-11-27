@@ -366,10 +366,10 @@ function tosvg(in_fname,		// file name
 			switch (a[0]) {
 			case "abcm2ps":
 			case "ss-pref":
-				parse.prefix = a[1]
+				parse.prefix = a[1]	// may contain a '%'
 				continue
 			case "abc-include":
-				do_include(a[1])
+				do_include(uncomment(a[1]))
 				continue
 			}
 
@@ -384,7 +384,7 @@ function tosvg(in_fname,		// file name
 					parse.eol = eof
 					continue
 				}
-				self.do_begin_end(b, a[1],
+				self.do_begin_end(b, uncomment(a[1]),
 					file.slice(eol + 1, i).replace(
 						new RegExp('^' + line0 + line1, 'gm'),
 										''));
