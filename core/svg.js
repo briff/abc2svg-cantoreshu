@@ -54,7 +54,7 @@ var tgls = {
   brace: {x:0, y:0, c:"\ue000"},
   hl: {x:-4, y:0, c:"\ue022"},
   hl1: {x:-6, y:0, c:"\ue023"},
-  hl2: {x:-6, y:0, c:"\ue023"},
+//  hl2: {x:-6, y:0, c:"\ue023"},		// (unused)
   ghl: {x:-4, y:0, c:"\ue024"},
   lphr: {x:0, y:24, c:"\ue030"},
   mphr: {x:0, y:24, c:"\ue038"},

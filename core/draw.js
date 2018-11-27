@@ -1376,34 +1376,33 @@ function draw_basic_note(x, s, m, y_tb) {
 function draw_note(s,
 		   fl) {		// draw flags
 	var	s2, i, m, y, staffb, slen, c, hltype, nflags,
-		x, y, note,
+		x, y, note, x_hl,
 		y_tb = new Array(s.nhd + 1)
 
 	if (s.dots)
 		setdoty(s, y_tb)
 
 	note = s.notes[s.stem < 0 ? s.nhd : 0];	// master note head
-	x = x_head(s, note);
+	x_hl = x = x_head(s, note);
 	staffb = staff_tb[s.st].y
 
 	/* output the ledger lines */
 	if (s.grace) {
 		hltype = "ghl"
 	} else {
+		hltype = "hl"
 		switch (s.head) {
-		default:
-			hltype = "hl"
-			break
-		case C.OVAL:
 		case C.OVALBARS:
+		case C.OVAL:
+			x_hl = x - .3;
 			hltype = "hl1"
 			break
 		case C.SQUARE:
-			hltype = "hl2"
+			x_hl = x - 2
 			break
 		}
 	}
-	draw_hl(x, 3 * (s.notes[0].pit - 18), 3 * (s.notes[s.nhd].pit - 18),
+	draw_hl(x_hl, 3 * (s.notes[0].pit - 18), 3 * (s.notes[s.nhd].pit - 18),
 		s.st, hltype)
 
 	/* draw the stem and flags */
