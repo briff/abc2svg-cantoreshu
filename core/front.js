@@ -363,8 +363,6 @@ function tosvg(in_fname,		// file name
 			if (!text || text[0] == '%')
 				continue
 			a = text.split(/\s+/, 2)
-			if (!a[0])
-				a.shift()
 			switch (a[0]) {
 			case "abcm2ps":
 			case "ss-pref":
@@ -401,7 +399,7 @@ function tosvg(in_fname,		// file name
 					syntax(1, "%%select ignored")
 					continue
 				}
-				select = uncomment(text.slice(7), false)
+				select = uncomment(text.slice(7))
 				if (select[0] == '"')
 					select = select.slice(1, -1);
 				if (!select) {
@@ -421,7 +419,7 @@ function tosvg(in_fname,		// file name
 					syntax(1, "%%voice ignored")
 					continue
 				}
-				select = uncomment(text.slice(6), false)
+				select = uncomment(text.slice(6))
 
 				/* if void %%voice, free all voice options */
 				if (!select) {
