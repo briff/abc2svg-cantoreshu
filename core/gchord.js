@@ -64,6 +64,8 @@ function parse_gchord(type) {
 	if (curvoice.pos.gch == C.SL_HIDDEN)
 		return
 
+	if (cfmt.annotationbox)
+		h_ann += 3;
 	i = 0;
 	type = 'g'
 	while (1) {
@@ -302,7 +304,6 @@ function gch_build(s) {
 		y_below = 0,
 		y_left = 0,
 		y_right = 0,
-		box = cfmt.gchordbox,
 		GCHPRE = .4;		// portion of chord before note
 
 	s.a_gch = a_gch;
@@ -334,8 +335,12 @@ function gch_build(s) {
 					}
 					return "&#x1d12b;"
 				});
+			if (cfmt.gchordbox)
+				gch.box = true
 		} else {
 			gch.text = cnv_escape(gch.text);
+			if (cfmt.annotationbox)
+				gch.box = true
 			if (gch.type == '@'
 			 && !user.anno_start && !user.anno_stop)
 				continue		/* no width */
@@ -345,6 +350,8 @@ function gch_build(s) {
 		gene.curfont = gch.font;
 		wh = strwh(gch.text);
 		gch.w = wh[0]
+		if (gch.box)
+			wh[1] += 3
 		switch (gch.type) {
 		case '@':
 			break
@@ -375,7 +382,6 @@ function gch_build(s) {
 			gch.y = y_right + wh[1] / 2
 			break
 		default:			// chord symbol
-			gch.box = box
 			xspc = wh[0] * GCHPRE
 			if (xspc > 8)
 				xspc = 8;
@@ -383,17 +389,9 @@ function gch_build(s) {
 			if (pos < 0) {		/* below */
 				y_below -= wh[1];
 				gch.y = y_below
-				if (box) {
-					y_below -= 2;
-					gch.y -= 1
-				}
 			} else {
 				y_above -= wh[1];
 				gch.y = y_above
-				if (box) {
-					y_above -= 2;
-					gch.y -= 1
-				}
 			}
 			break
 		}

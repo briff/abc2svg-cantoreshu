@@ -362,9 +362,9 @@ function set_format(cmd, param, lock) {
 		case "gchordfont":
 			cfmt.gchordbox = box
 			break
-//		case "annotationfont":
-//			cfmt.annotationbox = box
-//			break
+		case "annotationfont":
+			cfmt.annotationbox = box
+			break
 		case "measurefont":
 			cfmt.measurebox = box
 			break
@@ -428,6 +428,7 @@ function set_format(cmd, param, lock) {
 		}
 		cfmt[cmd] = f
 		break
+	case "annotationbox":
 	case "bstemdown":
 	case "breakoneoln":
 	case "cancelkey":
