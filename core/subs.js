@@ -184,9 +184,9 @@ function xy_str_b(x, y, str) {
     var	wh = strwh(str);
 
 	output += '<rect class="stroke" x="';
-	out_sxsy(x - 2, '" y="', y + wh[1] + 1);
+	out_sxsy(x - 2, '" y="', y + wh[1] * 1.1);
 	output += '" width="' + (wh[0] + 4).toFixed(2) +
-		'" height="' + (wh[1] + 3).toFixed(2) +
+		'" height="' + (wh[1] + 2).toFixed(2) +
 		'"/>\n';
 	xy_str(x, y, str)
 }
