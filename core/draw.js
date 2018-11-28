@@ -1304,7 +1304,7 @@ function draw_basic_note(x, s, m, y_tb) {
 			}
 			// fall thru
 		case C.SQUARE:
-			if (note.dur < C.BLEN * 4) {
+			if (nflags > -4) {
 				p = "breve"
 			} else {
 				p =  "longa"
@@ -1398,7 +1398,8 @@ function draw_note(s,
 			hltype = "hl1"
 			break
 		case C.SQUARE:
-			x_hl = x - 2
+			x_hl = x - 2;
+			hltype = "hl1"
 			break
 		}
 	}

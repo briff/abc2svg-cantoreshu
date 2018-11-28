@@ -89,7 +89,7 @@ var tgls = {
   "mtr(":  {x:0, y:0, c:"\ue094"},
   "mtr)":  {x:0, y:0, c:"\ue095"},
   HDD: {x:-7, y:0, c:"\ue0a0"},
-  breve: {x:-6, y:0, c:"\ue0a1"},
+  breve: {x:-7, y:0, c:"\ue0a1"},
   HD: {x:-5.2, y:0, c:"\ue0a2"},
   Hd: {x:-3.8, y:0, c:"\ue0a3"},
   hd: {x:-3.7, y:0, c:"\ue0a4"},
