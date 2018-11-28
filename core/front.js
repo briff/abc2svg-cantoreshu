@@ -246,6 +246,8 @@ function tosvg(in_fname,		// file name
 	// remove the comment at end of text
 	function uncomment(src, do_escape) {
 	    var i
+		if (!src)
+			return src
 		if (src.indexOf('%') >= 0)
 			src = src.replace(/([^\\])%.*/, '$1')
 				 .replace(/\\%/g, '%');
