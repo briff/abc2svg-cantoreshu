@@ -203,7 +203,7 @@ function get_lyrics(text, cont) {
 				case '\t':
 					break
 				case '~':
-					word += ' ';
+					word += ' ';	// (&nbsp;)
 					i++
 					continue
 				case '-':
