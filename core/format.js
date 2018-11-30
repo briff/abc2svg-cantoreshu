@@ -646,16 +646,16 @@ function font_init() {
 }
 
 // build a font style
-function style_font(fn) {		// 'font_name'.'size'
-	var	r = fn.split('.'),
-		sz = r[1],
-		i, j;
+function style_font(fno) {		// 'font_name'.'size'
+    var	r = fno.split('.'),
+	fn = r[0].toLowerCase(),
+	sz = r[1],
+	i, j;
 
-	fn = r[0].toLowerCase();
-	r = ''
-	i = fn.indexOf("-")
+	r = '';
+	i = fn.lastIndexOf("-")
 	if (i < 0)
-		i = fn.length
+		i = fn.length;
 	j = fn.indexOf("italic")
 	if (j >= 0) {
 		r += "italic "
@@ -674,9 +674,8 @@ function style_font(fn) {		// 'font_name'.'size'
 		if (j < i)
 			i = j
 	}
-	if (i > 0)
-		fn = fn.slice(0, i)
-	return 'font:' + r + sz + 'px ' + fn
+	fno = fno.slice(0, i)
+	return 'font:' + r + sz + 'px ' + fno
 }
 Abc.prototype.style_font = style_font
 
