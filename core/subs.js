@@ -747,7 +747,6 @@ function write_heading() {
 	}
 
 	/* rhythm, composer, origin */
-	set_font("composer");
 //	down1 = cfmt.composerspace + gene.curfont.size
 	down1 = down2 = 0
 	if (parse.ckey.k_bagpipe
@@ -755,6 +754,7 @@ function write_heading() {
 	 && cfmt.writefields.indexOf('R') >= 0)
 		rhythm = info.R
 	if (rhythm) {
+		set_font("composer");
 		xy_str(0, -cfmt.composerspace, rhythm);
 		down1 = cfmt.composerspace
 	}
@@ -766,6 +766,7 @@ function write_heading() {
 	if (composer || origin || cfmt.infoline) {
 		var xcomp, align;
 
+		set_font("composer");
 		vskip(cfmt.composerspace)
 		if (cfmt.aligncomposer < 0) {
 			xcomp = 0;
