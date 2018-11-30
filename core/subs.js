@@ -146,21 +146,26 @@ function out_str(str) {
 //	'c' align center
 //	'r' align right
 //	'\t' handle the tabulations - dx is the space between the fields
-//	'j' justify - line_w is the line width
+//	'j' justify - w is the line width
 //	otherwise align left
 function xy_str(x, y, str,
-		 action,
-		 line_w) {
-    var	h = strwh(str)[1];
-	y += h * .2;			// a bit upper for the descent
-	output += '<text class="' + font_class(gene.curfont) + '" x="';
+		action,
+		w) {
+    var	wh = strwh(str);
+
+	y += wh[1] * .2;		// a bit upper for the descent
+	output += '<text class="' + font_class(gene.curfont)
+	if (action != 'j' && str.length > 3)
+		output += '" lengthAdjust="spacingAndGlyphs" textLength="' +
+			wh[0].toFixed(2);
+	output += '" x="';
 	out_sxsy(x, '" y="', y)
 	switch (action) {
 	case 'c':
 		output += '" text-anchor="middle">'
 		break
 	case 'j':
-		output += '" textLength="' + line_w.toFixed(2) + '">'
+		output += '" textLength="' + w.toFixed(2) + '">'
 		break
 	case 'r':
 		output += '" text-anchor="end">'
