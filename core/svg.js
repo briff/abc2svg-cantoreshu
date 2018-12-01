@@ -945,7 +945,7 @@ function out_gliss(x2, y2, de) {
 	x1 = de1.s.dots ? 13 + de1.s.xmx : 8;
 	len -= x1 + 8;
 	xypath(x1, 0);
-	output += 'l' + len.toFixed(2) + ' 0" stroke-width="1"/>\n';
+	output += 'h' + len.toFixed(2) + '" stroke-width="1"/>\n';
 	g_close()
 }
 
