@@ -64,7 +64,7 @@ function parse_gchord(type) {
 	if (curvoice.pos.gch == C.SL_HIDDEN)
 		return
 
-	if (cfmt.annotationbox)
+	if (gene.curfont.box)
 		h_ann += 3;
 	i = 0;
 	type = 'g'
@@ -335,11 +335,11 @@ function gch_build(s) {
 					}
 					return "&#x1d12b;"
 				});
-			if (cfmt.gchordbox)
+			if (cfmt.gchordfont.box)
 				gch.box = true
 		} else {
 			gch.text = cnv_escape(gch.text);
-			if (cfmt.annotationbox)
+			if (cfmt.annotationfont.box)
 				gch.box = true
 			if (gch.type == '@'
 			 && !user.anno_start && !user.anno_stop)

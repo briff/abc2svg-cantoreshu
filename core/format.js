@@ -172,11 +172,14 @@ function param_set_font(xxxfont, param) {
 	}
 	font = Object.create(font);
 	font.fid = font.used = undefined;
-//	font.fid = font_tb.length;
-//	font_tb.push(font);
 	cfmt[xxxfont] = font;
 
 	// fill the values
+	if (param.slice(-4) == " box") {
+		font.box = true;
+		param = param.slice(0, -4)
+	}
+
 	n = param.indexOf('class=')
 	if (n >= 0) {
 		n += 6;
@@ -342,7 +345,7 @@ function set_page() {
 // set a format parameter
 // (possible hook)
 function set_format(cmd, param, lock) {
-	var f, f2, v, box, i
+	var f, f2, v, i
 
 //fixme: should check the type and limits of the parameter values
 	if (lock) {
@@ -351,25 +354,7 @@ function set_format(cmd, param, lock) {
 		return
 
 	if (/.+font(-[\d])?$/.test(cmd)) {
-		if (param.slice(-4) == " box") {
-			box = true;
-			param = param.slice(0, -4)
-		}
 		param_set_font(cmd, param)
-		switch (cmd) {
-		case "gchordfont":
-			cfmt.gchordbox = box
-			break
-		case "annotationfont":
-			cfmt.annotationbox = box
-			break
-		case "measurefont":
-			cfmt.measurebox = box
-			break
-		case "partsfont":
-			cfmt.partsbox = box
-			break
-		}
 		return
 	}
 
@@ -427,6 +412,12 @@ function set_format(cmd, param, lock) {
 		cfmt[cmd] = f
 		break
 	case "annotationbox":
+	case "gchordbox":
+	case "measurebox":
+	case "partsbox":
+		cfmt[cmd.replace("box", "font")]	// font
+			.box = get_bool(param)
+		break
 	case "bstemdown":
 	case "breakoneoln":
 	case "cancelkey":
@@ -435,14 +426,11 @@ function set_format(cmd, param, lock) {
 	case "decoerr":
 	case "dynalign":
 	case "flatbeams":
-	case "gchordbox":
 	case "graceslurs":
 	case "graceword":
 	case "hyphencont":
 	case "keywarn":
 	case "linewarn":
-	case "measurebox":
-	case "partsbox":
 	case "rbdbstop":
 	case "singleline":
 	case "squarebreve":

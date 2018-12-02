@@ -1625,7 +1625,7 @@ function draw_measnb() {
 			y = y_get(st, true, 0, 20)
 			if (y < staff_tb[st].topbar + 14)
 				y = staff_tb[st].topbar + 14;
-			if (cfmt.measurebox)
+			if (gene.curfont.box)
 				xy_str_b(0, y, bar_num.toString())
 			else
 				xy_str(0, y, bar_num.toString());
@@ -1653,13 +1653,13 @@ function draw_measnb() {
 			w = cwid('0') * gene.curfont.swfac
 			if (bar_num >= 10)
 				w *= bar_num >= 100 ? 3 : 2
-			if (cfmt.measurebox)
+			if (gene.curfont.box)
 				w += 4;
 			y = y_get(st, true, x, w)
 			if (y < staff_tb[st].topbar + 6)
 				y = staff_tb[st].topbar + 6;
 			y += 2;
-			if (cfmt.measurebox) {
+			if (gene.curfont.box) {
 				xy_str_b(x, y, bar_num.toString());
 				y += 2;
 				w += 3
@@ -1701,7 +1701,7 @@ function draw_measnb() {
 		w = cwid('0') * gene.curfont.swfac
 		if (bar_num >= 10)
 			w *= bar_num >= 100 ? 3 : 2
-		if (cfmt.measurebox)
+		if (gene.curfont.box)
 			w += 4;
 		x = s.x - w * .4;
 		y = y_get(st, true, x, w)
@@ -1717,7 +1717,7 @@ function draw_measnb() {
 			}
 		}
 		y += 2;
-		if (cfmt.measurebox) {
+		if (gene.curfont.box) {
 			xy_str_b(x, y, bar_num.toString());
 			y += 2;
 			w += 3
@@ -1947,7 +1947,7 @@ function draw_partempo(st, top) {
 				s.ymx = s.ymn + h;
 				anno_start(s)
 			}
-			if (cfmt.partsbox)
+			if (gene.curfont.box)
 				xy_str_b(s.x, 2 - ht - h, s.text)
 			else
 				xy_str(s.x, 2 - ht - h, s.text)
