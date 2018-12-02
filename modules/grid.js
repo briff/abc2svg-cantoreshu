@@ -133,7 +133,7 @@ function build_grid(chords, bars, font, wmx) {
 	if (cfmt.fullsvg || grid.nomusic)
 		line += '\
 .stroke {stroke: currentColor; fill: none}\n\
-.' + font_cl + ' {' + this.style_font(font.name + '.' + font.size) +  '}\n';
+.' + font_cl + ' {' + this.style_font(font) +  '}\n';
 	line += '</style>\n'
 
 	// draw the lines

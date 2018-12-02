@@ -1032,7 +1032,8 @@ function svg_flush() {
 	font_style = ''
 	if (cfmt.fullsvg) {
 		defined_glyph = {}
-		defined_font = {}
+		for (var i = 0; i < font_tb.length; i++)
+			font_tb[i].used = false
 	} else {
 		musicfont = '';
 		style = '';

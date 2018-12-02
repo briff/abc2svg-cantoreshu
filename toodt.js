@@ -347,9 +347,9 @@ abc2svg.abort = function(e) {
 
 // convert a CSS font definition (in pixels) to ODT (in points)
 function def_font(font) {
-    var	css_font = abc.style_font(abc.cfmt()[font]).
-			slice(5).
-			split(' '),
+    var	css_font = abc.style_font(abc.cfmt()[font])
+			.slice(5)		// remove 'font:'
+			.split(' '),
 	l = css_font.length,
 	fo = 'fo:font-family="' + css_font[--l] + '"',
 	i = css_font[--l].slice(0, -2)

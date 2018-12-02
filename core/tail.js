@@ -22,7 +22,6 @@ function psdeco() { return false }
 function psxygl() { return false }
 
 // initialize
-	font_init();
 	init_tune()
 
 // Abc functions used by the modules
