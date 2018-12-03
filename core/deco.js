@@ -1813,10 +1813,14 @@ function tempo_width(s) {
 
 /* - output a tempo --*/
 function write_tempo(s, x, y) {
-	var	j, dx,
+	var	j, dx, bx, bh,
 		sc = .6 * gene.curfont.size / 15.0; //fixme: 15.0 = initial tempofont
 
 	set_font("tempo")
+	if (gene.curfont.box) {
+		gene.curfont.box = false
+		bx = x
+	}
 	if (s.tempo_str1) {
 		xy_str(x, y, s.tempo_str1);
 		x += strwh(s.tempo_str1)[0] + 3
@@ -1845,6 +1849,18 @@ function write_tempo(s, x, y) {
 	}
 	if (s.tempo_str2)
 		xy_str(x, y, s.tempo_str2)
+
+	if (bx) {
+		gene.curfont.box = true
+		if (s.tempo_str2)
+			x += strwh(s.tempo_str2)[0] + 3;
+		bh = gene.curfont.size + 4;
+		output += '<rect class="stroke" x="';
+		out_sxsy(bx - 2, '" y="', y + bh - 1);
+		output += '" width="' + (x - bx + 2).toFixed(2) +
+			'" height="' + bh.toFixed(2) +
+			'"/>\n'
+	}
 
 	// don't display anymore
 	s.del = true
