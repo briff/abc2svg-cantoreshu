@@ -4329,6 +4329,7 @@ function set_piece() {
 			}
 			break
 		case C.BAR:
+		    if (!s.bar_mrep)
 			if (!sy.staves[st].staffnonote	// default = 1
 			 || sy.staves[st].staffnonote <= 1)
 				break
