@@ -3520,7 +3520,7 @@ function draw_systems(indent) {
 
 	// output all the bars
 	function out_bars() {
-	    var	i, b, w,
+	    var	i, b, w, bx,
 		l = sb.length;
 
 		set_sscale(-1)
@@ -3566,11 +3566,17 @@ function draw_systems(indent) {
 		l = rn.length
 		if (l) {			// repeat number [x, y, staff, number]
 			set_font("annotation");
+			if (gene.curfont.box) {
+				gene.curfont.box = false
+				bx = true
+			}
 			for (i = 0; i < l; i++) {
 				b = rn[i];
 				set_sscale(b[2]);
 				xy_str(b[0], b[1], b[3], "c")
 			}
+			if (bx)
+				gene.curfont.box = true
 		}
 	} // out_bars()
 
