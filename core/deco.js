@@ -1880,7 +1880,7 @@ function draw_partempo(st, top) {
 	if (some_tempo) {
 		set_sscale(-1);
 		set_font("tempo");
-		ht = gene.curfont.size + 2 + 2;
+		ht = gene.curfont.size + 2;
 		y = 2 - ht;
 		h = y - ht
 		if (dosh != 0)
@@ -1908,14 +1908,14 @@ function draw_partempo(st, top) {
 
 	/* then, put the parts */
 /*fixme: should reduce vertical space if parts don't overlap tempo...*/
-	ymin = staff_tb[st].topbar + 8
+	ymin = staff_tb[st].topbar + 6
 	for (s = tsfirst; s; s = s.ts_next) {
 		if (s.type != C.PART)
 			continue
 		if (!some_part) {
 			some_part = s;
 			set_font("parts");
-			h = gene.curfont.size + 2 + 2
+			h = gene.curfont.size + 2
 						/* + cfmt.partsspace ?? */
 		}
 		w = strwh(s.text)[0];
@@ -1925,6 +1925,8 @@ function draw_partempo(st, top) {
 	}
 	if (some_part) {
 		set_sscale(-1)
+		if (gene.curfont.box)
+			h += 2
 		if (top < ymin + h + ht)
 			dy = ymin + h + ht - top
 
