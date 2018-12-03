@@ -930,7 +930,7 @@ var rest_tb = [
 	"r2", "r1", "r0", "r00"]
 
 function draw_rest(s) {
-	var	s2, i, j, x, y, dotx, yb, yt, head,
+	var	s2, i, j, x, y, dotx, yb, yt, head, bx,
 		p_staff = staff_tb[s.st]
 
 	/* don't display the rests of invisible staves */
@@ -980,8 +980,14 @@ function draw_rest(s) {
 			xygl(x, yb, "mrep")
 			if (s.rep_nb > 2 && s.v == cur_sy.top_voice) {
 				set_font("annotation");
+				if (gene.curfont.box) {
+					gene.curfont.box = false;
+					bx = true
+				}	
 				xy_str(x, yb + p_staff.topbar - 9,
 					s.rep_nb.toString(), "c")
+				if (bx)
+					gene.curfont.box = true
 			}
 		}
 		anno_stop(s)
