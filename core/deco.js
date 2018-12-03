@@ -1696,12 +1696,10 @@ function draw_measnb() {
 		w = cwid('0') * gene.curfont.swfac
 		if (bar_num >= 10)
 			w *= bar_num >= 100 ? 3 : 2
-		if (gene.curfont.box)
-			w += 4;
 		x = s.x - w * .4;
 		y = y_get(st, true, x, w)
-		if (y < staff_tb[st].topbar + 6)
-			y = staff_tb[st].topbar + 6
+		if (y < staff_tb[st].topbar + 3)
+			y = staff_tb[st].topbar + 3
 		if (s.next.type == C.NOTE) {
 			if (s.next.stem > 0) {
 				if (y < s.next.ys - gene.curfont.size)
@@ -1712,12 +1710,14 @@ function draw_measnb() {
 			}
 		}
 		y += 2;
-		xy_str(x, y, bar_num.toString())
 		if (gene.curfont.box) {
 			y += 2;
 			w += 3
 		}
+		xy_str(x, y, bar_num.toString())
 		y += gene.curfont.size;
+		if (gene.curfont.box)
+			y += 2;
 		y_set(st, true, x, w, y);
 		s.ymx = y
 	}
