@@ -381,9 +381,14 @@ function build_grid(chords, bars, font, wmx) {
 		if (!parm)
 			parm = "1";
 		parm = parm.split(/\s+/)
-		var grid = this.cfmt().grid = {n: Number(parm.shift())}
-		if (isNaN(grid.n))
+		var grid = {n: Number(parm.shift())}
+		if (isNaN(grid.n)) {
+			if (parm.length) {
+				this.syntax(1, this.errs.bad_val, "%%grid")
+				return
+			}
 			grid.n = 1
+		}
 		while (parm.length) {
 			var item = parm.shift()
 			if (item == "norepeat")
@@ -393,6 +398,7 @@ function build_grid(chords, bars, font, wmx) {
 			else if (item.slice(0, 8) == "include=")
 				grid.ls = item.slice(8).split(',')
 		}
+		this.cfmt().grid = grid
 		return
 	}
 	of(cmd, parm, lock)
