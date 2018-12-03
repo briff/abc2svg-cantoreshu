@@ -4322,34 +4322,35 @@ function set_piece() {
 		if (non_empty[st])
 			continue
 		switch (s.type) {
+		default:
+			continue
 		case C.CLEF:
 			if (st > nstaff) {	// if clef warning/change for new staff
 				staff_tb[st].clef = s;
 				unlksym(s)
 			}
-			break
+			continue
 		case C.BAR:
-		    if (!s.bar_mrep)
-			if (!sy.staves[st].staffnonote	// default = 1
-			 || sy.staves[st].staffnonote <= 1)
+			if (s.bar_mrep
+			 || sy.staves[st].staffnonote > 1)
 				break
-			// fall thru
+			continue
 		case C.GRACE:
-			non_empty_gl[st] = non_empty[st] = true
 			break
 		case C.NOTE:
 		case C.REST:
 		case C.SPACE:
 		case C.MREST:
-			if (sy.staves[st].staffnonote > 1) {
-				non_empty_gl[st] = non_empty[st] = true
-			} else if (!s.invis) {
-				if (sy.staves[st].staffnonote != 0
-				 || s.type == C.NOTE)
-					non_empty_gl[st] = non_empty[st] = true
-			}
-			break
+			if (sy.staves[st].staffnonote > 1)
+				break
+			if (s.invis)
+				continue
+			if (sy.staves[st].staffnonote != 0
+			 || s.type == C.NOTE)
+				break
+			continue
 		}
+		non_empty_gl[st] = non_empty[st] = true
 	}
 	tsnext = s;
 
