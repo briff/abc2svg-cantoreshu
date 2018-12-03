@@ -1689,7 +1689,8 @@ function draw_measnb() {
 		bar_num = s.bar_num
 		if (cfmt.measurenb == 0
 		 || (bar_num % cfmt.measurenb) != 0
-		 || !s.next)
+		 || !s.next
+		 || s.bar_mrep)
 			continue
 		if (!any_nb)
 			any_nb = true;
