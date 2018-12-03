@@ -153,21 +153,22 @@ function xy_str(x, y, str,
 		w) {
     var	wh = strwh(str);
 
-	y += wh[1] * .2;		// a bit upper for the descent
 	output += '<text class="' + font_class(gene.curfont)
 	if (action != 'j' && str.length > 3)
 		output += '" lengthAdjust="spacingAndGlyphs" textLength="' +
 			wh[0].toFixed(2);
 	output += '" x="';
-	out_sxsy(x, '" y="', y)
+	out_sxsy(x, '" y="', y + wh[1] * .2)	// a bit upper for the descent
 	switch (action) {
 	case 'c':
+		x -= wh[0] / 2;
 		output += '" text-anchor="middle">'
 		break
 	case 'j':
 		output += '" textLength="' + w.toFixed(2) + '">'
 		break
 	case 'r':
+		x -= wh[0];
 		output += '" text-anchor="end">'
 		break
 	default:
@@ -176,24 +177,21 @@ function xy_str(x, y, str,
 	}
 	out_str(str);
 	output += "</text>\n"
-}
 
-// output a string in a box
-function xy_str_b(x, y, str) {
+	if (!w && gene.curfont.box) {
 // not in the SVG documentation,
 // but this works for almost all browsers but firefox
-//	output += '<g style="outline: solid black;\
-// outline-width: 1px">\n';
-//	xy_str(x, y, str, action, line_w);
-//	output += '</g>\n'
-    var	wh = strwh(str);
+//		output += '<g style="outline: solid black;\
+//			outline-width: 1px">\n';
+//	//	xy_str(x, y, str, action, w);
+//		output += '</g>\n'
+		output += '<rect class="stroke" x="';
+		out_sxsy(x - 2, '" y="', y + wh[1]);
+		output += '" width="' + (wh[0] + 4).toFixed(2) +
+			'" height="' + (wh[1] + 2).toFixed(2) +
+			'"/>\n'
+	}
 
-	output += '<rect class="stroke" x="';
-	out_sxsy(x - 2, '" y="', y + wh[1] * 1.1);
-	output += '" width="' + (wh[0] + 4).toFixed(2) +
-		'" height="' + (wh[1] + 2).toFixed(2) +
-		'"/>\n';
-	xy_str(x, y, str)
 }
 
 /* -- move trailing "The" to front, set to uppercase letters or add xref -- */
