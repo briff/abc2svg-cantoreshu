@@ -1877,7 +1877,8 @@ function draw_partempo(st, top) {
 	var	ymin = staff_tb[st].topbar + 8,
 		dosh = 0,
 		shift = 1,
-		x = 0
+		x = -100	// (must be negative for %%soloffs)
+
 	for (s = tsfirst; s; s = s.ts_next) {
 		if (s.type != C.TEMPO || s.del)
 			continue
