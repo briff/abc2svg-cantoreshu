@@ -175,9 +175,13 @@ function param_set_font(xxxfont, param) {
 	cfmt[xxxfont] = font;
 
 	// fill the values
-	if (param.slice(-4) == " box") {
-		font.box = true;
-		param = param.slice(0, -4)
+	a = param.match(/\s+(no)?box(\s|$)/)
+	if (a) {				// if box
+		if (a[1])
+			font.box = false	// nobox
+		else
+			font.box = true;
+		param = param.replace(a[0], a[2])
 	}
 
 	n = param.indexOf('class=')
