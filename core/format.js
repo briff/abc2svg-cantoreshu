@@ -184,16 +184,10 @@ function param_set_font(xxxfont, param) {
 		param = param.replace(a[0], a[2])
 	}
 
-	n = param.indexOf('class=')
-	if (n >= 0) {
-		n += 6;
-		a = param.indexOf(' ', n)
-		if (a > 0)
-			font.class = param.slice(n, a)
-		else
-			font.class = param.slice(n);
-		param = param.replace(new RegExp('class=' + font.class), '')
-				.trim()
+	a = param.match(/\s+class=(.*?)(\s|$)/)
+	if (a) {
+		font.class = a[1];
+		param = param.replace(a[0], a[2])
 	}
 
 	a = param.split(/\s+/);
