@@ -351,7 +351,7 @@ function gch_build(s) {
 		wh = strwh(gch.text);
 		gch.w = wh[0]
 		if (gch.box)
-			wh[1] += 3
+			wh[1] += 4
 		switch (gch.type) {
 		case '@':
 			break
@@ -425,7 +425,7 @@ function gch_build(s) {
 // (unscaled delayed output)
 // (possible hook)
 function draw_gchord(s, gchy_min, gchy_max) {
-	var	gch, gch2, text, ix, x, y, y2, i, j, hbox, h
+	var	gch, text, ix, x, y, y2, i, j, hbox, h
 
 	// adjust the vertical offset according to the chord symbols
 //fixme: w may be too small
@@ -436,41 +436,24 @@ function draw_gchord(s, gchy_min, gchy_max) {
 			(((s.notes[s.nhd].pit + s.notes[0].pit) >> 1) - 18) * 3 :
 			12		// fixed offset on measure bars
 
-	for (ix = 0; ix < s.a_gch.length; ix++) {
-		gch = s.a_gch[ix]
-		if (gch.type != 'g')
-			continue
-		gch2 = gch		// chord symbol closest to the staff
-		if (gch.y < 0)
-			break
-	}
-	if (gch2) {
-		if (gch2.y >= 0) {
-			if (y_above < gchy_max)
-				y_above = gchy_max
-		} else {
-			if (y_below > gchy_min)
-				y_below = gchy_min
-		}
-	}
-
 	set_dscale(s.st);
 	for (ix = 0; ix < s.a_gch.length; ix++) {
 		gch = s.a_gch[ix];
 		use_font(gch.font);
 		set_font(gch.font);
 		h = gch.font.size;
+		hbox = gch.box ? 4 : 2;
 		w = gch.w;
 		x = s.x + gch.x;
 		text = gch.text
 		switch (gch.type) {
 		case '_':			/* below */
-			y = gch.y + y_below;
-			y_set(s.st, 0, x, w, y - h * .2 - 2)
+			y = gch.y + y_below - 2;
+			y_set(s.st, 0, x, w, y - h * .25 - hbox)
 			break
 		case '^':			/* above */
-			y = gch.y + y_above;
-			y_set(s.st, 1, x, w, y + h * .8 + 2)
+			y = gch.y + y_above + hbox;
+			y_set(s.st, 1, x, w, y + h * .75 + hbox)
 			break
 		case '<':			/* left */
 /*fixme: what symbol space?*/
@@ -486,13 +469,12 @@ function draw_gchord(s, gchy_min, gchy_max) {
 			y = gch.y + yav - h / 2
 			break
 		default:			// chord symbol
-			hbox = gch.box ? 3 : 2
 			if (gch.y >= 0) {
-				y = gch.y + y_above;
-				y_set(s.st, true, x, w, y + h + hbox)
+				y = gch.y + y_above + hbox;
+				y_set(s.st, true, x, w, y + h * .75 + hbox)
 			} else {
-				y = gch.y + y_below;
-				y_set(s.st, false, x, w, y - hbox)
+				y = gch.y + y_below - 2;
+				y_set(s.st, false, x, w, y - h * .25)
 			}
 			i = text.indexOf('\t')
 
