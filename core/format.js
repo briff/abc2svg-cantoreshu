@@ -189,6 +189,24 @@ function param_set_font(xxxfont, param) {
 		font.class = a[1];
 		param = param.replace(a[0], a[2])
 	}
+	a = param.match(/\s+wadj=(.*?)(\s|$)/)
+	if (a) {
+		switch (a[1]) {
+		case 'none':
+			font.wadj = ''
+			break
+		case 'space':
+			font.wadj = 'spacing'
+			break
+		case 'glyph':
+			font.wadj = 'spacingAndGlyphs'
+			break
+		default:
+			syntax(1, errs.bad_val, "%%" + xxxfont)
+			break
+		}
+		param = param.replace(a[0], a[2])
+	}
 
 	a = param.split(/\s+/);
 	new_name = a[0]

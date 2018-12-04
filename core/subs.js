@@ -154,9 +154,10 @@ function xy_str(x, y, str,
     var	wh = strwh(str);
 
 	output += '<text class="' + font_class(gene.curfont)
-	if (action != 'j' && str.length > 3)
-		output += '" lengthAdjust="spacingAndGlyphs" textLength="' +
-			wh[0].toFixed(2);
+	if (action != 'j' && str.length > 5
+	 && gene.curfont.wadj)
+		output += '" lengthAdjust="' + gene.curfont.wadj +
+			'" textLength="' + wh[0].toFixed(2);
 	output += '" x="';
 	out_sxsy(x, '" y="', y + wh[1] * .2)	// a bit upper for the descent
 	switch (action) {
@@ -230,7 +231,7 @@ function get_lwidth() {
 
 // header generation functions
 function write_title(title, is_subtitle) {
-    var	font, h
+    var	h
 
 	if (!title)
 		return
