@@ -64,7 +64,7 @@ function parse_gchord(type) {
 	if (curvoice.pos.gch == C.SL_HIDDEN)
 		return
 
-	if (gene.curfont.box)
+	if (ann_font.box)
 		h_ann += 3;
 	i = 0;
 	type = 'g'
