@@ -19,10 +19,10 @@
 
 var	font_tb = [],
 	font_scale_tb = {
-		serif: 1.05,
-		serifBold: 1.05,
-		'sans-serif': 1.1,
-		'sans-serifBold': 1.1,
+		serif: 1,
+		serifBold: 1,
+		'sans-serif': 1,
+		'sans-serifBold': 1,
 		Palatino: 1.1,
 		Mono: 1.35
 	},

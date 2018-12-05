@@ -17,10 +17,13 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with abc2svg-core.  If not, see <http://www.gnu.org/licenses/>.
 
-/* width of characters according to the encoding */
-/* these are the widths for Times-Roman, extracted from the 'a2ps' package */
+// width of characters according to the font type
+// these tables were created from the font 'Liberation'
 
-var cw_tb = new Float32Array([
+    var	cw_tb = sw_tb,
+
+// serif
+    sw_tb = new Float32Array([
 	.000,.000,.000,.000,.000,.000,.000,.000,	// 00
 	.000,.000,.000,.000,.000,.000,.000,.000,
 	.000,.000,.000,.000,.000,.000,.000,.000,	// 10
@@ -36,8 +39,25 @@ var cw_tb = new Float32Array([
 	.333,.444,.500,.444,.500,.444,.333,.500,	// 60
 	.500,.278,.278,.500,.278,.778,.500,.500,
 	.500,.500,.333,.389,.278,.500,.500,.722,	// 70
-	.500,.500,.444,.480,.200,.480,.541,.500
-])
+	.500,.500,.444,.480,.200,.480,.541,.500]),
+// sans-serif
+    ssw_tb = new Float32Array([
+	.000,.000,.000,.000,.000,.000,.000,.000,	// 00
+	.000,.000,.000,.000,.000,.000,.000,.000,
+	.000,.000,.000,.000,.000,.000,.000,.000,	// 10
+	.000,.000,.000,.000,.000,.000,.000,.000,
+	.278,.278,.355,.556,.556,.889,.667,.191,	// 20
+	.333,.333,.389,.584,.278,.333,.278,.278,
+	.556,.556,.556,.556,.556,.556,.556,.556,	// 30
+	.556,.556,.278,.278,.584,.584,.584,.556,
+       1.015,.667,.667,.722,.722,.667,.611,.778,	// 40
+	.722,.278,.500,.667,.556,.833,.722,.778,
+	.667,.778,.722,.667,.611,.722,.667,.944,	// 50
+	.667,.667,.611,.278,.278,.278,.469,.556,
+	.333,.556,.556,.500,.556,.556,.278,.556,	// 60
+	.556,.222,.222,.500,.222,.833,.556,.556,
+	.556,.556,.333,.500,.278,.556,.500,.722,	// 70
+	.500,.500,.500,.334,.260,.334,.584,.512])
 
 /* -- return the character width -- */
 function cwid(c) {
@@ -96,6 +116,7 @@ function strwh(str) {
 function set_font(xxx) {
 	if (typeof xxx == "string")
 		xxx = get_font(xxx);
+	cw_tb = xxx.name.slice(0, 4) == 'sans' ? ssw_tb : sw_tb;
 	gene.curfont = gene.deffont = xxx
 }
 
