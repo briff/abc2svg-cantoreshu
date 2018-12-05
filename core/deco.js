@@ -1629,13 +1629,8 @@ function draw_measnb() {
 			y_set(st, true, 0, 20, y + gene.curfont.size + 2)
 		} else if (bar_num % cfmt.measurenb == 0) {
 			for ( ; ; s = s.ts_next) {
-				switch (s.type) {
-				case C.METER:
-				case C.CLEF:
-				case C.KEY:
-				case C.STBRK:
+				if (!s.dur)
 					continue
-				}
 				break
 			}
 			while (s.st != st)
@@ -1643,8 +1638,8 @@ function draw_measnb() {
 
 			// don't display the number twice
 		     if (s.type != C.BAR || !s.bar_num) {
-			if (s.prev && s.prev.type != C.CLEF)
-				s = s.prev;
+//			if (s.prev && s.prev.type != C.CLEF)
+//				s = s.prev;
 			x = s.x - s.wl;
 			any_nb = true;
 			w = cwid('0') * gene.curfont.swfac
