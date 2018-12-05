@@ -3130,6 +3130,8 @@ function draw_sym_near() {
 
 	set_color(undefined);
 	draw_deco_note()
+	if (cfmt.measurenb >= 0)
+		draw_measnb();
 	draw_deco_staff();
 
 	/* if any lyric, draw them now as unscaled */
@@ -3142,9 +3144,6 @@ function draw_sym_near() {
 			break
 		}
 	}
-
-	if (cfmt.measurenb >= 0)
-		draw_measnb();
 
 	set_dscale(-1);
 	output = output_sav
