@@ -219,9 +219,13 @@ function param_set_font(xxxfont, param) {
 	}
 	if (a.length > 1) {
 		new_size = a[a.length - 1]
-		if (new_size != '*')
-			font.size = Number(new_size)
-//fixme: error if not number
+		if (new_size != '*') {
+			new_size = Number(new_size)
+			if (isNaN(new_size))
+				syntax(1, errs.bad_val, "%%" + xxxfont)
+			else
+				font.size = new_size
+		}
 	}
 }
 
