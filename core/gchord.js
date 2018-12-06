@@ -449,11 +449,11 @@ function draw_gchord(s, gchy_min, gchy_max) {
 		switch (gch.type) {
 		case '_':			/* below */
 			y = gch.y + y_below - 2;
-			y_set(s.st, 0, x, w, y - h * .25 - hbox)
+			y_set(s.st, 0, x, w, y - h - hbox)
 			break
 		case '^':			/* above */
 			y = gch.y + y_above + hbox;
-			y_set(s.st, 1, x, w, y + h * .75 + hbox)
+			y_set(s.st, 1, x, w, y + h + hbox)
 			break
 		case '<':			/* left */
 /*fixme: what symbol space?*/
@@ -471,10 +471,10 @@ function draw_gchord(s, gchy_min, gchy_max) {
 		default:			// chord symbol
 			if (gch.y >= 0) {
 				y = gch.y + y_above + hbox;
-				y_set(s.st, true, x, w, y + h * .75 + hbox)
+				y_set(s.st, true, x, w, y + h + hbox)
 			} else {
 				y = gch.y + y_below - 2;
-				y_set(s.st, false, x, w, y - h * .25)
+				y_set(s.st, false, x, w, y - h)
 			}
 			i = text.indexOf('\t')
 
