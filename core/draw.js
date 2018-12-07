@@ -3756,7 +3756,7 @@ function draw_symbols(p_voice) {
 			break			/* drawn in draw_systems */
 		case C.CLEF:
 			st = s.st
-			if (s.time > staff_tb[st].clef.time)
+			if (s.time >= staff_tb[st].clef.time)
 				staff_tb[st].clef = s
 			if (s.second)
 /*			 || p_voice.st != st)	*/
