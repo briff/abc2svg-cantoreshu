@@ -347,7 +347,7 @@ function gch_build(s) {
 		}
 
 		/* set the offsets and widths */
-		gene.curfont = gch.font;
+		set_font(gch.font);
 		wh = strwh(gch.text);
 		gch.w = wh[0]
 		if (gch.box)
