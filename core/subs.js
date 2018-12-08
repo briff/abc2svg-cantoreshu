@@ -20,9 +20,8 @@
 // width of characters according to the font type
 // these tables were created from the font 'Liberation'
 
-    var	cw_tb = sw_tb,
-
 // serif
+  var
     sw_tb = new Float32Array([
 	.000,.000,.000,.000,.000,.000,.000,.000,	// 00
 	.000,.000,.000,.000,.000,.000,.000,.000,
@@ -57,7 +56,9 @@
 	.333,.556,.556,.500,.556,.556,.278,.556,	// 60
 	.556,.222,.222,.500,.222,.833,.556,.556,
 	.556,.556,.333,.500,.278,.556,.500,.722,	// 70
-	.500,.500,.500,.334,.260,.334,.584,.512])
+	.500,.500,.500,.334,.260,.334,.584,.512]),
+
+    cw_tb = sw_tb				// current width table
 
 /* -- return the character width -- */
 function cwid(c) {
