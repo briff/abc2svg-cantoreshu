@@ -933,11 +933,6 @@ function draw_rest(s) {
 	var	s2, i, j, x, y, dotx, yb, yt, head, bx,
 		p_staff = staff_tb[s.st]
 
-	/* don't display the rests of invisible staves */
-	/* (must do this here for voices out of their normal staff) */
-	if (!p_staff.topbar)
-		return
-
 	/* if rest alone in the measure or measure repeat, center */
 	if (s.dur == s.p_v.meter.wmeasure
 	 || (s.rep_nb && s.rep_nb >= 0)) {
@@ -3128,7 +3123,7 @@ function draw_sym_near() {
 		}
 	}
 
-	set_color(undefined);
+	set_color();
 	draw_deco_note()
 	if (cfmt.measurenb >= 0)
 		draw_measnb();
@@ -3731,6 +3726,7 @@ function draw_symbols(p_voice) {
 				break
 			}
 		}
+		st = s.st
 		x = s.x;
 		set_color(s.color)
 		switch (s.type) {
@@ -3750,20 +3746,22 @@ function draw_symbols(p_voice) {
 				bm.s2 = null
 			break
 		case C.REST:
+			if (s.second
+			 || s.invis
+			 || !staff_tb[st].topbar)
+				break
 			draw_rest(s);
 			break
 		case C.BAR:
 			break			/* drawn in draw_systems */
 		case C.CLEF:
-			st = s.st
 			if (s.time >= staff_tb[st].clef.time)
 				staff_tb[st].clef = s
-			if (s.second)
-/*			 || p_voice.st != st)	*/
-				break		/* only one clef per staff */
-			if (!staff_tb[s.st].topbar)
+			if (s.second
+			 || s.invis
+			 || !staff_tb[st].topbar)
 				break
-			set_color(undefined);
+			set_color();
 			set_sscale(st);
 			anno_start(s);
 			y = staff_tb[st].y
@@ -3791,11 +3789,10 @@ function draw_symbols(p_voice) {
 		case C.METER:
 			p_voice.meter = s
 			if (s.second
+//			 || s.invis
 			 || !staff_tb[s.st].topbar)
 				break
-			if (cfmt.alignbars && s.st != 0)
-				break
-			set_color(undefined);
+			set_color();
 			set_sscale(s.st);
 			anno_start(s);
 			draw_meter(x, s);
@@ -3804,9 +3801,10 @@ function draw_symbols(p_voice) {
 		case C.KEY:
 			p_voice.key = s
 			if (s.second
+			 || s.invis
 			 || !staff_tb[s.st].topbar)
 				break
-			set_color(undefined);
+			set_color();
 			set_sscale(s.st);
 			anno_start(s);
 			draw_keysig(p_voice, x, s);
@@ -3847,7 +3845,7 @@ function draw_symbols(p_voice) {
 	set_scale(p_voice.sym);
 	draw_all_ties(p_voice);
 // no need to reset the scale as in abcm2ps
-	set_color(undefined)
+	set_color()
 }
 
 /* -- draw all symbols -- */
