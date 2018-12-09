@@ -475,29 +475,61 @@ function set_graceoffs(s) {
 	return x
 }
 
-/* -- compute the width needed by the guitar chords / annotations -- */
+// Compute the smallest spacing between symbols according to chord symbols
+//	so that they stay at the same offset.
+// Constraints:
+// - assume the chord symbols are only in the first staff
+// - treat only the first chord symbol of each symbol
+// - the chord symbol under the staff are ignored
+function set_w_chs(s) {
+    var	i, ch, ch0, s0, dw, x,
+	n = 0
+
+	for ( ; s; s = s.ts_next) {
+		if (s.shrink) {
+			x += s.shrink;
+			n++
+		}
+		if (!s.a_gch)
+			continue
+		for (i = 0; i < s.a_gch.length; i++) {
+			ch = s.a_gch[i]
+			if (ch.type != 'g' || ch.y < 0) // upper chord symbol only
+				continue
+			if (ch0) {
+				if (ch0.w > x + ch.x) {
+					dw = (ch0.w - x - ch.x) / n
+					while (1) {
+						s0 = s0.ts_next
+						if (s0.shrink)
+							s0.shrink += dw
+						if (s0 == s)
+							break
+					}
+				}
+			}
+			s0 = s;
+			ch0 = ch;
+			n = 0;
+//			x = ch.box ? -2 : 0
+			x = 0
+			break
+		}
+	}
+}
+
+// compute the width needed by the left and right annotations
 function gchord_width(s, wlnote, wlw) {
-	var	s2, gch, w, wl, ix,
-		lspc = 0,
-		rspc = 0,
-		alspc = 0,
-		arspc = 0
+    var	gch, w, ix,
+	arspc = 0
 
 	for (ix = 0; ix < s.a_gch.length; ix++) {
 		gch = s.a_gch[ix]
 		switch (gch.type) {
-		default:		/* default = above */
-			wl = -gch.x
-			if (wl > lspc)
-				lspc = wl;
-			w = gch.w + 2 - wl
-			if (w > rspc)
-				rspc = w
-			break
 		case '<':		/* left */
 			w = gch.w + wlnote
-			if (w > alspc)
-				alspc = w
+			if (w > wlw)
+				wlw = w
 			break
 		case '>':		/* right */
 			w = gch.w + s.wr
@@ -506,42 +538,9 @@ function gchord_width(s, wlnote, wlw) {
 			break
 		}
 	}
+	if (s.wr < arspc)
+		s.wr = arspc
 
-	/* adjust width for no clash */
-	s2 = s.prev
-	if (s2) {
-		if (s2.a_gch) {
-			for (s2 = s.ts_prev; ; s2 = s2.ts_prev) {
-				if (s2 == s.prev) {
-					if (wlw < lspc)
-						wlw = lspc
-					break
-				}
-				if (s2.seqst)
-					lspc -= s2.shrink
-			}
-		}
-		if (alspc != 0)
-			if (wlw < alspc)
-				wlw = alspc
-	}
-	s2 = s.next
-	if (s2) {
-		if (s2.a_gch) {
-			for (s2 = s.ts_next; ; s2 = s2.ts_next) {
-				if (s2 == s.next) {
-					if (s.wr < rspc)
-						s.wr = rspc
-					break
-				}
-				if (s2.seqst)
-					rspc -= 8
-			}
-		}
-		if (arspc != 0)
-			if (s.wr < arspc)
-				s.wr = alspc
-	}
 	return wlw
 }
 
@@ -1093,7 +1092,7 @@ function add_end_bar(s) {
 /* this function is called once for the whole tune
  * then, once per music line up to the first sequence */
 function set_allsymwidth() {
-    var	maxx, new_val, s_tupc, s_tupn, st,
+    var	maxx, new_val, s_tupc, s_tupn, st, s_chs,
 	s = tsfirst,
 	s2 = s,
 	xa = 0,
@@ -1105,6 +1104,8 @@ function set_allsymwidth() {
 	while (1) {
 		maxx = xa
 		do {
+			if (s.a_gch && !s_chs)
+				s_chs = s;
 			self.set_width(s);
 			st = s.st
 			if (xl[st] == undefined)
@@ -1147,6 +1148,10 @@ function set_allsymwidth() {
 			s2 = s2.ts_next
 		} while (!s2.seqst)
 	}
+
+	// let the chord symbols at the same offset
+	if (s_chs)
+		set_w_chs(s_chs)
 
 	// adjust the spacing inside the tuplets
 	s = s_tupc
