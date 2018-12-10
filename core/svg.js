@@ -112,15 +112,15 @@ var tgls = {
   fld4: {x:-.3, y:-9, c:"\ue247"},
   flu5: {x:-.3, y:12.5, c:"\ue248"},
   fld5: {x:-.3, y:-14, c:"\ue249"},
- "acc-1": {x:-3, y:0, c:"\ue260"},	// flat
-  acc3: {x:-2, y:0, c:"\ue261"},	// natural
-  acc1: {x:-3, y:0, c:"\ue262"},	// sharp
+ "acc-1": {x:-1, y:0, c:"\ue260"},	// flat
+  acc3: {x:-1, y:0, c:"\ue261"},	// natural
+  acc1: {x:-2, y:0, c:"\ue262"},	// sharp
   acc2: {x:-3, y:0, c:"\ue263"},	// double sharp
  "acc-2": {x:-3, y:0, c:"\ue264"},	// double flat
- "acc-1_1_4": {x:-3, y:0, c:"\ue280"},	// quarter-tone flat
- "acc-1_3_4": {x:-4, y:0, c:"\ue281"},	// three-quarter-tones flat
-  acc1_1_4: {x:-2, y:0, c:"\ue282"},	// quarter-tone sharp
-  acc1_3_4: {x:-4, y:0, c:"\ue283"},	// three-quarter-tones sharp
+ "acc-1_1_4": {x:-2, y:0, c:"\ue280"},	// quarter-tone flat
+ "acc-1_3_4": {x:-3, y:0, c:"\ue281"},	// three-quarter-tones flat
+  acc1_1_4: {x:-1, y:0, c:"\ue282"},	// quarter-tone sharp
+  acc1_3_4: {x:-3, y:0, c:"\ue283"},	// three-quarter-tones sharp
   accent: {x:-3, y:0, c:"\ue4a0"},
   stc: {x:-1, y:-2, c:"\ue4a2"},	// staccato
   emb: {x:-4, y:-2, c:"\ue4a4"},
