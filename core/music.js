@@ -2536,8 +2536,11 @@ if (st > nst) {
 				 || s.ts_next.st != s.st
 				 || s.time != s.ts_next.time
 				 || s.dur != s.ts_next.dur
+				 || (s.a_gch && s.ts_next.a_gch)
 				 || s.invis)
 					break
+				if (s.ts_next.a_gch)
+					s.a_gch = s.ts_next.a_gch
 				unlksym(s.ts_next)
 				break
 			case C.NOTE:
