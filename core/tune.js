@@ -924,7 +924,6 @@ function do_pscom(text) {
 			k = 1
 		} else {
 			b = param.split(/\s+/);
-
 			n = parseInt(b[0]);
 			k = parseInt(b[1])
 			if (isNaN(n) || n < 1
@@ -1733,6 +1732,7 @@ function get_clef(s) {
 
 	// clef change
 	/* the clef must appear before a key signature or a bar */
+//fixme: to remove (let the user do what (s)he wants)
 	for (s2 = curvoice.last_sym;
 	     s2 && s2.prev && s2.time == curvoice.time;
 	     s2 = s2.prev) {
@@ -1741,7 +1741,8 @@ function get_clef(s) {
 	}
 	if (s2 && s2.prev
 	 && s2.time == curvoice.time		// if no time skip
-	 && ((s2.type == C.KEY && !s2.k_none) || s2.type == C.BAR)) {
+	 && ((s2.type == C.KEY && !s2.k_none)
+	   || (s2.type == C.BAR && s2.bar_type != ':'))) {
 		for (s3 = s2; s3.prev; s3 = s3.prev) {
 			switch (s3.prev.type) {
 			case C.KEY:

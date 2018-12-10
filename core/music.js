@@ -2045,7 +2045,7 @@ function set_auto_clef(st, s_start, clef_type_start) {
 				continue
 			if (s2.type == C.BAR
 			 && s2.v == s.v) {
-				s3 = s2
+				s3 = s2.bar_type[0] != ':' ? s2 : s2.next
 				break
 			}
 			if (s2.type != C.NOTE)
