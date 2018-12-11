@@ -3746,8 +3746,7 @@ function draw_symbols(p_voice) {
 				bm.s2 = null
 			break
 		case C.REST:
-			if (s.second
-			 || s.invis
+			if (s.invis
 			 || !staff_tb[st].topbar)
 				break
 			draw_rest(s);
