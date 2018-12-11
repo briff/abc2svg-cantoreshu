@@ -273,10 +273,15 @@ function unlksym(s) {
 	else
 		s.p_v.sym = s.next
 	if (s.ts_next) {
-		if (s.seqst && !s.ts_next.seqst) {
+		if (s.seqst) {
+		    if (s.ts_next.seqst) {
+			s.ts_next.shrink += s.shrink;
+			s.ts_next.space += s.space
+		    } else {
 			s.ts_next.seqst = true;
 			s.ts_next.shrink = s.shrink;
 			s.ts_next.space = s.space
+		    }
 		}
 		s.ts_next.ts_prev = s.ts_prev
 	}
