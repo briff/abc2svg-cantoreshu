@@ -613,7 +613,7 @@ function tosvg(in_fname,		// file name
 			parse_music_line()
 			continue
 		default:
-			if ("ABCDFGHOSZ".indexOf(line0) >= 0) {
+			if ("ABCDFGHNOSZ".indexOf(line0) >= 0) {
 				if (parse.state >= 2) {
 					syntax(1, errs.ignored, line0)
 					continue
