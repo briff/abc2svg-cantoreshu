@@ -436,6 +436,11 @@ function draw_gchord(s, gchy_min, gchy_max) {
 			(((s.notes[s.nhd].pit + s.notes[0].pit) >> 1) - 18) * 3 :
 			12		// fixed offset on measure bars
 
+	if (y_above < gchy_max)
+		y_above = gchy_max
+	if (y_below > gchy_min)
+		y_below = gchy_min;
+
 	set_dscale(s.st);
 	for (ix = 0; ix < s.a_gch.length; ix++) {
 		gch = s.a_gch[ix];
