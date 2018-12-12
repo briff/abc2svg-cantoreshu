@@ -442,14 +442,14 @@ function draw_gchord(s, gchy_min, gchy_max) {
 		use_font(gch.font);
 		set_font(gch.font);
 		h = gch.font.size;
-		hbox = gch.box ? 4 : 2;
+		hbox = gch.box ? 2 : 0;
 		w = gch.w;
 		x = s.x + gch.x;
 		text = gch.text
 		switch (gch.type) {
 		case '_':			/* below */
-			y = gch.y + y_below - 2;
-			y_set(s.st, 0, x, w, y - h - hbox)
+			y = gch.y + y_below;
+			y_set(s.st, 0, x, w, y - hbox)
 			break
 		case '^':			/* above */
 			y = gch.y + y_above + hbox;
@@ -473,8 +473,8 @@ function draw_gchord(s, gchy_min, gchy_max) {
 				y = gch.y + y_above + hbox;
 				y_set(s.st, true, x, w, y + h + hbox)
 			} else {
-				y = gch.y + y_below - 2;
-				y_set(s.st, false, x, w, y - h)
+				y = gch.y + y_below;
+				y_set(s.st, false, x, w, y - hbox)
 			}
 			i = text.indexOf('\t')
 
