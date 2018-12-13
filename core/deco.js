@@ -429,7 +429,7 @@ function d_slide(de) {
 	de.y = 3 * (yc - 18)
 }
 
-/* 5: special case for long trill */
+// special case for long decoration
 function d_trill(de) {
 	if (de.ldst)
 		return
@@ -650,6 +650,8 @@ function deco_def(nm) {
 		error(1, null, "%%deco: bad C function index '$1'", c_func)
 		return //undefined
 	}
+	if (c_func == 5)			// old !trill(!
+		c_func = 3
 	if (h < 0 || wl < 0 || wr < 0) {
 		error(1, null, "%%deco: cannot have a negative value '$1'", text)
 		return //undefined
@@ -1093,8 +1095,6 @@ function draw_deco_near() {
 				break
 			case 3:				/* d_upstaff */
 			case 4:
-//fixme:trill does not work yet
-			case 5:				/* trill */
 				if (ottava[dd.name]) {	// only one ottava per staff
 					x = dd.name.slice(0, -1) + s.st.toString()
 					if (od[x]) {
