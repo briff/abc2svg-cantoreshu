@@ -2820,7 +2820,7 @@ function init_music_line() {
 
 	/* add a clef at start of the main voices */
 	last_s = tsfirst
-	while (last_s.type == C.CLEF) {		/* move the starting clefs */
+	while (last_s && last_s.type == C.CLEF) {	// move the starting clefs
 		v = last_s.v
 		if (cur_sy.voices[v].range >= 0
 		 && !cur_sy.voices[v].second) {
