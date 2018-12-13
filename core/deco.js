@@ -89,14 +89,14 @@ var decos = {
 	sfz: "6 sfz 18 4 10",
 	ped: "4 ped 20 0 0",
 	"ped-up": "4 pedoff 20 0 0",
-	"crescendo(": "7 cresc 18 0 0",
-	"crescendo)": "7 cresc 18 0 0",
-	"<(": "7 cresc 18 0 0",
-	"<)": "7 cresc 18 0 0",
-	"diminuendo(": "7 dim 18 0 0",
-	"diminuendo)": "7 dim 18 0 0",
-	">(": "7 dim 18 0 0",
-	">)": "7 dim 18 0 0",
+	"crescendo(": "6 cresc 18 0 0",
+	"crescendo)": "6 cresc 18 0 0",
+	"<(": "6 cresc 18 0 0",
+	"<)": "6 cresc 18 0 0",
+	"diminuendo(": "6 dim 18 0 0",
+	"diminuendo)": "6 dim 18 0 0",
+	">(": "6 dim 18 0 0",
+	">)": "6 dim 18 0 0",
 	"-(": "8 gliss 0 0 0",
 	"-)": "8 gliss 0 0 0",
 	"~(": "8 glisq 0 0 0",
@@ -252,7 +252,7 @@ function d_arp(de) {
 	de.y = 3 * (s.notes[0].pit - 18) - 3
 }
 
-/* 7: special case for crescendo/diminuendo */
+// special case for long dynamic decorations
 function d_cresc(de) {
 	if (de.ldst)			// skip start of deco
 		return
@@ -372,6 +372,14 @@ function d_pf(de) {
 		s = de.s,
 		dd = de.dd,
 		de_prev;
+
+	// don't treat here the long decorations
+	if (de.ldst)			// if long deco start
+		return
+	if (de.start) {			// if long decoration
+		d_cresc(de)
+		return
+	}
 
 	de.val = dd.wl + dd.wr;
 	up = up_p(s, s.pos.vol)
@@ -652,6 +660,9 @@ function deco_def(nm) {
 	}
 	if (c_func == 5)			// old !trill(!
 		c_func = 3
+	if (c_func == 7)			// old !cresc(!
+		c_func = 6
+
 	if (h < 0 || wl < 0 || wr < 0) {
 		error(1, null, "%%deco: cannot have a negative value '$1'", text)
 		return //undefined
@@ -691,6 +702,7 @@ function deco_def(nm) {
 	c = dd.name.slice(-1)
 	if (c == '(' ||
 	    (c == ')' && dd.name.indexOf('(') < 0)) {
+		dd.str = null;			// (no string)
 		name2 = dd.name.slice(0, -1) + (c == '(' ? ')' : '(');
 		dd2 = dd_tb[name2]
 		if (dd2) {
