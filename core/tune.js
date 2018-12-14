@@ -1731,35 +1731,7 @@ function get_clef(s) {
 	}
 
 	// clef change
-	/* the clef must appear before a key signature or a bar */
-//fixme: to remove (let the user do what (s)he wants)
-	for (s2 = curvoice.last_sym;
-	     s2 && s2.prev && s2.time == curvoice.time;
-	     s2 = s2.prev) {
-		if (w_tb[s2.type] != 0)
-			break
-	}
-	if (s2 && s2.prev
-	 && s2.time == curvoice.time		// if no time skip
-	 && ((s2.type == C.KEY && !s2.k_none)
-	   || (s2.type == C.BAR && s2.bar_type != ':'))) {
-		for (s3 = s2; s3.prev; s3 = s3.prev) {
-			switch (s3.prev.type) {
-			case C.KEY:
-			case C.BAR:
-				continue
-			}
-			break
-		}
-		s2 = curvoice.last_sym;
-		curvoice.last_sym = s3.prev;
-		sym_link(s);
-		s.next = s3;
-		s3.prev = s;
-		curvoice.last_sym = s2
-	} else {
-		sym_link(s)
-	}
+	sym_link(s);
 	s.clef_small = true
 }
 
