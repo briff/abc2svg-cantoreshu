@@ -216,15 +216,18 @@ function param_set_font(xxxfont, param) {
 		new_name = new_name.replace('Helvetica', 'sans-serif');
 		new_name = new_name.replace('Courier', 'monospace');
 		font.name = new_name
+		font.swfac = 0
 	}
 	if (a.length > 1) {
 		new_size = a[a.length - 1]
 		if (new_size != '*') {
 			new_size = Number(new_size)
-			if (isNaN(new_size))
+			if (isNaN(new_size)) {
 				syntax(1, errs.bad_val, "%%" + xxxfont)
-			else
-				font.size = new_size
+			} else {
+				font.size = new_size;
+				font.swfac = 0
+			}
 		}
 	}
 }
