@@ -163,65 +163,22 @@ function parse_gchord(type) {
 
 // transpose a chord symbol
 var	note_names = "CDEFGAB",
-	latin_names = [ "Do", "Re", "Mi", "Fa", "Sol", "La", "Si" ],
 	acc_name = ["bb", "b", "", "#", "##"]
 
 	function gch_tr1(p, i2) {
 		var	new_txt, l,
-			n, i1, i3, i4, ix, a, ip, ip2,
-			latin = 0
+			n, i1, i3, i4, ix, a, ip, ip2
 
 		/* main chord */
-		switch (p[0]) {
-		case 'A': n = 5; break
-		case 'B': n = 6; break
-		case 'C': n = 0; break
-		case 'D':
-			if (p[1] == 'o') {
-				latin++;
-				n = 0		/* Do */
-				break
-			}
-			n = 1
-			break
-		case 'E': n = 2; break
-		case 'F':
-			if (p[1] == 'a')
-				latin++;	/* Fa */
-			n = 3
-			break
-		case 'G': n = 4; break
-		case 'L':
-			latin++;		/* La */
-			n = 5
-			break
-		case 'M':
-			latin++;		/* Mi */
-			n = 2
-			break
-		case 'R':
-			latin++
-			n = 1			/* Re */
-			break
-		case 'S':
-			latin++
-			if (p[1] == 'o') {
-				latin++;
-				n = 4		/* Sol */
-			} else {
-				n = 6		/* Si */
-			}
-			break
-		case '/':			// bass only
-			latin--
-			break
-		default:
-			return p
+		n = note_names.indexOf(p[0])
+		if (n < 0) {
+			if (p[0] != '/')
+				return p
 		}
 
-		a = 0;
-		ip = latin + 1
-		if (latin >= 0) {		// if some chord
+		ip = 1
+		if (n >= 0) {		// if some chord
+			a = 0
 			while (p[ip] == '#') {
 				a++;
 				ip++
@@ -235,10 +192,7 @@ var	note_names = "CDEFGAB",
 			i3 = cde2fcg[n] + i2 + a * 7;
 			i4 = cgd2cde[(i3 + 16 * 7) % 7];	// note
 			i1 = ((((i3 + 22) / 7) | 0) + 159) % 5;	// accidental
-			new_txt = (latin ? latin_names[i4] : note_names[i4]) +
-					acc_name[i1]
-		} else {
-			new_txt = ''
+			new_txt = note_names[i4] + acc_name[i1]
 		}
 
 		ip2 = p.indexOf('/', ip)	// skip 'm'/'dim'..
@@ -249,7 +203,7 @@ var	note_names = "CDEFGAB",
 		n = note_names.indexOf(p[++ip2])
 		if (n < 0)
 			return new_txt + p.slice(ip);
-//fixme: latin names not treated
+
 		new_txt += p.slice(ip, ip2);
 		a = 0
 		if (p[++ip2] == '#') {
