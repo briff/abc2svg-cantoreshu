@@ -89,11 +89,6 @@ Abc.prototype.set_tsfirst = function(s) { tsfirst = s };
 Abc.prototype.set_vp = set_vp;
 Abc.prototype.set_v_param = set_v_param;
 Abc.prototype.set_width = set_width;
-Abc.prototype.set_xhtml = function(wt) {
-    var wto = write_text;
-	write_text = wt
-	return wto
-};
 Abc.prototype.sort_pitch = sort_pitch;
 Abc.prototype.strwh = strwh;
 Abc.prototype.stv_g = function() { return stv_g };
