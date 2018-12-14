@@ -425,7 +425,7 @@ function gch_build(s) {
 // (unscaled delayed output)
 // (possible hook)
 function draw_gchord(s, gchy_min, gchy_max) {
-	var	gch, text, ix, x, y, y2, i, j, hbox, h
+	var	gch, text, ix, x, y, y2, hbox, h
 
 	// adjust the vertical offset according to the chord symbols
 //fixme: w may be too small
@@ -480,53 +480,6 @@ function draw_gchord(s, gchy_min, gchy_max) {
 			} else {
 				y = gch.y + y_below;
 				y_set(s.st, false, x, w, y - hbox)
-			}
-			i = text.indexOf('\t')
-
-			// if some TAB: expand the chord symbol
-			if (i >= 0) {
-				x = realwidth
-				for (var next = s.next; next; next = next.next) {
-					switch (next.type) {
-					default:
-						continue
-					case C.NOTE:
-					case C.REST:
-					case C.BAR:
-						x = next.x
-						break
-					}
-					break
-				}
-				j = 2
-				for (;;) {
-					i = text.indexOf('\t', i + 1)
-					if (i < 0)
-						break
-					j++
-				}
-				var expdx = (x - s.x) / j;
-
-				x = s.x;
-				y *= staff_tb[s.st].staffscale
-				if (user.anno_start)
-					user.anno_start("gchord", gch.istart, gch.iend,
-						x - 2, y + h + 2, w + 4, h + 4, s)
-				i = 0;
-				j = i;
-				for (;;) {
-					i = text.indexOf('\t', j)
-					if (i < 0)
-						break
-					xy_str(x, y, text.slice(j, i), 'c');
-					x += expdx;
-					j = i + 1
-				}
-				xy_str(x, y, text.slice(j), 'c')
-				if (user.anno_stop)
-					user.anno_stop("gchord", gch.istart, gch.iend,
-						s.x - 2, y + h + 2, w + 4, h + 4, s)
-				continue
 			}
 			break
 		case '@':			/* absolute */
