@@ -166,7 +166,7 @@ var	note_names = "CDEFGAB",
 	acc_name = ["bb", "b", "", "#", "##"]
 
 	function gch_tr1(p, i2) {
-		var	new_txt, l,
+	    var	new_txt,
 			n, i1, i3, i4, ix, a, ip, ip2
 
 		/* main chord */
@@ -226,23 +226,14 @@ var	note_names = "CDEFGAB",
 	} // get_tr1
 
 function gch_transp(s) {
-	var	gch, p, j,
+    var	gch,
 		i = 0,
 		i2 = curvoice.ckey.k_sf - curvoice.okey.k_sf
 
-	while (1) {
-		gch = s.a_gch[i++]
-		if (!gch)
-			return
-		if (gch.type != 'g')
-			continue
-		p = gch.text;
-		j = p.indexOf('\t')
-		if (j >= 0) {
-			j++;
-			p = p.slice(0, j) + gch_tr1(p.slice(j), i2)
-		}
-		gch.text = gch_tr1(p, i2)
+	for (i = 0; i < s.a_gch.length; i++) {
+		gch = s.a_gch[i]
+		if (gch.type == 'g')
+			gch.text = gch_tr1(gch.text, i2)
 	}
 }
 
