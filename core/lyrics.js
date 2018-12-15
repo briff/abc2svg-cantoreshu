@@ -282,7 +282,7 @@ function ly_width(s, wlw) {
 			if (p[0] == '(') {
 				sz = cwid('(') * swfac
 			} else {
-				j = p.indexOf(' ');
+				j = p.indexOf(' ');	// (&nbsp;)
 				set_font(ly.font)
 				if (j > 0)
 					sz = strwh(p.slice(0, j))[0]
