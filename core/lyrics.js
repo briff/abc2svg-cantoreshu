@@ -287,7 +287,7 @@ function ly_width(s, wlw) {
 				if (j > 0)
 					sz = strwh(p.slice(0, j))[0]
 				else
-					sz = w
+					sz = w * .2
 			}
 			shift = (w - sz + 2 * cwid(' ') * swfac) * .4
 			if (shift > 20)
