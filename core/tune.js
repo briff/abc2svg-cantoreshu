@@ -1160,7 +1160,8 @@ function do_begin_end(type,
 			s.text = text
 		} else {
 			svg_flush();
-			user.img_out(text)
+			if (user.img_out)
+				user.img_out(text)
 		}
 		break
 	case "svg":
