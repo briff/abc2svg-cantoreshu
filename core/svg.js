@@ -827,6 +827,13 @@ function out_ltr(x, y, val) {
 		x += 6
 	}
 }
+function out_lped(x, y, val, defl) {
+	y += 4;
+	if (!defl.nost)
+		xygl(x, y, "ped");
+	if (!defl.noen)
+		xygl(x + val, y, "pedoff")
+}
 function out_8va(x, y, val, defl) {
 	if (!defl.nost) {
 		out_XYAB('<text x="X" y="Y" \
@@ -900,6 +907,7 @@ var deco_val_tb = {
 	cresc:	out_cresc,
 	dim:	out_dim,
 	ltr:	out_ltr,
+	lped:	out_lped,
 	"8va":	out_8va,
 	"8vb":	out_8vb,
 	"15ma":	out_15ma,

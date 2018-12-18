@@ -89,6 +89,8 @@ var decos = {
 	sfz: "6 sfz 18 4 10",
 	ped: "4 ped 18 8 8",
 	"ped-up": "4 pedoff 18 8 8",
+	"ped(": "4 lped 20 1 1",
+	"ped)": "4 lped 20 1 1",
 	"crescendo(": "6 cresc 18 0 0",
 	"crescendo)": "6 cresc 18 0 0",
 	"<(": "6 cresc 18 0 0",
