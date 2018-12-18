@@ -3040,7 +3040,10 @@ function draw_sym_near() {
 
 		// (permit closer staves)
 		if (s.stem > 0) {
-			if (s.beam_st) {
+			if (s.stemless) {
+				dx = -5;
+				w = 10
+			} else if (s.beam_st) {
 				dx = 3;
 				w = s.beam_end ? 4 : 10
 			} else {
@@ -3051,7 +3054,10 @@ function draw_sym_near() {
 			y_set(s.st, false, s.x - s.wl, s.wl + s.wr, s.ymn)
 		} else {
 			y_set(s.st, true, s.x - s.wl, s.wl + s.wr, s.ymx);
-			if (s.beam_st) {
+			if (s.stemless) {
+				dx = -5;
+				w = 10
+			} else if (s.beam_st) {
 				dx = -6;
 				w = s.beam_end ? 4 : 10
 			} else {
