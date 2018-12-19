@@ -423,7 +423,6 @@ function put_words(words) {
 		return i >= p.length && k == 0
 	} // put_wline()
 
-	blk_out();
 	set_font("words")
 
 	/* see if we may have 2 columns */
