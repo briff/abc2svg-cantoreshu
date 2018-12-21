@@ -676,7 +676,7 @@ function font_class(font) {
 function use_font(font) {
 	if (!font.used) {
 		font.used = true;
-		if (!font.fid) {
+		if (font.fid == undefined) {
 			font.fid = font_tb.length;
 			font_tb.push(font)
 			if (!font.swfac)
