@@ -31,7 +31,7 @@
 // This module runs only with the nodeJS script 'abc2svg' and asks for
 // the npm module 'jszip' to be installed.
 
-    var	margins, page_size, page_type, page_mid, page_right,
+    var	margins, page_size, page_type, page_left, page_mid, page_right,
 	header, footer, headerfont, footerfont, in_p, t_info, title,
 	style = '',
 	content = '',
@@ -73,7 +73,7 @@ function gen_hf(type, stype, str) {
     var	c, i, res_left,
 	j = 0,
 	res = '<style:' + type + '>\n\
-<text:p text:style-name="' + stype + '\">'
+<text:p text:style-name="' + stype + '\"><text:tab/>'
 
 	if (str[0] == '"')
 		str = str.slice(1, -1)
@@ -291,6 +291,7 @@ function odt_out() {
  style:parent-style-name="Standard" style:class="extra">\n\
  <style:paragraph-properties>\n\
   <style:tab-stops>\n\
+   <style:tab-stop style:position="' + page_left + '" style:type="left"/>\n\
    <style:tab-stop style:position="' + page_mid + '" style:type="center"/>\n\
    <style:tab-stop style:position="' + page_right + '" style:type="right"/>\n\
   </style:tab-stops>\n\
@@ -301,6 +302,7 @@ function odt_out() {
  style:parent-style-name="Standard" style:class="extra">\n\
  <style:paragraph-properties>\n\
   <style:tab-stops>\n\
+   <style:tab-stop style:position="' + page_left + '" style:type="left"/>\n\
    <style:tab-stop style:position="' + page_mid + '" style:type="center"/>\n\
    <style:tab-stop style:position="' + page_right + '" style:type="right"/>\n\
   </style:tab-stops>\n\
@@ -314,7 +316,7 @@ function odt_out() {
  </style:style>\n\
  <style:page-layout style:name="Standard">\n\
   <style:page-layout-properties ' + margins + '\
- fo:margin-left="1.5cm" fo:margin-right="1.5cm"/>\n\
+ fo:margin-left="0" fo:margin-right="0"/>\n\
  </style:page-layout>\n\
  </office:automatic-styles>\n\
  <office:master-styles>\n\
@@ -505,7 +507,6 @@ abc2svg.abc_init = function(args) {
 	// define some functions in the Abc object
 	abc.tosvg("toodt", "\
 %%fullsvg 1\n\
-%%printmargin 1.5cm\n\
 %%musicfont abc2svg")
 
 	// get the page parameters
@@ -517,16 +518,17 @@ abc2svg.abc_init = function(args) {
 		if (pw > 800) {
 			page_type = 'Letter';
 			page_size = 'fo:page-width="8.5in" fo:page-height="11in"';
-			page_mid = '3.66in';	// with margin = 1.5cm = 0.59in
-			page_right = '7.32in'
+			page_left = set_unit(cfmt.leftmargin);
+			page_mid = '4.25in';
+			page_right = set_unit(816 - cfmt.rightmargin)
 		} else {
 			page_type = 'A4';
 			page_size = 'fo:page-width="21cm" fo:page-height="29.7cm"';
-			page_mid = '9cm';	// with margin 1.5cm
-			page_right = '18cm'
+			page_left = set_unit(cfmt.leftmargin);
+			page_mid = '10.5cm';
+			page_right = set_unit(793.8 - cfmt.rightmargin)
 		}
 
-		// top and bottom margins default = 1cm
 		margins = 'fo:margin-top="' +
 			set_unit(cfmt.topmargin || 37.8) +
 			'" fo:margin-bottom="' +
