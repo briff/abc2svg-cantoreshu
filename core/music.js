@@ -1015,7 +1015,7 @@ function set_space(s) {
 
 // set a fixed spacing inside tuplets
 function set_sp_tup(s, s_et) {
-    var	dt, s2,
+    var	s2,
 	tim = s.time,
 	endtime = s_et.time + s_et.dur,
 	ttim = endtime - tim,
@@ -1025,10 +1025,11 @@ function set_sp_tup(s, s_et) {
 	do {
 		s = s.ts_next
 	} while (!s.seqst)
-	while (!s.dur)
-		s = s.ts_next
-	while (!s.seqst)
-		s = s.ts_prev
+//fixme: problem when BAR inside the tuplet sequence (in case user error)
+//	while (!s.dur)
+//		s = s.ts_next
+//	while (!s.seqst)
+//		s = s.ts_prev
 
 	// stop outside the tuplet sequence
 	// and add a measure bar when at end of tune
@@ -1055,10 +1056,9 @@ function set_sp_tup(s, s_et) {
 	// set the space values
 	while (1) {
 		if (s.seqst) {
-			dt = (s.time - tim) * space;
+			s.space = (s.time - tim) * space;
 			tim = s.time
 		}
-		s.space = dt
 		if (s == s_et)
 			break
 		s = s.ts_next
