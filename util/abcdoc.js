@@ -91,6 +91,9 @@ function dom_loaded() {
 
 	var page = document.body.innerHTML
 
+	// accept page formatting
+	abc2svg.abc_end = function() {}
+
 	// load the required modules
 	if (!abc2svg.modules.load(page, dom_loaded))
 		return
@@ -151,13 +154,14 @@ function dom_loaded() {
 				"\n...\n\n" + errtxt);
 			errtxt = ""
 		}
+		abc2svg.abc_end();	// close the page if %%pageheight
 		new_page += '</div><br/>\n';
 		i = k
 		if (k >= page.length)
 			break
 		re.lastIndex = i
 	}
-//console.log('result:\n' + new_page)
+
 	try {
 		document.body.innerHTML = new_page + page.slice(i)
 	} catch (e) {

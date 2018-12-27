@@ -147,6 +147,9 @@ function dom_loaded() {
 
 	page = document.body.innerHTML;
 
+	// accept page formatting
+	abc2svg.abc_end = function() {}
+
 	// load the required modules
 	if (abc2svg.modules.load(page, render))
 		render()
@@ -218,6 +221,7 @@ function render() {
 			alert("abc2svg javascript error: " + e.message +
 				"\nStack:\n" + e.stack)
 		}
+		abc2svg.abc_end()		// close the page if %%pageheight
 		if (errtxt) {
 			i = page.indexOf("\n", j);
 			i = page.indexOf("\n", i + 1);
