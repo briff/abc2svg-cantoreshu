@@ -90,6 +90,7 @@ build equalbars-$MAJOR.js: jscu modules/equalbars.js
 build grid-$MAJOR.js: jscu modules/grid.js
 build grid2-$MAJOR.js: jscu modules/grid2.js
 build MIDI-$MAJOR.js: jscu modules/MIDI.js
+build page-$MAJOR.js: jscu modules/page.js
 build perc-$MAJOR.js: jscu modules/perc.js
 build psvg-$MAJOR.js: jscu modules/wps.js modules/psvg.js
 build soloffs-$MAJOR.js: jscu modules/soloffs.js
@@ -117,8 +118,8 @@ build all: phony abc2svg-$MAJOR.js abcdoc-$MAJOR.js $
  play-$MAJOR.js psvg-$MAJOR.js $
  ambitus-$MAJOR.js break-$MAJOR.js capo-$MAJOR.js clip-$MAJOR.js $
  combine-$MAJOR.js diag-$MAJOR.js equalbars-$MAJOR.js grid-$MAJOR.js grid2-$MAJOR.js $
- MIDI-$MAJOR.js perc-$MAJOR.js soloffs-$MAJOR.js sth-$MAJOR.js temper-$MAJOR.js $
- edit-$MAJOR.css edit-$MAJOR.js edit-$MAJOR.xhtml $
+ MIDI-$MAJOR.js page-$MAJOR.js perc-$MAJOR.js soloffs-$MAJOR.js sth-$MAJOR.js $
+ temper-$MAJOR.js edit-$MAJOR.css edit-$MAJOR.js edit-$MAJOR.xhtml $
  abckbd-$MAJOR.js abckbd2-$MAJOR.js follow-$MAJOR.js
 
 default all

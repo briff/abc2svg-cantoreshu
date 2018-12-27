@@ -214,6 +214,10 @@ abc2svg.abc_init = function() {
 	div.right {text-align: right}\n\
 }';
 
+		// no margin / header / footer when SVG page formatting
+		if (abc.page)
+			topmargin = botmargin = header = footer = 0;
+
 		abc2svg.print('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"\n\
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1.dtd">\n\
 <html xmlns="http://www.w3.org/1999/xhtml">\n\
@@ -242,7 +246,7 @@ p span {line-height:' + ((cfmt.lineskipfac * 100) | 0).toString() + '%}\n' +
 		init_done = true;
 
 		// change the output function
-		user.img_out = function(str) { abc2svg.print(str) }
+		user.img_out = abc2svg.print
 	}
 }
 

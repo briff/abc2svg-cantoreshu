@@ -529,7 +529,11 @@ abc2svg.abc_init = function(args) {
 			page_right = set_unit(793.8 - cfmt.rightmargin)
 		}
 
-		margins = 'fo:margin-top="' +
+		// if abc2svg page formatting
+		if (abc.page)
+			margins = 'fo:margin-top="0" fo:margin-bottom="0"'
+		else
+		    margins = 'fo:margin-top="' +
 			set_unit(cfmt.topmargin || 37.8) +
 			'" fo:margin-bottom="' +
 			set_unit(cfmt.botmargin || 37.8) + '"';
