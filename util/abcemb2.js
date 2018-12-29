@@ -174,6 +174,9 @@ function ready() {
 	if (!abc2svg.modules.load(tunes, ready))
 		return
 
+	// accept page formatting
+	abc2svg.abc_end = function() {}
+
 	var sel = window.location.hash.slice(1)
 	if (sel)
 		select = '%%select ' + decodeURIComponent(sel);
@@ -216,6 +219,7 @@ function ready() {
 
 		if (j >= 0 && j < indx[i + 1])
 			new_page += '</div>\n'
+		abc2svg.abc_end()		// close the page if %%pageheight
 	}
 
 	// prepare for playing
