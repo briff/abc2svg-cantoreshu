@@ -331,7 +331,6 @@ function do_scroll(elt) {
 	drh = dr.getBoundingClientRect().height,	// height of the view
 	ty = elt_ref.target.getBoundingClientRect().y	// y offset of <div> 'target'
 
-	while (elt.tagName != 'svg')
 		elt = elt.parentNode;
 	r = elt.getBoundingClientRect()
 // upper -> top, lower -> bottom
