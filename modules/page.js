@@ -164,6 +164,7 @@ abc2svg.page = {
 				x = cfmt.pagewidth / 2
 			else
 				x = cfmt.pagewidth - cfmt.rightmargin;
+			x += page.gutter;
 			y = y0;
 			k = 0
 			while (1) {
@@ -198,6 +199,7 @@ abc2svg.page = {
 	page.hmax = cfmt.pageheight - cfmt.topmargin - page.botmargin;
 	page.pn++;
 	page.pna++;
+	page.gutter = -page.gutter;
 
 	// define the header/footer
 	page.hf = ''
@@ -231,7 +233,8 @@ abc2svg.page = {
 			b = page.blk[i]
 			page.out += b.p
 			    .replace(/<svg(.|\n)*?>/,
-				'<g transform="translate(0,' +
+				'<g transform="translate(' +
+				page.gutter.toFixed(2) + ', ' +
 				(h + page.hbase).toFixed(2) +
 				')">')
 			    .replace('</svg>', '</g>');
@@ -300,7 +303,8 @@ abc2svg.page = {
 		} else {
 			page.out += p
 			    .replace(/<svg(.|\n)*?>/,
-				'<g transform="translate(0,' +
+				'<g transform="translate(' +
+				page.gutter.toFixed(2) + ', ' +
 				(page.h + page.hbase).toFixed(2) + ')">')
 			    .replace('</svg>', '</g>\n')
 		}
@@ -336,6 +340,7 @@ abc2svg.page = {
 			this.page = page = {
 				topmargin: 38,	// 1cm
 				botmargin: 38,	// 1cm
+				gutter: 0,
 				h: 0,		// current page height
 				pn: 0,		// page number
 				pna: 0,		// absolute page number
@@ -378,6 +383,7 @@ abc2svg.page = {
 			}
 			page.pn = v - 1
 			return
+		case "gutter":
 		case "botmargin":
 		case "topmargin":
 			v = this.get_unit(parm)
@@ -386,6 +392,8 @@ abc2svg.page = {
 				return
 			}
 			page[cmd] = v
+			if (cmd == "gutter" && !(page.pn & 1))
+				page.gutter = -page.gutter
 			return
 		case "oneperpage":
 			page[cmd] = this.get_bool(parm)
