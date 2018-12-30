@@ -263,6 +263,7 @@ abc2svg.page = {
 	switch (p.slice(0, 4)) {
 	case "<div":				// new block (tune / paragraph)
 		if (p.indexOf('newpage') > 0
+		 || (this.cfmt().oneperpage && this.info().X)
 		 || page.h == 0) {
 			if (page.h) {
 				abc2svg.page.img_out.call(this,
@@ -385,6 +386,9 @@ abc2svg.page = {
 				return
 			}
 			cfmt[cmd] = v
+			return
+		case "oneperpage":
+			cfmt[cmd] = this.get_bool(parm)
 			return
 		}
 	}
