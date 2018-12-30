@@ -232,6 +232,8 @@ function render2() {
 		alert(e.message + '\nabc2svg tosvg bug - stack:\n' + e.stack)
 		return
 	}
+	abc2svg.abc_end()		// close the page if %%pageheight
+
 //	document.body.style.cursor = "auto";
 
 	try {
@@ -729,6 +731,9 @@ function edit_init() {
 		}
 		document.head.appendChild(s)
 	}
+
+	// accept page formatting
+	abc2svg.abc_end = function() {}
 
 	function set_pref() {
 	    var	v = storage(true, "fontsz")
