@@ -658,8 +658,22 @@ function play_tune(what) {
 		si = i < 0 ? 0 : get_se(i);
 		ei = get_ee(selx[1], si)
 	} else {				// no selection => tune
-		elt = play.svg.getElementsByClassName('abcr');
-		i = elt ? Number(elt[0].getAttribute('class').slice(6, -1)) : 0;
+		si = play.click.svg.getElementsByClassName('abcr');
+		elt = play.click.svg		// (dummy)
+		for (i = 0; ; i++) {
+			if (!si[i]) {
+				elt = null
+				break
+			}
+			if (si[i].parentNode == elt.parentNode)
+				continue		// same container
+			elt = si[i];
+			ei = elt.parentNode.getBoundingClientRect()
+			if (ei.y < play.click.Y
+			 && ei.y + ei.height > play.click.Y)
+				break
+		}
+		i = elt ? Number(elt.getAttribute('class').slice(6, -1)) : 0;
 		si = ei = 0
 		if (s[0] == 'X' && s[1] == ':')
 			si = 1
@@ -796,12 +810,10 @@ function edit_init() {
 			}
 
 			// otherwise, display the play menu
-			while (elt.tagName != 'svg') {
-				elt = elt.parentNode
-//				if (!elt)
-//					return true
+			play.click = {	// keep the click references for 'play tune'
+				svg: elt,
+				Y: evt.pageY
 			}
-			play.svg = elt;		// keep the SVG ref for 'play tune'
 
 			var ctxMenu = document.getElementById("ctxMenu");
 			ctxMenu.style.display = "block";
