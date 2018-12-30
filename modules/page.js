@@ -196,7 +196,7 @@ abc2svg.page = {
 	abc2svg.page.img_out.call(abc, '<div>');
 
 	page.hbase = page.topmargin;
-	page.hmax = cfmt.pageheight - cfmt.topmargin - page.botmargin;
+	page.hmax = cfmt.pageheight - page.topmargin - page.botmargin;
 	page.pn++;
 	page.pna++;
 	page.gutter = -page.gutter;
