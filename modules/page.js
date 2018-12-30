@@ -153,7 +153,7 @@ abc2svg.page = {
 		if (up)
 			y0 = page.hbase + fh
 		else
-			y0 = cfmt.pageheight - cfmt.topmargin - fh * a[4]
+			y0 = cfmt.pageheight - page.topmargin - fh * a[4]
 		for (i = 0; i < 3; i++) {
 			str = a[i]
 			if (!str)
@@ -194,8 +194,8 @@ abc2svg.page = {
 	// start a new SVG container for the page
 	abc2svg.page.img_out.call(abc, '<div>');
 
-	page.hbase = cfmt.topmargin;
-	page.hmax = cfmt.pageheight - cfmt.topmargin - cfmt.botmargin;
+	page.hbase = page.topmargin;
+	page.hmax = cfmt.pageheight - cfmt.topmargin - page.botmargin;
 	page.pn++;
 	page.pna++;
 
@@ -263,7 +263,7 @@ abc2svg.page = {
 	switch (p.slice(0, 4)) {
 	case "<div":				// new block (tune / paragraph)
 		if (p.indexOf('newpage') > 0
-		 || (this.cfmt().oneperpage && this.info().X)
+		 || (page.oneperpage && this.info().X)
 		 || page.h == 0) {
 			if (page.h) {
 				abc2svg.page.img_out.call(this,
@@ -320,7 +320,9 @@ abc2svg.page = {
     // handle the page related parameters
     set_fmt: function(of, cmd, parm, lock) {
     var	v,
-	cfmt = this.cfmt()
+	cfmt = this.cfmt(),
+	page = this.page
+
 	if (cmd == "pageheight") {
 		v = this.get_unit(parm)
 		if (isNaN(v)) {
@@ -330,12 +332,10 @@ abc2svg.page = {
 		cfmt.pageheight = v
 
 		// if first definition, install the hook
-		if (!this.page && user.img_out && abc2svg.abc_end) {
-			if (!cfmt.topmargin)
-				cfmt.topmargin = 38	// 1cm
-			if (!cfmt.botmargin)
-				cfmt.botmargin = 38	// 1cm
-			this.page = {
+		if (!page && user.img_out && abc2svg.abc_end) {
+			this.page = page = {
+				topmargin: 38,	// 1cm
+				botmargin: 38,	// 1cm
 				h: 0,		// current page height
 				pn: 0,		// page number
 				pna: 0,		// absolute page number
@@ -346,27 +346,27 @@ abc2svg.page = {
 
 			// don't let the backend handle the header/footer
 			if (cfmt.header) {
-				this.page.header = cfmt.header;
+				page.header = cfmt.header;
 				cfmt.header = null
 			}
 			if (cfmt.footer) {
-				this.page.footer = cfmt.footer;
+				page.footer = cfmt.footer;
 				cfmt.footer = null
 			}
 
 			// set the hooks
 			user.img_out = abc2svg.page.img_in.bind(this);
-			this.page.img_out_sav = user.img_out;
+			page.img_out_sav = user.img_out;
 			abc2svg.abc_end = abc2svg.page.abc_end.bind(this,
 								abc2svg.abc_end)
 		}
 		return
 	}
-	if (this.page) {
+	if (page) {
 		switch (cmd) {
 		case "header":
 		case "footer":
-			this.page[cmd] = parm
+			page[cmd] = parm
 			return
 		case "newpage":
 			if (!parm)
@@ -376,7 +376,7 @@ abc2svg.page = {
 				this.syntax(1, errs.bad_val, '%%' + cmd)
 				return
 			}
-			this.page.pn = v - 1
+			page.pn = v - 1
 			return
 		case "botmargin":
 		case "topmargin":
@@ -385,19 +385,19 @@ abc2svg.page = {
 				this.syntax(1, errs.bad_val, '%%' + cmd)
 				return
 			}
-			cfmt[cmd] = v
+			page[cmd] = v
 			return
 		case "oneperpage":
-			cfmt[cmd] = this.get_bool(parm)
+			page[cmd] = this.get_bool(parm)
 			return
 		}
 	}
 	of(cmd, parm, lock)
-	if (this.page) {
+	if (page) {
 		switch (cmd) {
 		case "pagewidth":
 		case "bgcolor":
-			this.page.head = abc2svg.page.svg_head(cfmt)
+			page.head = abc2svg.page.svg_head(cfmt)
 			break
 		}
 	}
