@@ -283,21 +283,24 @@ abc2svg.page = {
 		break
 	case "<svg":				// SVG image
 		h = Number(p.match(/height="(\d+)px"/)[1])
-		if (h + page.h >= page.hmax && page.h) { // if page overflow
-			blkcpy(page);
+		if (h + page.h >= page.hmax) {		// if page overflow
+			if (!page.out)		// if at start of page
+				blkcpy(page);	// output the start of tune
 			abc2svg.page.img_out.call(this,
 					page.head + page.style + page.hf +
 					page.out + '</svg>');
 			abc2svg.page.img_out.call(this, '</div>');
 			abc2svg.page.svg_out(this, page);
-			page.h = this.cfmt().topspace
+			page.h = page.hb = this.cfmt().topspace;
+			if (page.blk)
+				blkcpy(page)	// output the start of tune
 			if (!this.cfmt().fullsvg)
 				page.style = ''
 		}
 
 		p = get_style(p, page)
 
-		// output the block part or keep it until page overflow
+		// if no overflow yet, keep the block
 		if (page.blk) {
 			page.blk.push({p: p, h: h})
 		} else {
