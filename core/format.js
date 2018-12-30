@@ -457,6 +457,7 @@ function set_format(cmd, param, lock) {
 	case "rbdbstop":
 	case "singleline":
 	case "squarebreve":
+	case "splittune":
 	case "straightflags":
 	case "stretchstaff":
 	case "timewarn":

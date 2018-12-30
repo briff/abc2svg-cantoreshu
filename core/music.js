@@ -4670,7 +4670,10 @@ function output_music() {
 		}
 
 		tsfirst = tsnext
-		svg_flush()
+		if (cfmt.splittune)
+			blk_flush()
+		else
+			svg_flush()
 		if (!tsnext)
 			break
 
