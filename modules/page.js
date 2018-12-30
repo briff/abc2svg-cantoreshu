@@ -359,6 +359,25 @@ abc2svg.page = {
 				cfmt.footer = null
 			}
 
+			// get the previously defined page parameters
+			if (cfmt.botmargin) {
+				v = this.get_unit(cfmt.botmargin)
+				if (!isNaN(v))
+					page.botmargin = v
+			}
+			if (cfmt.topmargin) {
+				v = this.get_unit(cfmt.topmargin)
+				if (!isNaN(v))
+					page.topmargin = v
+			}
+			if (cfmt.gutter) {
+				v = this.get_unit(cfmt.gutter)
+				if (!isNaN(v))
+					page.gutter = (page.pn & 1) ? v : -v
+			}
+			if (cfmt.oneperpage)
+				page.oneperpage = this.get_bool(cfmt.oneperpage)
+
 			// set the hooks
 			user.img_out = abc2svg.page.img_in.bind(this);
 			page.img_out_sav = user.img_out;
