@@ -344,8 +344,12 @@ abc2svg.abc_init = function() {
 		page_size = pw > 800 ?
 				'width="8.50" height="11.00" units="in"' :
 				'width="210.00" height="297.00" units="mm"';
-		topmargin = set_unit(cfmt.topmargin || 37.8);
-		botmargin = set_unit(cfmt.botmargin || 37.8);
+		if (abc.page) {
+			topmargin = botmargin = 0
+		} else {
+			topmargin = set_unit(cfmt.topmargin || 37.8);
+			botmargin = set_unit(cfmt.botmargin || 37.8)
+		}
 
 		// output the first generated string
 		svg_out(str);
