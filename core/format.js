@@ -24,7 +24,7 @@ var	font_tb = [],
 		'sans-serif': 1,
 		'sans-serifBold': 1,
 		Palatino: 1.1,
-		Mono: 1.35
+		monospace: 1.35
 	},
 	fmt_lock = {}
 
