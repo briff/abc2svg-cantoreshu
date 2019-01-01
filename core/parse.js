@@ -1483,13 +1483,12 @@ function parse_staves(p) {
 function info_split(text) {
 	if (!text)
 		return []
-    var	a = text.match(/(".+?"|.+?)(\s+|=|$)/g)
+    var	a = text.match(/[^ \t"=]+=?|".+?"/g)	// "
 	if (!a) {
+//fixme: bad error text
 		syntax(1, "Unterminated string")
 		return []
 	}
-	for (var i = 0; i < a.length; i++)
-		a[i] = a[i].trim()
 	return a
 }
 
