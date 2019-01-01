@@ -636,33 +636,25 @@ function set_format(cmd, param, lock) {
 
 // build a font style
 function style_font(font) {
-    var	j,
-	fn = font.name.toLowerCase(),
+    var	fn = font.name,
 	r = '',
-	i = fn.lastIndexOf("-")
+	a = fn.match(/-?[bB]old/)
 
-	if (i < 0)
-		i = fn.length;
-	j = fn.indexOf("italic")
-	if (j >= 0) {
-		r += "italic "
-		if (j < i)
-			i = j
+	if (a) {
+		r += "bold ";
+		fn = fn.replace(a[0], '')
 	}
-	j = fn.indexOf("oblique")
-	if (j >= 0) {
-		r += "oblique "
-		if (j < i)
-			i = j
+	a = fn.match(/-?[iI]talic/)
+	if (a) {
+		r += "italic ";
+		fn = fn.replace(a[0], '')
 	}
-	j = fn.indexOf("bold")
-	if (j >= 0) {
-		r += "bold "
-		if (j < i)
-			i = j
+	a = fn.match(/-?[oO]blique/)
+	if (a) {
+		r += "oblique ";
+		fn = fn.replace(a[0], '')
 	}
-	return 'font:' + r + font.size.toFixed(2) + 'px ' +
-			font.name.slice(0, i)
+	return 'font:' + r + font.size.toFixed(2) + 'px ' + fn
 }
 Abc.prototype.style_font = style_font
 
