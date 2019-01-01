@@ -1685,7 +1685,7 @@ function draw_measnb() {
 				if (sy.st_print[st])
 					break
 			}
-			set_sscale(st)
+			set_dscale(st)
 			continue
 		default:
 			continue
