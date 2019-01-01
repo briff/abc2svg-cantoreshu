@@ -374,25 +374,41 @@ function def_font(font) {
 }
 
 function font_bug(str) {
-	return str.replace(/font:.*?(}|;|")/g, function(s) {	//"
-	    var	i,
-		w = s.slice(5).split(' '),
-		l = w.length,
-		r = 'font-family:' + w[--l].slice(0, -1) + ';font-size:' + w[--l]
+    var i, k, l, r, w,
+	j = 0
+
+	while (1) {
+		i = str.indexOf('font:', j)
+		if (i < 0)
+			return str
+		if (str[i - 1] == '"') {
+			j = str.indexOf('"', i)
+		} else {
+			j = str.indexOf('}', i);
+			k = str.indexOf(';', i)
+			if (k < j)
+				j = k
+		}
+		w = str.slice(i + 5, j).match(/[^ \t"]+|".+?"/g) // "
+
+		l = w.length;
+		r = 'font-family:' + w[--l] +
+			';font-size:' + w[--l]
 		while (--l >= 0) {
-			i = w[l]
-			switch (i) {
+			switch (w[l]) {
 			case 'italic':
+				r += ';font-style:italic'
+				break
 			case 'oblique':
-				r += ';font-style:' + i
+				r += ';font-style:oblique'
 				break
 			case 'bold':
-				r += ';font-weight:' + i
+				r += ';font-weight:bold'
 				break
 			}
 		}
-		return r + s.slice(-1)
-	})
+		str = str.replace(str.slice(i, j), r)
+	}
 }
 
 function svg_out(str) {
