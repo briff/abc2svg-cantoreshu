@@ -208,7 +208,11 @@ function param_set_font(xxxfont, param) {
 		param = param.replace(a[0], a[2])
 	}
 
-	a = param.split(/\s+/);
+	a = info_split(param)
+	if (!a) {
+		syntax(1, errs.bad_val, "%%" + xxxfont)
+		return
+	}
 	new_name = a[0]
 	if (new_name != "*") {
 		new_name = new_name.replace('Times-Roman', 'serif');
