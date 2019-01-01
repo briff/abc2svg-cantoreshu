@@ -128,7 +128,7 @@ function get_bool(param) {
 // %%font <font> [<encoding>] [<scale>]
 function get_font_scale(param) {
     var	i, font,
-	a = param.split(/\s+/)	// a[0] = font name
+	a = info_split(param)	// a[0] = font name
 
 	if (a.length <= 1)
 		return
