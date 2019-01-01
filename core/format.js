@@ -134,7 +134,7 @@ function get_font_scale(param) {
 		return
 	var scale = parseFloat(a[a.length - 1])
 
-	if (isNaN(scale) || a <= 0) {
+	if (isNaN(scale) || scale <= 0.5) {
 		syntax(1, "Bad scale value in %%font")
 		return
 	}
