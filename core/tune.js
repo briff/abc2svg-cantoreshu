@@ -623,7 +623,7 @@ function get_map(text) {
 		return
 
 	var	i, note, notes, map, tmp, ns,
-		a = info_split(text, 2)
+		a = info_split(text)
 
 	if (a.length < 3) {
 		syntax(1, "Not enough parameters in %%map")
@@ -1940,7 +1940,7 @@ function do_cloning(vs) {
 // treat a 'V:' info
 function get_voice(parm) {
 	var	v, transp, vtransp, vs,
-		a = info_split(parm, 1),
+		a = info_split(parm),
 		vid = a.shift();
 
 	if (!vid)
