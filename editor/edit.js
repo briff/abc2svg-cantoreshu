@@ -455,11 +455,10 @@ function set_vol(v) {
 }
 function notehlight(i, on) {
 	if (play.stop) {
-		if (on) {
-			if (play.stop < 0)	// if first stop
-				play.stop = i	// keep the last note reference
+		if (on)				// (should not occur anymore)
 			return
-		}
+		if (play.stop < 0)		// if first stop
+			play.stop = i		// keep the last note reference
 		if (i == selx[1])		// if end selection
 			return			// don't remove highlight
 	}
