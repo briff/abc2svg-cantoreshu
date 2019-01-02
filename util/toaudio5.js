@@ -196,20 +196,22 @@ function Audio5(i_conf) {
 	} // sf2_create()
 
 	// load an instrument (.js file)
-	function load_instr(instr) {
+	function load_instr(instr, a_e) {
 		w_instr++;
 		abc2svg.loadjs(conf.sfu + '/' + instr + '.js',
 			function() {
 			    var	parser = new sf2.Parser(b64dcod(abcsf2[instr]));
 				parser.parse();
 				sf2_create(parser, instr);
-				w_instr--
+				if (--w_instr == 0)
+					play_start(a_e)
 			},
 			function() {
 				errmsg('could not find the instrument ' +
 					((instr / 128) | 0).toString() + '-' +
 					(instr % 128).toString());
-				w_instr--
+				if (--w_instr == 0)
+					play_start(a_e)
 			})
 	} // load_instr()
 
@@ -224,7 +226,7 @@ function Audio5(i_conf) {
 			instr = e[2]
 			if (!params[instr]) {
 				params[instr] = [];
-				load_instr(instr)
+				load_instr(instr, a_e)
 			}
 		}
 	}
@@ -341,10 +343,8 @@ function Audio5(i_conf) {
 		}
 
 		// wait for instruments
-		if (w_instr != 0) {
-			setTimeout(play_start, 300, a_e)
+		if (w_instr != 0)
 			return
-		}
 
 		// all resources are there
 		gain.connect(ac.destination);
