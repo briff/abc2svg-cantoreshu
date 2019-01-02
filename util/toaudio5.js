@@ -288,7 +288,8 @@ function Audio5(i_conf) {
 		var	t, e, e2, maxt, st, d;
 
 		// play the next events
-		e = a_e[evt_idx]
+		if (a_e)			// if not stop
+			e = a_e[evt_idx]
 		if (!e || evt_idx >= iend) {
 			onend()
 			return
@@ -330,9 +331,9 @@ function Audio5(i_conf) {
 		}
 
 		// delay before next sound generation
-		setTimeout(play_next, (t + stime - ac.currentTime)
+		timouts.push(setTimeout(play_next, (t + stime - ac.currentTime)
 				* 1000 - 300,	// wake before end of playing
-				a_e)
+				a_e))
 	} // play_next()
 
 	// wait for all resources, then start playing
@@ -399,6 +400,7 @@ function Audio5(i_conf) {
 		timouts.forEach(function(id) {
 					clearTimeout(id)
 				})
+		play_next()
 		if (gain) {
 			gain.disconnect();
 			gain = null

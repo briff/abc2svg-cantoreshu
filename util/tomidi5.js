@@ -113,7 +113,8 @@ function Midi5(i_conf) {
     var	t, e, e2, maxt, st, d
 
 	// play the next events
-	e = a_e[evt_idx]
+	if (a_e)			// if not stop
+		e = a_e[evt_idx]
 	if (!op || evt_idx >= iend || !e) {
 		onend()
 		return
@@ -153,9 +154,9 @@ function Midi5(i_conf) {
 	}
 
 	// delay before next sound generation
-	setTimeout(play_next, (t + stime - window.performance.now())
+	timouts.push(setTimeout(play_next, (t + stime - window.performance.now())
 			- 300,		// wake before end of playing
-			a_e)
+			a_e))
     } // play_next()
 
 // Midi5 object creation (only one instance)
@@ -215,6 +216,7 @@ if (0) {
 		timouts.forEach(function(id) {
 					clearTimeout(id)
 				})
+		play_next()
 //fixme: op.clear() should exist...
 		if (op && op.clear)
 			op.clear()
