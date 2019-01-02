@@ -1,6 +1,6 @@
 // toaudio5.js - audio output using HTML5 audio
 //
-// Copyright (C) 2015-2018 Jean-Francois Moine
+// Copyright (C) 2015-2019 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -74,7 +74,8 @@ function Audio5(i_conf) {
 	// -- play the memorized events --
 		evt_idx,		// event index while playing
 		iend,			// play array stop index
-		stime			// start playing time
+		stime,			// start playing time
+		timouts = []		// note start events
 
 	// base64 stuff
 	    var b64d = []
@@ -300,6 +301,7 @@ function Audio5(i_conf) {
 			conf.new_speed = 0
 		}
 
+		timouts = [];
 //fixme: better, count the number of events?
 		t = e[1] / conf.speed;		// start time
 		maxt = t + 3			// max time = evt time + 3 seconds
@@ -311,7 +313,7 @@ function Audio5(i_conf) {
 			// follow the notes while playing
 			    var	i = e[0];
 				st = (t + stime - ac.currentTime) * 1000;
-				setTimeout(onnote, st, i, true);
+				timouts.push(setTimeout(onnote, st, i, true));
 				setTimeout(onnote, st + d * 1000, i, false)
 
 			e = a_e[++evt_idx]
@@ -394,6 +396,9 @@ function Audio5(i_conf) {
 	// stop playing
 	stop: function() {
 		iend = 0
+		timouts.forEach(function(id) {
+					clearTimeout(id)
+				})
 		if (gain) {
 			gain.disconnect();
 			gain = null

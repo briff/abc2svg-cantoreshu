@@ -1,6 +1,6 @@
 // tomidi5.js - audio output using HTML5 MIDI
 //
-// Copyright (C) 2018 Jean-Francois Moine
+// Copyright (C) 2018-2019 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -63,7 +63,8 @@ function Midi5(i_conf) {
 // -- play the memorized events --
 	evt_idx,		// event index while playing
 	iend,			// play array stop index
-	stime			// start playing time in ms
+	stime,			// start playing time in ms
+	timouts = []		// note start events
 
 // create a note
 // @e[2] = instrument index
@@ -127,6 +128,7 @@ function Midi5(i_conf) {
 		conf.new_speed = 0
 	}
 
+	timouts = [];
 	t = e[1] / conf.speed * 1000;	// start time
 	maxt = t + 3000			// max time = evt time + 3 seconds
 	while (1) {
@@ -136,7 +138,7 @@ function Midi5(i_conf) {
 
 		// follow the notes while playing
 			st = t + stime - window.performance.now();
-			setTimeout(onnote, st, e[0], true);
+			timouts.push(setTimeout(onnote, st, e[0], true));
 			setTimeout(onnote, st + d, e[0], false)
 
 		e = a_e[++evt_idx]
@@ -210,6 +212,9 @@ if (0) {
 	// stop playing
 	stop: function() {
 		iend = 0
+		timouts.forEach(function(id) {
+					clearTimeout(id)
+				})
 //fixme: op.clear() should exist...
 		if (op && op.clear)
 			op.clear()
