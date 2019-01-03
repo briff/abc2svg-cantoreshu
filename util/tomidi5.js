@@ -77,7 +77,7 @@ function Midi5(i_conf) {
     var	k = e[3] | 0,
 	i = e[2],
 	c = e[6] & 0x0f,	//fixme
-	d = (e[3] * 100) % 100
+	a = (e[3] * 100) % 100	// detune in cents
 
 	if (i == 16384) {			// if bank 128
 		c = 9				// channel 10 (percussion)
@@ -89,7 +89,7 @@ function Midi5(i_conf) {
 				0xc0 + c, i & 0x7f		// program
 			]))
 	}
-	if (d && Midi5.ma.sysexEnabled) {	// if microtone
+	if (a && Midi5.ma.sysexEnabled) {	// if microtone
 // fixme: should cache the current microtone values
 		op.send(new Uint8Array([
 			0xf0, 0x7f,	// realtime SysEx
@@ -100,13 +100,13 @@ function Midi5(i_conf) {
 			0x01,		// number of notes
 				k,		// key
 				k,		// note
-				d / .78125,	// MSB fract
+				a / .78125,	// MSB fract
 				0,		// LSB fract
 			0xf7		// SysEx end
 			]), t);
 	}
 	op.send(new Uint8Array([0x90 + c, k, 127]), t);		// note on
-	op.send(new Uint8Array([0x80 + c, k, 0x40]), t + d - 20) // note off
+	op.send(new Uint8Array([0x80 + c, k, 0]), t + d - 20) // note off
     } // note_run()
 
 // play the next time sequence
