@@ -55,6 +55,7 @@ function Midi5(i_conf) {
     var	conf = i_conf,		// configuration
 	onend = conf.onend || function() {},
 	onnote = conf.onnote || function() {},
+	rf,			// get_outputs result function
 
 // MIDI variables
 	op,			// output port
@@ -159,18 +160,43 @@ function Midi5(i_conf) {
 			a_e))
     } // play_next()
 
+    // MIDI output is possible,
+    // return the possible ports in return to get_outputs()
+    function send_outputs(access) {
+	Midi5.ma = access;	// store the MIDI access in the Midi5 function
+
+//fixme: just the first output port for now...
+	op = Midi5.ma.outputs.values().next().value;
+	rf(op ? [op.name] : null)
+    } // send_outputs()
+
 // Midi5 object creation (only one instance)
 
 // public methods
     return {
 
 	// get outputs
-	get_outputs: function() {
-//fixme: just the first output port for now...
-		if (Midi5.ma)
-			op = Midi5.ma.outputs.values().next().value
-			if (op)
-				return [op.name]
+	get_outputs: function(f) {
+		if (!navigator.requestMIDIAccess) {
+			f()			// no MIDI
+			return
+		}
+		rf = f;
+
+		// open MIDI with SysEx
+		navigator.requestMIDIAccess({sysex: true}).then(
+			send_outputs,
+			function(msg) {
+
+				// open MIDI without SysEx
+				navigator.requestMIDIAccess().then(
+					send_outputs,
+					function(msg) {
+						rf()
+					}
+				)
+			}
+		)
 	}, // get_outputs()
 
 	// set the output port
@@ -223,21 +249,3 @@ if (0) {
 	} // stop()
     }
 } // end Midi5
-
-// check MIDI access at script load time
-function onMIDISuccess(access) {
-	Midi5.ma = access	// store the MIDI access in the Midi5 function
-} // onMIDISuccess()
-
-// (no SysEx)
-function onMIDIFailure1(msg) {
-	navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure2)
-} // onMIDIFailure1()
-
-// (no MIDI access)
-function onMIDIFailure2(msg) {
-} // onMIDIFailure2()
-
-// (try SysEx)
-if (navigator.requestMIDIAccess)
-	navigator.requestMIDIAccess({sysex: true}).then(onMIDISuccess, onMIDIFailure1)
