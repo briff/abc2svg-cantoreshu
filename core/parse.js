@@ -1,6 +1,6 @@
 // abc2svg - parse.js - ABC parse
 //
-// Copyright (C) 2014-2018 Jean-Francois Moine
+// Copyright (C) 2014-2019 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -1483,7 +1483,7 @@ function parse_staves(p) {
 function info_split(text) {
 	if (!text)
 		return []
-    var	a = text.match(/[^ \t"=]+=?|".+?"/g)	// "
+    var	a = text.match(/[^\s"=]+=?|".+?"/g)	// "
 	if (!a) {
 //fixme: bad error text
 		syntax(1, "Unterminated string")
