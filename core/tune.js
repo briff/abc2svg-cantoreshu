@@ -1,6 +1,6 @@
 // abc2svg - tune.js - tune generation
 //
-// Copyright (C) 2014-2018 Jean-Francois Moine
+// Copyright (C) 2014-2019 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -478,13 +478,16 @@ function new_syst(init) {
 
 	// update the previous system
 	for (v = 0; v < voice_tb.length; v++) {
+	    if (par_sy.voices[v].range >= 0) {
 		st = par_sy.voices[v].st
 		var	sy_staff = par_sy.staves[st],
 			p_voice = voice_tb[v]
+
 		if (p_voice.staffnonote != undefined)
 			sy_staff.staffnonote = p_voice.staffnonote
 		if (p_voice.staffscale)
 			sy_staff.staffscale = p_voice.staffscale;
+	    }
 		sy_new.voices[v] = clone(par_sy.voices[v]);
 		sy_new.voices[v].range = -1;
 		delete sy_new.voices[v].second
