@@ -1,6 +1,6 @@
 // abc2svg - music.js - music generation
 //
-// Copyright (C) 2014-2018 Jean-Francois Moine
+// Copyright (C) 2014-2019 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -4135,11 +4135,6 @@ function check_bar(s) {
 		else
 			s.bar_type = "|"
 		return
-	}
-	if (bar_type == "||:") {
-		p_voice.bar_start.bar_type = "[|:";
-		s.bar_type = "||"
-		return true
 	}
 
 	// ':xx:' -> ':x|]' and '[|x:'
