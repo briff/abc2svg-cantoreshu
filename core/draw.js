@@ -916,8 +916,6 @@ function bar_cnv(bar_type) {
 		return bar_type + "]"		/* :..| -> :..|] */
 	case "::":
 		return cfmt.dblrepbar		/* :: -> double repeat bar */
-	case '||:':
-		return '[|:'
 	}
 	return bar_type
 }
@@ -3497,6 +3495,9 @@ function draw_systems(indent) {
 						st, s.bar_mrep.toString()])
 			}
 		}
+
+		if (bar_type == '||:')
+			bar_type = '[|:'
 
 		for (i = bar_type.length; --i >= 0; ) {
 			switch (bar_type[i]) {
