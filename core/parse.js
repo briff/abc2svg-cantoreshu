@@ -1308,19 +1308,8 @@ function new_bar() {
 	if (!curvoice.sym_restart)
 		curvoice.sym_restart = s
 
-	/* the bar must appear before a key signature */
-	if (s2 && s2.type == C.KEY
-	 && (!s2.prev || s2.prev.type != C.BAR)) {
-		curvoice.last_sym = s2.prev
-		if (!s2.prev)
-			curvoice.sym = s2.prev;	// null
-		sym_link(s);
-		s.next = s2;
-		s2.prev = s;
-		curvoice.last_sym = s2
-	} else {
-		sym_link(s)
-	}
+	sym_link(s);
+
 	s.st = curvoice.st			/* original staff */
 
 	/* if repeat bar and shift, add a repeat bar */
