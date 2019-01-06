@@ -1238,45 +1238,59 @@ function new_bar() {
 		adjust_dur(s);
 
 	s2 = curvoice.last_sym
-	if (s2 && s2.type == C.SPACE) {
-		s2.time--		// keep the space at the right place
-	} else if (s2 && s2.type == C.BAR) {
-//fixme: why these next lines?
+	if (s2 && s2.time == curvoice.time) {
+		if (s2.type == C.SPACE) {
+			s2.time--		// keep the space at the right place
+		} else if (bar_type == "["
+			|| bar_type == "|:") {
+
+			// search if a previous bar at this time
+			do {
+				if (s2.type == C.BAR)
+					break
+				if (w_tb[s2.type]) // symbol with a width
+					break
+				s2 = s2.prev
+			} while (s2)
+			if (s2 && s2.type == C.BAR) {
 //		&& !s2.a_gch && !s2.a_dd
 //		&& !s.a_gch && !s.a_dd) {
 
-		/* remove the invisible repeat bars when no shift is needed */
-		if (bar_type == "["
-		 && !s2.text
-		 && (curvoice.st == 0
-		  || (par_sy.staves[curvoice.st - 1].flags & STOP_BAR)
-		  || s.norepbra)) {
-			if (s.text)
-				s2.text = s.text
-			if (s.a_gch)
-				s2.a_gch = s.a_gch
-			if (s.norepbra)
-				s2.norepbra = s.norepbra
-			if (s.rbstart)
-				s2.rbstart = s.rbstart
-			if (s.rbstop)
-				s2.rbstop = s.rbstop
+				// remove the invisible repeat bars
+				// when no shift is needed
+				if (bar_type == "["
+				 && !s2.text
+				 && (curvoice.st == 0
+				  || (par_sy.staves[curvoice.st - 1].flags & STOP_BAR)
+				  || s.norepbra)) {
+					if (s.text)
+						s2.text = s.text
+					if (s.a_gch)
+						s2.a_gch = s.a_gch
+					if (s.norepbra)
+						s2.norepbra = s.norepbra
+					if (s.rbstart)
+						s2.rbstart = s.rbstart
+					if (s.rbstop)
+						s2.rbstop = s.rbstop
 //--fixme: pb when on next line and empty staff above
-			return
-		}
+					return
+				}
 
-		/* merge back-to-back repeat bars */
-		if (s2.st == curvoice.st
-		 && bar_type == "|:") {
-			if (s2.bar_type == ":|") {
-				s2.bar_type = "::";
-				s2.rbstop = 2
-				return
-			}
-			if (s2.bar_type == "||") {
-				s2.bar_type = "||:";
-				s2.rbstop = 2
-				return
+				// merge back-to-back repeat bars
+				if (s2.st == curvoice.st
+				 && bar_type == "|:") {
+					if (s2.bar_type == ":|") {
+						s2.bar_type = "::";
+						s2.rbstop = 2
+						return
+					}
+					if (s2.bar_type == "||") {
+						s2.bar_type = "||:";
+						s2.rbstop = 2
+						return
+					}
+				}
 			}
 		}
 	}
