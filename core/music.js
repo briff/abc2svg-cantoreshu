@@ -712,10 +712,10 @@ function set_width(s) {
 		bar_type = s.bar_type
 			switch (bar_type) {
 			case "|":
-				w = 7		// 4 + 3
+				w = 5		// 3 + 2
 				break
 			default:
-				w = 4 + 3 * bar_type.length
+				w = 2 + 2.8 * bar_type.length
 				for (i = 0; i < bar_type.length; i++) {
 					switch (bar_type[i]) {
 					case "[":
