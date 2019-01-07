@@ -762,7 +762,8 @@ function set_width(s) {
 			s.wl = s.wr = 1		// (!! not 0 !!)
 			return
 		}
-		s.wl = s.wr = s.clef_small ? 8 : 12
+		s.wl = s.clef_small ? 9 : 12
+		s.wr = s.clef_small ? 7 : 12
 		return
 	case C.KEY:
 		s.wl = 3;
