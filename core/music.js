@@ -1748,7 +1748,7 @@ function set_lines(	s,		/* first symbol */
 
 /* -- cut the tune into music lines -- */
 function cut_tune(lwidth, indent) {
-	var	s, s2, s3, i, xmin,
+	var	s, s2, s3, i, xmin, lwx,
 //fixme: not usable yet
 //		pg_sav = {
 //			leftmargin: cfmt.leftmargin,
@@ -1790,6 +1790,7 @@ function cut_tune(lwidth, indent) {
 
 	/* cut at explicit end of line, checking the line width */
 	xmin = indent;
+	lwx = lwidth * cfmt.maxshrink;
 	s2 = s
 	for ( ; s; s = s.ts_next) {
 //fixme: not usable yet
@@ -1809,7 +1810,7 @@ function cut_tune(lwidth, indent) {
 		if (!s.seqst && !s.eoln)
 			continue
 		xmin += s.shrink
-		if (xmin > lwidth) {		// overflow
+		if (xmin > lwx) {		// overflow
 			s2 = set_lines(s2, s, lwidth, indent)
 		} else {
 			if (!s.eoln)
