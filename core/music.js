@@ -605,6 +605,8 @@ function set_width(s) {
 				wlnote -= 3
 				break
 			}
+		} else {
+			wlnote += 8		// (start of tune)
 		}
 
 		/* room for the decorations */
