@@ -1645,21 +1645,14 @@ function set_lines(	s,		/* first symbol */
 				break
 			if (s.type != C.BAR)
 				continue
-			if (x < xmid) {
-				s3 = s		// keep the last bar
-				continue
-			}
 
 			// cut on the bar closest to the middle
-			if (!s3 || s.x < xmid) {
-				s3 = s
+			if (x < xmid) {
+				s3 = s		// closest bar before middle
 				continue
 			}
-			if (s3 > xmid)
-				break
-			if (xmid - s3.x < s.x - xmid)
-				break
-			s3 = s
+			if (!s3 || x - xmid < xmid - s3.x)
+				s3 = s		// closest bar after middle
 			break
 		}
 
