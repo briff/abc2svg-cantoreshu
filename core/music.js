@@ -1426,15 +1426,15 @@ function custos_add(s) {
 }
 
 /* -- define the beginning of a new music line -- */
-function set_nl(s) {
+function set_nl(s, eoln) {
 	var s2, p_voice, done
 
-	// set the end of line marker and
+	// set the end of line marker and ...
 	function set_eol(s) {
 		if (cfmt.custos && voice_tb.length == 1)
 			custos_add(s)
 
-		// set the nl flag if more music
+		// ... set the nl flag if more music
 		for (var s2 = s.ts_next; s2; s2 = s2.ts_next) {
 			if (s2.seqst) {
 				s.nl = true
@@ -1459,7 +1459,7 @@ function set_nl(s) {
 	} // set_eol_next()
 
 	/* if explicit EOLN, cut on the next symbol */
-	if (s.eoln && !cfmt.keywarn && !cfmt.timewarn)
+	if (eoln && !cfmt.keywarn && !cfmt.timewarn)
 		return set_eol_next(s)
 
 	/* if normal symbol, cut here */
@@ -1831,9 +1831,9 @@ function cut_tune(lwidth, indent) {
 				if (s3 && !s3.seqst)
 					s2 = set_lines(s2, s, lwidth, indent)
 				else
-					s2 = set_nl(s)
+					s2 = set_nl(s, true)
 			} else {
-				s2 = set_nl(s)
+				s2 = set_nl(s, true)
 			}
 		}
 		if (!s2)
