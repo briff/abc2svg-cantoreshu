@@ -4500,8 +4500,7 @@ function set_sym_glue(width) {
 		|| blocks.length	//	(abcm2ps compatibility)
 
 	// strong shrink
-	if (xmin >= width
-	 || xx == xse) {		// no space
+	if (xmin >= width) {
 		if (xmin > width)
 			error(1, s, "Line too much shrunk $1 $2 $3",
 				xmin.toFixed(2),
@@ -4517,6 +4516,8 @@ function set_sym_glue(width) {
 		spf_last = 0
 	} else if ((ll && xx + xs > width * (1 - cfmt.stretchlast))
 		 || (!ll && (xx + xs > width || cfmt.stretchstaff))) {
+		if (xx == xse)			// if no space
+			xx += 5
 		for (var cnt = 4; --cnt >= 0; ) {
 			spf = (width - xs - xse) / (xx - xse);
 			xx = 0;
