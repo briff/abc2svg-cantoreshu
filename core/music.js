@@ -1427,7 +1427,7 @@ function custos_add(s) {
 
 /* -- define the beginning of a new music line -- */
 function set_nl(s, eoln) {
-	var s2, p_voice, done
+    var	s2, s3, p_voice, done
 
 	// set the end of line marker and ...
 	function set_eol(s) {
@@ -1458,8 +1458,66 @@ function set_nl(s, eoln) {
 		return s
 	} // set_eol_next()
 
+	// go to the end of the time sequence
+	// for adding keywarn or timewarn
+	while (s) {
+		if (!s.ts_next)
+			return // null
+		if (s.ts_next.seqst)
+			break
+		s = s.ts_next
+	}
+
+	// if keywarn or timewarn, move K: and M: to the end of the previous line
+	if (cfmt.keywarn || cfmt.timewarn) {
+		for (s2 = s.ts_next; s2; s2 = s2.ts_next) {
+			switch (s2.type) {
+			case C.BAR:
+			case C.CLEF:
+				continue
+			case C.KEY:
+				if (!cfmt.keywarn)
+					continue
+			case C.METER:
+				if (s2.type == C.METER && !cfmt.timewarn)
+					continue
+				s3 = s2.ts_prev;
+				unlksym(s2);		// remove
+				lktsym(s2, s.ts_next);	// link in time at eol
+				s = s2
+				while (1) {		// link in voice
+					s2 = s2.ts_prev
+					if (s2.v == s.v) {
+						s.next = s2.next;
+						s.prev = s2;
+						s.next.prev = s;
+						s2.next = s
+						break
+					}
+				}
+
+				// care with spacing
+				if (s.type != s.ts_prev.type) {
+					if (!s.seqst) {
+						s.seqst = true;
+						s.shrink = s.wl + s.prev.wr;
+						s.space = s.ts_next.space;
+						s.ts_next.space = 0
+					}
+				} else {
+					delete s.seqst
+				}
+
+				s2 = s3		// restart
+				continue
+			}
+			if (w_tb[s2.type])
+				break		// symbol with a width
+		}
+	}
+
 	/* if explicit EOLN, cut on the next symbol */
-	if (eoln && !cfmt.keywarn && !cfmt.timewarn)
+	if (eoln)
 		return set_eol_next(s)
 
 	/* if normal symbol, cut here */
@@ -1468,14 +1526,6 @@ function set_nl(s, eoln) {
 	case C.BAR:
 	case C.STAVES:
 		break
-	case C.KEY:
-		if (cfmt.keywarn && !s.k_none)
-			break
-		return set_eol_next(s)
-	case C.METER:
-		if (cfmt.timewarn)
-			break
-		return set_eol_next(s)
 	case C.GRACE:			/* don't cut on a grace note */
 		s = s.next
 		if (!s)
@@ -1487,15 +1537,8 @@ function set_nl(s, eoln) {
 
 	/* go back to handle the staff breaks at end of line */
 	for (; s; s = s.ts_prev) {
-		if (!s.seqst)
-			continue
-		switch (s.type) {
-		case C.KEY:
-		case C.CLEF:
-		case C.METER:
-			continue
-		}
-		break
+		if (s.seqst && s.type != C.CLEF)
+			break
 	}
 	done = 0
 	for ( ; ; s = s.ts_next) {
@@ -1530,16 +1573,8 @@ function set_nl(s, eoln) {
 			else
 				done = -1	// keep the next symbols on the next line
 			continue
-		case C.METER:
-			if (!cfmt.timewarn)
-				break
-			continue
 		case C.CLEF:
 			if (done)
-				break
-			continue
-		case C.KEY:
-			if (!cfmt.keywarn || s.k_none)
 				break
 			continue
 		default:
