@@ -1360,14 +1360,18 @@ function parse_staves(p) {
 		bracket = 0,
 		parenth = 0,
 		flags_st = 0,
-		i = 0
+	e,
+	a = p.match(/\w+|[^\s]/g)
 
-	/* parse the voices */
-	while (i < p.length) {
-		switch (p[i]) {
-		case ' ':
-		case '\t':
+	if (!a) {
+		syntax(1, errs.bad_val, "%%staves")
+		return // null
+	}
+	while (1) {
+		e = a.shift()
+		if (!e)
 			break
+		switch (e) {
 		case '[':
 			if (parenth || brace + bracket >= 2) {
 				syntax(1, errs.misplaced, '[');
@@ -1409,24 +1413,19 @@ function parse_staves(p) {
 			flags |= MASTER_VOICE
 			break
 		default:
-			if (!/\w/.test(p[i])) {
+			if (!/\w/.test(e)) {
 				syntax(1, "Bad voice ID in %%staves");
 				err = true
 				break
 			}
 
 			/* get / create the voice in the voice table */
-			vid = ""
-			while (i < p.length) {
-				if (" \t()[]{}|*".indexOf(p[i]) >= 0)
+			vid = e
+			while (1) {
+				e = a.shift()
+				if (!e)
 					break
-				vid += p[i++]
-			}
-			for ( ; i < p.length; i++) {
-				switch (p[i]) {
-				case ' ':
-				case '\t':
-					continue
+				switch (e) {
 				case ']':
 					if (!(flags_st & OPEN_BRACKET)) {
 						syntax(1, errs.misplaced, ']');
@@ -1470,9 +1469,11 @@ function parse_staves(p) {
 			}
 			a_vf.push([vid, flags]);
 			flags = 0
-			continue
+			if (!e)
+				break
+			a.unshift(e)
+			break
 		}
-		i++
 	}
 	if (flags_st != 0) {
 		syntax(1, "'}', ')' or ']' missing in %%staves");
