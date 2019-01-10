@@ -1632,6 +1632,7 @@ function draw_slur(k1_o, k2, m1, m2, slur_type) {
 		upstaff = k1.st,
 		two_staves = false
 
+	set_dscale(k1.st)
 	if (k1 != k2) {
 		k = k1.next
 		while (1) {
@@ -2123,6 +2124,7 @@ function draw_tuplet(s1,
 
 	// check if some slurs and treat the nested tuplets
 	upstaff = s1.st
+	set_dscale(s1.st)
 	for (s2 = s1; s2; s2 = s2.next) {
 		if (s2.type != C.NOTE && s2.type != C.REST) {
 			if (s2.type == C.GRACE) {
@@ -3097,7 +3099,6 @@ function draw_sym_near() {
 //error(1, s, "BUG: no staff for voice " + p_voice.id)
 //    continue
 //  }
-		set_dscale(st)
 
 		/* draw the tuplets near the notes */
 		for ( ; s; s = s.next) {
