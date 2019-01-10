@@ -1474,7 +1474,7 @@ function draw_deco_staff() {
 			 && !p_voice.bar_start) { // continue on next line
 				p_voice.bar_start = clone(s);
 				p_voice.bar_start.type = C.BAR;
-				p_voice.bar_start.bar_type = "["
+				p_voice.bar_start.bar_type = ""
 				delete p_voice.bar_start.text;
 				p_voice.bar_start.rbstart = 1
 				delete p_voice.bar_start.a_gch
