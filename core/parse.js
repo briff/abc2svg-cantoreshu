@@ -1166,6 +1166,25 @@ function new_bar() {
 		a_dcn = null
 	}
 
+	// set the start/stop of ottava
+	if (parse.ottava != undefined) {
+		s2 = s
+		if (curvoice.cst != curvoice.st) {	// if staff change
+			s2 = {
+				type: C.SPACE,		// put the decoration on a ...
+				fname: parse.fname,
+				istart: parse.bol + line.index,
+				dur: 0,
+				multi: 0,
+				invis: true,
+				width: 1		// .. small space
+			}
+			sym_link(s2)
+		}
+		s2.ottava = parse.ottava
+		delete parse.ottava
+	}
+
 	/* if the last element is '[', it may start
 	 * a chord or an embedded header */
 	switch (bar_type.slice(-1)) {
@@ -1989,8 +2008,6 @@ function new_note(grace, tp_fact) {
 			// transpose
 			if (curvoice.octave)
 				note.pit += curvoice.octave * 7
-			if (curvoice.ottava)
-				note.pit += curvoice.ottava
 			if (sl1) {
 				note.sl1 = sl1
 				if (s.sl1)
@@ -2158,6 +2175,10 @@ function new_note(grace, tp_fact) {
 
 	if (a_dcn_sav)
 		deco_cnv(a_dcn_sav, s, s.prev)
+	if (parse.ottava != undefined) {
+		s.ottava = parse.ottava
+		delete parse.ottava
+	}
 	if (parse.stemless)
 		s.stemless = true
 	s.iend = parse.bol + line.index
@@ -2165,8 +2186,8 @@ function new_note(grace, tp_fact) {
 }
 
 // characters in the music line (ASCII only)
-var nil = ["0"]
-var char_tb = [
+var nil = ["0"],
+    char_tb = [
 	nil, nil, nil, nil,		/* 00 - .. */
 	nil, nil, nil, nil,
 	nil, " ", "\n", nil,		/* . \t \n . */
@@ -2202,7 +2223,9 @@ var char_tb = [
 		"!downbow!", "d",	/* t u v w */
 	"n", "n", "n", "{",		/* x y z { */
 	"|", "}", "!gmark!", nil,	/* | } ~ (del) */
-]
+],
+    ottava = {"8va(":1, "8va)":0, "15ma(":2, "15ma)":0,
+	"8vb(":-1, "8vb)":0, "15mb(":-2, "15mb)":0}
 
 function parse_music_line() {
 	var	grace, last_note_sav, a_dcn_sav, no_eol, s,
@@ -2457,9 +2480,10 @@ function parse_music_line() {
 						break
 					}
 				}
-				if (ottava[dcn])
-					set_ottava(dcn)
-				a_dcn.push(dcn)
+				if (ottava[dcn] != undefined)
+					parse.ottava = ottava[dcn]
+				else
+					a_dcn.push(dcn)
 				break
 			case '"':
 				parse_gchord(type)

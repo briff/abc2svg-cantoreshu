@@ -2359,10 +2359,22 @@ var rest_sp = [
 
 // (possible hook)
 function set_pitch(last_s) {
-	var	s, s2, g, st, delta, m, pitch, note,
+	var	s, s2, g, st, delta, pitch, note,
 		dur = C.BLEN,
-		staff_delta = new Array(nstaff),
+		m = nstaff + 1,
+		staff_d = new Int16Array(new Array(m * 2)),	// (delta - ottava)
+		staff_delta = new Int16Array(new Array(m * 2)),	// delta clef
+		staff_ottava = new Int16Array(new Array(m * 2)), // ottava value
+		staff_noo = new Int8Array(new Array(m)),	// number of ottava values
 		sy = cur_sy
+
+	// add an ottava decoration
+	function ottava_add(s, ottava, start) {
+	    var	dc_st = ["15mb(", "8vb(", null, "8va(", "15ma("],
+		dc_en = ["15mb)", "8vb)", null, "8va)", "15ma)"];
+
+		deco_cnv([(start ? dc_st : dc_en)[2 + ottava]], s)
+	}
 
 	// set the starting clefs of the staves
 	for (st = 0; st <= nstaff; st++) {
@@ -2377,10 +2389,31 @@ function set_pitch(last_s) {
 			if (s.clef_oct_transp)
 				staff_delta[st] -= s.clef_octave
 		}
+		staff_d[st] = staff_delta[st];
+		staff_ottava[st] = 0;
+		staff_noo[st] = 0
 	}
 
 	for (s = tsfirst; s != last_s; s = s.ts_next) {
 		st = s.st
+
+		// set the ottava decorations and the associated pitch shift
+		if (s.ottava != undefined && !cfmt.sound) {
+			if (s.ottava) {
+				if (staff_noo[st]++ == 0) {	// if first ottava
+					ottava_add(s, s.ottava, true);
+					staff_ottava[st] = s.ottava;
+					staff_d[st] = staff_delta[st] - s.ottava * 7
+				}
+			} else {
+				if (--staff_noo[st] == 0) {	// if last ottava
+					ottava_add(s, staff_ottava[st]);
+					staff_ottava[st] = s.ottava;
+					staff_d[st] = staff_delta[st]
+				}
+			}
+		}
+
 		switch (s.type) {
 		case C.CLEF:
 			staff_delta[st] = delta_tb[s.clef_type] +
@@ -2394,11 +2427,12 @@ function set_pitch(last_s) {
 				if (s.clef_oct_transp)
 					staff_delta[st] -= s.clef_octave
 			}
+			staff_d[st] = staff_delta[st] - staff_ottava[st] * 7;
 			set_yval(s)
 			break
 		case C.GRACE:
 			for (g = s.extra; g; g = g.next) {
-				delta = staff_delta[g.st]
+				delta = staff_d[g.st]
 				if (delta != 0
 				 && !s.p_v.key.k_drum) {
 					for (m = 0; m <= g.nhd; m++) {
@@ -2435,7 +2469,7 @@ function set_pitch(last_s) {
 			}
 			// fall thru
 		case C.NOTE:
-			delta = staff_delta[st]
+			delta = staff_d[st]
 			if (delta != 0
 			 && !s.p_v.key.k_drum) {
 				for (m = s.nhd; m >= 0; m--) {

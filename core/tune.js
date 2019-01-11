@@ -751,31 +751,6 @@ function set_transp() {
 		s.k_sf = 0
 }
 
-function set_ottava(dcn) {
-	if (cfmt.sound)
-		return
-	switch (dcn) {
-	case "15ma(":
-		curvoice.ottava = -14
-		break
-	case "8va(":
-		curvoice.ottava = -7
-		break
-	case "8vb(":
-		curvoice.ottava = 7
-		break
-	case "15mb(":
-		curvoice.ottava = 14
-		break
-	case "15ma)":
-	case "8va)":
-	case "8vb)":
-	case "15mb)":
-		curvoice.ottava = 0
-		break
-	}
-}
-
 /* -- process a pseudo-comment (%% or I:) -- */
 // (possible hook)
 function do_pscom(text) {
@@ -884,29 +859,7 @@ function do_pscom(text) {
 			syntax(1, errs.bad_val, "%%ottava")
 			return
 		}
-		switch (curvoice.ottava) {
-		case 14: b = "15mb)"; break
-		case 7: b = "8vb)"; break
-		case -7: b = "8va)"; break
-		case -14: b = "15ma)"; break
-		}
-		if (b) {
-			if (!a_dcn)
-				a_dcn = []
-			a_dcn.push(b);
-			set_ottava(b)
-		}
-		switch (n) {
-		case -2: b = "15mb("; break
-		case -1: b = "8vb("; break
-		case 0: return
-		case 1: b = "8va("; break
-		case 2: b = "15ma("; break
-		}
-		if (!a_dcn)
-			a_dcn = []
-		a_dcn.push(b);
-		set_ottava(b)
+		parse.ottava = n
 		return
 	case "repbra":
 		if (parse.state >= 2) {
@@ -1906,7 +1859,6 @@ function init_tune() {
 	staves_found = -1;
 	gene = {}
 	a_de = []			// remove old decorations
-	od = {}				// no ottava decorations anymore
 }
 
 // treat V: with many voices
