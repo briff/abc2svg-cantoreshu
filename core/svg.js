@@ -846,7 +846,7 @@ style="font:italic bold 12px serif">8\
 		val -= 5
 	}
 	y += 6;
-	out_XYAB('<path class="stroke" stroke-dasharray="6,6" d="mX YhA"/>\n',
+	out_XYAB('<path class="stroke" stroke-dasharray="6,6" d="mX YhF"/>\n',
 		x, y, val)
 	if (!defl.noen)
 		out_XYAB('<path class="stroke" d="mX Yv6"/>\n', x + val, y)
@@ -863,7 +863,7 @@ style="font:italic bold 12px serif">8\
 		val -= 5
 	}
 //	y -= 2;
-	out_XYAB('<path class="stroke" stroke-dasharray="6,6" d="mX YhA"/>\n',
+	out_XYAB('<path class="stroke" stroke-dasharray="6,6" d="mX YhF"/>\n',
 		x, y, val)
 	if (!defl.noen)
 		out_XYAB('<path class="stroke" d="mX Yv-6"/>\n', x + val, y)
@@ -880,7 +880,7 @@ style="font:italic bold 12px serif">15\
 		val -= 5
 	}
 	y += 6;
-	out_XYAB('<path class="stroke" stroke-dasharray="6,6" d="mX YhA"/>\n',
+	out_XYAB('<path class="stroke" stroke-dasharray="6,6" d="mX YhF"/>\n',
 		x, y, val)
 	if (!defl.noen)
 		out_XYAB('<path class="stroke" d="mX Yv6"/>\n', x + val, y)
@@ -897,7 +897,7 @@ style="font:italic bold 12px serif">15\
 		val -= 5
 	}
 //	y -= 2;
-	out_XYAB('<path class="stroke" stroke-dasharray="6,6" d="mX YhA"/>\n',
+	out_XYAB('<path class="stroke" stroke-dasharray="6,6" d="mX YhF"/>\n',
 		x, y, val)
 	if (!defl.noen)
 		out_XYAB('<path class="stroke" d="mX Yv-6"/>\n', x + val, y)
