@@ -1070,15 +1070,29 @@ function set_sp_tup(s, s_et) {
 
 // create an invisible bar for end of music lines
 function add_end_bar(s) {
-    var bar = clone(s);
-	bar.type = C.BAR;
-	bar.bar_type = "|";
-	bar.dur = bar.nhd = bar.wl = bar.wr = 0;
-	bar.seqst = true;
-	bar.invis = true;
-	bar.time = s.time + s.dur;
-	bar.prev = bar.ts_prev = s;
-	bar.shrink = s.wr + 3;
+    var bar = {
+		type: C.BAR,
+		bar_type: "|",
+		fname: s.fname,
+		istart: s.istart,
+		iend: s.iend,
+		v: s.v,
+		p_v: s.p_v,
+		st: s.st,
+		dur: 0,
+		seqst: true,
+		invis: true,
+		time: s.time + s.dur,
+		nhd: 0,
+		notes: [{
+			pit: s.notes[0].pit
+		}],
+		wl: 0,
+		wr: 0,
+		prev: s,
+		ts_prev: s,
+		shrink: s.wr + 3
+	}
 	s.next = s.ts_next = bar
 	return bar
 }
