@@ -28,6 +28,14 @@
 //		Arguments:
 //			i: start index of the note in the ABC source
 //			on: true on note start, false on note stop
+//	instr_load: function to load the sound font of an instrument
+//			(default: js_instr_load)
+//		Arguments:
+//			instr: MIDI instrument number
+//			done: callback function in case of success
+//				Arguments: soundfont in binary format
+//			fail: callback function in case of error
+//				no argument
 //	errmsg: function called on error (default: alert)
 //
 //  When playing, the following items must/may be set:
@@ -76,6 +84,18 @@ function Audio5(i_conf) {
 		iend,			// play array stop index
 		stime,			// start playing time
 		timouts = []		// note start events
+
+	// default sound font load function
+	function js_instr_load(instr, done, fail) {
+		abc2svg.loadjs(conf.sfu + '/' + instr + '.js',
+			function() {
+				 done(b64dcod(abcsf2[instr]))
+			},
+			fail
+		)
+	}
+	if (!conf.instr_load)
+		conf.instr_load = js_instr_load
 
 	// base64 stuff
 	    var b64d = []
@@ -198,9 +218,9 @@ function Audio5(i_conf) {
 	// load an instrument (.js file)
 	function load_instr(instr, a_e) {
 		w_instr++;
-		abc2svg.loadjs(conf.sfu + '/' + instr + '.js',
-			function() {
-			    var	parser = new sf2.Parser(b64dcod(abcsf2[instr]));
+		conf.instr_load(instr,
+			function(sf2_bin) {
+			    var	parser = new sf2.Parser(sf2_bin);
 				parser.parse();
 				sf2_create(parser, instr);
 				if (--w_instr == 0)
