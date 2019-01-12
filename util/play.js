@@ -93,8 +93,10 @@ function AbcPlay(i_conf) {
 			o = 0			// only one port
 		} else {
 			o = -1			// ask which port?
-			var res = window.prompt('Use \n0: ' + out[0] +
-					'\n1: ' + out[1] + '?', '0')
+			var pr = "Use"
+			for (var i = 0; i < out.length; i++)
+				pr += "\n " + i + ": " + out[i]
+			var res = window.prompt(pr, '0')
 			if (res) {
 				o = Number(res)
 				if (isNaN(o) || o < 0 || o >= out.length)
@@ -112,7 +114,7 @@ function AbcPlay(i_conf) {
 		abcplay.play = current.play;
 		abcplay.stop = current.stop
 		if (current.set_output)
-			current.set_output(name);
+			current.set_output(out[o]);
 		abcplay.play(init.istart, init.i_iend, init.a_e);
 		init = {}
 	} // play2()
