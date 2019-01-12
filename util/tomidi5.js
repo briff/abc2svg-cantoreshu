@@ -163,11 +163,21 @@ function Midi5(i_conf) {
     // MIDI output is possible,
     // return the possible ports in return to get_outputs()
     function send_outputs(access) {
+    var	o, os,
+	out = [];
+
 	Midi5.ma = access;	// store the MIDI access in the Midi5 function
 
-//fixme: just the first output port for now...
-	op = Midi5.ma.outputs.values().next().value;
-	rf(op ? [op.name] : null)
+	if (access && access.outputs.size > 0) {
+		os = access.outputs.values()
+		while (1) {
+			o = os.next()
+			if (!o || o.done)
+				break
+			out.push(o.value.name)
+		}
+	}
+	rf(out)
     } // send_outputs()
 
 // Midi5 object creation (only one instance)
@@ -201,9 +211,19 @@ function Midi5(i_conf) {
 
 	// set the output port
 	set_output: function(name) {
-//fixme: todo
-//		if (!Midi5.ma)
-//			return
+	    var o, os
+		if (!Midi5.ma)
+			return
+		os = Midi5.ma.outputs.values()
+		while (1) {
+			o = os.next()
+			if (!o || o.done)
+				break
+			if (o.value.name == name) {
+				op = o.value
+				break
+			}
+		}
 	},
 
 	// play the events
