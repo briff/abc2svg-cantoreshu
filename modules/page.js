@@ -176,8 +176,8 @@ abc2svg.page = {
 				if (s)
 					page.hf += '<text class="' +
 							font_class(font) +
-							'" x="' + x.toFixed(2) +
-							'" y="' + y.toFixed(2) +
+							'" x="' + x.toFixed(1) +
+							'" y="' + y.toFixed(1) +
 							pos[i] +
 							s + '</text>\n'
 				if (j < 0)
@@ -234,8 +234,8 @@ abc2svg.page = {
 			page.out += b.p
 			    .replace(/<svg(.|\n)*?>/,
 				'<g transform="translate(' +
-				page.gutter.toFixed(2) + ', ' +
-				(h + page.hbase).toFixed(2) +
+				page.gutter.toFixed(1) + ', ' +
+				(h + page.hbase).toFixed(1) +
 				')">')
 			    .replace('</svg>', '</g>');
 			h += b.h
@@ -307,8 +307,8 @@ abc2svg.page = {
 			page.out += p
 			    .replace(/<svg(.|\n)*?>/,
 				'<g transform="translate(' +
-				page.gutter.toFixed(2) + ', ' +
-				(page.h + page.hbase).toFixed(2) + ')">')
+				page.gutter.toFixed(1) + ', ' +
+				(page.h + page.hbase).toFixed(1) + ')">')
 			    .replace('</svg>', '</g>\n')
 		}
 		page.h += h

@@ -1,6 +1,6 @@
 // ambitus.js - module to insert an ambitus at start of a voice
 //
-// Copyright (C) 2018 Jean-Francois Moine - GPL3+
+// Copyright (C) 2018-2019 Jean-Francois Moine - GPL3+
 //
 // This module is loaded when "%%ambitus" appears in a ABC source.
 //
@@ -50,7 +50,6 @@ abc2svg.ambitus = {
     }, // do_ambitus()
 
     draw_symbols: function(of, p_voice) {
-// constants from the abc2svg core
     var	staff_tb = this.get_staff_tb(),
 	s = p_voice.sym
 
@@ -61,7 +60,7 @@ abc2svg.ambitus = {
 		if (s.notes[1].pit - s.notes[0].pit > 4) {
 			this.xypath(s.x, 3 * (s.notes[1].pit - 18) + staff_tb[s.st].y);
 			this.out_svg('v' +
-				((s.notes[1].pit - s.notes[0].pit) * 3).toFixed(2) +
+				((s.notes[1].pit - s.notes[0].pit) * 3).toFixed(1) +
 				'" stroke-width=".6"/>\n');
 		}
 		s.x += 26;

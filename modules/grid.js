@@ -1,6 +1,6 @@
 // grid.js - module to insert a chord grid before or after a tune
 //
-// Copyright (C) 2018 Jean-Francois Moine - GPL3+
+// Copyright (C) 2018-2019 Jean-Francois Moine - GPL3+
 //
 // This module is loaded when "%%grid" appears in a ABC source.
 //
@@ -141,13 +141,13 @@ function build_grid(chords, bars, font, wmx) {
 	x0 = (img.width - w) / 2;
 	y = 1
 	for (j = 0; j <= nr; j++) {
-		line += 'M' + x0.toFixed(2) + ' ' + y.toFixed(2) +
-			'h' + w.toFixed(2)+ '\n';
+		line += 'M' + x0.toFixed(1) + ' ' + y.toFixed(1) +
+			'h' + w.toFixed(1)+ '\n';
 		y += hr
 	}
 	x = x0
 	for (i = 0; i <= nc; i++) {
-		line += 'M' + x.toFixed(2) + ' 1v' + (hr * nr).toFixed(2) + '\n';
+		line += 'M' + x.toFixed(1) + ' 1v' + (hr * nr).toFixed(1) + '\n';
 		x += wmx
 	}
 	line += '"/>\n';
@@ -164,61 +164,61 @@ function build_grid(chords, bars, font, wmx) {
 		}
 		if (cell.length > 1) {
 			line += '<path class="stroke" stroke-width="1" d="M' +
-				(x - wmx / 2).toFixed(2) + ' ' +
-				yl.toFixed(2) + 'l' +
-				wmx.toFixed(2) + ' -' + hr.toFixed(2) +
+				(x - wmx / 2).toFixed(1) + ' ' +
+				yl.toFixed(1) + 'l' +
+				wmx.toFixed(1) + ' -' + hr.toFixed(1) +
 				'"/>\n';
 			if (cell[1]) {
 			    line += '<path class="stroke" stroke-width="1" d="M' +
-				(x - wmx / 2).toFixed(2) + ' ' +
-				(yl - hr).toFixed(2) + 'l' +
-				(wmx / 2).toFixed(2) + ' ' + (hr / 2).toFixed(2) +
+				(x - wmx / 2).toFixed(1) + ' ' +
+				(yl - hr).toFixed(1) + 'l' +
+				(wmx / 2).toFixed(1) + ' ' + (hr / 2).toFixed(1) +
 				'"/>\n';
 			    line += '<text class="' + cls + '" style="font-size:' +
-				(font.size * .72).toFixed(2) + '" x="' +
-				(x - wmx / 3).toFixed(2) + '" y="' +
-				y.toFixed(2) + '">' +
+				(font.size * .72).toFixed(1) + '" x="' +
+				(x - wmx / 3).toFixed(1) + '" y="' +
+				y.toFixed(1) + '">' +
 				cell[0] + '</text>\n';
 			    line += '<text class="' + cls + '" style="font-size:' +
-				(font.size * .72).toFixed(2) + '" x="' +
-				x.toFixed(2) + '" y="' +
-				(y - hr / 3).toFixed(2) + '">' +
+				(font.size * .72).toFixed(1) + '" x="' +
+				x.toFixed(1) + '" y="' +
+				(y - hr / 3).toFixed(1) + '">' +
 				cell[1] + '</text>\n'
 			} else {
 			    line += '<text class="' + cls + '" style="font-size:' +
-				(font.size * .72).toFixed(2) + '" x="' +
-				(x - wmx * .2).toFixed(2) + '" y="' +
-				(y - hr / 4).toFixed(2) + '">' +
+				(font.size * .72).toFixed(1) + '" x="' +
+				(x - wmx * .2).toFixed(1) + '" y="' +
+				(y - hr / 4).toFixed(1) + '">' +
 				cell[0] + '</text>\n'
 			}
 			if (cell.length >= 3) {
 			  if (cell[3]) {
 			    line += '<path class="stroke" stroke-width="1" d="M' +
-				x.toFixed(2) + ' ' +
-				(yl - hr / 2).toFixed(2) + 'l' +
-				(wmx / 2).toFixed(2) + ' ' + (hr / 2).toFixed(2) +
+				x.toFixed(1) + ' ' +
+				(yl - hr / 2).toFixed(1) + 'l' +
+				(wmx / 2).toFixed(1) + ' ' + (hr / 2).toFixed(1) +
 				'"/>\n';
 			    line += '<text class="' + cls + '" style="font-size:' +
-				(font.size * .72).toFixed(2) + '" x="' +
-				x.toFixed(2) + '" y="' +
-				(y + hr / 3).toFixed(2) + '">' +
+				(font.size * .72).toFixed(1) + '" x="' +
+				x.toFixed(1) + '" y="' +
+				(y + hr / 3).toFixed(1) + '">' +
 				cell[2] + '</text>\n';
 			    line += '<text class="' + cls + '" style="font-size:' +
-				(font.size * .72).toFixed(2) + '" x="' +
-				(x + wmx / 3).toFixed(2) + '" y="' +
-				y.toFixed(2) + '">' +
+				(font.size * .72).toFixed(1) + '" x="' +
+				(x + wmx / 3).toFixed(1) + '" y="' +
+				y.toFixed(1) + '">' +
 				cell[3] + '</text>\n'
 			  } else {
 			    line += '<text class="' + cls + '" style="font-size:' +
-				(font.size * .72).toFixed(2) + '" x="' +
-				(x + wmx * .2).toFixed(2) + '" y="' +
-				(y + hr / 4).toFixed(2) + '">' +
+				(font.size * .72).toFixed(1) + '" x="' +
+				(x + wmx * .2).toFixed(1) + '" y="' +
+				(y + hr / 4).toFixed(1) + '">' +
 				cell[2] + '</text>\n'
 			  }
 			}
 		} else {
 			line += '<text class="' + cls + '" x="' +
-				x.toFixed(2) + '" y="' + y.toFixed(2) + '">' +
+				x.toFixed(1) + '" y="' + y.toFixed(1) + '">' +
 				cell[0] + '</text>\n'
 		}
 		x += wmx
@@ -231,20 +231,20 @@ function build_grid(chords, bars, font, wmx) {
 		bar = bars[i]
 		if (bar[0] == ':')
 			line += '<text class="' + cls + '" x="' +
-				(x - 5).toFixed(2) +
-				'" y="' + y.toFixed(2) +
+				(x - 5).toFixed(1) +
+				'" y="' + y.toFixed(1) +
 				'" style="font-weight:bold;font-size:' +
-			(font.size + 2).toFixed(2) + '">:</text>\n'
+			(font.size + 2).toFixed(1) + '">:</text>\n'
 		if (i % nc == 0) {
 			y += hr;			// new row
 			x = x0
 		}
 		if (bar[bar.length - 1] == ':')
 			line += '<text class="' + cls + '" x="' +
-				(x + 5).toFixed(2) +
-				'" y="' + y.toFixed(2) +
+				(x + 5).toFixed(1) +
+				'" y="' + y.toFixed(1) +
 				'" style="font-weight:bold;font-size:' +
-			(font.size + 2).toFixed(2) + '">:</text>\n'
+			(font.size + 2).toFixed(1) + '">:</text>\n'
 		x += wmx
 	}
 
