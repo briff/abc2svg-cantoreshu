@@ -43,9 +43,10 @@
 // @play_event: array of array
 //		[0]: index of the note in the ABC source
 //		[1]: time in seconds
-//		[2]: MIDI instrument (MIDI GM number - 1)
-//		[3]: MIDI note pitch (with cents)
-//		[4]: duration
+//		[2]: if >= 0: MIDI instrument (MIDI GM number - 1)
+//			else: MIDI control message
+//		[3]: MIDI note pitch (with cents) / controller
+//		[4]: duration			  / controller value
 //		[5]: volume (0..1 - optional)
 //		[6]: voice number
 //
@@ -82,6 +83,12 @@ function Midi5(i_conf) {
 	if (i == 16384) {			// if bank 128
 		c = 9				// channel 10 (percussion)
 	} else if (i != v_i[c]) {		// if program change
+
+		// at channel start, reset all controllers
+//fixme: does not work with fluidsynth
+		if (v_i[c] == undefined)
+			op.send(new Uint8Array([0xb0 + c, 121, 0]));
+
 		v_i[c] = i
 		op.send(new Uint8Array([
 				0xb0 + c, 0, (i >> 14) & 0x7f,	// MSB bank
@@ -135,13 +142,18 @@ function Midi5(i_conf) {
 	maxt = t + 3000			// max time = evt time + 3 seconds
 	while (1) {
 		d = e[4] / conf.speed * 1000
-		if (e[5] != 0)		// if not a rest
+		if (e[2] >= 0) {		// if not a MIDI control message
+		    if (e[5] != 0)		// if not a rest
 			note_run(e, t + stime, d)
 
 		// follow the notes while playing
 			st = t + stime - window.performance.now();
 			timouts.push(setTimeout(onnote, st, e[0], true));
 			setTimeout(onnote, st + d, e[0], false)
+		} else {				// MIDI control
+			op.send(new Uint8Array([0xb0 + (e[6] & 0x0f),
+						e[3], e[4]]), t + stime)
+		}
 
 		e = a_e[++evt_idx]
 		if (!e || evt_idx >= iend) {
@@ -251,6 +263,7 @@ if (0) {
 			]), t);
 }
 
+		v_i = [];		// must do a reset of all channels
 		stime = window.performance.now() + 200	// start time + 0.2s
 			- a_e[evt_idx][1] * conf.speed * 1000;
 		play_next(a_e)

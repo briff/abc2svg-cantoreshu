@@ -1,6 +1,6 @@
 // toaudio.js - audio generation
 //
-// Copyright (C) 2015-2018 Jean-Francois Moine
+// Copyright (C) 2015-2019 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -37,9 +37,10 @@ function ToAudio() {
 // return the old ones as an array of Float32Array:
 //	[0]: index of the note in the ABC source
 //	[1]: time in seconds
-//	[2]: MIDI instrument (MIDI GM number - 1)
-//	[3]: MIDI note pitch (with cents)
-//	[4]: duration
+//	[2]: if >= 0: MIDI instrument (MIDI GM number - 1)
+//		else: MIDI control message
+//	[3]: MIDI note pitch (with cents) / controller
+//	[4]: duration			  / controller value
 //	[5]: volume (0..1)
 //	[6]: voice number
     clear: function() {
@@ -78,10 +79,25 @@ function ToAudio() {
 
 			mi = p_v.instr || 0
 			if (p_v.midictl) {
-				if (p_v.midictl[32])		// bank LSB
-					mi += p_v.midictl[32] * 128
-				if (p_v.midictl[0])		// bank MSB
-					mi += p_v.midictl[0] * 128 * 128
+				p_v.midictl.forEach(function(val, i) {
+					switch(i) {
+					case 0:		// bank MSB
+						mi += val * 128 * 128
+						break
+					case 32:	// bank LSB
+						mi += val * 128
+						break
+					default:	// generate a MIDI control
+						a_e.push(new Float32Array([
+							p_v.sym.istart,
+							1,	// (time)
+							-1,	// MIDI control
+							i,
+							val,
+							1,
+							v]))
+					}
+				})
 			}
 			instr[v] = mi;			// MIDI instrument
 
@@ -409,6 +425,18 @@ function ToAudio() {
 			break
 		case C.STAVES:
 			top_v = s.sy.top_voice
+			break
+		case C.BLOCK:
+			if (s.subtype != "midictl")
+				break
+			a_e.push(new Float32Array([	// generate a MIDI control
+				s.istart,
+				p_time,
+				-1,			// MIDI control
+				s.ctrl,
+				s.val,
+				1,
+				s.v]))
 			break
 		}
 		s = s.ts_next

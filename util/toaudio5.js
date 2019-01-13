@@ -54,7 +54,8 @@
 // @play_event: array of array
 //		[0]: index of the note in the ABC source
 //		[1]: time in seconds
-//		[2]: MIDI instrument (MIDI GM number - 1)
+//		[2]: if >= 0: MIDI instrument (MIDI GM number - 1)
+//			else: MIDI control message (not treated here)
 //		[3]: MIDI note pitch (with cents)
 //		[4]: duration
 //		[5]: volume (0..1 - optional)
@@ -244,7 +245,7 @@ function Audio5(i_conf) {
 			if (!e || evt_idx >= iend)
 				break
 			instr = e[2]
-			if (!params[instr]) {
+			if (instr >= 0 && !params[instr]) {
 				params[instr] = [];
 				load_instr(instr, a_e)
 			}
@@ -330,7 +331,8 @@ function Audio5(i_conf) {
 		maxt = t + 3			// max time = evt time + 3 seconds
 		while (1) {
 			d = e[4] / conf.speed
-			if (e[5] != 0)		// if not a rest
+			if (e[2] >= 0) {	// if not a MIDI control message
+			    if (e[5] != 0)		// if not a rest
 				note_run(e, t + stime, d)
 
 			// follow the notes while playing
@@ -338,6 +340,7 @@ function Audio5(i_conf) {
 				st = (t + stime - ac.currentTime) * 1000;
 				timouts.push(setTimeout(onnote, st, i, true));
 				setTimeout(onnote, st + d * 1000, i, false)
+			}
 
 			e = a_e[++evt_idx]
 			if (!e || evt_idx >= iend) {

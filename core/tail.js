@@ -66,6 +66,7 @@ Abc.prototype.get_unit = get_unit;
 Abc.prototype.get_voice_tb = function() { return voice_tb };
 Abc.prototype.goto_tune = goto_tune;
 Abc.prototype.info = function() { return info };
+Abc.prototype.new_block = new_block;
 Abc.prototype.new_note = new_note;
 Abc.prototype.out_arp = out_arp;
 Abc.prototype.out_deco_str = out_deco_str;

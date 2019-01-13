@@ -1,6 +1,6 @@
 // MIDI.js - module to handle the %%MIDI parameters
 //
-// Copyright (C) 2018 Jean-Francois Moine - GPL3+
+// Copyright (C) 2019 Jean-Francois Moine - GPL3+
 //
 // This module is loaded when "%%MIDI" appears in a ABC source.
 //
@@ -48,7 +48,7 @@ abc2svg.MIDI = {
 	return p
     } // norm()
 
-	var	n, v,
+    var	n, v, s,
 	maps = this.get_maps(),
 		a = parm.split(/\s+/)
 
@@ -96,7 +96,13 @@ abc2svg.MIDI = {
 			this.syntax(1, "Bad controller value in %%MIDI")
 			return
 		}
-		this.set_v_param("midictl", a[2] + ' ' + a[3])
+		if (this.cfmt().sound != "play")
+			break
+		if (this.parse.state >= 2) {
+			s = this.new_block("midictl");
+			s.ctrl = n;
+			s.val = v
+		}
 		break
 	}
     }, // do_midi()
