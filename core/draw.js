@@ -486,9 +486,9 @@ function draw_beams(bm) {
 		x2 /= stv_g.scale;
 		dy2 = bm.a * x2 * stv_g.scale;
 		xypath(x1, y1, true);
-		output += 'l' + x2.toFixed(2) + ' ' + (-dy2).toFixed(2) +
-			'v' + h.toFixed(2) +
-			'l' + (-x2).toFixed(2) + ' ' + dy2.toFixed(2) +
+		output += 'l' + x2.toFixed(1) + ' ' + (-dy2).toFixed(1) +
+			'v' + h.toFixed(1) +
+			'l' + (-x2).toFixed(1) + ' ' + dy2.toFixed(1) +
 			'z"/>\n'
 	} // draw_beam()
 
@@ -682,7 +682,7 @@ function draw_lstaff(x) {
 	yb = staff_tb[j].y + staff_tb[j].botbar * staff_tb[j].staffscale;
 	h = staff_tb[i].y + staff_tb[i].topbar * staff_tb[i].staffscale - yb;
 	xypath(x, yb);
-	output += "v" + (-h).toFixed(2) + '"/>\n'
+	output += "v" + (-h).toFixed(1) + '"/>\n'
 	for (i = 0; i <= nst; i++) {
 		if (cur_sy.staves[i].flags & OPEN_BRACE)
 			draw_sysbra(x, i, CLOSE_BRACE)
@@ -1180,9 +1180,9 @@ function draw_gracenotes(s) {
 
 	anno_start(s, 'slur');
 	xypath(x0, y0 + staff_tb[s.st].y);
-	output += 'c' + x1.toFixed(2) + ' ' + (-y1).toFixed(2) +
-		' ' + x2.toFixed(2) + ' ' + (-y2).toFixed(2) +
-		' ' + (x3 - x0).toFixed(2) + ' ' + (-y3 + y0).toFixed(2) + '"/>\n';
+	output += 'c' + x1.toFixed(1) + ' ' + (-y1).toFixed(1) +
+		' ' + x2.toFixed(1) + ' ' + (-y2).toFixed(1) +
+		' ' + (x3 - x0).toFixed(1) + ' ' + (-y3 + y0).toFixed(1) + '"/>\n';
 	anno_stop(s, 'slur')
 }
 
@@ -1574,22 +1574,22 @@ function slur_out(x1, y1, x2, y2, dir, height, dotted) {
 		output += '<path class="stroke" stroke-dasharray="5,5" d="M';
 	out_sxsy(x1, ' ', y1);
 	output += 'c' +
-		((xx1 - x1) / stv_g.scale).toFixed(2) + ' ' +
-		((y1 - yy1) / scale_y).toFixed(2) + ' ' +
-		((xx2 - x1) / stv_g.scale).toFixed(2) + ' ' +
-		((y1 - yy2) / scale_y).toFixed(2) + ' ' +
-		((x2 - x1) / stv_g.scale).toFixed(2) + ' ' +
-		((y1 - y2) / scale_y).toFixed(2)
+		((xx1 - x1) / stv_g.scale).toFixed(1) + ' ' +
+		((y1 - yy1) / scale_y).toFixed(1) + ' ' +
+		((xx2 - x1) / stv_g.scale).toFixed(1) + ' ' +
+		((y1 - yy2) / scale_y).toFixed(1) + ' ' +
+		((x2 - x1) / stv_g.scale).toFixed(1) + ' ' +
+		((y1 - y2) / scale_y).toFixed(1)
 
 	if (!dotted)
 		output += '\n\tv' +
-			(-dz).toFixed(2) + 'c' +
-			((xx2 - dx - x2) / stv_g.scale).toFixed(2) + ' ' +
-			((y2 + dz - yy2 - dy) / scale_y).toFixed(2) + ' ' +
-			((xx1 + dx - x2) / stv_g.scale).toFixed(2) + ' ' +
-			((y2 + dz - yy1 - dy) / scale_y).toFixed(2) + ' ' +
-			((x1 - x2) / stv_g.scale).toFixed(2) + ' ' +
-			((y2 + dz - y1) / scale_y).toFixed(2);
+			(-dz).toFixed(1) + 'c' +
+			((xx2 - dx - x2) / stv_g.scale).toFixed(1) + ' ' +
+			((y2 + dz - yy2 - dy) / scale_y).toFixed(1) + ' ' +
+			((xx1 + dx - x2) / stv_g.scale).toFixed(1) + ' ' +
+			((y2 + dz - yy1 - dy) / scale_y).toFixed(1) + ' ' +
+			((x1 - x2) / stv_g.scale).toFixed(1) + ' ' +
+			((y2 + dz - y1) / scale_y).toFixed(1);
 	output += '"/>\n'
 }
 
@@ -3337,7 +3337,7 @@ function set_staff() {
 		if (p_staff.staffscale != 1) {
 			p_staff.scale_str =
 				'transform="translate(0,' +
-					(posy - dy).toFixed(2) + ') ' +
+					(posy - dy).toFixed(1) + ') ' +
 				'scale(' + p_staff.staffscale.toFixed(2) + ')"'
 		}
 	}
@@ -3426,9 +3426,9 @@ function draw_systems(indent) {
 				case '-':
 					continue
 				case ty:
-					ln += 'm-' + ws.toFixed(2) +
+					ln += 'm-' + ws.toFixed(1) +
 						' ' + dy +
-						'h' + ws.toFixed(2);
+						'h' + ws.toFixed(1);
 					dy = 0
 					continue
 				}
@@ -3437,7 +3437,7 @@ function draw_systems(indent) {
 				ty = stafflines[i]
 				ln += '<path class="stroke ' +
 					(ty == '[' ? 'slthW' : 'slW') +
-					'" d="m0 ' + y + 'h' + ws.toFixed(2);
+					'" d="m0 ' + y + 'h' + ws.toFixed(1);
 				dy = 0
 			}
 			ln += '"/>\n'
@@ -3545,7 +3545,7 @@ function draw_systems(indent) {
 		if (l) {			// dotted bars [x, y, h, scale]
 			for (i = 0; i < l; i++) {
 				b = db[i];
-				w = (5 * b[3]).toFixed(2);
+				w = (5 * b[3]).toFixed(1);
 				out_XYAB('<path class="stroke bW" ' +
 					'stroke-dasharray="' + w + ',' + w + '" d="' +
 					'MX Yv-F"/>\n', b[0], b[1], b[2])

@@ -933,7 +933,7 @@ function do_pscom(text) {
 		vskip(h1);
 		output += '<path class="stroke"\n\td="M';
 		out_sxsy((lwidth - len) / 2 / cfmt.scale, ' ', 0);
-		output += 'h' + (len / cfmt.scale).toFixed(2) + '"/>\n';
+		output += 'h' + (len / cfmt.scale).toFixed(1) + '"/>\n';
 		vskip(h2);
 		blk_flush()
 		return

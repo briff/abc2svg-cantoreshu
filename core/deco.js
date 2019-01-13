@@ -1467,7 +1467,7 @@ function draw_deco_staff() {
 			xypath(x, y2);
 			if (s1.rbstart == 2)
 				output += 'm0 20v-20';
-			output+= 'h' + w.toFixed(2)
+			output+= 'h' + w.toFixed(1)
 			if (s.rbstop == 2)
 				output += 'v20';
 			output += '"/>\n';
@@ -1848,8 +1848,8 @@ function write_tempo(s, x, y) {
 		bh = gene.curfont.size + 4;
 		output += '<rect class="stroke" x="';
 		out_sxsy(bx - 2, '" y="', y + bh - 1);
-		output += '" width="' + (x - bx + 2).toFixed(2) +
-			'" height="' + bh.toFixed(2) +
+		output += '" width="' + (x - bx + 2).toFixed(1) +
+			'" height="' + bh.toFixed(1) +
 			'"/>\n'
 	}
 

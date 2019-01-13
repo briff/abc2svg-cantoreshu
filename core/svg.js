@@ -1,6 +1,6 @@
 // abc2svg - svg.js - svg functions
 //
-// Copyright (C) 2014-2018 Jean-Francois Moine
+// Copyright (C) 2014-2019 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -192,8 +192,8 @@ function m_gl(s) {
 		    var	m = tgls["mtr" + e]
 			if (!m.x && !m.y)
 				return m.c
-			return '<tspan dx="'+ m.x.toFixed(2) +
-				'" dy="' + m.y.toFixed(2) + '">' +
+			return '<tspan dx="'+ m.x.toFixed(1) +
+				'" dy="' + m.y.toFixed(1) + '">' +
 				m.c + '</tspan>'
 		})
 }
@@ -369,7 +369,7 @@ function delayed_update() {
 	for (st = 0; st <= nstaff; st++) {
 		if (staff_tb[st].sc_out) {
 			output += '<g transform="translate(0,' +
-					(posy - staff_tb[st].y).toFixed(2) +
+					(posy - staff_tb[st].y).toFixed(1) +
 					') scale(' +
 					 staff_tb[st].staffscale.toFixed(2) +
 					')">\n' +
@@ -380,7 +380,7 @@ function delayed_update() {
 		if (!staff_tb[st].output)
 			continue
 		output += '<g transform="translate(0,' +
-				(-staff_tb[st].y).toFixed(2) +
+				(-staff_tb[st].y).toFixed(1) +
 				')">\n' +
 			staff_tb[st].output +
 			'</g>\n';
@@ -432,13 +432,13 @@ function out_XYAB(str, x, y, a, b) {
 	y = sy(y);
 	output += str.replace(/X|Y|A|B|F|G/g, function(c) {
 		switch (c) {
-		case 'X': return x.toFixed(2)
-		case 'Y': return y.toFixed(2)
+		case 'X': return x.toFixed(1)
+		case 'Y': return y.toFixed(1)
 		case 'A': return a
 		case 'B': return b
-		case 'F': return a.toFixed(2)
+		case 'F': return a.toFixed(1)
 //		case 'G':
-		default: return b.toFixed(2)
+		default: return b.toFixed(1)
 		}
 		})
 }
@@ -504,7 +504,7 @@ Abc.prototype.ah = function(h) {
 function out_sxsy(x, sep, y) {
 	x = sx(x);
 	y = sy(y);
-	output += x.toFixed(2) + sep + y.toFixed(2)
+	output += x.toFixed(1) + sep + y.toFixed(1)
 }
 Abc.prototype.out_sxsy = out_sxsy
 
@@ -563,7 +563,7 @@ function out_brace(x, y, h) {
 	y = posy - y;
 	h /= 24;
 	output += '<text transform="translate(' +
-				x.toFixed(2) + ',' + y.toFixed(2) +
+				x.toFixed(1) + ',' + y.toFixed(1) +
 			') scale(2.5,' + h.toFixed(2) +
 			')">' + tgls.brace.c + '</text>\n'
 }
@@ -574,9 +574,9 @@ function out_bracket(x, y, h) {
 	y = posy - y - 3;
 	h += 2;
 	output += '<path class="fill"\n\
-	d="m' + x.toFixed(2) + ' ' + y.toFixed(2) + '\n\
+	d="m' + x.toFixed(1) + ' ' + y.toFixed(1) + '\n\
 	c10.5 1 12 -4.5 12 -3.5c0 1 -3.5 5.5 -8.5 5.5\n\
-	v' + h.toFixed(2) + '\n\
+	v' + h.toFixed(1) + '\n\
 	c5 0 8.5 4.5 8.5 5.5c0 1 -1.5 -4.5 -12 -3.5"/>\n'
 }
 // hyphen
@@ -705,9 +705,9 @@ function out_tubr(x, y, dx, dy, up) {
 	dx /= stv_g.scale;
 	output += '<path class="stroke" d="m';
 	out_sxsy(x, ' ', y);
-	output += 'v' + h.toFixed(2) +
-		'l' + dx.toFixed(2) + ' ' + (-dy).toFixed(2) +
-		'v' + (-h).toFixed(2) + '"/>\n'
+	output += 'v' + h.toFixed(1) +
+		'l' + dx.toFixed(1) + ' ' + (-dy).toFixed(1) +
+		'v' + (-h).toFixed() + '"/>\n'
 }
 // tuplet bracket with number - the staves are not defined
 function out_tubrn(x, y, dx, dy, up, str) {
@@ -722,14 +722,14 @@ function out_tubrn(x, y, dx, dy, up, str) {
 		y += 6;
 	output += '<path class="stroke" d="m';
 	out_sxsy(x, ' ', y);
-	output += 'v' + h.toFixed(2) +
-		'm' + dx.toFixed(2) + ' ' + (-dy).toFixed(2) +
-		'v' + (-h).toFixed(2) + '"/>\n' +
+	output += 'v' + h.toFixed(1) +
+		'm' + dx.toFixed(1) + ' ' + (-dy).toFixed(1) +
+		'v' + (-h).toFixed(1) + '"/>\n' +
 		'<path class="stroke" stroke-dasharray="' +
-		((dx - sw) / 2).toFixed(2) + ' ' + sw.toFixed(2) +
+		((dx - sw) / 2).toFixed(1) + ' ' + sw.toFixed(1) +
 		'" d="m';
 	out_sxsy(x, ' ', y - h);
-	output += 'l' + dx.toFixed(2) + ' ' + (-dy).toFixed(2) + '"/>\n'
+	output += 'l' + dx.toFixed(1) + ' ' + (-dy).toFixed(1) + '"/>\n'
 
 }
 // underscore line
@@ -806,18 +806,18 @@ function out_cresc(x, y, val, defl) {
 	out_XYAB('<path class="stroke"\n\
 	d="mX YlA ', x, y + 5, val)
 	if (defl.nost)
-		output += '-2.2m0 -3.6l' + (-val).toFixed(2) + ' -2.2"/>\n'
+		output += '-2.2m0 -3.6l' + (-val).toFixed(1) + ' -2.2"/>\n'
 	else
-		output += '-4l' + (-val).toFixed(2) + ' -4"/>\n'
+		output += '-4l' + (-val).toFixed(1) + ' -4"/>\n'
 
 }
 function out_dim(x, y, val, defl) {
 	out_XYAB('<path class="stroke"\n\
 	d="mX YlA ', x, y + 5, val)
 	if (defl.noen)
-		output += '-2.2m0 -3.6l' + (-val).toFixed(2) + ' -2.2"/>\n'
+		output += '-2.2m0 -3.6l' + (-val).toFixed(1) + ' -2.2"/>\n'
 	else
-		output += '-4l' + (-val).toFixed(2) + ' -4"/>\n'
+		output += '-4l' + (-val).toFixed(1) + ' -4"/>\n'
 }
 function out_ltr(x, y, val) {
 	y += 4;
@@ -953,7 +953,7 @@ function out_gliss(x2, y2, de) {
 	x1 = de1.s.dots ? 13 + de1.s.xmx : 8;
 	len -= x1 + 8;
 	xypath(x1, 0);
-	output += 'h' + len.toFixed(2) + '" stroke-width="1"/>\n';
+	output += 'h' + len.toFixed(1) + '" stroke-width="1"/>\n';
 	g_close()
 }
 

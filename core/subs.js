@@ -1,6 +1,6 @@
 // abc2svg - subs.js - text output
 //
-// Copyright (C) 2014-2018 Jean-Francois Moine
+// Copyright (C) 2014-2019 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -179,7 +179,7 @@ function xy_str(x, y, str,
 	if (action != 'j' && str.length > 5
 	 && gene.curfont.wadj)
 		output += '" lengthAdjust="' + gene.curfont.wadj +
-			'" textLength="' + wh[0].toFixed(2);
+			'" textLength="' + wh[0].toFixed(1);
 	output += '" x="';
 	out_sxsy(x, '" y="', y + wh[1] * .2)	// a bit upper for the descent
 	switch (action) {
@@ -188,7 +188,7 @@ function xy_str(x, y, str,
 		output += '" text-anchor="middle">'
 		break
 	case 'j':
-		output += '" textLength="' + w.toFixed(2) + '">'
+		output += '" textLength="' + w.toFixed(1) + '">'
 		break
 	case 'r':
 		x -= wh[0];
@@ -210,8 +210,8 @@ function xy_str(x, y, str,
 //		output += '</g>\n'
 		output += '<rect class="stroke" x="';
 		out_sxsy(x - 2, '" y="', y + wh[1]);
-		output += '" width="' + (wh[0] + 4).toFixed(2) +
-			'" height="' + (wh[1] + 2).toFixed(2) +
+		output += '" width="' + (wh[0] + 4).toFixed(1) +
+			'" height="' + (wh[1] + 2).toFixed(1) +
 			'"/>\n'
 	}
 

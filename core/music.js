@@ -4262,7 +4262,7 @@ function block_gen(s) {
 		vskip(s.sk1);
 		output += '<path class="stroke"\n\td="M';
 		out_sxsy(s.x, ' ', 0);
-		output += 'h' + s.l.toFixed(2) + '"/>\n';
+		output += 'h' + s.l.toFixed(1) + '"/>\n';
 		vskip(s.sk2);
 		break
 	case "text":
@@ -4551,9 +4551,9 @@ function set_sym_glue(width) {
 	if (xmin >= width) {
 		if (xmin > width)
 			error(1, s, "Line too much shrunk $1 $2 $3",
-				xmin.toFixed(2),
-				xx.toFixed(2),
-				width.toFixed(2));
+				xmin.toFixed(1),
+				xx.toFixed(1),
+				width.toFixed(1));
 		x = 0
 		for (s = tsfirst; s; s = s.ts_next) {
 			if (s.seqst)

@@ -1,6 +1,6 @@
 // abc2svg - format.js - formatting functions
 //
-// Copyright (C) 2014-2018 Jean-Francois Moine
+// Copyright (C) 2014-2019 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -658,7 +658,7 @@ function style_font(font) {
 		r += "oblique ";
 		fn = fn.replace(a[0], '')
 	}
-	return 'font:' + r + font.size.toFixed(2) + 'px ' + fn
+	return 'font:' + r + font.size.toFixed(1) + 'px ' + fn
 }
 Abc.prototype.style_font = style_font
 
