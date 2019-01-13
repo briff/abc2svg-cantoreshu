@@ -1,6 +1,6 @@
 // abc2svg - toodt.js - ABC translation to ODT+SVG
 //
-// Copyright (C) 2017-2018 Jean-Francois Moine
+// Copyright (C) 2017-2019 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -64,8 +64,8 @@ function set_unit(p) {
 	if (typeof p == "string")
 		return p
 	if (page_type[0] == 'L')
-		return (p / 96).toFixed(2) + 'in'
-	return (p / 37.8).toFixed(2) + 'cm'
+		return (p / 96).toFixed(1) + 'in'
+	return (p / 37.8).toFixed(1) + 'cm'
 }
 
 // output a header or a footer

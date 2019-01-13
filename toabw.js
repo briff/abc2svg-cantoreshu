@@ -1,6 +1,6 @@
 // abc2svg - toabw.js - SVG generation for Abiword
 //
-// Copyright (C) 2018 Jean-Francois Moine
+// Copyright (C) 2018-2019 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -48,8 +48,8 @@ function set_unit(p) {
 	if (typeof p == "string")
 		return p
 	if (page_type[0] == 'L')
-		return (p / 96).toFixed(2) + 'in'
-	return (p / 37.8).toFixed(2) + 'cm'
+		return (p / 96).toFixed(1) + 'in'
+	return (p / 37.8).toFixed(1) + 'cm'
 }
 
 function header_footer(str) {
@@ -340,7 +340,7 @@ function svg_out(str) {
 				return ''
 			default:			// size:..px
 				var r = c.match(/size:(.+)px/)
-				return 'size:' + (r[1] * 72 / 96).toFixed(2) + 'pt'
+				return 'size:' + (r[1] * 72 / 96).toFixed(1) + 'pt'
 			}
 		})
 		section += '\n'

@@ -1,6 +1,6 @@
 // abc2svg - toxhtml.js - SVG generation
 //
-// Copyright (C) 2014-2018 Jean-Francois Moine
+// Copyright (C) 2014-2019 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -115,13 +115,13 @@ function set_pstyle() {
 	if (nml != ml) {
 		if (ml == undefined)
 			ml = nml;
-		psty += 'margin-left:' + nml.toFixed(2) + 'px;'
+		psty += 'margin-left:' + nml.toFixed(1) + 'px;'
 	}
 	nmr = cfmt.rightmargin;
 	if (nmr != mr) {
 		if (mr == undefined)
 			mr = nmr;
-		psty += 'margin-right:' + nmr.toFixed(2) + 'px;'
+		psty += 'margin-right:' + nmr.toFixed(1) + 'px;'
 	}
 	nlkf = cfmt.lineskipfac;
 	if (nlkf != lkf) {
@@ -139,7 +139,7 @@ function set_pstyle() {
 	if (npw != pw || nml != ml || nmr != mr) {
 		if (pw == undefined)
 			pw = npw;
-		psty += 'width:' + (npw - nml - nmr).toFixed(2) + 'px;'
+		psty += 'width:' + (npw - nml - nmr).toFixed(1) + 'px;'
 	}
 	return psty
 }

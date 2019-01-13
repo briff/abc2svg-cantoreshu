@@ -1,6 +1,6 @@
 // abc2svg - toabc.js - convert ABC to ABC
 //
-// Copyright (C) 2016-2018 Jean-Francois Moine
+// Copyright (C) 2016-2019 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -132,9 +132,9 @@ function abc_dump(tsfirst, voice_tb, music_types, info) {
 			ln += s.param
 			break
 		case "sep":
-			ln += s.sk1.toFixed(2) + ' ' +
-				s.l.toFixed(2) + ' ' +
-				s.sk2.toFixed(2)
+			ln += s.sk1.toFixed(1) + ' ' +
+				s.l.toFixed(1) + ' ' +
+				s.sk2.toFixed(1)
 			break
 		case "skip":
 			ln += s.sk
