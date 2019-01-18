@@ -1735,7 +1735,7 @@ function draw_notempo(s, x, y, dur, sc) {
 //	}
 
 	out_XYAB('<g transform="translate(X,Y) scale(F)">\n',
-		x + 4, y + 5, sc)
+		x + 4, y + 4, sc)
 	switch (head) {
 	case C.OVAL:
 		p = "HD"
