@@ -1507,7 +1507,7 @@ function parse_staves(p) {
 function info_split(text) {
 	if (!text)
 		return []
-    var	a = text.match(/[^\s"=]+=?|".+?"/g)	// "
+    var	a = text.match(/=?[^\s"=]+=?|".+?"/g)	// "
 	if (!a) {
 //fixme: bad error text
 		syntax(1, "Unterminated string")
