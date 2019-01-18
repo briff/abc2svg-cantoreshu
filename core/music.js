@@ -1496,6 +1496,10 @@ function set_nl(s, eoln) {
 				if (s2.type == C.METER && !cfmt.timewarn)
 					continue
 				s3 = s2.ts_prev;
+				if (s3 == s) {		// if next symbol
+					s = s2		// advance the eol
+					continue
+				}
 				unlksym(s2);		// remove
 				lktsym(s2, s.ts_next);	// link in time at eol
 				s = s2
