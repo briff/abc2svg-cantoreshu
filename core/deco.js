@@ -1789,16 +1789,12 @@ function draw_notempo(s, x, y, dur, sc) {
 function tempo_width(s) {
 	var	w = 0;
 
-	set_font("tempo")
-	if (s.tempo_str1)
-		w = strwh(s.tempo_str1)[0]
-	if (s.tempo_ca)
-		w += strwh(s.tempo_ca)[0]
-	if (s.tempo_notes)
-		w += 10 * s.tempo_notes.length +
-			6 + cwid(' ') * gene.curfont.swfac * 6 + 10
-	if (s.tempo_str2)
-		w += strwh(s.tempo_str2)[0]
+	if (s.tempo_wh1)
+		w = s.tempo_wh1[0]
+	if (s.tempo_wh0)
+		w += s.tempo_wh0[0]
+	if (s.tempo_wh2)
+		w += s.tempo_wh2[0]
 	return w
 }
 
@@ -1813,38 +1809,26 @@ function write_tempo(s, x, y) {
 		bx = x
 	}
 	if (s.tempo_str1) {
-		xy_str(x, y, s.tempo_str1);
-		x += strwh(s.tempo_str1)[0] + 3
+		xy_str(x, y, s.tempo_str1, null, null, s.tempo_wh1);
+		x += s.tempo_wh1[0] + 3
 	}
 	if (s.tempo_notes) {
 		for (j = 0; j < s.tempo_notes.length; j++)
 			x += draw_notempo(s, x, y, s.tempo_notes[j], sc);
-		xy_str(x, y, "=");
-		x += strwh("= ")[0]
-		if (s.tempo_ca) {
-			xy_str(x, y, s.tempo_ca);
-			x += strwh(s.tempo_ca)[0]
-		}
-		if (s.tempo) {
-			xy_str(x, y, s.tempo.toString());
-			dx = cwid('0') * gene.curfont.swfac;
-			x += dx + 5
-			if (s.tempo >= 10) {
-				x += dx
-				if (s.tempo >= 100)
-					x += dx
-			}
-		} else {
+		xy_str(x, y, s.tempo_str0, null, null, s.tempo_wh0);
+		x += s.tempo_wh0[0]
+		if (s.tempo)
+			x += 5
+		else
 			x += draw_notempo(s, x, y, s.new_beat, sc)
-		}
 	}
 	if (s.tempo_str2)
-		xy_str(x, y, s.tempo_str2)
+		xy_str(x, y, s.tempo_str2, null, null, s.tempo_wh2)
 
 	if (bx) {
 		gene.curfont.box = true
 		if (s.tempo_str2)
-			x += strwh(s.tempo_str2)[0] + 3;
+			x += s.tempo_wh2[0] + 3;
 		bh = gene.curfont.size + 4;
 		output += '<rect class="stroke" x="';
 		out_sxsy(bx - 2, '" y="', y + bh - 1);

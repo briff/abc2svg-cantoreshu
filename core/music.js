@@ -869,11 +869,25 @@ function set_width(s) {
 	case C.CUSTOS:
 		s.wl = s.wr = 4
 		return
+	case C.TEMPO:		// no width, but set here the [w,h] of the strings
+		set_font("tempo")
+		if (s.tempo_str1)
+			s.tempo_wh1 = strwh(s.tempo_str1)
+		if (s.tempo_notes ) {
+			s.tempo_str0 = '= '
+			if (s.tempo_ca)
+				s.tempo_str0 += s.tempo_ca
+			if (s.tempo)
+				s.tempo_str0 += s.tempo;
+			s.tempo_wh0 = strwh(s.tempo_str0)
+		}
+		if (s.tempo_str2)
+			s.tempo_wh2 = strwh(s.tempo_str2)
+		break
 	case C.BLOCK:				// no width
 	case C.PART:
 	case C.REMARK:
 	case C.STAVES:
-	case C.TEMPO:
 		break
 	default:
 		error(2, s, "set_width - Cannot set width for symbol $1", s.type)
