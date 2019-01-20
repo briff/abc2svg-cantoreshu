@@ -191,6 +191,7 @@ function param_set_font(xxxfont, param) {
 	}
 	a = param.match(/\s+wadj=(.*?)(\s|$)/)
 	if (a) {
+	    if (typeof document == "undefined")	// useless if in browser
 		switch (a[1]) {
 		case 'none':
 			font.wadj = ''
