@@ -72,8 +72,59 @@ function cwid(c) {
 	return cw_tb[i]
 }
 
-// estimate the width and height of a string
-function strwh(str) {
+// estimate the width and height of a string ..
+var strwh = typeof document != "undefined" ?
+
+    // .. by the browser
+    (function(el) {
+	el.style.position = 'absolute';
+	el.style.top = '-1000px';
+	el.style.padding = '0';
+	document.body.appendChild(el)
+
+	return function(str) {
+	    var	c,
+		font = gene.curfont,
+		h = font.size,
+		w = 0,
+		n = str.length,
+		i0 = 0,
+		i = 0
+
+		el.style.font = style_font(font).slice(5);
+
+		while (1) {
+			i = str.indexOf('$', i)
+			if (i < 0)
+				break
+			c = str[i + 1]
+			if (c == '0') {
+				font = gene.deffont
+			} else if (c >= '1' && c <= '9') {
+				font = get_font("u" + c)
+			} else {
+				i++
+				continue
+			}
+			el.innerHTML = str.slice(i0, i);
+			w += el.clientWidth
+			if (font.size > h)
+				h = font.size;
+
+			el.style.font = style_font(font).slice(5);
+			i += 2;
+			i0 = i
+		}
+		el.innerHTML = str.slice(i0);
+		w += el.clientWidth;
+
+		gene.curfont = font
+		return [w, h]
+	}
+    })(document.createElement('div')) :
+
+    // .. by internal tables
+    function(str) {
     var	font = gene.curfont,
 	swfac = font.swfac,
 	h = font.size,
