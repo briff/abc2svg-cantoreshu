@@ -1,6 +1,6 @@
 // abc2svg - lyrics.js - lyrics
 //
-// Copyright (C) 2014-2018 Jean-Francois Moine
+// Copyright (C) 2014-2019 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -241,7 +241,7 @@ function get_lyrics(text, cont) {
 			ly = {
 				t: word,
 				font: gene.curfont,
-				w: strwh(word)[0],
+				wh: strwh(word),
 				istart: j,
 				iend: j + word.length
 			}
@@ -271,7 +271,7 @@ function ly_width(s, wlw) {
 			ly.shift = 0
 			continue
 		}
-		w = ly.w;
+		w = ly.wh[0];
 		swfac = ly.font.swfac;
 		xx = w + 2 * cwid(' ') * swfac
 		if (s.type == C.GRACE) {			// %%graceword
@@ -385,7 +385,7 @@ function draw_lyric_line(p_voice, j, y) {
 		if (ly.font != gene.curfont)		/* font change */
 			gene.curfont = font = ly.font;
 		p = ly.t;
-		w = ly.w;
+		w = ly.wh[0];
 		shift = ly.shift
 		if (hyflag) {
 			if (p == "_\n") {		/* '_' */
@@ -432,7 +432,7 @@ function draw_lyric_line(p_voice, j, y) {
 			}
 			anno_start(s2, 'lyrics')
 		}
-		xy_str(x0, y, p);
+		xy_str(x0, y, p, null, ly.wh);
 		anno_stop(s2, 'lyrics')
 		lastx = x0 + w
 	}
@@ -534,9 +534,9 @@ function draw_all_lyrics() {
 				w = 10
 				for (i = 0; i < a_ly.length; i++) {
 					ly = a_ly[i]
-					if (ly && ly.w != 0) {
+					if (ly && ly.wh[0] != 0) {
 						x -= ly.shift;
-						w = ly.w
+						w = ly.wh[0]
 						break
 					}
 				}
