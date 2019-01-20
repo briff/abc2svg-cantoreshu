@@ -167,13 +167,14 @@ function out_str(str) {
 // the action is:
 //	'c' align center
 //	'r' align right
-//	'\t' handle the tabulations - dx is the space between the fields
 //	'j' justify - w is the line width
 //	otherwise align left
 function xy_str(x, y, str,
-		action,
-		w) {
-    var	wh = strwh(str);
+		action,		// default: align left
+		w,		// needed for justify
+		wh) {		// optional [width, height]
+	if (!wh)
+		wh = strwh(str);
 
 	output += '<text class="' + font_class(gene.curfont)
 	if (action != 'j' && str.length > 5
@@ -214,7 +215,6 @@ function xy_str(x, y, str,
 			'" height="' + (wh[1] + 2).toFixed(1) +
 			'"/>\n'
 	}
-
 }
 
 /* -- move trailing "The" to front, set to uppercase letters or add xref -- */
@@ -287,18 +287,14 @@ function put_inf2r(x, y, str1, str2, action) {
 		xy_str(x, y, str1 + ' (' + str2 + ')', action)
 }
 
-// let vertical room for a text line
-function str_skip(str) {
-	vskip(strwh(str)[1] * cfmt.lineskipfac)
-}
-
 /* -- write a text block (%%begintext / %%text / %%center) -- */
 function write_text(text, action) {
 	if (action == 's')
 		return				// skip
 	set_font("text");
 	set_page();
-	var	strlw = get_lwidth(),
+    var	wh, font,
+	strlw = get_lwidth(),
 		sz = gene.curfont.size,
 		lineskip = sz * cfmt.lineskipfac,
 		parskip = sz * cfmt.parskipfac,
@@ -317,12 +313,16 @@ function write_text(text, action) {
 		default: x = 0; break
 		}
 		j = 0
+		font = gene.curfont
 		while (1) {
 			i = text.indexOf('\n', j)
 			if (i < 0) {
 				str = text.slice(j);
-				str_skip(str);
-				xy_str(x, 0, str, action)
+				wh = strwh(str);
+				gene.curfont = font;
+				vskip(wh[1]  * cfmt.lineskipfac);
+				xy_str(x, 0, str, action, null, wh);
+				font = gene.curfont
 				break
 			}
 			if (i == j) {			// new paragraph
@@ -338,8 +338,11 @@ function write_text(text, action) {
 				p_start()
 			} else {
 				str = text.slice(j, i);
-				str_skip(str);
-				xy_str(x, 0, str, action)
+				wh = strwh(str);
+				gene.curfont = font;
+				vskip(wh[1]  * cfmt.lineskipfac);
+				xy_str(x, 0, str, action, null, wh);
+				font = gene.curfont
 			}
 			j = i + 1
 		}
@@ -357,21 +360,29 @@ function write_text(text, action) {
 				words = text.slice(j, i);
 			words = words.split(/\s+/);
 			w = k = 0
+			font = gene.curfont
 			for (j = 0; j < words.length; j++) {
 				ww = strwh(words[j] + ' ')[0];
 				w += ww
 				if (w >= strlw) {
 					str = words.slice(k, j).join(' ');
-					str_skip(str);
-					xy_str(0, 0, str, action, strlw);
+					gene.curfont = font;
+					wh = strwh(str);
+					gene.curfont = font;
+					vskip(wh[1]  * cfmt.lineskipfac);
+					xy_str(0, 0, str, action, strlw, wh);
+					font = gene.curfont;
 					k = j;
 					w = ww
 				}
 			}
 			if (w != 0) {
 				str = words.slice(k).join(' ');
-				str_skip(str);
-				xy_str(0, 0, str)
+				gene.curfont = font;
+				wh = strwh(str);
+				gene.curfont = font;
+				vskip(wh[1]  * cfmt.lineskipfac);
+				xy_str(0, 0, str, null, null, wh)
 			}
 			vskip(parskip);
 			p_flush()
