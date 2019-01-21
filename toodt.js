@@ -386,7 +386,7 @@ function font_bug(str) {
 		} else {
 			j = str.indexOf('}', i);
 			k = str.indexOf(';', i)
-			if (k < j)
+			if (j < 0 || (k >= 0 && k < j))
 				j = k
 		}
 		w = str.slice(i + 5, j).match(/[^ \t"]+|".+?"/g) // "
