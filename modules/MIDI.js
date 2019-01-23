@@ -119,7 +119,7 @@ abc2svg.MIDI = {
 			break
 		case "midictl=":		// %%MIDI control
 			if (!curvoice.midictl)
-				curvoice.midictl = {}
+				curvoice.midictl = []
 			item = a[i + 1].split(' ');
 			curvoice.midictl[item[0]] = Number(item[1])
 			break
