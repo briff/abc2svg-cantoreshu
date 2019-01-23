@@ -24,8 +24,7 @@ var	output = "",		// output buffer
 \n.bthW{stroke-width:3}\
 \n.slW{stroke-width:.7}\
 \n.slthW{stroke-width:1.5}\
-\n.sW{stroke-width:.7}\
-\n.music text, .music tspan{fill:currentColor}',
+\n.sW{stroke-width:.7}',
 	font_style = '',
 	posx = cfmt.leftmargin / cfmt.scale,	// default x offset of the images
 	posy = 0,		// y offset in the block
@@ -1006,13 +1005,13 @@ function svg_flush() {
 		if (musicfont) {
 			if (musicfont.indexOf('(') > 0) {
 				head += '\n\
-.music {font:24px music; fill:currentColor}\n\
+.music {font:24px music}\n\
 @font-face {\n\
   font-family:"music";\n\
   src:' + musicfont + '}';
 			} else {
 				head += '\n\
-.music {font:24px '+ musicfont +'; fill:currentColor}'
+.music {font:24px '+ musicfont +'}'
 			}
 		}
 		head += '\n</style>\n'
