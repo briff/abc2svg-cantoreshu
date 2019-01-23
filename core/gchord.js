@@ -374,7 +374,7 @@ function draw_gchord(s, gchy_min, gchy_max) {
 
 	// adjust the vertical offset according to the chord symbols
 //fixme: w may be too small
-	var	w = s.a_gch[0].w,
+	var	w = s.a_gch[0].wh[0],
 		y_above = y_get(s.st, 1, s.x - 2, w),
 		y_below = y_get(s.st, 0, s.x - 2, w),
 		yav = s.dur ?
