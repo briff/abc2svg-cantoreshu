@@ -431,7 +431,7 @@ function draw_lyric_line(p_voice, j, y) {
 			}
 			anno_start(s2, 'lyrics')
 		}
-		xy_str(x0, y, p, null, ly.wh);
+		xy_str(x0, y, p, null, null, ly.wh);
 		anno_stop(s2, 'lyrics')
 		lastx = x0 + w
 	}

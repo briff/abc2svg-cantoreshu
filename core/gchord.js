@@ -442,7 +442,7 @@ function draw_gchord(s, gchy_min, gchy_max) {
 		if (user.anno_start)
 			user.anno_start("annot", gch.istart, gch.iend,
 				x - 2, y + h + 2, w + 4, h + 4, s)
-		xy_str(x, y, text, null, gch.wh)
+		xy_str(x, y, text, null, null, gch.wh)
 		if (user.anno_stop)
 			user.anno_stop("annot", gch.istart, gch.iend,
 				x - 2, y + h + 2, w + 4, h + 4, s)
