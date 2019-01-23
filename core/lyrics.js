@@ -313,8 +313,7 @@ function ly_width(s, wlw) {
 			switch (k.type) {
 			case C.NOTE:
 			case C.REST:
-				if (!k.a_ly || !k.a_ly[i]
-				 || k.a_ly[i].w == 0)
+				if (!k.a_ly || !k.a_ly[i])
 					xx -= 9
 				else if (k.a_ly[i].t == "-\n"
 				      || k.a_ly[i].t == "_\n")
@@ -534,7 +533,7 @@ function draw_all_lyrics() {
 				w = 10
 				for (i = 0; i < a_ly.length; i++) {
 					ly = a_ly[i]
-					if (ly && ly.wh[0] != 0) {
+					if (ly) {
 						x -= ly.shift;
 						w = ly.wh[0]
 						break
