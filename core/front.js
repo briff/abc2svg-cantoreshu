@@ -1,6 +1,6 @@
 // abc2svg - front.js - ABC parsing front-end
 //
-// Copyright (C) 2014-2018 Jean-Francois Moine
+// Copyright (C) 2014-2019 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -179,7 +179,19 @@ function cnv_escape(src) {
 		dst += '\\' + c;
 		j = i + 1
 	}
-	return dst + src.slice(j)
+	// cleanup for XML treatment
+	return (dst + src.slice(j)).replace(/<|>|  |&.*?;|&/g, function(c) {
+			switch (c) {
+			case '<': return "&lt;"
+			case '>': return "&gt;"
+			case '&': return "&amp;"
+			case '  ': return '  '		// space + nbspace
+			case "&lt;":
+			case "&gt;":
+			case "&amp;": return c
+			}
+			return "&amp;" + c.slice(1)
+		})
 }
 
 // ABC include

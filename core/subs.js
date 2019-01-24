@@ -178,17 +178,7 @@ function out_str(str) {
 		o_font = gene.curfont,
 		c_font = o_font;
 
-	output += str.replace(/<|>|&.*?;|&|  |\$./g, function(c){
-			switch (c[0]) {
-			case '<': return "&lt;"
-			case '>': return "&gt;"
-			case '&':
-				if (c == '&')
-					 return "&amp;"
-				return c
-			case ' ':
-				return '  '		// space + nbspace
-			case '$':
+	output += str.replace(/\$./g, function(c) {
 				if (c[1] == '0') {
 					n_font = gene.deffont;
 					use_font(n_font)
@@ -206,7 +196,6 @@ function out_str(str) {
 					return c
 				return c + '<tspan\n\tclass="' +
 						font_class(n_font) + '">'
-			}
 		})
 	if (c_font != o_font) {
 		output += "</tspan>";
