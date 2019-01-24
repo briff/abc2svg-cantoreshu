@@ -280,11 +280,11 @@ function gch_build(s) {
 					}
 					return "&#x1d12b;"
 				});
-			if (cfmt.gchordfont.box)
+			if (gch.font.box)
 				gch.box = true
 		} else {
 			gch.text = cnv_escape(gch.text);
-			if (cfmt.annotationfont.box)
+			if (gch.font.box)
 				gch.box = true
 			if (gch.type == '@'
 			 && !user.anno_start && !user.anno_stop) {
