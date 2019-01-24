@@ -287,8 +287,10 @@ function gch_build(s) {
 			if (cfmt.annotationfont.box)
 				gch.box = true
 			if (gch.type == '@'
-			 && !user.anno_start && !user.anno_stop)
+			 && !user.anno_start && !user.anno_stop) {
+				gch.wh = [0, 0]
 				continue		/* no width */
+			}
 		}
 
 		/* set the offsets and widths */
