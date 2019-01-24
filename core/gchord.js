@@ -372,17 +372,21 @@ function gch_build(s) {
 // (unscaled delayed output)
 // (possible hook)
 function draw_gchord(s, gchy_min, gchy_max) {
-	var	gch, text, ix, x, y, y2, hbox, h
+    var	gch, text, ix, x, y, y2, hbox, h, y_above, y_below,
 
 	// adjust the vertical offset according to the chord symbols
-//fixme: w may be too small
-	var	w = s.a_gch[0].wh[0],
-		y_above = y_get(s.st, 1, s.x - 2, w),
-		y_below = y_get(s.st, 0, s.x - 2, w),
+	w = 0,
 		yav = s.dur ?
 			(((s.notes[s.nhd].pit + s.notes[0].pit) >> 1) - 18) * 3 :
 			12		// fixed offset on measure bars
 
+	for (ix = 0; ix < s.a_gch.length; ix++) {
+		gch = s.a_gch[ix]
+		if (gch.wh[0] > w)
+			w = gch.wh[0]
+	}
+	y_above = y_get(s.st, 1, s.x - 2, w);
+	y_below = y_get(s.st, 0, s.x - 2, w)
 	if (y_above < gchy_max)
 		y_above = gchy_max
 	if (y_below > gchy_min)
