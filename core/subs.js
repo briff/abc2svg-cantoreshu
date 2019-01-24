@@ -304,7 +304,7 @@ function get_lwidth() {
 
 // header generation functions
 function write_title(title, is_subtitle) {
-    var	h
+    var	h, wh
 
 	if (!title)
 		return
@@ -317,11 +317,12 @@ function write_title(title, is_subtitle) {
 		set_font("title");
 		h = cfmt.titlespace
 	}
-	vskip(strwh(title)[1] + h)
+	wh = strwh(title);
+	vskip(wh[1] + h)
 	if (cfmt.titleleft)
-		xy_str(0, 0, title)
+		xy_str(0, 0, title, null, null, wh)
 	else
-		xy_str(get_lwidth() / 2, 0, title, "c")
+		xy_str(get_lwidth() / 2, 0, title, "c", null, wh)
 }
 
 /* -- output a header format '111 (222)' -- */
@@ -562,7 +563,7 @@ function put_words(words) {
 
 /* -- output history -- */
 function put_history() {
-	var	i, j, c, str, font, h, w, head,
+	var	i, j, c, str, font, h, w, wh, head,
 		names = cfmt.infoname.split("\n"),
 		n = names.length
 
@@ -583,8 +584,9 @@ function put_history() {
 		if (head[0] == '"')
 			head = head.slice(1, -1);
 		vskip(h);
-		xy_str(0, 0, head);
-		w = strwh(head)[0];
+		wh = strwh(head);
+		xy_str(0, 0, head, null, null, wh);
+		w = wh[0];
 		str = str.split('\n');
 		xy_str(w, 0, str[0])
 		for (j = 1; j < str.length; j++) {
