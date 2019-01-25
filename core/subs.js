@@ -71,6 +71,10 @@ function cwid(c) {
 	}
 	return cw_tb[i]
 }
+// return the character width with the current font
+function cwidf(c) {
+	cwid(c) * gene.curfont.swfac
+}
 
 // estimate the width and height of a string ..
 var strwh = typeof document != "undefined" ?
@@ -479,7 +483,7 @@ function put_words(words) {
 
 	/* see if we may have 2 columns */
 	var	middle = get_lwidth() / 2,
-		max2col = (middle - 45.) / (cwid('a') * gene.curfont.swfac);
+		max2col = (middle - 45.) / cwidf('a');
 	n = 0;
 	words = words.split('\n');
 	nw = words.length

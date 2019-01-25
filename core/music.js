@@ -3341,8 +3341,8 @@ function set_indent(first) {
 		if (!p)
 			continue
 		if (!font) {
-			font = get_font("voice");
 			set_font(font);
+			font = gene.cur_font
 		}
 		i = 0
 		while (1) {
@@ -3360,7 +3360,7 @@ function set_indent(first) {
 		}
 	}
 	if (font)
-		maxw += 4 * cwid(' ') * font.swfac;
+		maxw += 4 * cwidf(' ');
 
 	w = .5				// (width of left bar)
 	for (st = 0; st <= cur_sy.nstaff; st++) {
