@@ -1593,7 +1593,7 @@ function draw_deco_staff() {
 /* -- draw the measure bar numbers -- */
 /* (scaled delayed output) */
 function draw_measnb() {
-	var	s, st, bar_num, x, y, w, any_nb, font_size,
+	var	s, st, bar_num, x, y, w, any_nb, font_size, w0,
 		sy = cur_sy
 
 	/* search the top staff */
@@ -1612,6 +1612,7 @@ function draw_measnb() {
 			(font_size / staff_tb[st].staffscale).toString())
 	}
 	set_font("measure");
+	w0 = cwidf('0');			// (greatest) width of a number
 
 	s = tsfirst;				/* clef */
 	bar_num = gene.nbar
@@ -1638,7 +1639,7 @@ function draw_measnb() {
 //				s = s.prev;
 			x = s.x - s.wl;
 			any_nb = true;
-			w = cwid('0') * gene.curfont.swfac
+			w = w0
 			if (bar_num >= 10)
 				w *= bar_num >= 100 ? 3 : 2
 			if (gene.curfont.box)
@@ -1685,7 +1686,7 @@ function draw_measnb() {
 			continue
 		if (!any_nb)
 			any_nb = true;
-		w = cwid('0') * gene.curfont.swfac
+		w = w0
 		if (bar_num >= 10)
 			w *= bar_num >= 100 ? 3 : 2
 		x = s.x - w * .4;
