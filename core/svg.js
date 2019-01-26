@@ -1005,13 +1005,13 @@ function svg_flush() {
 		if (musicfont) {
 			if (musicfont.indexOf('(') > 0) {
 				head += '\n\
-.music {font:24px music}\n\
+.music {font:24px music;fill:currentColor}\n\
 @font-face {\n\
   font-family:"music";\n\
   src:' + musicfont + '}';
 			} else {
 				head += '\n\
-.music {font:24px '+ musicfont +'}'
+.music {font:24px '+ musicfont +';fill:currentColor}'
 			}
 		}
 		head += '\n</style>\n'
