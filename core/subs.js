@@ -73,7 +73,7 @@ function cwid(c) {
 }
 // return the character width with the current font
 function cwidf(c) {
-	cwid(c) * gene.curfont.swfac
+	return cwid(c) * gene.curfont.swfac
 }
 
 // estimate the width and height of a string ..
