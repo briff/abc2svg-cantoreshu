@@ -3341,7 +3341,7 @@ function set_indent(first) {
 		if (!p)
 			continue
 		if (!font) {
-			set_font(font);
+			set_font("voice");
 			font = gene.cur_font
 		}
 		i = 0
