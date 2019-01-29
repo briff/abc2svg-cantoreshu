@@ -1,6 +1,6 @@
 // page.js - module to generate one SVG image per page
 //
-// Copyright (C) 2018 Jean-Francois Moine - GPL3+
+// Copyright (C) 2018-2019 Jean-Francois Moine - GPL3+
 //
 // This module is loaded when "%%pageheight" appears in a ABC source.
 //
@@ -10,16 +10,20 @@
 abc2svg.page = {
 
     // output a new block
-    img_out: function(p) {
-    var	page = this.page;
+    img_out: function(page, p) {
+    var	cur_img_out = user.img_out;
 
 	page.user_out(p)
 	
-	// user.img_out may have been changed
-	if (user.img_out != page.img_out_sav) {
+	// user.img_out may have been changed ..
+	if (user.img_out != cur_img_out) {
 		page.user_out = user.img_out;
-		user.img_out = abc2svg.page.img_in.bind(this);
-		page.img_out_sav = user.img_out	// keep our reference
+		if (cur_img_out == page.img_out_sav) {	// .. by the backend
+			user.img_out = abc2svg.page.img_in.bind(this);
+			page.img_out_sav = user.img_out	// keep our reference
+		} else {
+			user.img_out = cur_img_out	// .. by an other extension
+		}
 	}
     },
 
@@ -27,9 +31,9 @@ abc2svg.page = {
     abc_end: function(of) {
     var page = this.page
 	if (page.h) {
-		abc2svg.page.img_out.call(this,
+		abc2svg.page.img_out(page,
 			page.head + page.style + page.hf + page.out + '</svg>');
-		abc2svg.page.img_out.call(this, '</div>');
+		abc2svg.page.img_out(page, '</div>');
 		page.h = 0;
 		page.out = ''
 	}
@@ -193,7 +197,7 @@ abc2svg.page = {
 	// svg_out()
 
 	// start a new SVG container for the page
-	abc2svg.page.img_out.call(abc, '<div>');
+	abc2svg.page.img_out(abc.page, '<div>');
 
 	page.hbase = page.topmargin;
 	page.hmax = cfmt.pageheight - page.topmargin - page.botmargin;
@@ -269,10 +273,10 @@ abc2svg.page = {
 		 || (page.oneperpage && this.info().X)
 		 || page.h == 0) {
 			if (page.h) {
-				abc2svg.page.img_out.call(this,
+				abc2svg.page.img_out(page,
 						page.head + page.style + page.hf +
 						page.out + '</svg>');
-				abc2svg.page.img_out.call(this, '</div>')
+				abc2svg.page.img_out(page, '</div>')
 			}
 			abc2svg.page.svg_out(this, page)
 			if (!this.cfmt().fullsvg)
@@ -286,10 +290,10 @@ abc2svg.page = {
 		if (h + page.h >= page.hmax) {		// if page overflow
 			if (!page.out)		// if at start of page
 				blkcpy(page);	// output the start of tune
-			abc2svg.page.img_out.call(this,
+			abc2svg.page.img_out(page,
 					page.head + page.style + page.hf +
 					page.out + '</svg>');
-			abc2svg.page.img_out.call(this, '</div>');
+			abc2svg.page.img_out(page, '</div>');
 			abc2svg.page.svg_out(this, page);
 			page.h = page.hb = this.cfmt().topspace;
 			if (page.blk)
