@@ -19,7 +19,7 @@ abc2svg.page = {
 	if (user.img_out != cur_img_out) {
 		page.user_out = user.img_out;
 		if (cur_img_out == page.img_out_sav) {	// .. by the backend
-			user.img_out = abc2svg.page.img_in.bind(this);
+			user.img_out = abc2svg.page.img_in.bind(page.abc);
 			page.img_out_sav = user.img_out	// keep our reference
 		} else {
 			user.img_out = cur_img_out	// .. by an other extension
@@ -345,6 +345,7 @@ abc2svg.page = {
 		// if first definition, install the hook
 		if (!page && user.img_out && abc2svg.abc_end) {
 			this.page = page = {
+				abc: this,
 				topmargin: 38,	// 1cm
 				botmargin: 38,	// 1cm
 				gutter: 0,
