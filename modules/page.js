@@ -241,7 +241,7 @@ abc2svg.page = {
 				page.gutter.toFixed(1) + ', ' +
 				(h + page.hbase).toFixed(1) +
 				')">')
-			    .replace('</svg>', '</g>');
+			    .replace('</svg>', '</g>\n');
 			h += b.h
 		}
 		page.blk = null
