@@ -43,7 +43,7 @@ loadRelativeToScript("cmdline.js")
 	if (typeof abc2svg.abc_init != 'function')
 		loadRelativeToScript("toxhtml.js")
 	if (!args[0]) {
-		printErr('ABC translator with js24 (SpiderMonkey)\
+		printErr('ABC translator with js52 (SpiderMonkey)\
  and abc2svg-' + abc2svg.version + ' ' + abc2svg.vdate + '\n\
 Usage:\n\
   abcjs52 [script.js] [g_options] ABC_file [f_options] [ABC_file [f_options]]*\n\
