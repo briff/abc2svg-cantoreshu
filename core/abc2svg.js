@@ -1,6 +1,6 @@
 // abc2svg - abc2svg.js
 //
-// Copyright (C) 2014-2018 Jean-Francois Moine
+// Copyright (C) 2014-2019 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -18,7 +18,7 @@
 // along with abc2svg-core.  If not, see <http://www.gnu.org/licenses/>.
 
 // start of the abc2svg object
-abc2svg = {
+var abc2svg = {
 
 // constants
     C: {
