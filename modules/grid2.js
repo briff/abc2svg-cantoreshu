@@ -1,6 +1,6 @@
 // grid2.js - module to replace a voice in the music by a chord grid
 //
-// Copyright (C) 2018 Jean-Francois Moine - GPL3+
+// Copyright (C) 2018-2019 Jean-Francois Moine - GPL3+
 //
 // This module is loaded when "%%grid2" appears in a ABC source.
 //

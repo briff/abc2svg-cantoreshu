@@ -1,6 +1,6 @@
 // combine.js - module to add a combine chord line
 //
-// Copyright (C) 2018 Jean-Francois Moine - GPL3+
+// Copyright (C) 2018-2019 Jean-Francois Moine - GPL3+
 //
 // This module is loaded when "%%voicecombine" appears in a ABC source.
 //

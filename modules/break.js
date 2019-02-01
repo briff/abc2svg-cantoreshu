@@ -1,6 +1,6 @@
 // break.js - module to handle the %%break command
 //
-// Copyright (C) 2018 Jean-Francois Moine - GPL3+
+// Copyright (C) 2018-2019 Jean-Francois Moine - GPL3+
 //
 // This module is loaded when "%%break" appears in a ABC source.
 //

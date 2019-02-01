@@ -1,6 +1,6 @@
 // sth.js - module to set the stem heights
 //
-// Copyright (C) 2018 Jean-Francois Moine - GPL3+
+// Copyright (C) 2018-2019 Jean-Francois Moine - GPL3+
 //
 // This module is loaded when "%%sth" appears in a ABC source.
 //

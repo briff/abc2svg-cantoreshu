@@ -1,7 +1,7 @@
 //#javascript
 // abcdoc-1.js file to include in html pages with abc2svg-1.js
 //
-// Copyright (C) 2014-2018 Jean-Francois Moine
+// Copyright (C) 2014-2019 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //

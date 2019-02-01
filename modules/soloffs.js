@@ -1,6 +1,6 @@
 // soloffs.js - module to set the X offset of some elements at start of music line
 //
-// Copyright (C) 2018 Jean-Francois Moine - GPL3+
+// Copyright (C) 2018-2019 Jean-Francois Moine - GPL3+
 //
 // Parameters
 //	%%soloffs <type>=<offset> [<type>=<offset>]*

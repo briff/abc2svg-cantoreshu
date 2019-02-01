@@ -2,7 +2,7 @@
 //	abc2svg-1.js, abcemb[2]-1.js and play-1.js.
 //	This script permits to follow the notes while playing.
 //
-// Copyright (C) 2015-2018 Jean-Francois Moine
+// Copyright (C) 2015-2019 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //

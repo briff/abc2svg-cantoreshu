@@ -1,6 +1,6 @@
 // capo.js - module to add a capo chord line
 //
-// Copyright (C) 2018 Jean-Francois Moine - GPL3+
+// Copyright (C) 2018-2019 Jean-Francois Moine - GPL3+
 //
 // This module is loaded when "%%capo" appears in a ABC source.
 //

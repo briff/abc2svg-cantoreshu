@@ -1,6 +1,6 @@
 // abc2svg - modules.js - module handling
 //
-// Copyright (C) 2018 Jean-Francois Moine
+// Copyright (C) 2018-2019 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
