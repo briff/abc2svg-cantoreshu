@@ -18,7 +18,7 @@
 // along with abc2svg-core.  If not, see <http://www.gnu.org/licenses/>.
 
 var	output = "",		// output buffer
-	style = '\n.fill{fill:currentColor}\
+	style = '\n.music path, .music text, .music tspan{fill:currentColor}\n\
 \n.stroke{stroke:currentColor;fill:none}\
 \n.bW{stroke-width:1}\
 \n.bthW{stroke-width:3}\
@@ -1004,14 +1004,12 @@ function svg_flush() {
 		head += '<style type="text/css">' + style + font_style
 		if (musicfont) {
 			if (musicfont.indexOf('(') > 0) {
-				head += '\n\
-.music {font:24px music;fill:currentColor}\n\
+				head += '\n.music{font:24px music}\n\
 @font-face {\n\
   font-family:"music";\n\
   src:' + musicfont + '}';
 			} else {
-				head += '\n\
-.music {font:24px '+ musicfont +';fill:currentColor}'
+				head += '\n.music{font:24px '+ musicfont +'}'
 			}
 		}
 		head += '\n</style>\n'
