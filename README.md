@@ -218,3 +218,13 @@ There are:
   (default `abc.odt`).   
   Example:   
   `abc2svg toodt.js my_file.abc -o my_file.odt`
+
+#### PDF generation
+
+`abctopdf` is a shell script which converts ABC to PDF using one of the
+previous shell scripts and the program `rsvg-convert`.   
+  Example:
+
+```
+        abctopdf my_file.abc -o my_file.pdf
+```
