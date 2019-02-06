@@ -288,7 +288,7 @@ function set_g() {
 	if (stv_g.color) {
 		if (stv_g.scale != 1)
 			output += ' ';
-		output += 'style="color:' + stv_g.color + '"'
+		output += 'color="' + stv_g.color + '"'
 	}
 	output += ">\n";
 	stv_g.started = true
