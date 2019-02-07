@@ -2480,10 +2480,12 @@ function parse_music_line() {
 						break
 					}
 				}
-				if (ottava[dcn] != undefined)
+				if (ottava[dcn] != undefined) {
+					glovar.tune.ottava = true;
 					parse.ottava = ottava[dcn]
-				else
+				} else {
 					a_dcn.push(dcn)
+				}
 				break
 			case '"':
 				parse_gchord(type)
@@ -2735,5 +2737,4 @@ function parse_music_line() {
 	 && par_sy.voices[curvoice.v].range == 0
 	 && curvoice.last_sym)
 		curvoice.last_sym.eoln = true
-//--fixme: cfmt.alignbars
 }
