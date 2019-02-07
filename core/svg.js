@@ -610,7 +610,7 @@ function out_stem(x, y, h, grace,
 	x += dx * stv_g.scale
 	if (stv_g.st < 0)
 		slen /= stv_g.scale;
-	out_XYAB('<path class="stroke sW" d="mX YvF"/>\n',	// stem
+	out_XYAB('<path class="sW" d="mX YvF"/>\n',	// stem
 		x, y, slen)
 	if (!nflags)
 		return
