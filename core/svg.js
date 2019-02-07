@@ -18,7 +18,7 @@
 // along with abc2svg-core.  If not, see <http://www.gnu.org/licenses/>.
 
 var	output = "",		// output buffer
-	style = '\n.music path, .music text, .music tspan{fill:currentColor}\n\
+	style = '\n.music path, .music text, .music tspan{fill:currentColor}\
 \n.stroke{stroke:currentColor;fill:none}\
 \n.bW{stroke-width:1}\
 \n.bthW{stroke-width:3}\
@@ -509,7 +509,10 @@ Abc.prototype.out_sxsy = out_sxsy
 
 // define the start of a path
 function xypath(x, y, fill) {
-	out_XYAB('<path class="A" d="mX Y\n', x, y, fill ? "fill" : "stroke")
+	if (fill)
+		out_XYAB('<path d="mX Y', x, y)
+	else
+		out_XYAB('<path class="stroke" d="mX Y', x, y)
 }
 Abc.prototype.xypath = xypath
 
@@ -572,8 +575,7 @@ function out_bracket(x, y, h) {
 	x += posx - 5;
 	y = posy - y - 3;
 	h += 2;
-	output += '<path class="fill"\n\
-	d="m' + x.toFixed(1) + ' ' + y.toFixed(1) + '\n\
+	output += '<path d="m' + x.toFixed(1) + ' ' + y.toFixed(1) + '\n\
 	c10.5 1 12 -4.5 12 -3.5c0 1 -3.5 5.5 -8.5 5.5\n\
 	v' + h.toFixed(1) + '\n\
 	c5 0 8.5 4.5 8.5 5.5c0 1 -1.5 -4.5 -12 -3.5"/>\n'
@@ -619,7 +621,7 @@ function out_stem(x, y, h, grace,
 				xygl(x, y, "flu" + nflags)
 				return
 			} else {		// grace
-				output += '<path class="fill" d="'
+				output += '<path d="'
 				if (nflags == 1) {
 					out_XYAB('MX Yc0.6 3.4 5.6 3.8 3 10\n\
 	1.2 -4.4 -1.4 -7 -3 -7\n', x, y)
@@ -632,7 +634,7 @@ function out_stem(x, y, h, grace,
 				}
 			}
 		} else {			// straight
-			output += '<path class="fill" d="'
+			output += '<path d="'
 //fixme: to do
 			if (!grace) {
 //fixme: check endpoints
@@ -656,7 +658,7 @@ function out_stem(x, y, h, grace,
 				xygl(x, y, "fld" + nflags)
 				return
 			} else {		// grace
-				output += '<path class="fill" d="'
+				output += '<path d="'
 				if (nflags == 1) {
 					out_XYAB('MX Yc0.6 -3.4 5.6 -3.8 3 -10\n\
 	1.2 4.4 -1.4 7 -3 7\n', x, y)
@@ -669,7 +671,7 @@ function out_stem(x, y, h, grace,
 				}
 			}
 		} else {			// straight
-			output += '<path class="fill" d="'
+			output += '<path d="'
 			if (!grace) {
 //fixme: check endpoints
 				y += 1
@@ -687,7 +689,7 @@ function out_stem(x, y, h, grace,
 }
 // tremolo
 function out_trem(x, y, ntrem) {
-	out_XYAB('<path class="fill" d="mX Y\n\t', x - 4.5, y)
+	out_XYAB('<path d="mX Y\n\t', x - 4.5, y)
 	while (1) {
 		output += 'l9 -3v3l-9 3z'
 		if (--ntrem <= 0)

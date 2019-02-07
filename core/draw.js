@@ -1569,7 +1569,7 @@ function slur_out(x1, y1, x2, y2, dir, height, dotted) {
 	
 	var scale_y = stv_g.v ? stv_g.scale : 1
 	if (!dotted)
-		output += '<path class="fill" d="M'
+		output += '<path d="M'
 	else
 		output += '<path class="stroke" stroke-dasharray="5,5" d="M';
 	out_sxsy(x1, ' ', y1);
