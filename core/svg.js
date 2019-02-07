@@ -20,11 +20,11 @@
 var	output = "",		// output buffer
 	style = '\n.music path, .music text, .music tspan{fill:currentColor}\
 \n.stroke{stroke:currentColor;fill:none}\
-\n.bW{stroke-width:1}\
-\n.bthW{stroke-width:3}\
-\n.slW{stroke-width:.7}\
-\n.slthW{stroke-width:1.5}\
-\n.sW{stroke-width:.7}',
+\n.bW{stroke:currentColor;fill:none;stroke-width:1}\
+\n.bthW{stroke:currentColor;fill:none;stroke-width:3}\
+\n.slW{stroke:currentColor;fill:none;stroke-width:.7}\
+\n.slthW{stroke:currentColor;fill:none;stroke-width:1.5}\
+\n.sW{stroke:currentColor;fill:none;stroke-width:.7}',
 	font_style = '',
 	posx = cfmt.leftmargin / cfmt.scale,	// default x offset of the images
 	posy = 0,		// y offset in the block

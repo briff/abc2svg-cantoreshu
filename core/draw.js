@@ -3435,7 +3435,7 @@ function draw_systems(indent) {
 				if (ty != undefined)
 					ln += '"/>\n';
 				ty = stafflines[i]
-				ln += '<path class="stroke ' +
+				ln += '<path class="' +
 					(ty == '[' ? 'slthW' : 'slW') +
 					'" d="m0 ' + y + 'h' + ws.toFixed(1);
 				dy = 0
@@ -3533,7 +3533,7 @@ function draw_systems(indent) {
 
 		set_sscale(-1)
 		if (l) {			// single bars [x, y, h]
-			output += '<path class="stroke bW" d="'
+			output += '<path class="bW" d="'
 			for (i = 0; i < l; i++) {
 				b = sb[i];
 				out_XYAB('MX Yv-F', b[0], b[1], b[2])
@@ -3546,7 +3546,7 @@ function draw_systems(indent) {
 			for (i = 0; i < l; i++) {
 				b = db[i];
 				w = (5 * b[3]).toFixed(1);
-				out_XYAB('<path class="stroke bW" ' +
+				out_XYAB('<path class="bW" ' +
 					'stroke-dasharray="' + w + ',' + w + '" d="' +
 					'MX Yv-F"/>\n', b[0], b[1], b[2])
 			}
@@ -3554,7 +3554,7 @@ function draw_systems(indent) {
 
 		l = thb.length
 		if (l) {			// thick bars [x, y, h]
-			output += '<path class="stroke bthW" d="'
+			output += '<path class="bthW" d="'
 			for (i = 0; i < l; i++) {
 				b = thb[i];
 				out_XYAB('MX Yv-F', b[0], b[1], b[2])
