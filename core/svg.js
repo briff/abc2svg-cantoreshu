@@ -18,7 +18,7 @@
 // along with abc2svg-core.  If not, see <http://www.gnu.org/licenses/>.
 
 var	output = "",		// output buffer
-	style = '\n.music path, .music text, .music tspan{fill:currentColor}\
+	style = '\
 \n.stroke{stroke:currentColor;fill:none}\
 \n.bW{stroke:currentColor;fill:none;stroke-width:1}\
 \n.bthW{stroke:currentColor;fill:none;stroke-width:3}\
@@ -288,7 +288,8 @@ function set_g() {
 	if (stv_g.color) {
 		if (stv_g.scale != 1)
 			output += ' ';
-		output += 'color="' + stv_g.color + '"'
+		output += 'color="' + stv_g.color +
+			'" fill="' + stv_g.color + '"'
 	}
 	output += ">\n";
 	stv_g.started = true
