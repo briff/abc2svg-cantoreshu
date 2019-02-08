@@ -2019,7 +2019,7 @@ function set_ottava() {
 				}
 			} else {
 				if (--staff_noo[st] == 0) {	// if last ottava
-					ottava_add(s, staff_ottava[st]);
+					ottava_add(s, -staff_d[st] / 7);
 					staff_d[st] = 0
 				}
 			}
