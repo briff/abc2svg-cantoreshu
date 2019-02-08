@@ -1550,7 +1550,7 @@ function draw_deco_staff() {
 				break
 		}
 		if (gch2) {
-			w = gch2.w
+			w = gch2.wh[0]
 			if (gch2.y >= 0) {
 				y = y_get(s.st, true, s.x, w)
 				if (y > minmax[s.st].ymax)
