@@ -488,7 +488,8 @@ function set_graceoffs(s) {
 // - treat only the first chord symbol of each symbol
 // - the chord symbol under the staff are ignored
 function set_w_chs(s) {
-    var	i, ch, ch0, s0, dw, x,
+    var	i, ch, w0, s0, dw,
+	x = 0,
 	n = 0
 
 	for ( ; s; s = s.ts_next) {
@@ -502,9 +503,9 @@ function set_w_chs(s) {
 			ch = s.a_gch[i]
 			if (ch.type != 'g' || ch.y < 0) // upper chord symbol only
 				continue
-			if (ch0) {
-				if (ch0.w > x + ch.x) {
-					dw = (ch0.w - x - ch.x) / n
+			if (w0) {
+				if (w0 > x + ch.x) {
+					dw = (w0 - x - ch.x) / n
 					while (1) {
 						s0 = s0.ts_next
 						if (s0.shrink)
@@ -515,7 +516,7 @@ function set_w_chs(s) {
 				}
 			}
 			s0 = s;
-			ch0 = ch;
+			w0 = ch.wh[0];
 			n = 0;
 //			x = ch.box ? -2 : 0
 			x = 0
@@ -533,12 +534,12 @@ function gchord_width(s, wlnote, wlw) {
 		gch = s.a_gch[ix]
 		switch (gch.type) {
 		case '<':		/* left */
-			w = gch.w + wlnote
+			w = gch.wh[0] + wlnote
 			if (w > wlw)
 				wlw = w
 			break
 		case '>':		/* right */
-			w = gch.w + s.wr
+			w = gch.wh[0] + s.wr
 			if (w > arspc)
 				arspc = w
 			break
