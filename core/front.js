@@ -62,7 +62,7 @@ var oct_acc = {
 function cnv_escape(src) {
 	var	c, c2,
 		dst = "",
-		i, j = 0, codeUnits
+		i, j = 0
 
 	while (1) {
 		i = src.indexOf('\\', j)
@@ -87,21 +87,12 @@ function cnv_escape(src) {
 		case 'u':
 			j = Number("0x" + src.slice(i + 1, i + 5));
 			if (isNaN(j) || j < 0x20) {
-				dst += src[++i] + "\u0306"	// breve
+				dst += src[++i] + "\u0306"	// breve accent
 				j = i + 1
 				continue
 			}
-			codeUnits = [j]
-			if (j >= 0xd800 && j <= 0xdfff) {	// surrogates
-				j = Number("0x" + src.slice(i + 7, i + 11));
-				if (isNaN(j))
-					break		// bad surrogate
-				codeUnits.push(j);
-				j = i + 11
-			} else {
-				j = i + 5
-			}
-			dst += String.fromCharCode.apply(null, codeUnits)
+			dst += String.fromCharCode(j);
+			j = i + 5
 			continue
 		case 't':			// TAB
 			dst += ' ';
