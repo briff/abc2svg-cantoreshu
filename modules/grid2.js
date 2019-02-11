@@ -23,6 +23,7 @@ abc2svg.grid2 = {
 		p_v.key.k_sf = p_v.key.k_a_acc = 0; // no key signature
 		p_v.staffnonote = 2		// draw the staff
 		for (s = p_v.sym; s; s = s.next) {
+			delete s.a_dd		// no decoration
 			if (s.dur) {		// set all notes
 				s.invis = true;	//  as invisible
 				delete s.sl1;	//  with no slur
