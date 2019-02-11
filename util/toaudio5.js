@@ -400,13 +400,25 @@ function Audio5(i_conf) {
 			return
 		}
 
+		// play a null file to unlock the iOS audio
+		// This is needed for iPhone/iPad/...
+		function play_unlock() {
+		    var buf = ac.createBuffer(1, 1, 22050),
+			src = ac.createBufferSource();
+			src.buffer = buf;
+			src.connect(ac.destination);
+			src.noteOn(0)
+		}
+
 		// initialize the audio subsystem if not done yet
-		// (needed for iPhone/iPad/...)
 		if (!gain) {
 			ac = conf.ac
-			if (!ac)
+			if (!ac) {
 				conf.ac = ac = new (window.AudioContext ||
 							window.webkitAudioContext);
+				if (/iPad|iPhone|iPod/.test(navigator.userAgent))
+					play_unlock()
+			}
 			gain = ac.createGain();
 			gain.gain.value = conf.gain
 		}
