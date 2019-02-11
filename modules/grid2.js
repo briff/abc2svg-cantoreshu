@@ -12,7 +12,7 @@ abc2svg.grid2 = {
 
 // function called before tune generation
     do_grid: function() {
-    var s, v, p_v,
+    var s, v, p_v, ix, cs, c_a_cs, bt,
 	voice_tb = this.get_voice_tb()
 
 	for (v = 0; v < voice_tb.length; v++) {
@@ -24,13 +24,30 @@ abc2svg.grid2 = {
 		p_v.staffnonote = 2		// draw the staff
 		for (s = p_v.sym; s; s = s.next) {
 			delete s.a_dd		// no decoration
-			if (s.dur) {		// set all notes
+			if (!s.dur) {
+				if (s.bar_type)
+					bt = s.time
+				continue
+			}
+
+			// set all notes
 				s.invis = true;	//  as invisible
 				delete s.sl1;	//  with no slur
 				s.ti1 = 0	//  and no tie
 				if (s.tf)	// don't show the tuplets
 					s.tf[0] = 1
-			}
+				if (!s.a_gch) {
+					if (s.time == bt)
+						s.a_gch = c_a_cs
+					continue
+				}
+				for (ix = 0; ix < s.a_gch.length; ix++) {
+					gch = s.a_gch[ix]
+					if (gch.type == 'g') {
+						c_a_cs = s.a_gch
+						break
+					}
+				}
 		}
 	}
     }, // do_grid()
