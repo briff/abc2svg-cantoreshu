@@ -518,7 +518,7 @@ function set_w_chs(s) {
 			s0 = s;
 			w0 = ch.wh[0];
 			n = 0;
-//			x = ch.box ? -2 : 0
+//			x = ch.font.box ? -2 : 0
 			x = 0
 			break
 		}

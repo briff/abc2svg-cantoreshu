@@ -280,12 +280,8 @@ function gch_build(s) {
 					}
 					return "&#x1d12b;"
 				});
-			if (gch.font.box)
-				gch.box = true
 		} else {
 			gch.text = cnv_escape(gch.text);
-			if (gch.font.box)
-				gch.box = true
 			if (gch.type == '@'
 			 && !user.anno_start && !user.anno_stop) {
 				gch.wh = [0, 0]
@@ -297,7 +293,7 @@ function gch_build(s) {
 		set_font(gch.font);
 		wh = strwh(gch.text);
 		gch.wh = wh
-		if (gch.box)
+		if (gch.font.box)
 			wh[1] += 4
 		switch (gch.type) {
 		case '@':
@@ -398,7 +394,7 @@ function draw_gchord(s, gchy_min, gchy_max) {
 		use_font(gch.font);
 		set_font(gch.font);
 		h = gch.font.size;
-		hbox = gch.box ? 2 : 0;
+		hbox = gch.font.box ? 2 : 0;
 		w = gch.wh[0];
 		x = s.x + gch.x;
 		text = gch.text
