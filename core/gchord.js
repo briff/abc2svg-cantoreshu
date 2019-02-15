@@ -270,13 +270,14 @@ function gch_build(s) {
 				if (cfmt.chordnames.B == 'H')
 					gch.text = gch.text.replace(/Hb/g, 'Bb')
 			}
-			gch.text = gch.text.replace(/##|#|=|bb|b/g,
+			gch.text = gch.text.replace(/##|#|=|bb|b|  /g,
 				function(x) {
 					switch (x) {
 					case '##': return "&#x1d12a;"
 					case '#': return "\u266f"
 					case '=': return "\u266e"
 					case 'b': return "\u266d"
+					case '  ': return '  '
 					}
 					return "&#x1d12b;"
 				});
