@@ -1043,8 +1043,7 @@ function draw_all_deco() {
 				out_deco_val(x, y, f, de.val, de.defl)
 			if (de.defl.noen)
 				new_de.push(de.start)	// to be continued next line
-		} else if (dd.str != undefined
-			&& dd.str != 'sfz') {
+		} else if (dd.str != undefined) {
 			str = dd.str
 			if (str[0] == '@') {
 				a = str.match(/^@([0-9.-]+),([0-9.-]+);?/);
