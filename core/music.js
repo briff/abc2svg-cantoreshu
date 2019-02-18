@@ -1892,17 +1892,19 @@ function cut_tune(lwidth, indent) {
 			// check for a smaller duration in an other voice
 			if (s.dur) {
 				for (s3 = s.ts_next; s3; s3 = s3.ts_next) {
-					if (s3.seqst
-					 || s3.dur < s.dur)
+					if (s3.seqst)
 						break
+					if (s3.dur < s.dur) {
+						if (s.next)
+							s = s.next.ts_prev
+						else
+							s = s2 = null
+						break
+					}
 				}
-				if (s3 && !s3.seqst)
-					s2 = set_lines(s2, s, lwidth, indent)
-				else
-					s2 = set_nl(s, true)
-			} else {
-				s2 = set_nl(s, true)
 			}
+			if (s)
+				s2 = set_nl(s, true)
 		}
 		if (!s2)
 			break
