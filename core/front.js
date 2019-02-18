@@ -534,7 +534,6 @@ function tosvg(in_fname,		// file name
 			info_sav = clone(info, 1);
 			char_tb_sav = clone(char_tb);
 			glovar_sav = clone(glovar);
-			glovar.tune = {};
 			maps_sav = clone(maps, 1);
 			mac_sav = clone(mac);
 			maci_sav = new Int8Array(maci);

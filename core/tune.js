@@ -859,7 +859,7 @@ function do_pscom(text) {
 			syntax(1, errs.bad_val, "%%ottava")
 			return
 		}
-		glovar.tune.ottava = true;
+		glovar.ottava = true;
 		parse.ottava = n
 		return
 	case "repbra":

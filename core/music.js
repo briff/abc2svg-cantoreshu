@@ -3341,7 +3341,7 @@ function set_global() {
 	/* set the staff of the floating voices */
 	set_float();
 
-	if (glovar.tune.ottava && !cfmt.sound)
+	if (glovar.ottava && cfmt.sound != "play")
 		set_ottava();
 
 	// set the clefs and adjust the pitches of all symbol

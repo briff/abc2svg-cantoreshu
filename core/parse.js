@@ -2481,7 +2481,7 @@ function parse_music_line() {
 					}
 				}
 				if (ottava[dcn] != undefined) {
-					glovar.tune.ottava = true;
+					glovar.ottava = true;
 					parse.ottava = ottava[dcn]
 				} else {
 					a_dcn.push(dcn)
