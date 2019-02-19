@@ -157,7 +157,7 @@ var tgls = {
   umrd: {x:-7, y:-2, c:"\ue56c"},
   lmrd: {x:-7, y:-2, c:"\ue56d"},
   dplus: {x:-4, y:10, c:"\ue582"},	// plus
-  sld: {x:-8, y:12, c:"\ue5d4"},	// slide
+  sld: {x:-8, y:12, c:"\ue5d0"},	// slide
   grm: {x:-2, y:0, c:"\ue5e2"},		// grace mark
   dnb: {x:-4, y:0, c:"\ue610"},		// down bow
   upb: {x:-3, y:0, c:"\ue612"},		// up bow
