@@ -96,12 +96,14 @@ abc2svg.MIDI = {
 			this.syntax(1, "Bad controller value in %%MIDI")
 			return
 		}
-		if (this.cfmt().sound != "play")
-			break
 		if (this.parse.state >= 2) {
+			if (this.cfmt().sound != "play")
+				break
 			s = this.new_block("midictl");
 			s.ctrl = n;
 			s.val = v
+		} else {
+			this.set_v_param("midictl", a[2] + ' ' + a[3])
 		}
 		break
 	}
