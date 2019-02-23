@@ -82,8 +82,8 @@ and render the music
 - The music is rendered as SVG images. There is one image per
   music line / text block.  
   If you want to move these images to some other files,
-  each one must contain the full CSS and defs. For that, insert
-  > `%%fullsvg x`
+  each one must contain the full CSS and defs. For that, insert   
+  `        %%fullsvg x`   
   in the ABC file before rendering (see the
   [fullsvg documentation](http://moinejf.free.fr/abcm2ps-doc/fullsvg.xhtml)
   for more information).
@@ -117,11 +117,11 @@ command line (batch) programs `abc2svg` and `abc2odt`.
 These ones may be used as **abcm2ps** to generate XHTML or ODT files.   
 
 `abc2svg` writes to standard output:   
-> `abc2svg mytunes.abc > Out.xhtml`
+`        abc2svg mytunes.abc > Out.xhtml`
 
 `abc2odt` output is `abc.odt` or the file specified
 by the command line argument `-o`:   
-> `abc2odt my_file.abc -o my_file.odt`
+`        abc2odt my_file.abc -o my_file.odt`
 
 ### Build
 
@@ -141,16 +141,19 @@ You may do it:
 
 - without minification  
   This is interesting for debug purpose, the scripts being more human friendly.
-  > `NOMIN=1 samu -v`
+
+  `        NOMIN=1 samu -v`
 
 - in a standard way with minification  
   In this case, you need the tool `uglifyjs` which comes with nodeJS.
-  > `samu -v`
+
+  `        samu -v`
 
 If you also want to change or add music glyphs, you may edit the source
 file `font/abc2svg.sfd`. In this case, you will need both `base64` and `fontforge`,
 and run
-> `samu -v font.js`
+
+`        samu -v font.js`
 
 If you cannot or don't want to install `ninja` or `samurai`, you may build
 the abc2svg files by `./build` which is a shell script.
@@ -178,8 +181,8 @@ There are:
   This script outputs back the (selected) ABC tunes of the ABC source file.   
   Transposition is applied.   
   The resulting file does not contain the formatting parameters.   
-  Example:
-  > `abcjs52 toabc.js my_file.abc --select X:2 > tune_2.abc`
+  Example:   
+  `        abcjs52 toabc.js my_file.abc --select X:2 > tune_2.abc`
 
 - `toabw.js`   
   This script outputs a Abiword file (ABW+SVG) which may be read by some
@@ -187,8 +190,8 @@ There are:
   formats by the batch function of abiword.   
   The abc2svg music font (`abc2svf.woff` or `abc2svg.ttf`) must be installed
   in the local system for displaying and/or converting the .abw file.   
-  Example:
-  > `abcv8 toabw.js my_file.abc > my_file.abw`
+  Example:   
+  `        abcv8 toabw.js my_file.abc > my_file.abw`
 
 - `toodt.js`   
   This script creates an Open Document (ODT+SVG) which may be read by most
@@ -197,8 +200,8 @@ There are:
   `jszip` to be installed.   
   The output ODT document may be specified by the command line argument `-o`
   (default `abc.odt`).   
-  Example:
-  > `abc2svg toodt.js my_file.abc -o my_file.odt`
+  Example:   
+  `        abc2svg toodt.js my_file.abc -o my_file.odt`
 
 #### PDF generation
 
@@ -206,5 +209,5 @@ There are:
 previous shell scripts and the program `rsvg-convert`.   
 As a constraint, the used music font must be installed and defined by
 `%%musicfont <fontname>`.   
-Example:
-> `abctopdf my_file.abc -o my_file.pdf`
+Example:   
+`        abctopdf my_file.abc -o my_file.pdf`
