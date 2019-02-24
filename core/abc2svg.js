@@ -121,7 +121,7 @@ var errs = {
 		ctx: {},
 		prefix: '%',
 		state: 0,
-		line: new scanBuf()
+		line: new scanBuf
 	},
 	psvg			// PostScript
 
@@ -129,7 +129,7 @@ var errs = {
 function clone(obj, lvl) {
 	if (!obj)
 		return obj
-	var tmp = new obj.constructor()
+	var tmp = new obj.constructor
 	for (var k in obj)
 	    if (obj.hasOwnProperty(k)) {
 		if (lvl && typeof obj[k] == 'object')

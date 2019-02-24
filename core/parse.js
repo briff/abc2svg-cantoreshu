@@ -171,7 +171,7 @@ function get_transp(param,
 		}
 	}
 
-	tmp = new scanBuf();
+	tmp = new scanBuf;
 	tmp.buffer = param
 	for (i = 0; i < 2; i++) {
 		note = tmp.buffer[tmp.index] ? parse_acc_pit(tmp) : null
@@ -637,7 +637,7 @@ function new_key(param) {
 		c = param[0]
 		if (c == '^' || c == '_' || c == '=') {
 			s.k_a_acc = [];
-			tmp = new scanBuf();
+			tmp = new scanBuf;
 			tmp.buffer = param
 			do {
 				var note = parse_acc_pit(tmp)
@@ -864,7 +864,7 @@ function new_tempo(text) {
 	}
 
 	/* beat */
-	tmp = new scanBuf();
+	tmp = new scanBuf;
 	tmp.buffer = text;
 	tmp.index = i
 	while (1) {
@@ -2294,7 +2294,7 @@ function parse_music_line() {
 		line_sav = line,
 		istart_sav = parse.istart;
 
-		parse.line = line = new scanBuf();
+		parse.line = line = new scanBuf;
 		parse.istart += line_sav.index;
 		line.buffer = b ? expand(m, b) : m;
 		parse_seq(true);

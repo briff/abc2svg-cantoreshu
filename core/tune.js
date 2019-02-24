@@ -641,7 +641,7 @@ function get_map(text) {
 	} else if (ns[0] == '*' || ns.indexOf("all") == 0) {
 		ns = 'all'
 	} else {				// exact pitch, rebuild the note
-		tmp = new scanBuf();
+		tmp = new scanBuf;
 		tmp.buffer = a[1];
 		note = parse_acc_pit(tmp)
 		if (!note) {
@@ -664,7 +664,7 @@ function get_map(text) {
 	i = 2
 	if (a[2].indexOf('=') < 0) {
 		if (a[2][0] != '*') {
-			tmp = new scanBuf();		// print
+			tmp = new scanBuf;		// print
 			tmp.buffer = a[2];
 			map[1] = parse_acc_pit(tmp)
 		}
@@ -685,7 +685,7 @@ function get_map(text) {
 		case "print=":
 			if (cfmt.sound == "play")
 				break
-			tmp = new scanBuf();
+			tmp = new scanBuf;
 			tmp.buffer = a[++i];
 			map[1] = parse_acc_pit(tmp)
 			break
