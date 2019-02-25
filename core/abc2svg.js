@@ -101,9 +101,10 @@ var errs = {
 	must_note: "!$1! must be on a note",
 	must_note_rest: "!$1! must be on a note or a rest",
 	nonote_vo: "No note in voice overlay",
+	not_ascii: "Not an ASCII character",
 	not_enough_n: 'Not enough notes/rests for %%repeat',
 	not_enough_m: 'Not enough measures for %%repeat',
-	not_ascii: "Not an ASCII character"
+	not_in_tune: "Cannot have '$1' inside a tune"
 }
 
     var	self = this,				// needed for modules

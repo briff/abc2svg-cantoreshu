@@ -537,7 +537,7 @@ function set_format(cmd, param, lock) {
 		break
 	case "fullsvg":
 		if (parse.state != 0) {
-			syntax(1, "Cannot have %%fullsvg inside a tune")
+			syntax(1, errs.not_in_tune, "%%fullsvg")
 			break
 		}
 //fixme: should check only alpha, num and '_' characters

@@ -35,16 +35,14 @@ user.textrans = {
 	"%%multicol end without start": "%%multicol end sans start",
 	"%%multicol new without start": "%%multicol new sans start",
 	"%%repeat cannot start a tune": "%%repeat ne peut pas être en début de morceau",
-	"%%select ignored": "%%select ignoré",
 	"%%staffwidth too big": "%%staffwidth trop grand",
 	"%%staffwidth too small": "%%staffwidth trop petit",
 	"%%tune not treated yet": "%%tune n'est pas encore traité",
-	"%%voice ignored": "%%voice ignoré",
 	"%%vskip cannot be negative": "%%vskip ne peut pas être négatif",
 	"Bad !xstem!": "!xstem! erroné",
 	"Bad %%setbarnb value": "Valeur incorrecte dans %%setbarnb",
 	"Bad %%staff number $1 (cur $2, max $3)":
-				"Numéro $1 %%staff incorrect (cur $2, max $3)",
+				"Numéro %%staff $1 incorrect (cur $2, max $3)",
 	"Bad %%staff value '$1'": "Valeur incorrecte '$1' dans %%staff",
 	"Bad %%stafflines value": "Valeur incorrecte dans %%stafflines",
 	"Bad %%staffscale value": "Valeur incorrecte dans %%staffscale",
@@ -69,8 +67,7 @@ user.textrans = {
 	"Bad voice ID in %%staves": "Mauvaise identité de voix dans %%staves",
 	"Bar in repeat sequence": "Barre dans la séquence à répéter",
 	"Cannot have !$1! on a head": "!$1! ne peut pas être sur une tête de note",
-	"Cannot have %%fullsvg inside a tune":
-				"'%%fullsvg' ne peut pas être dans un morceau",
+	"Cannot have '$1' inside a tune": "'$1' ne peut pas être dans un morceau",
 	"Cannot have a bar in grace notes":
 			"Il ne peut pas y avoir de barre dans les notes d'agrément",
 	"Cannot have a broken rhythm in grace notes":

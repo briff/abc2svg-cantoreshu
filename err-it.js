@@ -35,11 +35,9 @@ user.textrans = {
 	"%%multicol end without start": "%%multicol end senza start",
 	"%%multicol new without start": "%%multicol new senza start",
 	"%%repeat cannot start a tune": "%%repeat non può stare all'inizio del brano",
-	"%%select ignored": "%%select ignorato",
 	"%%staffwidth too big": "%%staffwidth troppo grande",
 	"%%staffwidth too small": "%%staffwidth troppo piccolo",
 	"%%tune not treated yet": "%%tune non ancora gestito",
-	"%%voice ignored": "%%voice ignorato",
 	"%%vskip cannot be negative": "%%vskip non può essere negativo",
 	"Bad !xstem!": "!xstem! errato",
 	"Bad %%setbarnb value": "Valore errato in %%setbarnb",
@@ -69,8 +67,7 @@ user.textrans = {
 	"Bad voice ID in %%staves": "ID di voce non valido in %%staves",
 	"Bar in repeat sequence": "Stanghetta in sequenza ripetuta",
 	"Cannot have !$1! on a head": "!$1! non è consentito su una nota",
-	"Cannot have %%fullsvg inside a tune":
-				"'%%fullsvg' non è consentito entro il brano",
+	"Cannot have '$1' inside a tune": "'$1' non è consentito entro il brano",
 	"Cannot have a bar in grace notes":
 			"Stanghette non consentite nelle note di abbellimento",
 	"Cannot have a broken rhythm in grace notes":

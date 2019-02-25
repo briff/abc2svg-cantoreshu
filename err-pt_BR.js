@@ -34,11 +34,9 @@ user.textrans = {
 	"%%multicol end without start": "%%multicol end sem 'start'",
 	"%%multicol new without start": "%%multicol new sem 'start'",
 	"%%repeat cannot start a tune": "%%repeat não pode estar no início de uma música",
-	"%%select ignored": "%%select ignorado",
 	"%%staffwidth too big": "%%staffwidth muito grande",
 	"%%staffwidth too small": "%%staffwidth muito pequeno",
 	"%%tune not treated yet": "%%tune ainda não é tratado",
-	"%%voice ignored": "%%voice ignorado",
 	"%%vskip cannot be negative": "%%vskip não pode ser negativo",
 	"Bad !xstem!": "!xstem! incorreto",
 	"Bad %%setbarnb value": "Valor incorreto para %%setbarnb",
@@ -68,8 +66,7 @@ user.textrans = {
 	"Bad voice ID in %%staves": "Identificador de voz incorreto em %%staves",
 	"Bar in repeat sequence": "Barra de compasso em um fragmento %%repeat",
 	"Cannot have !$1! on a head": "!$1! não pode estar em cabeça de nota",
-	"Cannot have %%fullsvg inside a tune":
-				"'%%fullsvg' não pode estar dentro de uma música",
+	"Cannot have '$1' inside a tune": "'$1' não pode estar dentro de uma música",
 	"Cannot have a bar in grace notes":
 			"Não pode haver barra de compasso em grupo de notinhas ornamentais",
 	"Cannot have a broken rhythm in grace notes":

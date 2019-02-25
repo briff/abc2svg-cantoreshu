@@ -401,7 +401,7 @@ function tosvg(in_fname,		// file name
 			switch (a[0]) {
 			case "select":
 				if (parse.state != 0) {
-					syntax(1, "%%select ignored")
+					syntax(1, errs.not_in_tune, "%%select")
 					continue
 				}
 				select = uncomment(text.slice(7))
@@ -421,7 +421,7 @@ function tosvg(in_fname,		// file name
 				continue
 			case "voice":
 				if (parse.state != 0) {
-					syntax(1, "%%voice ignored")
+					syntax(1, errs.not_in_tune, "%%voice")
 					continue
 				}
 				select = uncomment(text.slice(6))
