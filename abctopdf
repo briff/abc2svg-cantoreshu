@@ -52,6 +52,7 @@ else
 		abcscr="$bdir/$abcscr"
 	fi
 fi
+echo "Using $abcscr"
 
 # get the output file name (after '-o')
 # default name
@@ -134,8 +135,7 @@ rm -f /tmp/abc*.svg
 # generate a (XHTML+SVG) file with a abc2svg batch script
 # then, extract the SVG images (pages) to /tmp
 n=0
-command $abcscr /tmp/fix.abc "$@" | while :; do
-	read v
+command $abcscr /tmp/fix.abc "$@" | while read v; do
 	case "$v" in
 	"<svg"*)
 		n=$(($n+1))
@@ -157,7 +157,11 @@ command $abcscr /tmp/fix.abc "$@" | while :; do
 done
 
 # convert the SVG images to PDF
-rsvg-convert -f pdf /tmp/abc*.svg -o $out
+if [ -f /tmp/abc1.svg ]; then
+ rsvg-convert -f pdf /tmp/abc*.svg -o $out
+else
+ echo 'Errors during the generation'
+fi
 
 # cleanup
 rm -f /tmp/abc*.svg /tmp/fix.abc
