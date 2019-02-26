@@ -70,6 +70,7 @@ Arguments:\n\
 	}
 	args.shift()
 	args.shift()
+	global.user = user;		// (for modules/page.js)
 	abc_cmd("abcnode", args)
 EOF
 
