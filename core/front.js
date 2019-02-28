@@ -17,6 +17,8 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with abc2svg-core.  If not, see <http://www.gnu.org/licenses/>.
 
+var sav = {}		// save global (between tunes) definitions
+
 // translation table from the ABC draft version 2.2
 var abc_utf = {
 	"=D": "Đ",
@@ -199,14 +201,15 @@ function do_include(fn) {
 		syntax(1, "Too many include levels")
 		return
 	}
-	include++;
 	file = user.read_file(fn)
 	if (!file) {
 		syntax(1, "Cannot read file '$1'", fn)
 		return
 	}
+	include++;
 	parse_sav = clone(parse);
 	tosvg(fn, file);
+	parse_sav.state = parse.state;
 	parse = parse_sav;
 	include--
 }
@@ -215,12 +218,10 @@ function do_include(fn) {
 function tosvg(in_fname,		// file name
 		file,			// file content
 		bol, eof) {		// beginning/end of file
-	var	i, c, bol, eol, end,
+	var	i, c, eol, end,
 		select,
 		line0, line1,
 		last_info, opt, text, a, b, s,
-		cfmt_sav, info_sav, char_tb_sav, glovar_sav, maps_sav,
-		mac_sav, maci_sav,
 		pscom,
 		txt_add = '\n'		// for "+:"
 
@@ -267,13 +268,13 @@ function tosvg(in_fname,		// file name
 		put_history();
 		blk_flush();
 		parse.state = 0;		// file header
-		cfmt = cfmt_sav;
-		info = info_sav;
-		char_tb = char_tb_sav;
-		glovar = glovar_sav;
-		maps = maps_sav;
-		mac = mac_sav;
-		maci = maci_sav;
+		cfmt = sav.cfmt;
+		info = sav.info;
+		char_tb = sav.char_tb;
+		glovar = sav.glovar;
+		maps = sav.maps;
+		mac = sav.mac;
+		maci = sav.maci;
 		init_tune()
 		img.chg = true;
 		set_page();
@@ -529,14 +530,14 @@ function tosvg(in_fname,		// file name
 				continue
 			}
 
-			cfmt_sav = clone(cfmt);
+			sav.cfmt = clone(cfmt);
 			cfmt.pos = clone(cfmt.pos);
-			info_sav = clone(info, 1);
-			char_tb_sav = clone(char_tb);
-			glovar_sav = clone(glovar);
-			maps_sav = clone(maps, 1);
-			mac_sav = clone(mac);
-			maci_sav = new Int8Array(maci);
+			sav.info = clone(info, 1);
+			sav.char_tb = clone(char_tb);
+			sav.glovar = clone(glovar);
+			sav.maps = clone(maps, 1);
+			sav.mac = clone(mac);
+			sav.maci = new Int8Array(maci);
 			info.X = text;
 			parse.state = 1			// tune header
 			continue
