@@ -298,14 +298,12 @@ function set_user(parm) {
 
 // get a stafflines value
 function get_st_lines(param) {
-	var n, val
-
 	if (!param)
 		return
 	if (/^[\]\[|.-]+$/.test(param))
 		return param.replace(/\]/g, '[')
 
-	n = parseInt(param)
+    var	n = parseInt(param)
 	switch (n) {
 	case 0: return "..."
 	case 1: return "..|"
@@ -314,10 +312,7 @@ function get_st_lines(param) {
 	}
 	if (isNaN(n) || n < 0 || n > 16)
 		return //undefined
-	val = '|'
-	while (--n > 0)
-		val += '|'
-	return val
+	return "||||||||||||||||".slice(0, n)
 }
 
 // create a block symbol in the tune body
