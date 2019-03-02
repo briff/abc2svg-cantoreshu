@@ -275,10 +275,102 @@ function tosvg(in_fname,		// file name
 		maps = sav.maps;
 		mac = sav.mac;
 		maci = sav.maci;
+		parse.tune_v_opts = null;
+		parse.scores = null;
 		init_tune()
 		img.chg = true;
 		set_page();
 	} // end_tune()
+
+	// get %%voice
+	function do_voice(select, in_tune) {
+	    var	opt, bol
+		if (select == "end")
+			return		// end of previous %%voice
+
+		// get the options
+		if (in_tune) {
+			if (!parse.tune_v_opts)
+				parse.tune_v_opts = {};
+			opt = parse.tune_v_opts
+		} else {
+			if (!parse.voice_opts)
+				parse.voice_opts = {};
+			opt = parse.voice_opts
+		}
+		opt[select] = []
+		while (1) {
+			bol = ++eol
+			if (file[bol] != '%')
+				break
+			eol = file.indexOf('\n', eol);
+			if (file[bol + 1] != line1)
+				continue
+			bol += 2
+			if (eol < 0)
+				text = file.slice(bol)
+			else
+				text = file.slice(bol, eol);
+			a = text.match(/\S+/)
+			switch (a[0]) {
+			default:
+				opt[select].push(uncomment(text, true))
+				continue
+			case "score":
+			case "staves":
+			case "tune":
+			case "voice":
+				bol -= 2
+				break
+			}
+			break
+		}
+		eol = parse.eol = bol - 1
+	} // do_voice()
+
+	// apply the options to the current tune
+	function tune_filter() {
+	    var	o, opts, j, pc,
+		i = file.indexOf('K:', bol),
+		h = file.slice(parse.bol, i)	// tune header
+
+		for (i in parse.tune_opts) {
+			if (!parse.tune_opts.hasOwnProperty(i))
+				continue
+			if (!(new RegExp(i)).test(h))
+				continue
+			opts = parse.tune_opts[i]
+			for (j = 0; j < opts.t_opts.length; j++) {
+				pc = opts.t_opts[j]
+				switch (pc.match(/\S+/)[0]) {
+				case "score":
+				case "staves":
+					if (!parse.scores)
+						parse.scores = [];
+					parse.scores.push(pc)
+					break
+				default:
+					self.do_pscom(pc)
+					break
+				}
+			}
+			opts = opts.v_opts
+			if (!opts)
+				continue
+			for (j in opts) {
+				if (!opts.hasOwnProperty(j))
+					continue
+				if (!parse.tune_v_opts)
+					parse.tune_v_opts = {};
+				if (!parse.tune_v_opts[j])
+					parse.tune_v_opts[j] = opts[j]
+				else
+					parse.tune_v_opts[j] =
+						parse.tune_v_opts[j].
+								concat(opts[j])
+			}
+		}
+	} // tune_filter()
 
 	// export functions and/or set module hooks
 	if (abc2svg.modules
@@ -418,38 +510,27 @@ function tosvg(in_fname,		// file name
 				parse.select = new RegExp(select, 'm')
 				continue
 			case "tune":
-				syntax(1, "%%tune not treated yet")
-				continue
-			case "voice":
 				if (parse.state != 0) {
-					syntax(1, errs.not_in_tune, "%%voice")
+					syntax(1, errs.not_in_tune, "%%tune")
 					continue
 				}
 				select = uncomment(text.slice(6))
 
-				/* if void %%voice, free all voice options */
+				// if void %%tune, free all tune options
 				if (!select) {
-					if (parse.cur_tune_opts)
-						parse.cur_tune_opts.voice_opts = null
-					else
-						parse.voice_opts = null
+					parse.tune_opts = {}
 					continue
 				}
 				
 				if (select == "end")
-					continue	/* end of previous %%voice */
+					continue	// end of previous %%tune
 
-				/* get the voice options */
-				if (parse.cur_tune_opts) {
-					if (!parse.cur_tune_opts.voice_opts)
-						parse.cur_tune_opts.voice_opts = {}
-					opt = parse.cur_tune_opts.voice_opts
-				} else {
-					if (!parse.voice_opts)
-						parse.voice_opts = {}
-					opt = parse.voice_opts
-				}
-				opt[select] = []
+				if (!parse.tune_opts)
+					parse.tune_opts = {};
+				parse.tune_opts[select] = opt = {
+						t_opts: []
+//						v_opts: {}
+					};
 				while (1) {
 					bol = ++eol
 					if (file[bol] != '%')
@@ -464,20 +545,40 @@ function tosvg(in_fname,		// file name
 						text = file.slice(bol, eol);
 					a = text.match(/\S+/)
 					switch (a[0]) {
+					case "tune":
+						break
+					case "voice":
+//fixme: there may be spaces
+						do_voice(uncomment(text.slice(6),
+								true), true)
+						continue
 					default:
-						opt[select].push(
+						opt.t_opts.push(
 							uncomment(text, true))
 						continue
-					case "score":
-					case "staves":
-					case "tune":
-					case "voice":
-						bol -= 2
-						break
 					}
 					break
 				}
+				if (parse.tune_v_opts) {
+					opt.v_opts = parse.tune_v_opts;
+					parse.tune_v_opts = null
+				}
 				parse.eol = bol - 1
+				continue
+			case "voice":
+				if (parse.state != 0) {
+					syntax(1, errs.not_in_tune, "%%voice")
+					continue
+				}
+				select = uncomment(text.slice(6))
+
+				/* if void %%voice, free all voice options */
+				if (!select) {
+					parse.voice_opts = null
+					continue
+				}
+				
+				do_voice(select)
 				continue
 			}
 			self.do_pscom(uncomment(text, true))
@@ -540,6 +641,8 @@ function tosvg(in_fname,		// file name
 			sav.maci = new Int8Array(maci);
 			info.X = text;
 			parse.state = 1			// tune header
+			if (parse.tune_opts)
+				tune_filter()
 			continue
 		case 'T':
 			switch (parse.state) {

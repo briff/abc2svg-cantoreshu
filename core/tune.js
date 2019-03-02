@@ -27,18 +27,31 @@ var	par_sy,		// current staff system for parse
 
 /* apply the %%voice options of the current voice */
 function voice_filter() {
-	var opt, sel, i
+    var	opt
 
-	for (opt in parse.voice_opts) {
-		if (!parse.voice_opts.hasOwnProperty(opt))
-			continue
+	function vfilt(opts, opt) {
+	    var	i,
 		sel = new RegExp(opt)
+
 		if (sel.test(curvoice.id)
 		 || sel.test(curvoice.nm)) {
-			for (i in parse.voice_opts[opt])
-			    if (parse.voice_opts[opt].hasOwnProperty(i))
-				self.do_pscom(parse.voice_opts[opt][i])
+			for (i = 0; i < opts.length; i++)
+				self.do_pscom(opts[i])
 		}
+	}
+
+	// global
+	if (parse.voice_opts)
+	    for (opt in parse.voice_opts) {
+		if (parse.voice_opts.hasOwnProperty(opt))
+			vfilt(parse.voice_opts[opt], opt)
+	}
+
+	// tune
+	if (parse.tune_v_opts)
+	    for (opt in parse.tune_v_opts) {
+		if (parse.tune_v_opts.hasOwnProperty(opt))
+			vfilt(parse.tune_v_opts[opt], opt)
 	}
 }
 
@@ -1001,7 +1014,14 @@ function do_pscom(text) {
 	case "score":
 		if (parse.state == 0)
 			return
-		get_staves(cmd, param)
+		if (parse.scores && parse.scores.length > 0) {
+			text = parse.scores.shift();
+			cmd = text.match(/(\w|-)+/);
+			param = text.replace(cmd, '').trim()
+			get_staves(cmd[0], param)
+		} else {
+			get_staves(cmd, param)
+		}
 		return
 	case "sysstaffsep":
 //--fixme: may be global
@@ -1101,7 +1121,7 @@ function do_pscom(text) {
 }
 
 // treat the %%beginxxx / %%endxxx sequences
-// (posible hook)
+// (possible hook)
 function do_begin_end(type,
 			opt,
 			text) {
@@ -1949,7 +1969,8 @@ function get_voice(parm) {
 
 	if (!curvoice.filtered
 	 && !curvoice.ignore
-	 && parse.voice_opts) {
+	 && (parse.voice_opts
+	  || parse.tune_v_opts)) {
 		curvoice.filtered = true;
 		voice_filter()
 	}
