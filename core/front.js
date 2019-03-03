@@ -172,19 +172,7 @@ function cnv_escape(src) {
 		dst += '\\' + c;
 		j = i + 1
 	}
-	// cleanup for XML treatment
-	return (dst + src.slice(j)).replace(/<|>|  |&.*?;|&/g, function(c) {
-			switch (c) {
-			case '<': return "&lt;"
-			case '>': return "&gt;"
-			case '&': return "&amp;"
-			case '  ': return '  '		// space + nbspace
-			case "&lt;":
-			case "&gt;":
-			case "&amp;": return c
-			}
-			return "&amp;" + c.slice(1)
-		})
+	return dst + src.slice(j)
 }
 
 // ABC include
