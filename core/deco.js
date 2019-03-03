@@ -1801,7 +1801,7 @@ function tempo_width(s) {
 /* - output a tempo --*/
 function write_tempo(s, x, y) {
 	var	j, dx, bx, bh,
-		sc = .6 * gene.curfont.size / 15.0; //fixme: 15.0 = initial tempofont
+		sc = .7 * gene.curfont.size / 12.0; //fixme: 12.0 = initial tempofont
 
 	set_font("tempo")
 	if (gene.curfont.box) {
