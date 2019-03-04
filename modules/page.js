@@ -53,11 +53,12 @@ abc2svg.page = {
 
     // start a new page
     svg_out: function(abc, page) {
-    var	h,
+    var	h, o_font,
 	cfmt = abc.cfmt()
 
-	function header_footer(str) {
-	    var	c, i, t,
+	function header_footer(o_font, str) {
+	    var	c, i, k, t, n_font,
+		c_font = o_font,
 		nl = 1,
 		j = 0,
 		r = ["", "", ""]
@@ -70,11 +71,29 @@ abc2svg.page = {
 		for (i = 0; i < str.length; i++) {
 			c = str[i]
 			switch (c) {
+			case '>':
+				r[j] += "&gt;"
+				continue
+			case '<':
+				r[j] += "&lt;"
+				continue
+			case '&':
+				for (k = i + 1; k < i + 8; k++) {
+					if (!str[k] || str[k] == '&'
+					 || str[k] == ';')
+						break
+				}
+				r[j] += str[k] == ';' ? "&" : "&amp;"
+				continue
 			case '\t':
 				if (j < 2)
 					j++		// next column
 				continue
 			case '\\':			// hope '\n'
+				if (c_font != o_font) {
+					r[j] += "</tspan>"
+//					c_font = o_font
+				}
 				for (j = 0; j < 3; j++)
 					r[j] += '\n';
 				nl++;
@@ -126,9 +145,30 @@ abc2svg.page = {
 			case 'V':
 				r[j] += "abc2svg-" + abc2svg.version
 				break
-//fixme: handle the font changes ($<number>) ?
+			default:
+				if (c == '0')
+					n_font = o_font
+				else if (c >= '1' && c < '9')
+					n_font = abc.get_font("u" + c)
+				else
+					break
+
+				// handle the font changes
+				if (n_font == c_font)
+					break
+				if (c_font != o_font)
+					r[j] += "</tspan>";
+				c_font = n_font
+				if (c_font == o_font)
+					break
+				r[j] += '<tspan class="' +
+						font_class(n_font) + '">'
+				break
 			}
 		}
+		if (c_font != o_font)
+			r[j] += "</tspan>";
+
 		r[4] = nl		// number of lines
 		return r
 	} // header_footer()
@@ -153,7 +193,7 @@ abc2svg.page = {
 			str = str.slice(1)
 		}
 
-		a = header_footer(str)
+		a = header_footer(font, str)
 		if (up)
 			y0 = page.hbase + fh
 		else
