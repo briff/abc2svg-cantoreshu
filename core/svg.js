@@ -19,6 +19,7 @@
 
 var	output = "",		// output buffer
 	style = '\
+\ntext, tspan{fill:currentColor}\
 \n.stroke{stroke:currentColor;fill:none}\
 \n.bW{stroke:currentColor;fill:none;stroke-width:1}\
 \n.bthW{stroke:currentColor;fill:none;stroke-width:3}\
