@@ -190,14 +190,16 @@ function out_str(str) {
 				 return "&amp;"
 			case '  ':
 				return '  '		// space + nbspace
-			case '$':
+			default:
+				if (c[0] != '$')
+					break
 				if (c[1] == '0') {
 					n_font = gene.deffont;
 					use_font(n_font)
 				} else if (c[1] >= '1' && c[1] <= '9')
 					n_font = get_font("u" + c[1])
 				else
-					return c
+					break
 				c = ''
 				if (n_font == c_font)
 					return c
