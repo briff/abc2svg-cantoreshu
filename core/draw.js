@@ -2968,9 +2968,9 @@ function draw_all_slurs(p_voice) {
  * The buffer output is delayed until the definition of the staff system
  */
 function draw_sym_near() {
-	var p_voice, p_st, s, v, st, y, g, w, i, st, dx, top, bot, output_sav;
-
+    var	p_voice, p_st, s, v, st, y, g, w, i, st, dx, top, bot,
 	output_sav = output;
+
 	output = ""
 
 	/* calculate the beams but don't draw them (the staves are not yet defined) */
