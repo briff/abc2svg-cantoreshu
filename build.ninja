@@ -24,8 +24,7 @@ rule font
 
 rule jsc
   command = VERSION=`grep '"version"' package.json|cut -d'"' -f4`;$
-   type fossil &> /dev/null;$
-   if [ $$? -eq 0 ]; then $
+   if command -v fossil >/dev/null 2>&1; then $
 	c=`fossil info | grep checkout:`;$
 	t=`fossil info | grep tags: | awk '{print $$NF}'`;$
 	if [ "$${t#v}" != "$$VERSION" ]; then $
