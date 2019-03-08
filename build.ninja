@@ -1,6 +1,6 @@
 # rules for ninja (ninja-build)
 
-# 'uglifyjs' may be disabled running
+# minifying with 'jsmin' or 'uglifyjs' may be disabled by running
 #	NOMIN=1 ninja -v
 
 MAJOR=1
@@ -36,7 +36,11 @@ rule jsc
    fi;$
    cp core/license $out;$
    if [ "x$$NOMIN" = "x" ]; then $
+      if command -v jsmin >/dev/null 2>&1; then $
+	cat $in | jsmin >> $out;$
+      else $
 	cat $in | uglifyjs >> $out;$
+     fi;$
    else $
 	cat $in >> $out;$
    fi;$
@@ -45,14 +49,22 @@ rule jsc
 rule jscu
   command = cp core/license $out;$
    if [ "x$$NOMIN" = "x" ]; then $
+      if command -v jsmin >/dev/null 2>&1; then $
+	jsmin < $in >> $out;$
+      else $
 	uglifyjs $in >> $out;$
+      fi;$
    else $
 	cat $in >> $out;$
    fi
 
 rule edit
   command = if [ "x$$NOMIN" = "x" ]; then $
+      if command -v jsmin >/dev/null 2>&1; then $
+	sed "s+@MAJOR@+$MAJOR+" | jsmin > $out;$
+      else $
 	sed "s+@MAJOR@+$MAJOR+" $in | uglifyjs > $out;$
+      fi;$
    else $
 	sed "s+@MAJOR@+$MAJOR+" $in > $out;$
    fi
