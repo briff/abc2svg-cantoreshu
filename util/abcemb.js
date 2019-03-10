@@ -155,7 +155,7 @@ function render() {
 
 	// search the ABC tunes,
 	// replace them by SVG images with play on click
-	var	i = 0, j, k, res, src,
+	var	i = 0, j, k, res,
 		seq = 0,
 		re = /\n%abc|\nX:/g,
 		re_stop = /\nX:|\n<|\n%.begin/g,
