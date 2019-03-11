@@ -2096,11 +2096,13 @@ function draw_slurs(first, last) {
 		if (gr1
 		 && gr1.next) {
 			gr1.next.prev.next = null;
-			gr1.next.prev = gr1
+			gr1.next.prev = gr1;
+			gr1 = null
 		}
 		if (gr2) {
 			gr2.prev.next = gr2;
-			gr2.extra.prev = null
+			gr2.extra.prev = null;
+			gr2 = null
 		}
 
 		if (s.slur_start || s.sl1)
