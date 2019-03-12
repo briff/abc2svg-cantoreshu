@@ -97,6 +97,16 @@ var strwh = typeof document != "undefined" ?
 
 		el.style.font = style_font(font).slice(5);
 
+		str = str.replace(/<|>|&[^&]*?;|&|  /g, function(c){
+			switch (c) {
+			case '<': return "&lt;"
+			case '>': return "&gt;"
+			case '&': return "&amp;"
+			case "  ": return '  '	// space + nbspace
+			}
+			return c		// &xxx;
+		})
+
 		while (1) {
 			i = str.indexOf('$', i)
 			if (i < 0)
