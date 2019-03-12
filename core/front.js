@@ -318,8 +318,10 @@ function tosvg(in_fname,		// file name
 
 	// apply the options to the current tune
 	function tune_filter() {
-	    var	o, opts, j, pc,
-		i = file.indexOf('K:', bol),
+	    var	o, opts, j, pc, h,
+		i = file.indexOf('K:', bol)
+
+		i = file.indexOf('\n', i);
 		h = file.slice(parse.bol, i)	// tune header
 
 		for (i in parse.tune_opts) {
@@ -448,29 +450,29 @@ function tosvg(in_fname,		// file name
 			text = file.slice(bol, eol)
 			if (!text || text[0] == '%')
 				continue
-			a = text.split(/\s+/, 2)
-			switch (a[0]) {
+			a = text.match(/([^\s]*)\s*(.*)/)
+			switch (a[1]) {
 			case "abcm2ps":
 			case "ss-pref":
-				parse.prefix = a[1]	// may contain a '%'
+				parse.prefix = a[2]	// may contain a '%'
 				continue
 			case "abc-include":
-				do_include(uncomment(a[1]))
+				do_include(uncomment(a[2]))
 				continue
 			}
 
 			// beginxxx/endxxx
-			if (a[0].slice(0, 5) == 'begin') {
-				b = a[0].substr(5);
+			if (a[1].slice(0, 5) == 'begin') {
+				b = a[1].substr(5);
 				end = '\n' + line0 + line1 + "end" + b;
 				i = file.indexOf(end, eol)
 				if (i < 0) {
 					syntax(1, "No $1 after %%$2",
-							end.slice(1), a[0]);
+							end.slice(1), a[1]);
 					parse.eol = eof
 					continue
 				}
-				self.do_begin_end(b, uncomment(a[1]),
+				self.do_begin_end(b, uncomment(a[2]),
 					file.slice(eol + 1, i).replace(
 						new RegExp('^' + line0 + line1, 'gm'),
 										''));
@@ -479,7 +481,7 @@ function tosvg(in_fname,		// file name
 					parse.eol = eof
 				continue
 			}
-			switch (a[0]) {
+			switch (a[1]) {
 			case "select":
 				if (parse.state != 0) {
 					syntax(1, errs.not_in_tune, "%%select")
@@ -502,7 +504,7 @@ function tosvg(in_fname,		// file name
 					syntax(1, errs.not_in_tune, "%%tune")
 					continue
 				}
-				select = uncomment(text.slice(6))
+				select = uncomment(a[2])
 
 				// if void %%tune, free all tune options
 				if (!select) {
@@ -531,13 +533,12 @@ function tosvg(in_fname,		// file name
 						text = file.slice(bol)
 					else
 						text = file.slice(bol, eol);
-					a = text.match(/\S+/)
-					switch (a[0]) {
+					a = text.match(/([^\s]*)\s*(.*)/)
+					switch (a[1]) {
 					case "tune":
 						break
 					case "voice":
-//fixme: there may be spaces
-						do_voice(uncomment(text.slice(6),
+						do_voice(uncomment(a[2],
 								true), true)
 						continue
 					default:
@@ -558,7 +559,7 @@ function tosvg(in_fname,		// file name
 					syntax(1, errs.not_in_tune, "%%voice")
 					continue
 				}
-				select = uncomment(text.slice(6))
+				select = uncomment(a[2])
 
 				/* if void %%voice, free all voice options */
 				if (!select) {
