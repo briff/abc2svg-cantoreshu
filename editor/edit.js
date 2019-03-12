@@ -743,8 +743,24 @@ function edit_init() {
 			document.getElementById("fontsize").value =
 					Number(v)
 		}
+
+		// set the language
+		// if not defined, get the one of the navigator
 		v = storage(true, "lang");
-		loadlang(v || 'en', true)
+		if (!v) {
+			v = (navigator.languages ?
+				navigator.languages[0] :
+				navigator.language).split('-')[0]
+			switch (v) {
+			case "de":
+			case "en":
+			case "fr":
+			case "it": break
+			case "pt": v = "pt_BR"; break
+			default: v = "en"; break
+			}
+		}
+		loadlang(v, true)
 	}
 
 	document.getElementById("abc2svg").innerHTML =
