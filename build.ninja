@@ -50,7 +50,7 @@ rule jscu
   command = cp core/license $out;$
    if [ "x$$NOMIN" = "x" ]; then $
       if command -v jsmin >/dev/null 2>&1; then $
-	jsmin < $in >> $out;$
+	cat $in | jsmin >> $out;$
       else $
 	uglifyjs $in >> $out;$
       fi;$
@@ -61,7 +61,7 @@ rule jscu
 rule edit
   command = if [ "x$$NOMIN" = "x" ]; then $
       if command -v jsmin >/dev/null 2>&1; then $
-	sed "s+@MAJOR@+$MAJOR+" | jsmin > $out;$
+	sed "s+@MAJOR@+$MAJOR+" $in | jsmin > $out;$
       else $
 	sed "s+@MAJOR@+$MAJOR+" $in | uglifyjs > $out;$
       fi;$
