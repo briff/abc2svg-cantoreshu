@@ -1458,18 +1458,11 @@ function custos_add(s) {
 function set_nl(s, eoln) {
     var	s2, s3, p_voice, done
 
-	// set the end of line marker and ...
+	// set the end of line marker
 	function set_eol(s) {
 		if (cfmt.custos && voice_tb.length == 1)
 			custos_add(s)
-
-		// ... set the nl flag if more music
-		for (var s2 = s.ts_next; s2; s2 = s2.ts_next) {
-			if (s2.seqst) {
-				s.nl = true
-				break
-			}
-		}
+		s.nl = true
 	} // set_eol()
 
 	// set the eol on the next symbol
