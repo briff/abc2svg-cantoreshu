@@ -72,6 +72,7 @@ function sym_dup(s_orig) {
 		s = clone(s_orig);
 
 	s.invis = true
+	delete s.extra;
 	delete s.text
 	delete s.a_gch
 	delete s.a_ly
