@@ -2098,7 +2098,6 @@ function draw_slurs(first, last) {
 		 && gr1.next) {
 			gr1.next.prev.next = null;
 			gr1.next.prev = gr1;
-			gr1 = null
 		}
 		if (gr2) {
 			gr2.prev.next = gr2;
