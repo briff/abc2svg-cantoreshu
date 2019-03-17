@@ -687,6 +687,8 @@ function new_meter(p) {
 					m1 = 4;
 					m2 = 4
 				}
+				if (p[i] == '|')
+					meter.top = p[i++]
 				break
 			case 'c':
 			case 'o':
