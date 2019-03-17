@@ -686,9 +686,13 @@ function use_font(font) {
 }
 
 // get the font of the 'xxxfont' parameter
-function get_font(xxx) {
-    var	fn = xxx + "font",
-	font = cfmt[fn];
+function get_font(fn) {
+	fn += "font"
+    var	font = cfmt[fn]
+	if (!font) {
+		syntax(1, "Unknown font $1", '$' + fn[1]);
+		font = gene.curfont
+	}
 
 	use_font(font)
 	return font
