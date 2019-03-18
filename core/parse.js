@@ -687,33 +687,32 @@ function new_meter(p) {
 					m1 = 4;
 					m2 = 4
 				}
-				if (p[i] == '|')
-					meter.top = p[i++]
 				break
 			case 'c':
 			case 'o':
 				meter.top = p[i++]
 				if (!m1) {
-					if (p[-1] == 'c') {
+					if (p[i - 1] == 'c') {
 						m1 = 2;
-						m2 = 4
+						m2 = 4	// c = 2/4
 					} else {
 						m1 = 3;
-						m2 = 4
+						m2 = 4	// o = 3/4
 					}
 					switch (p[i]) {
 					case '|':
-						m2 /= 2
+						m2 /= 2	// c| = 2/2, o| = 3/2
 						break
 					case '.':
 						m1 *= 3;
-						m2 *= 2
+						m2 *= 2	// c. = 6/8, o. = 9/8
 						break
 					}
 				}
 				break
 			case '.':
 			case '|':
+				m1 = 0;
 				meter.top = p[i++]
 				break
 			case '(':
