@@ -39,9 +39,17 @@ These files are:
   Note that, if the ABC sequence contains the characters '<', '>' or '&',
   it must be enclosed in a XML comment (starting after the first `X:` or `%abc`).
 
+- `abcemb1-1.js`   
+  This script is also to be used with the core in (X)HTML files.  
+  It works the same as the previous script, but for one tune only.
+  When there is no selection ('#' + string at the end of the URL),
+  a list of the tunes is proposed.   
+  See [this tune](http://moinejf.free.fr/abc/boyvin-2-2.html)
+  for an example.   
+
 - `abcemb2-1.js`   
   This script is also to be used with the core in (X)HTML files.  
-  The differences with the previous script are
+  The differences with the script `abcemb-1.js` are:
   - the ABC sequences are replaced in HTML elements with the class `abc`,
   - the string after '#' in the URL does a real %%select (i.e. this may
     select many tunes),
@@ -58,7 +66,7 @@ These files are:
   for an example.
 
 - `play-1.js`   
-  This script may be used with `abcemb-1.js` for playing the
+  This script may be used with `abcemb{,1,2}-1.js` for playing the
   rendered ABC music.  
   See [this page](http://moinejf.free.fr/abcm2ps-doc/au_clair.xhtml)
   for an example.
