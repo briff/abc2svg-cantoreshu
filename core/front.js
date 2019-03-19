@@ -438,19 +438,10 @@ function tosvg(in_fname,		// file name
 		if (pscom) {
 			pscom = false;
 			bol += 2		// skip %%/I:
-			while (1) {
-				switch (file[bol]) {
-				case ' ':
-				case '\t':
-					bol++
-					continue
-				}
-				break
-			}
 			text = file.slice(bol, eol)
-			if (!text || text[0] == '%')
+			a = text.match(/([^\s]+)\s*(.*)/)
+			if (!a || a[1][0] == '%')
 				continue
-			a = text.match(/([^\s]*)\s*(.*)/)
 			switch (a[1]) {
 			case "abcm2ps":
 			case "ss-pref":
@@ -533,7 +524,7 @@ function tosvg(in_fname,		// file name
 						text = file.slice(bol)
 					else
 						text = file.slice(bol, eol);
-					a = text.match(/([^\s]*)\s*(.*)/)
+					a = text.match(/([^\s]+)\s*(.*)/)
 					switch (a[1]) {
 					case "tune":
 						break

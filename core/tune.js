@@ -1016,9 +1016,8 @@ function do_pscom(text) {
 			return
 		if (parse.scores && parse.scores.length > 0) {
 			text = parse.scores.shift();
-			cmd = text.match(/(\w|-)+/);
-			param = text.replace(cmd, '').trim()
-			get_staves(cmd[0], param)
+			cmd = text.match(/([^\s]+)\s*(.*)/);
+			get_staves(cmd[1], cmd[2])
 		} else {
 			get_staves(cmd, param)
 		}
