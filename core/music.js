@@ -3835,6 +3835,22 @@ function set_overlap() {
 		if (same_head(s1, s2))
 			continue
 
+		// special case when only a second
+		if ((s1.stem > 0 && s2.stem < 0
+		  && s1.notes[0].pit == s2.notes[s2.nhd].pit + 1)
+		 || (s1.stem < 0 && s2.stem > 0
+		  && s1.notes[s1.nhd].pit + 1 == s2.notes[0].pit)) {
+			if (s1.stem < 0) {
+				s1 = s2;
+				s2 = s
+			}
+			for (m = 0; m <= s2.nhd; m++)	// shift the lower note(s)
+				s2.notes[m].shhd += 7;
+			s2.xmx += 7;
+			s1.xmx = s2.xmx		// align the dots
+			continue
+		}
+
 		/* compute the minimum space for 's1 s2' and 's2 s1' */
 		right1 = set_right(s1);
 		left2 = set_left(s2);
