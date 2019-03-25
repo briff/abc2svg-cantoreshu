@@ -1743,11 +1743,6 @@ function get_key(parm) {
 		if (!glovar.ulen)
 			glovar.ulen = C.BLEN / 8;
 		parse.state = 2;		// in tune header after K:
-
-		set_page();
-		write_heading();
-		reset_gen();
-		gene.nbar = cfmt.measurefirst	// measure numbering
 		return
 	case 2:					// K: at start of tune body
 		goto_tune(true)
@@ -1987,6 +1982,11 @@ function goto_tune(is_K) {
 			dur: 0,
 			sy: par_sy
 		}
+
+	set_page();
+	write_heading();
+	reset_gen();
+	gene.nbar = cfmt.measurefirst;		// measure numbering
 
 	parse.state = 3;			// in tune body
 
