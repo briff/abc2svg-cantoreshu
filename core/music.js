@@ -626,13 +626,10 @@ function set_width(s) {
 		  if (s.wl == undefined)	// don't recompute if new music line
 			switch (s.head) {
 			case C.SQUARE:
-				s.xmx += 4
-				break
 			case C.OVALBARS:
-			case C.OVAL:
-				s.xmx += 2
+				s.xmx += 3
 				break
-			case C.EMPTY:
+			case C.OVAL:
 				s.xmx += 1
 				break
 			}
