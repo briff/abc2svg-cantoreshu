@@ -3064,28 +3064,8 @@ function init_music_line() {
 		}
 	}
 
-	/* if initialization of a new music line, compute the spacing,
-	 * including the first (old) sequence */
-	self.set_pitch(last_s)
-	for (s = last_s; s; s = s.ts_next) {
-		if (s.seqst) {
-			for (s = s.ts_next; s; s = s.ts_next)
-				if (s.seqst)
-					break
-			break
-		}
-	}
-
-	// set the spacing of the added symbols
-	while (last_s) {
-		if (last_s.seqst) {
-			do {
-				last_s = last_s.ts_next
-			} while (last_s && !last_s.seqst)
-			break
-		}
-		last_s = last_s.ts_next
-	}
+	// compute the spacing of the added symbols
+	self.set_pitch(last_s);
 
 	s = tsfirst
 	while (1) {
@@ -3094,12 +3074,8 @@ function init_music_line() {
 		do {
 			self.set_width(s);
 			shr = s.wl
-			for (s3 = s.prev; s3; s3 = s3.prev) {
-				if (w_tb[s3.type] != 0) {
-					shr += s3.wr
-					break
-				}
-			}
+			if (s.prev)
+				shr += s.prev.wr
 			if (shr > shrmx)
 				shrmx = shr;
 			s = s.ts_next
@@ -3109,6 +3085,18 @@ function init_music_line() {
 		if (s == last_s)
 			break
 	}
+	if (!s)
+		return				// no music!
+
+	// update the spacing before the first old time sequence
+	shr = 0
+	do {
+		self.set_width(s)
+		if (shr < s.wl)
+			shr = s.wl;
+		s = s.ts_next
+	} while (s && !s.seqst);
+	last_s.shrink = s2.wr + shr
 }
 
 /* -- set a pitch in all symbols and the start/stop of the beams -- */
