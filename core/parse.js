@@ -2128,23 +2128,6 @@ function new_note(grace, tp_fact) {
 				s.stem = grace.stem
 		}
 
-		// adjust the duration
-		dur = s.dur_orig
-		if (curvoice.ulen < 0) {
-			dur = C.BLEN
-		} else if (s.type == C.REST
-
-			/* change the figure of whole measure rests */
-//--fixme: does not work in abcm2ps sample.abc because broken rhythm on measure bar
-			&& dur == curvoice.wmeasure) {
-			if (dur < C.BLEN * 2)
-				dur = C.BLEN
-			else if (dur < C.BLEN * 4)
-				dur = C.BLEN * 2
-			else
-				dur = C.BLEN * 4
-		}
-
 		curvoice.last_note = s
 	}
 

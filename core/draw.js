@@ -929,12 +929,20 @@ var rest_tb = [
 	"r2", "r1", "r0", "r00"]
 
 function draw_rest(s) {
-	var	s2, i, j, x, y, dotx, yb, yt, head, bx,
-		p_staff = staff_tb[s.st]
+    var	s2, i, j, x, y, yb, bx,
+	p_staff = staff_tb[s.st]
 
-	/* if rest alone in the measure or measure repeat, center */
-	if (s.dur == s.p_v.meter.wmeasure
+	// if rest alone in the measure or measure repeat,
+	// change the head and center
+	if (s.dur_orig == s.p_v.meter.wmeasure
 	 || (s.rep_nb && s.rep_nb >= 0)) {
+		if (s.dur < C.BLEN * 2)
+			s.nflags = -2		// semibreve / whole
+		else if (s.dur < C.BLEN * 4)
+			s.nflags = -3
+		else
+			s.nflags = -4;
+		s.dots = 0;
 
 		/* don't use next/prev: there is no bar in voice overlay */
 		s2 = s.ts_next
@@ -999,7 +1007,7 @@ function draw_rest(s) {
 		y -= 6				/* semibreve a bit lower */
 
 	// draw the rest
-	xygl(x, y + yb, s.notes[0].head ? s.notes[0].head : rest_tb[i])
+	xygl(x, y + yb, s.notes[0].head || rest_tb[i])
 
 	/* output ledger line(s) when greater than minim */
 	if (i >= 6) {
