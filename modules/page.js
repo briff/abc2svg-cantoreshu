@@ -369,7 +369,7 @@ abc2svg.page = {
     }, // img_in()
 
     // handle the page related parameters
-    set_fmt: function(of, cmd, parm, lock) {
+    set_fmt: function(of, cmd, parm) {
     var	v,
 	cfmt = this.cfmt(),
 	page = this.page
@@ -467,7 +467,7 @@ abc2svg.page = {
 			return
 		}
 	}
-	of(cmd, parm, lock)
+	of(cmd, parm)
 	if (page) {
 		switch (cmd) {
 		case "pagewidth":

@@ -376,7 +376,7 @@ function build_grid(chords, bars, font, wmx) {
 	of()
     },
 
-    set_fmt: function(of, cmd, parm, lock) {
+    set_fmt: function(of, cmd, parm) {
 	if (cmd == "grid") {
 		if (!parm)
 			parm = "1";
@@ -401,7 +401,7 @@ function build_grid(chords, bars, font, wmx) {
 		this.cfmt().grid = grid
 		return
 	}
-	of(cmd, parm, lock)
+	of(cmd, parm)
     },
 
     set_hooks: function(abc) {

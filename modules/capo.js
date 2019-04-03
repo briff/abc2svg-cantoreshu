@@ -51,12 +51,12 @@ abc2svg.capo = {
 	of()
     },
 
-    set_fmt: function(of, cmd, param, lock) {
+    set_fmt: function(of, cmd, param) {
 	if (cmd == "capo") {
 		this.cfmt().capo = param
 		return
 	}
-	of(cmd, param, lock)
+	of(cmd, param)
     },
 
     set_hooks: function(abc) {

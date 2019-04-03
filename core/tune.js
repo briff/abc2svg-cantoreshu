@@ -767,18 +767,21 @@ function set_transp() {
 /* -- process a pseudo-comment (%% or I:) -- */
 // (possible hook)
 function do_pscom(text) {
-	var	h1, val, s, cmd, param, n, k, b,
-		lock = false
+    var	h1, val, s, cmd, param, n, k, b
 
-	if (text.slice(-5) == ' lock') {
-		lock = true;
-		text = text.slice(0, -5).trim()
-	}
 	cmd = text.match(/(\w|-)+/)
 	if (!cmd)
 		return
 	cmd = cmd[0];
 	param = text.replace(cmd, '').trim()
+
+	if (param.slice(-5) == ' lock') {
+		fmt_lock[cmd] = true;
+		param = param.slice(0, -5).trim()
+	} else if (fmt_lock[cmd]) {
+		return
+	}
+
 	switch (cmd) {
 	case "center":
 		if (parse.state >= 2) {
@@ -1116,7 +1119,7 @@ function do_pscom(text) {
 		}
 		break
 	}
-	self.set_format(cmd, param, lock)
+	self.set_format(cmd, param)
 }
 
 // treat the %%beginxxx / %%endxxx sequences

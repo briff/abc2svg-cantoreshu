@@ -372,15 +372,10 @@ function set_page() {
 
 // set a format parameter
 // (possible hook)
-function set_format(cmd, param, lock) {
+function set_format(cmd, param) {
 	var f, f2, v, i
 
 //fixme: should check the type and limits of the parameter values
-	if (lock) {
-		fmt_lock[cmd] = true
-	} else if (fmt_lock[cmd])
-		return
-
 	if (/.+font(-[\d])?$/.test(cmd)) {
 		param_set_font(cmd, param)
 		return

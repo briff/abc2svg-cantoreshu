@@ -79,7 +79,7 @@ abc2svg.grid2 = {
 	of()
     },
 
-    set_fmt: function(of, cmd, param, lock) {
+    set_fmt: function(of, cmd, param) {
 	if (cmd == "grid2") {
 	    var	curvoice = this.get_curvoice()
 		if (curvoice) {
@@ -88,7 +88,7 @@ abc2svg.grid2 = {
 		}
 		return
 	}
-	of(cmd, param, lock)
+	of(cmd, param)
     },
 
     set_hooks: function(abc) {

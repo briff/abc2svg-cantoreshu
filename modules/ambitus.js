@@ -75,12 +75,12 @@ abc2svg.ambitus = {
 		abc2svg.ambitus.do_ambitus.call(this)
     },
 
-    set_fmt: function(of, cmd, param, lock) {
+    set_fmt: function(of, cmd, param) {
 	if (cmd == "ambitus") {
 		this.cfmt().ambitus = param
 		return
 	}
-	of(cmd, param, lock)
+	of(cmd, param)
     },
 
     set_width: function(of, s) {
