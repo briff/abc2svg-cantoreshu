@@ -1873,7 +1873,7 @@ function draw_partempo(st, top) {
 	if (some_tempo) {
 		set_sscale(-1);
 		set_font("tempo");
-		ht = gene.curfont.size + 2;
+		ht = gene.curfont.size + 8;
 		y = 2 - ht;
 		h = y - ht
 		if (dosh != 0)
