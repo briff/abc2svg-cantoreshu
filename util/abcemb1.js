@@ -1,10 +1,15 @@
 //#javascript
 // abcemb1-1.js file to include in html pages with abc2svg-1.js
-// This script either:
-// - builds a list of the tunes when no selection
-// - displays the selected tune
 //
-// Copyright (C) 2014-2019 Jean-Francois Moine
+// This script either:
+// - builds a list of the tunes when there is no selection or
+// - displays the selected tune.
+//
+// When the tune is displayed, if playing is not enabled,
+// scrolling the music may be done by clicking/taping
+// on the 'start scrolling' button.
+//
+// Copyright (C) 2019 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -33,20 +38,32 @@ window.onerror = function(msg, url, line) {
 	return false
 }
 
+    var	abc		// generation instance - must be global for follow.js
+
+// function called when abc2svg is fully loaded
+function abcemb() {
 var	errtxt = '',
+	app = "abcemb",
 	new_page = '',
-	abc,				// (must be global for follow.js)
 	playing,
 	abcplay,
 	playconf = {
 		onend: endplay
 	},
+
+	scr_div,			// scroll status
+	tune_dur,			// scroll tune duration
+	scroll_to,			// scroll timeout
+	dt,				// scroll delta per timeout
+	scolor = "lightgreen",		// scroll start button color
+	stxt = "start<br/>scrolling",	// associated text
+	sY,				// current scroll Y
+
 	page,				// document source
 	a_src = [],			// index: #sequence,
 					//	value: [start_idx, end_idx]
 	a_pe = [],			// index: #sequence, value: playing events
 	glop,				// global sequence for play
-	old_gm,
 	jsdir = document.currentScript ?
 		document.currentScript.src.match(/.*\//) :
 		(function() {
@@ -59,6 +76,30 @@ var user = {
 	errmsg: function(msg, l, c) {	// get the errors
 		errtxt += clean_txt(msg) + '\n'
 	},
+
+	// function called before SVG generation
+	get_abcmodel: function(tsfirst, voice_tb) {
+	    var	d, i, n, pf,
+		s = tsfirst
+
+		while (1) {
+			if (s.tempo && !pf) {
+				d = 0;
+				n = s.tempo_notes.length
+				for (i = 0; i < n; i++)
+					d += s.tempo_notes[i];
+				pf = d * s.tempo / 60
+			}
+			if (!s.ts_next)
+				break
+			s = s.ts_next
+		}
+		if (!pf)
+			pf = abc2svg.C.BLEN / 8;	// default: Q:1/4=120
+//			     abc2svg.C.BLEN / 4 * 120 / 60
+		tune_dur = s.time / pf
+	},
+
 	img_out: function(str) {	// image output
 		new_page += str
 	},
@@ -77,25 +118,87 @@ function clean_txt(txt) {
 	})
 }
 
+// scroll the displayed music
+function do_scroll(old) {
+
+	// if start, get the window parameters and delay the first scroll
+	if (!old) {
+	    var d = document.documentElement;
+
+		// scroll shift on timeout
+		dt = d.scrollHeight / tune_dur
+			// * nseconds			// update once per second
+			;
+
+		// (in Android Browser, remove the address bar)
+		window.scrollTo(0, 8);		// go to the top
+		sY = 0;
+
+		// start scrolling at this time (1/3 of the first screen)
+	    var	ttop = d.clientHeight / 3 / dt
+		if (scr_div) {
+			scr_div.style.background = "red";
+			scr_div.innerHTML = "stop<br/>scrolling"
+		}
+		scroll_to = setTimeout(do_scroll, ttop * 1000, 1)
+	} else {
+		if (sY == window.pageYOffset) {	// no scroll -> finished
+			if (scr_div) {
+				scr_div.style.background = scolor;
+				scr_div.innerHTML = stxt
+			}
+			scroll_to = null
+			return
+		}
+		sY = window.pageYOffset;
+		window.scrollTo(0, sY + dt);
+		scroll_to = setTimeout(do_scroll, 1000, 1)	// delay 1s
+	}
+}
+
+// start/stop scrolling when no play
+function st_scroll() {
+	if (scroll_to) {
+		clearTimeout(scroll_to);
+		scr_div.style.background = scolor;
+		scr_div.innerHTML = stxt;
+		scroll_to = null
+	} else {
+		scroll_to = setTimeout(do_scroll, 500, 0)	// scroll start
+	}
+}
+
 function endplay() {
 	playing = false
 }
 
-// function called on click on the music
-function playseq(seq) {
+// function called on click in the music:
+//	start / stop playing and scrolling
+abc2svg.playseq = function(seq) {
     var	outputs
 
-	if (!abcplay) {
-		if (typeof AbcPlay == "undefined") { // as play-1.js not loaded,
-			playseq = function(){}	     // don't come here anymore
+	if (!abcplay) {				// if first time
+		if (typeof AbcPlay == "undefined") {	// as play-1.js not loaded
+			abc2svg.playseq = function(){}	// don't come here anymore
 			return
 		}
-		abcplay = AbcPlay(playconf);
+		delete user.img_out;		// stop SVG generation
+		user.get_abcmodel = function(tsfirst, voice_tb) {
+			abcplay.add(tsfirst, voice_tb)
+		}
+		abcplay = AbcPlay(playconf)
 	}
+
+	// stop
 	if (playing) {
+		if (scroll_to) {			// if scrolling active
+			clearTimeout(scroll_to);	// stop it
+			scroll_to = null
+		}
 		abcplay.stop();
 		return
 	}
+
 	playing = true
 	if (!a_pe[seq]) {		// if no playing event
 		var abc = new abc2svg.Abc(user);
@@ -104,8 +207,8 @@ function playseq(seq) {
 		abc.tosvg("play", "%%play")
 		try {
 			if (glop)
-				abc.tosvg("abcemb", page, glop[0], glop[1]);
-			abc.tosvg("abcemb" + seq, page, a_src[seq][0], a_src[seq][1])
+				abc.tosvg(app, page, glop[0], glop[1])
+			abc.tosvg(app + seq, page, a_src[seq][0], a_src[seq][1])
 		} catch(e) {
 			alert(e.message + '\nabc2svg tosvg bug - stack:\n' + e.stack);
 			playing = false;
@@ -114,18 +217,9 @@ function playseq(seq) {
 		}
 		a_pe[seq] = abcplay.clear()	// keep the playing events
 	}
+	scroll_to = setTimeout(do_scroll, 500, 0);	// scroll start
 	abcplay.play(0, 100000, a_pe[seq])
-}
-
-// function called when the page is loaded
-function dom_loaded() {
-
-	// loop until abc2svg is fully loaded
-	if (typeof abc2svg != "object"
-	 || !abc2svg.modules) {
-		setTimeout(dom_loaded, 500)
-		return
-	}
+} // playseq()
 
 // function to load javascript files
 	abc2svg.loadjs = function(fn, relay, onerror) {
@@ -141,24 +235,21 @@ function dom_loaded() {
 			alert('error loading ' + fn)
 		}
 		document.head.appendChild(s)
-	}
-
-	page = document.body.innerHTML;
-
-	// accept page formatting
-	abc2svg.abc_end = function() {}
-
-	// load the required modules
-	if (abc2svg.modules.load(page, render))
-		render()
-}
+	} // loadjs()
 
 // build a list of the tunes
 function get_sel() {
     var	j, k,
+	n = 0,
 	i = 0,
-	t = 'Tunes:\n<ul>'
+	t = 'Tunes:<br/><ul>\n'
 
+	// open a new page and render the tune
+	abc2svg.tune_load = function(x_tune) {
+		window.open("#" + x_tune, "_self")
+	} // tune_load()
+
+	// --- get_sel() main ---
 	for (;;) {
 		i = page.indexOf("\nX:", i)
 		if (i < 0)
@@ -166,21 +257,30 @@ function get_sel() {
 		j = page.indexOf("\nT:", i)
 		if (j < 0)
 			break
-		t += '<li><a href="#' + page.slice(i + 1, j) +
-				'" onclick="window.location.reload(true)">';
+		n++;
+		t += '<li><a \
+style="cursor:pointer;color:blue;text-decoration:underline" \
+onclick="abc2svg.tune_load(\'' +
+					page.slice(i + 1, j) + '\')">';
 		k = page.indexOf("\n", j + 1);
 		t += page.slice(j + 3, k)
 		if (page[k + 1] == 'T' && page[k + 2] == ':') {
-			j = k + 3
-			k = page.indexOf("\n", j);
+			j = k + 3;
+			k = page.indexOf("\n", j)
 			if (k > 0)
 				t += " - " + page.slice(j, k)
 		}
 		t += '</a></li>\n';
 		i = k
 	}
-	document.body.innerHTML = t + '</ul>'
-}
+	if (n <= 1)
+		return true;
+
+	t += '</ul>';
+
+	document.body.innerHTML = t
+//	return false
+} // get_sel()
 
 function render() {
 	page = document.body.innerHTML;
@@ -191,16 +291,15 @@ function render() {
 	seq = 0,
 	re = /\n%abc|\nX:/g,
 	re_stop = /\nX:|\n<|\n%.begin/g,
-	select = window.location.hash.slice(1)
+	select = window.location.hash.slice(1)		// after '#'
 
-	// if no selection, get the references of the tunes
+	// if no selection and many tunes, get the references of the tunes
 	// and ask which one to display
-	if (!select) {
-		get_sel()
+	if (!select
+	 && !get_sel())
 		return
-	}
-	select = page.search(decodeURIComponent(select))
 
+	select = page.search(decodeURIComponent(select))
 	if (select < 0)
 		select = 0
 
@@ -235,18 +334,17 @@ function render() {
 
 	    // selection
 	    if (!select || page[j] != 'X' || (select >= j && select < k)) {
+		try {
 
 		// clicking on the music plays this tune
-		if (page[j] == 'X') {
-			new_page += '<div onclick="playseq(' +
+		    if (page[j] == 'X') {
+			new_page += '<div onclick="abc2svg.playseq(' +
 					a_src.length + ')">\n';
 			a_src.push([j, k])
-		} else if (!glop) {
+		    } else if (!glop) {
 			glop = [j, k]
-		}
-
-		try {
-			abc.tosvg('abcemb', page, j, k)
+		    }
+			abc.tosvg(app, page, j, k)
 		} catch (e) {
 			alert("abc2svg javascript error: " + e.message +
 				"\nStack:\n" + e.stack)
@@ -278,17 +376,53 @@ function render() {
 	} catch (e) {
 		alert("abc2svg bad generated SVG: " + e.message +
 			"\nStack:\n" + e.stack)
+		return
 	}
 
-	// prepare for playing
-	delete user.img_out;		// stop SVG generation
-	old_gm = user.get_abcmodel;
-	user.get_abcmodel = function(tsfirst, voice_tb, music_types, info) {
-			if (old_gm)
-				old_gm(tsfirst, voice_tb, music_types, info);
-			abcplay.add(tsfirst, voice_tb)
+	// if no playing stuff and big tune,
+	// put a button to start/stop scrolling the rendering area
+	setTimeout(function() {
+	    if (typeof AbcPlay == "undefined") {	// play-1.js not loaded
+		if (document.documentElement.scrollHeight > window.innerHeight) {
+			scr_div = document.createElement("div");
+			scr_div.style.position = "fixed";
+			scr_div.style.top = 0;
+			scr_div.style.bottom = 0;
+			scr_div.style.right = 0;
+			scr_div.style.height = "40px";
+			scr_div.style.padding = "5px";
+			scr_div.style.cursor = "pointer";
+			scr_div.style.background = scolor;
+			scr_div.innerHTML = stxt;
+			scr_div.addEventListener("click", st_scroll);
+			document.body.appendChild(scr_div)
 		}
-} // dom_loaded()
+	    }
+	}, 500)
+} // render()
+
+	// --- abcemb() main code ---
+
+	// get the page content
+	page = document.body.innerHTML;
+
+	// accept page formatting
+	abc2svg.abc_end = function() {}
+
+	// load the required modules, then render the music
+	if (abc2svg.modules.load(page, render))
+		render()
+} // abcemb()
+
+// loop until abc2svg is fully loaded
+function dom_loaded() {
+	if (typeof abc2svg != "object"
+	 || !abc2svg.modules) {
+		setTimeout(dom_loaded, 500)
+		return
+	}
+	abcemb()
+}
 
 // wait for the page to be loaded
 document.addEventListener("DOMContentLoaded", dom_loaded, false)
