@@ -244,8 +244,9 @@ function get_sel() {
 	t = 'Tunes:<br/><ul>\n'
 
 	// open a new page and render the tune
+	// ('?' permits the page to be reloaded)
 	abc2svg.tune_load = function(x_tune) {
-		window.open("#" + x_tune, "_self")
+		window.open("?#" + x_tune, "_self")
 	} // tune_load()
 
 	// --- get_sel() main ---
