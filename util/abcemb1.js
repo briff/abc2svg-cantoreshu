@@ -60,9 +60,8 @@ var	errtxt = '',
 	sY,				// current scroll Y
 
 	page,				// document source
-	a_src = [],			// index: #sequence,
-					//	value: [start_idx, end_idx]
-	a_pe = [],			// index: #sequence, value: playing events
+	src,				// source indexes [start, end]
+	pe,				// playing events
 	glop,				// global sequence for play
 	jsdir = document.currentScript ?
 		document.currentScript.src.match(/.*\//) :
@@ -174,7 +173,7 @@ function endplay() {
 
 // function called on click in the music:
 //	start / stop playing and scrolling
-abc2svg.playseq = function(seq) {
+abc2svg.playseq = function() {
     var	outputs
 
 	if (!abcplay) {				// if first time
@@ -200,7 +199,7 @@ abc2svg.playseq = function(seq) {
 	}
 
 	playing = true
-	if (!a_pe[seq]) {		// if no playing event
+	if (!pe) {			// if no playing event
 		var abc = new abc2svg.Abc(user);
 
 		abcplay.clear();
@@ -208,17 +207,17 @@ abc2svg.playseq = function(seq) {
 		try {
 			if (glop)
 				abc.tosvg(app, page, glop[0], glop[1])
-			abc.tosvg(app + seq, page, a_src[seq][0], a_src[seq][1])
+			abc.tosvg(app, page, src[0], src[1])
 		} catch(e) {
 			alert(e.message + '\nabc2svg tosvg bug - stack:\n' + e.stack);
 			playing = false;
-			a_pe[seq] = null
+			pe = null
 			return
 		}
-		a_pe[seq] = abcplay.clear()	// keep the playing events
+		pe = abcplay.clear()		// keep the playing events
 	}
 	scroll_to = setTimeout(do_scroll, 500, 0);	// scroll start
-	abcplay.play(0, 100000, a_pe[seq])
+	abcplay.play(0, 100000, pe)
 } // playseq()
 
 // function to load javascript files
@@ -288,7 +287,6 @@ function render() {
 	// search the ABC tunes,
 	// replace them by SVG images with play on click
     var	i = 0, j, k, res,
-	seq = 0,
 	re = /\n%abc|\nX:/g,
 	re_stop = /\nX:|\n<|\n%.begin/g,
 	select = window.location.hash.slice(1)		// after '#'
@@ -338,9 +336,8 @@ function render() {
 
 		// clicking on the music plays this tune
 		    if (page[j] == 'X') {
-			new_page += '<div onclick="abc2svg.playseq(' +
-					a_src.length + ')">\n';
-			a_src.push([j, k])
+			new_page += '<div onclick="abc2svg.playseq()">\n';
+			src = [j, k]
 		    } else if (!glop) {
 			glop = [j, k]
 		    }
