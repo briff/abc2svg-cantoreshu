@@ -124,22 +124,20 @@ function do_scroll(old) {
 	if (!old) {
 	    var d = document.documentElement;
 
-		// scroll shift on timeout
-		dt = d.scrollHeight / tune_dur
-			// * nseconds			// update once per second
-			;
+		// time for scrolling one pixel
+		dt = tune_dur / d.scrollHeight
 
-		// (in Android Browser, remove the address bar)
-		window.scrollTo(0, 8);		// go to the top
-		sY = 0;
-
-		// start scrolling at this time (1/3 of the first screen)
-	    var	ttop = d.clientHeight / 3 / dt
+		// start scrolling at this time (1/4 of the first screen)
+	    var	ttop = dt * d.clientHeight / 4
 		if (scr_div) {
 			scr_div.style.background = "red";
 			scr_div.innerHTML = "stop<br/>scrolling"
 		}
 		scroll_to = setTimeout(do_scroll, ttop * 1000, 1)
+
+		// (in Android Browser, remove the address bar)
+		window.scrollTo(0, 8);		// go to the top
+		sY = 0;
 	} else {
 		if (sY == window.pageYOffset) {	// no scroll -> finished
 			if (scr_div) {
@@ -150,8 +148,8 @@ function do_scroll(old) {
 			return
 		}
 		sY = window.pageYOffset;
-		window.scrollTo(0, sY + dt);
-		scroll_to = setTimeout(do_scroll, 1000, 1)	// delay 1s
+		window.scrollTo(0, sY + 1);
+		scroll_to = setTimeout(do_scroll, dt * 1000, 1)
 	}
 }
 
