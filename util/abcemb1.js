@@ -214,7 +214,8 @@ abc2svg.playseq = function() {
 		}
 		pe = abcplay.clear()		// keep the playing events
 	}
-	scroll_to = setTimeout(do_scroll, 500, 0);	// scroll start
+	if (document.documentElement.scrollHeight > window.innerHeight)
+		scroll_to = setTimeout(do_scroll, 500, 0);	// scroll start
 	abcplay.play(0, 100000, pe)
 } // playseq()
 
