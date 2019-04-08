@@ -38,7 +38,10 @@ window.onerror = function(msg, url, line) {
 	return false
 }
 
-    var	abc		// generation instance - must be global for follow.js
+// variables that must be global for follow.js
+    var	abc,		// generation instance
+	user = {},	// abc2svg init argument
+	playconf = {}
 
 // function called when abc2svg is fully loaded
 function abcemb() {
@@ -47,9 +50,6 @@ var	errtxt = '',
 	new_page = '',
 	playing,
 	abcplay,
-	playconf = {
-		onend: endplay
-	},
 
 	scr_div,			// scroll status
 	tune_dur,			// scroll tune duration
@@ -71,13 +71,12 @@ var	errtxt = '',
 		})()
 
 // -- abc2svg init argument
-var user = {
-	errmsg: function(msg, l, c) {	// get the errors
+    user.errmsg = function(msg, l, c) {	// get the errors
 		errtxt += clean_txt(msg) + '\n'
-	},
+	};
 
 	// function called before SVG generation
-	get_abcmodel: function(tsfirst, voice_tb) {
+    user.get_abcmodel = function(tsfirst, voice_tb) {
 	    var	d, i, n, pf,
 		s = tsfirst
 
@@ -97,13 +96,17 @@ var user = {
 			pf = abc2svg.C.BLEN / 8;	// default: Q:1/4=120
 //			     abc2svg.C.BLEN / 4 * 120 / 60
 		tune_dur = s.time / pf
-	},
+	};
 
-	img_out: function(str) {	// image output
+    user.img_out = function(str) {	// image output
 		new_page += str
-	},
-	page_format: true		// define the non-page-breakable blocks
-}
+	};
+    user.page_format = true;		// define the non-page-breakable blocks
+
+// play arguments
+    playconf.onend = function() {
+	playing = false
+    }
 
 // replace <>& by XML character references
 function clean_txt(txt) {
@@ -163,10 +166,6 @@ function st_scroll() {
 	} else {
 		scroll_to = setTimeout(do_scroll, 500, 0)	// scroll start
 	}
-}
-
-function endplay() {
-	playing = false
 }
 
 // function called on click in the music:
