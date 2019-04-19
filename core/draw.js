@@ -3422,7 +3422,8 @@ function draw_systems(indent) {
 		ws = w / stv_g.scale
 
 		// check if default staff
-		if (cache && cache.st_l == stafflines && cache.st_ws == ws) {
+		if (cache && cache.st_l == stafflines
+		 && cache.st_ws == (ws | 0)) {
 			xygl(x1, staff_tb[st].y, 'stdef' + cfmt.fullsvg)
 			return
 		}
@@ -3450,21 +3451,21 @@ function draw_systems(indent) {
 					'" d="m0 ' + y + 'h' + ws.toFixed(1);
 				dy = 0
 			}
-			ln += '"/>\n'
+			ln += '"/>'
 		}
 		y = staff_tb[st].y
 		if (!cache
-		 && w == get_lwidth()) {
+		 && w > get_lwidth() - 10) {
 			cache = {
 				st_l: stafflines,
-				st_ws: ws
+				st_ws: ws | 0
 			}
 			i = 'stdef' + cfmt.fullsvg;
-			glyphs[i] = '<g id="' + i + '">\n' + ln + '</g>';
+			glyphs[i] = ln.replace('path', 'path id="' + i + '"');
 			xygl(x1, y, i)
 			return
 		}
-		out_XYAB('<g transform="translate(X, Y)">\n' + ln + '</g>\n', x1, y)
+		out_XYAB('<g transform="translate(X, Y)">\n' + ln + '\n</g>\n', x1, y)
 	} // draw_staff()
 
 	// draw a measure bar
