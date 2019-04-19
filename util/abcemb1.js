@@ -281,7 +281,6 @@ onclick="abc2svg.tune_load(\'' +
 } // get_sel()
 
 function render() {
-	page = document.body.innerHTML;
 
 	// search the ABC tunes,
 	// replace them by SVG images with play on click
