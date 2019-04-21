@@ -241,12 +241,6 @@ function get_sel() {
 	i = 0,
 	t = 'Tunes:<br/><ul>\n'
 
-	// open a new page and render the tune
-	// ('?' permits the page to be reloaded)
-	abc2svg.tune_load = function(x_tune) {
-		window.open("?#" + x_tune, "_self")
-	} // tune_load()
-
 	// --- get_sel() main ---
 	for (;;) {
 		i = page.indexOf("\nX:", i)
@@ -256,10 +250,7 @@ function get_sel() {
 		if (j < 0)
 			break
 		n++;
-		t += '<li><a \
-style="cursor:pointer;color:blue;text-decoration:underline" \
-onclick="abc2svg.tune_load(\'' +
-					page.slice(i + 1, j) + '\')">';
+		t += '<li><a href="?#' + page.slice(i + 1, j) + '">';
 		k = page.indexOf("\n", j + 1);
 		t += page.slice(j + 3, k)
 		if (page[k + 1] == 'T' && page[k + 2] == ':') {
