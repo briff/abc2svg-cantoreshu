@@ -296,8 +296,11 @@ function render() {
 		return
 
 	select = page.search(decodeURIComponent(select))
-	if (select < 0)
-		select = 0
+	if (select < 0) {			// tune not found
+		if (!get_sel())
+			return
+		select = 0			// only one tune
+	}	
 
 	abc = new abc2svg.Abc(user)
 
