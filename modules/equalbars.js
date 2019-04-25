@@ -34,10 +34,8 @@ abc2svg.equalbars = {
 	if (!this.cfmt().equalbars)
 		return
 
-	// search the first note/rest/bar
+	// search the first note/rest/space
 	for (s2 = tsfirst; s2; s2 = s2.ts_next) {
-		if (!s2.seqst)
-			continue
 		switch (s2.type) {
 		default:
 			continue
