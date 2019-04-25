@@ -239,7 +239,7 @@ function get_sel() {
     var	j, k,
 	n = 0,
 	i = 0,
-	t = 'Tunes:<br/><ul>\n'
+	t = '<ul>\n'
 
 	// --- get_sel() main ---
 	for (;;) {
