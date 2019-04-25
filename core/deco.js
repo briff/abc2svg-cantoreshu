@@ -1625,18 +1625,22 @@ function draw_measnb() {
 			y_set(st, true, 0, 20, y + gene.curfont.size + 2)
 		} else if (bar_num % cfmt.measurenb == 0) {
 			for ( ; ; s = s.ts_next) {
-				if (!s.dur)
+				switch (s.type) {
+				case C.TIMESIG:
+				case C.CLEF:
+				case C.KEYSIG:
+				case C.FMTCHG:
+				case C.STBRK:
 					continue
+				}
 				break
 			}
-			while (s.st != st)
-				s = s.ts_next
 
 			// don't display the number twice
 		     if (s.type != C.BAR || !s.bar_num) {
-//			if (s.prev && s.prev.type != C.CLEF)
-//				s = s.prev;
-			x = s.x - s.wl;
+			if (s.prev)
+				s = s.prev;
+			x = s.x + s.wr;
 			any_nb = true;
 			w = w0
 			if (bar_num >= 10)
