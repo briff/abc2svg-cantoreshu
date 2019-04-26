@@ -9,6 +9,9 @@
 // scrolling the music may be done by clicking/taping
 // on the 'start scrolling' button.
 //
+// The header of the tune list ("Tunes:") may be set in a global
+// javascript variable 'list_head'.
+//
 // Copyright (C) 2019 Jean-Francois Moine
 //
 // This file is part of abc2svg.
@@ -239,7 +242,7 @@ function get_sel() {
     var	j, k,
 	n = 0,
 	i = 0,
-	t = '<ul>\n'
+	t = (typeof list_head == "undefined" ? "Tunes:" : list_head) + '<ul>\n'
 
 	// --- get_sel() main ---
 	for (;;) {
