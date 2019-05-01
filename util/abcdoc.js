@@ -37,12 +37,14 @@ function abcdoc() {
     var	errtxt = '',
 	new_page = '',
 	page,				// document source
-	jsdir = document.currentScript ?
-		document.currentScript.src.match(/.*\//) :
-		(function() {
-			var scrs = document.getElementsByTagName('script');
-			return scrs[scrs.length - 1].src.match(/.*\//) || ''
-		})(),
+	jsdir = (function() {
+		var scrs = document.getElementsByTagName('script')
+		for (var i = 0; i < scrs.length; i++) {
+			var a = scrs[i].src.match(/(.*?\/)abc2svg-.\.js/)
+			if (a)
+				return a[1]
+		}
+	})(),
     user = {	// -- abc2svg init argument
 	errmsg: function(msg, l, c) {	// get the errors
 		errtxt += clean_txt(msg) + '\n'
