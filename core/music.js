@@ -236,7 +236,7 @@ function set_acc_shft() {
 			notes: []
 		}
 		for ( ; s != s2; s = s.ts_next)
-			st.notes = st.notes.concat(s.notes);
+			Array.prototype.push.apply(st.notes, s.notes);
 		sort_pitch(st);
 		acc_shift(st.notes, dx_head)
 	}
@@ -3216,67 +3216,33 @@ function set_words(p_voice) {
 
 /* -- set the end of the repeat sequences -- */
 function set_rb(p_voice) {
-	var	s2, mx, n,
-		s = p_voice.sym
+    var	s2, n,
+	s = p_voice.sym
 
 	while (s) {
 		if (s.type != C.BAR || !s.rbstart || s.norepbra) {
 			s = s.next
 			continue
 		}
-
-		mx = cfmt.rbmax
-
-		/* if 1st repeat sequence, compute the bracket length */
-		if (s.text && s.text[0] == '1') {
-			n = 0;
-			s2 = null
-			for (s = s.next; s; s = s.next) {
-				if (s.type != C.BAR)
-					continue
-				n++
-				if (s.rbstop) {
-					if (n <= cfmt.rbmax) {
-						mx = n;
-						s2 = null
-					}
-					break
-				}
-				if (n == cfmt.rbmin)
-					s2 = s
+		n = 0;
+		s2 = null
+		for (s = s.next; s; s = s.next) {
+			if (s.type != C.BAR)
+				continue
+			n++
+			if (s.rbstop)
+				break
+			if (!s.next) {
+				s.rbstop = 2	// right repeat with end
+				break
 			}
-			if (s2) {
-				s2.rbstop = 1;
-				mx = cfmt.rbmin
-			}
-		}
-		while (s) {
-
-			/* check repbra shifts (:| | |2 in 2nd staves) */
-			if (s.rbstart != 2) {
-				s = s.next
-				if (!s)
-					break
-				if (s.rbstart != 2) {
-					s = s.next
-					if (!s)
-						break
-					if (s.rbstart != 2)
-						break
-				}
-			}
-			n = 0;
-			s2 = null
-			for (s = s.next; s; s = s.next) {
-				if (s.type != C.BAR)
-					continue
-				n++
-				if (s.rbstop)
-					break
-				if (!s.next)
-					s.rbstop = 2	// right repeat with end
-				else if (n == mx)
-					s.rbstop = 1	// right repeat without end
+			if (n == cfmt.rbmin)
+				s2 = s
+			if (n == cfmt.rbmax) {
+				if (s2)
+					s = s2;
+				s.rbstop = 1	// right repeat without end
+				break
 			}
 		}
 	}
