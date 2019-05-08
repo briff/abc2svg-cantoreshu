@@ -55,11 +55,10 @@ var user = {
 		return elt_ref.src1.value
 	},
 	// insert the errors
-	errmsg: function(msg, l, c) {
-		msg = clean_txt(msg)
-		if (l)
-			elt_ref.diverr.innerHTML += '<b onclick="gotoabc(' +
-				l + ',' + c +
+	errbld: function(sev, txt, fn, idx) {
+	    var	msg = sev + ' ' + clean_txt(txt)
+		if (idx >= 0)
+			elt_ref.diverr.innerHTML += '<b onclick="gotoabc(-1,' + idx +
 				')" style="cursor: pointer; display: inline-block">' +
 				msg + "</b><br/>\n"
 		else
