@@ -56,7 +56,7 @@ abc2svg.combine = {
     function combine_notes(s, s2) {
     var	nhd, type, m;
 
-	s.notes = s.notes.concat(s2.notes);
+	Array.prototype.push.apply(s.notes, s2.notes);
 	s.nhd = nhd = s.notes.length - 1;
 	this.sort_pitch(s)		// sort the notes by pitch
 
@@ -108,7 +108,7 @@ function do_combine(s) {
 			if (!s.a_dd)
 				s.a_dd = s2.a_dd
 			else
-				s.a_dd = s.a_dd.concat(s2.a_dd)
+				Array.prototype.push.apply(s.a_dd, s2.a_dd)
 		}
 		this.unlksym(s2)			// remove the next symbol
 
