@@ -2668,8 +2668,7 @@ function parse_music_line() {
 				a_dcn = a_dcn_sav
 				break
 			case "\\":
-				c = line.buffer[line.index + 1]
-				if (!c) {
+				if (!line.buffer[line.index + 1]) {
 					no_eol = true
 					break
 				}
