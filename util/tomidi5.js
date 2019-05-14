@@ -54,8 +54,8 @@
 
 function Midi5(i_conf) {
     var	conf = i_conf,		// configuration
-	onend = conf.onend || function() {},
-	onnote = conf.onnote || function() {},
+	onend = function() {},
+	onnote = function() {},
 	rf,			// get_outputs result function
 
 // MIDI variables
@@ -244,6 +244,13 @@ function Midi5(i_conf) {
 			onend()			// nothing to play
 			return
 		}
+
+		// get the callback functions
+		if (conf.onend)
+			onend = conf.onend
+		if (conf.onnote)
+			onnote = conf.onnote;
+
 		iend = i_iend;
 		evt_idx = istart;
 if (0) {
