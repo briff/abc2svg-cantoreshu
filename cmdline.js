@@ -42,24 +42,28 @@ var	abc = new abc2svg.Abc(user)		// (global for 'toxxx.js')
 
 // treat a file
 function do_file(fn) {
-	var	file = user.read_file(fn)
+    var	ext, file
 
-	if (!file) {
-		j = fn.lastIndexOf("/")
-		if (j < 0)
-			j = 0;
-		i = fn.indexOf(".", j)
-		if (i < 0) {
-			fn += ".abc";
-			file = user.read_file(fn)
+	try {
+		file = user.read_file(fn)
+	} catch (e) {
+
+		// get the file extension
+		ext = fn.slice((fn.lastIndexOf('.') - 1 >>> 0) + 2)
+		if (!ext) {
+			fn += ".abc"
+			try {
+				file = user.read_file(fn)
+			} catch (e) {
+			}
 		}
 	}
 	if (!file)
-		abort(new Error("Cannot read file '" + fn + "'"))
+		abc2svg.abort(new Error("Cannot read file '" + fn + "'"))
 //	if (typeof(utf_convert) == "function")
 //		file = utf_convert(file)
 
-	// load the required modules
+	// load the required modules (synchronous)
 	abc2svg.modules.load(file)
 
 	// generate
@@ -78,9 +82,7 @@ function abc_cmd(cmd, args) {
 
 	// load 'default.abc'
 	try {
-		arg = user.read_file('default.abc');
-		abc2svg.modules.load(arg)
-		abc.tosvg(cmd, arg)
+		do_file("default.abc")
 	} catch (e) {
 	}
 
