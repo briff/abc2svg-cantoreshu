@@ -158,10 +158,9 @@ function loadtune() {
 
 	// Closure to capture the file information
 	reader.onloadend = function(evt) {
-		var	i, j, sl,
-			content = evt.target.result,
-			s = srcidx == 0 ? "source" : "src1"
-		elt_ref[s].value = content;
+	    var	s = srcidx == 0 ? "source" : "src1";
+
+		elt_ref[s].value = evt.target.result;
 		elt_ref["s" + srcidx].value = abc_fname[srcidx];
 		src_change()
 	}
@@ -388,21 +387,17 @@ function seltxt(evt) {
 function saveas() {
 	var	s = srcidx == 0 ? "source" : "src1",
 		source = elt_ref[s].value,
-		uriContent = "data:text/plain;charset=utf-8," +
-				encodeURIComponent(source),
 
 	// create a link for our script to 'click'
 		link = document.createElement("a");
 
-	elt_ref["s" + srcidx].value =
-		link.download =
-			abc_fname[srcidx] =
-				prompt(texts.fn, abc_fname[srcidx]);
-	link.innerHTML = "Hidden Link";
-	link.href = uriContent;
+	link.download = abc_fname[srcidx];
+//	link.innerHTML = "Hidden Link";
+	link.href = "data:text/plain;charset=utf-8," +
+			encodeURIComponent(source);
 
 	// open in a new tab
-	link.target = '_blank';
+//	link.target = '_blank';
 
 	// when link is clicked call a function to remove it from
 	// the DOM in case user wants to save a second file.
