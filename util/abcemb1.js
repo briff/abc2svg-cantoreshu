@@ -41,13 +41,8 @@ window.onerror = function(msg, url, line) {
 	return false
 }
 
-// variables that must be global for follow.js
-    var	abc,		// generation instance
-	user = {},	// abc2svg init argument
-	playconf = {}
-
 // function called when abc2svg is fully loaded
-function abcemb() {
+function dom_loaded() {
 var	errtxt = '',
 	app = "abcemb",
 	new_page = '',
@@ -73,15 +68,16 @@ var	errtxt = '',
 			if (a)
 				return a[1]
 		}
-	})()
+	})(),
 
 // -- abc2svg init argument
-    user.errmsg = function(msg, l, c) {	// get the errors
+    user = {
+	errmsg: function(msg, l, c) {	// get the errors
 		errtxt += clean_txt(msg) + '\n'
-	};
+	},
 
 	// function called before SVG generation
-    user.get_abcmodel = function(tsfirst, voice_tb) {
+	get_abcmodel: function(tsfirst, voice_tb) {
 	    var	d, i, n, pf,
 		s = tsfirst
 
@@ -101,16 +97,20 @@ var	errtxt = '',
 			pf = abc2svg.C.BLEN / 8;	// default: Q:1/4=120
 //			     abc2svg.C.BLEN / 4 * 120 / 60
 		tune_dur = s.time / pf
-	};
+	},
 
-    user.img_out = function(str) {	// image output
+	img_out: function(str) {	// image output
 		new_page += str
-	};
-    user.page_format = true;		// define the non-page-breakable blocks
+	},
+
+	page_format: true		// define the non-page-breakable blocks
+    };
 
 // play arguments
-    playconf.onend = function() {
-	playing = false
+    playconf = {
+	onend: function() {
+		playing = false
+	}
     }
 
 // replace <>& by XML character references
@@ -280,7 +280,7 @@ function render() {
 
 	// search the ABC tunes,
 	// replace them by SVG images with play on click
-    var	i = 0, j, k, res,
+    var	i = 0, j, k, res, abc,
 	re = /\n%abc|\nX:/g,
 	re_stop = /\nX:|\n<|\n%.begin/g,
 	select = window.location.hash.slice(1)		// after '#'
@@ -298,7 +298,16 @@ function render() {
 		select = 0			// only one tune
 	}	
 
+	// aweful hack: user.anno_stop must be defined before Abc creation
+	// for being set later by follow() !
+	if (typeof follow == "function")
+		user.anno_stop = function(){};
+
 	abc = new abc2svg.Abc(user)
+
+	// initialize the play follow function
+	if (typeof follow == "function")
+		follow(abc, user, playconf)
 
 	for (;;) {
 
@@ -406,17 +415,7 @@ function render() {
 	// load the required modules, then render the music
 	if (abc2svg.modules.load(page, render))
 		render()
-} // abcemb()
+} // dom_loaded()
 
-// loop until abc2svg is fully loaded
-function dom_loaded() {
-	if (typeof abc2svg != "object"
-	 || !abc2svg.modules) {
-		setTimeout(dom_loaded, 500)
-		return
-	}
-	abcemb()
-}
-
-// wait for the page to be loaded
-document.addEventListener("DOMContentLoaded", dom_loaded, false)
+// wait for the scripts to be loaded
+window.addEventListener("load", function() {setTimeout(dom_loaded, 500)})
