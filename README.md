@@ -41,7 +41,7 @@ These files are:
 
 - `abcemb1-1.js`   
   This script is also to be used with the core in (X)HTML files.  
-  It works the same as the previous script, but for one tune only.
+  It works the same as the previous script, but displaying one tune only.
   When there is no selection ('#' + string at the end of the URL),
   a list of the tunes is proposed.   
   See [this tune](http://moinejf.free.fr/abc/boyvin-2-2.html)
@@ -80,11 +80,13 @@ These files are:
 - `edit-1.xhtml`   
   This is a simple web ABC editor/player.
 
-When looking at a ABC file in a web browser, you may also use
-this
-<a href="javascript:(function(){d=document;b=d.body;b.innerHTML=%22\n%25abc-2.2\n%25%3c!--\n%22+b.textContent+%22%25--%3e\n%22;function%20f(u){s=d.createElement('script');s.setAttribute('src',u);b.appendChild(s);};f('http://moinejf.free.fr/js/abc2svg-1.js');f('http://moinejf.free.fr/js/abcemb-1.js');f('http://moinejf.free.fr/js/play-1.js');function%20t(){if(typeof%20dom_loaded=='function'){dom_loaded()}else{setTimeout(t,200)}};setTimeout(t,200)})();void(0)">bookmarklet</a>
-and render the music
-(create a bookmark and copy the link location into the address/location box).
+When looking at a ABC file in a web browser, you may also use a
+<a href="https://en.wikipedia.org/wiki/Bookmarklet">bookmarklet</a>
+as
+<a href="javascript:(function(){var%20s,n=4,d=document,b=d.body;b.innerHTML=%22\n%25abc-2.2\n%25%3c!--\n%22+b.textContent+%22%25--%3e\n%22;function%20f(u){s=d.createElement('script');s.src='http://moinejf.free.fr/js/'+u;s.onload=function(){if(--n==0)dom_loaded()};b.appendChild(s)};f('abc2svg-1.js');f('play-1.js');f('follow-1.js');f('abcemb-1.js')})();void(0)">this one</a>
+for rendering all tunes, or
+<a href="javascript:(function(){var%20s,n=4,d=document,b=d.body;b.innerHTML=%22\n%25abc-2.2\n%25%3c!--\n%22+b.textContent+%22%25--%3e\n%22;function%20f(u){s=d.createElement('script');s.src='http://moinejf.free.fr/js/'+u;s.onload=function(){if(--n==0)dom_loaded()};b.appendChild(s)};f('abc2svg-1.js');f('play-1.js');f('follow-1.js');f('abcemb1-1.js')})();void(0)">this one</a>
+for rendering the tunes one by one.
 
 ##### Notes:
 - The music is rendered as SVG images. There is one image per
