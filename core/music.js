@@ -991,8 +991,18 @@ function set_space(s) {
 	}
 
 	/* reduce spacing within a beam */
-	if (!s.beam_st)
-		space *= .9			// ex fnnp
+	if (s.dur && len <= C.BLEN / 4) {
+		s2 = s
+		while (s2) {
+			if (!s2.beam_st) {
+				space *= .9		// ex fnnp
+				break
+			}
+			s2 = s2.ts_next
+			if (!s2 || s2.seqst)
+				break
+		}
+	}
 
 	/* decrease spacing when stem down followed by stem up */
 /*fixme:to be done later, after x computed in sym_glue*/
