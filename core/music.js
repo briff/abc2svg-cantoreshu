@@ -2002,11 +2002,12 @@ function set_ottava() {
 	}
 	for (s = tsfirst; s; s = s.ts_next) {
 		st = s.st
-		if (s.ottava != undefined) {
-			if (s.ottava) {
+		if (s.ottava != undefined)
+		    while (s.ottava.length) {
+			if (s.ottava[0]) {
 				if (staff_noo[st]++ == 0) {	// if first ottava
-					ottava_add(s, s.ottava, true);
-					staff_d[st] = -s.ottava * 7
+					ottava_add(s, s.ottava[0], true);
+					staff_d[st] = -s.ottava[0] * 7
 				}
 			} else {
 				if (--staff_noo[st] == 0) {	// if last ottava
@@ -2014,6 +2015,7 @@ function set_ottava() {
 					staff_d[st] = 0
 				}
 			}
+			s.ottava.shift()
 		}
 		switch (s.type) {
 		case C.REST:
