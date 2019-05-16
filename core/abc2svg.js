@@ -122,6 +122,7 @@ var errs = {
 		ctx: {},
 		prefix: '%',
 		state: 0,
+		ottava: [],
 		line: new scanBuf
 	},
 	psvg			// PostScript

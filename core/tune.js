@@ -876,7 +876,7 @@ function do_pscom(text) {
 			return
 		}
 		glovar.ottava = true;
-		parse.ottava = n
+		parse.ottava.push(n)
 		return
 	case "repbra":
 		if (parse.state >= 2) {

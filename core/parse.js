@@ -1163,7 +1163,7 @@ function new_bar() {
 	}
 
 	// set the start/stop of ottava
-	if (parse.ottava != undefined) {
+	if (parse.ottava.length) {
 		s2 = s
 		if (curvoice.cst != curvoice.st) {	// if staff change
 			s2 = {
@@ -1178,7 +1178,7 @@ function new_bar() {
 			sym_link(s2)
 		}
 		s2.ottava = parse.ottava
-		delete parse.ottava
+		parse.ottava = []
 	}
 
 	/* if the last element is '[', it may start
@@ -2154,9 +2154,9 @@ function new_note(grace, tp_fact) {
 
 	if (a_dcn_sav)
 		deco_cnv(a_dcn_sav, s, s.prev)
-	if (parse.ottava != undefined) {
+	if (parse.ottava.length) {
 		s.ottava = parse.ottava
-		delete parse.ottava
+		parse.ottava = []
 	}
 	if (parse.stemless)
 		s.stemless = true
@@ -2461,7 +2461,7 @@ function parse_music_line() {
 				}
 				if (ottava[dcn] != undefined) {
 					glovar.ottava = true;
-					parse.ottava = ottava[dcn]
+					parse.ottava.push(ottava[dcn])
 				} else {
 					a_dcn.push(dcn)
 				}
