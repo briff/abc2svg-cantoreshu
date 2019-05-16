@@ -813,9 +813,9 @@ function deco_cnv(a_dcn, s, prev) {
 			}
 			s.trem2 = true;
 			s.beam_end = true;
-//			s.beam_st = false;
+			s.beam_st = false;
 			prev.beam_st = true;
-//			prev.beam_end = false;
+			prev.beam_end = false;
 			s.ntrem = prev.ntrem = Number(dd.name[4]);
 			for (j = 0; j <= s.nhd; j++)
 				s.notes[j].dur *= 2;
