@@ -743,42 +743,61 @@ function draw_acc(x, y, acc,
 	xygl(x, y, "acc" + acc)
 }
 
-// draw helper lines between yl and yu
+// draw helper lines
 //fixme: double lines when needed for different voices
-function draw_hl(x, yl, yu, st, hltype) {
-    var	i, j,
-	p_staff = staff_tb[st],
-	staffb = p_staff.y,
+// (possible hook)
+Abc.prototype.draw_hl = function(x, s, hltype) {
+    var	i, j, n,
+	hla = [],
+	st = s.st,
+	p_staff = staff_tb[st]
+
+	// check if any helper line
+	if (!p_staff.hll)
+		return			// no helper line (no line)
+	for (i = 0; i <= s.nhd; i++) {
+		if (!p_staff.hlmap[s.notes[i].pit - p_staff.hll])
+			hla.push((s.notes[i].pit - 18) * 3)
+	}
+	n = hla.length
+	if (!n)
+		return			// no
+
+	// handle the helper lines out of the staff
+    var	staffb = p_staff.y,
 	stafflines = p_staff.stafflines,
 	top = (stafflines.length - 1) * 6,
-	bot = p_staff.botline
+	bot = p_staff.botline,
+	yl = bot,
+	yu = top
 
-	// no helper if no line
-	if (!/[\[|]/.test(stafflines))
-		return
-
-	if (yl % 6)
-		yl += 3
-	if (yu % 6)
-		yu -= 3
-	if (stafflines.indexOf('-') >= 0	// if forced helper lines ('-')
-	 && ((yl > bot && yl < top) || (yu > bot && yu < top)
-	  || (yl <= bot && yu >= top))) {
-		i = yl;
-		j = yu
-		while (i > bot && stafflines[i / 6] == '-')
-			i -= 6
-		while (j < top && stafflines[j / 6] == '-')
-			j += 6
-		for ( ; i < j; i += 6) {
-			if (stafflines[i / 6] == '-')
-				xygl(x, staffb + i, hltype)	// hole
+	for (i = 0; i < hla.length; i++) {
+		if (hla[i] < yl) {
+			yl = (((hla[i] + 51) / 6) | 0) * 6 - 48;
+			n--
+		} else if (hla[i] > yu) {
+			yu = ((hla[i] / 6) | 0) * 6;
+			n--
 		}
 	}
 	for (; yl < bot; yl += 6)
 		xygl(x, staffb + yl, hltype)
 	for (; yu > top; yu -= 6)
 		xygl(x, staffb + yu, hltype)
+	if (!n)
+		return			// no more helper lines
+
+	// draw the helper lines inside the staff
+	i = yl;
+	j = yu
+	while (i > bot && stafflines[i / 6] == '-')
+		i -= 6
+	while (j < top && stafflines[j / 6] == '-')
+		j += 6
+	for ( ; i < j; i += 6) {
+		if (stafflines[i / 6] == '-')
+			xygl(x, staffb + i, hltype)	// hole
+	}
 }
 
 /* -- draw a key signature -- */
@@ -879,7 +898,12 @@ function draw_keysig(x, s) {
 		/* explicit accidentals */
 		var	acc,
 			last_acc = s.k_a_acc[0].acc,
-			last_shift = 100
+			last_shift = 100,
+			s2 = {
+				st: st,
+				nhd: 0,
+				notes: [{}]
+			}
 
 		for (i = 0; i < s.k_a_acc.length; i++) {
 			acc = s.k_a_acc[i];
@@ -892,7 +916,8 @@ function draw_keysig(x, s) {
 			else if (acc.acc != last_acc)
 				x += 3;
 			last_acc = acc.acc;
-			draw_hl(x, shift, shift, st, "hl");
+			s2.notes[0].pit = shift / 3 + 18;
+			self.draw_hl(x, s2, "hl");
 			last_shift = shift;
 			draw_acc(x, staffb + shift,
 				 acc.acc, acc.micro_n, acc.micro_d);
@@ -1411,8 +1436,7 @@ function draw_note(s,
 			break
 		}
 	}
-	draw_hl(x_hl, 3 * (s.notes[0].pit - 18), 3 * (s.notes[s.nhd].pit - 18),
-		s.st, hltype)
+	self.draw_hl(x_hl, s, hltype)
 
 	/* draw the stem and flags */
 	y = y_head(s, note)

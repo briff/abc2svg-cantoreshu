@@ -4343,7 +4343,7 @@ function set_piece() {
 
 	// set the top and bottom of the staves
 	function set_top_bot() {
-		var st, p_staff, i, l, hole
+	    var	st, p_staff, i, j, l
 
 		for (st = 0; st <= nstaff; st++) {
 			p_staff = staff_tb[st]
@@ -4365,6 +4365,22 @@ function set_piece() {
 				} else {		// no line: big bar
 					p_staff.botbar -= 12;
 					p_staff.topbar += 12
+					continue	// no helper line
+				}
+			}
+
+			// define the helper lines
+			p_staff.hll = 18 + i - 1;	// pitch of lowest note
+							// without helper line
+			p_staff.hlmap = new Int8Array(new Array((l - i + 1) * 2))
+			for (j = 1; i < l; i++, j += 2) {
+				switch (p_staff.stafflines[i]) {
+				case '|':
+				case '[':
+					p_staff.hlmap[j - 1] = 1; // no helper line
+					p_staff.hlmap[j] = 1;
+					p_staff.hlmap[j + 1] = 1
+					break
 				}
 			}
 		}
