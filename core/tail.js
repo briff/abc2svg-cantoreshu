@@ -89,7 +89,6 @@ Abc.prototype.set_stems = set_stems;
 Abc.prototype.set_sym_glue = set_sym_glue;
 Abc.prototype.set_tsfirst = function(s) { tsfirst = s };
 Abc.prototype.set_vp = set_vp;
-Abc.prototype.set_v_param = set_v_param;
 Abc.prototype.set_width = set_width;
 Abc.prototype.sort_pitch = sort_pitch;
 Abc.prototype.strwh = strwh;

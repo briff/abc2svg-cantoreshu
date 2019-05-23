@@ -1011,7 +1011,7 @@ function do_pscom(text) {
 	case "stafflines":
 	case "staffscale":
 	case "staffnonote":
-		self.set_v_param(cmd, param)
+		set_v_param(cmd, param)
 		return
 	case "staves":
 	case "score":
