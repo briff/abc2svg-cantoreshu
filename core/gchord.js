@@ -166,18 +166,16 @@ var	note_names = "CDEFGAB",
 	acc_name = ["bb", "b", "", "#", "##"]
 
 	function gch_tr1(p, i2) {
-	    var	new_txt,
-			n, i1, i3, i4, ix, a, ip, ip2
+	    var	i, o, new_txt,
+		n, i1, i3, i4, ix, a, ip,
+		csa = p.split('/')
 
-		/* main chord */
-		n = note_names.indexOf(p[0])
-		if (n < 0) {
-			if (p[0] != '/')
-				return p
-		}
-
-		ip = 1
-		if (n >= 0) {		// if some chord
+		for (i = 0; i < csa.length; i++) {	// main and optional bass
+			p = csa[i];
+			o = p.search(/[ABCDEFG]/);
+			if (o < 0)
+				continue		// strange chord symbol!
+			ip = o + 1
 			a = 0
 			while (p[ip] == '#') {
 				a++;
@@ -187,42 +185,15 @@ var	note_names = "CDEFGAB",
 				a--;
 				ip++
 			}
-//			if (p[ip] == '=')
-//				ip++
+			n = note_names.indexOf(p[o]);
 			i3 = cde2fcg[n] + i2 + a * 7;
 			i4 = cgd2cde[(i3 + 16 * 7) % 7];	// note
 			i1 = ((((i3 + 22) / 7) | 0) + 159) % 5;	// accidental
-			new_txt = note_names[i4] + acc_name[i1]
+			csa[i] = p.slice(0, o) +
+					note_names[i4] + acc_name[i1] +
+					p.slice(ip)
 		}
-
-		ip2 = p.indexOf('/', ip)	// skip 'm'/'dim'..
-		if (ip2 < 0)
-			return new_txt + p.slice(ip);
-
-		/* bass */
-		n = note_names.indexOf(p[++ip2])
-		if (n < 0)
-			return new_txt + p.slice(ip);
-
-		new_txt += p.slice(ip, ip2);
-		a = 0
-		if (p[++ip2] == '#') {
-			a++
-			if (p[++ip2] == '#') {
-				a++;
-				ip2++
-			}
-		} else if (p[ip2] == 'b') {
-			a--
-			if (p[++ip2] == 'b') {
-				a--;
-				ip2++
-			}
-		}
-		i3 = cde2fcg[n] + i2 + a * 7;
-		i4 = cgd2cde[(i3 + 16 * 7) % 7];	// note
-		i1 = ((((i3 + 22) / 7) | 0) + 159) % 5;	// accidental
-		return new_txt + note_names[i4] + acc_name[i1] + p.slice(ip2)
+		return csa.join('/')
 	} // get_tr1
 
 function gch_transp(s) {
