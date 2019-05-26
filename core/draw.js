@@ -1600,7 +1600,8 @@ function slur_out(x1, y1, x2, y2, dir, height, dotted) {
 		dz = .6;
 	dz *= dir
 	
-	var scale_y = stv_g.v ? stv_g.scale : 1
+//	var scale_y = stv_g.st < 0 ? stv_g.scale : 1
+	var scale_y = 1			// (see set_dscale())
 	if (!dotted)
 		output += '<path d="M'
 	else
