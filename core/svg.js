@@ -42,7 +42,7 @@ var	output = "",		// output buffer
 		scale: 1,
 		dy: 0,
 		st: -1,
-		v: 0,
+		v: -1,
 		g: 0
 //		color: undefined
 	},
@@ -281,10 +281,14 @@ function set_g() {
 	// open the new sequence
 	output += '<g '
 	if (stv_g.scale != 1) {
-		if (stv_g.st >= 0)
+		if (stv_g.st < 0)
+			output += voice_tb[stv_g.v].scale_str
+		else if (stv_g.v < 0)
 			output += staff_tb[stv_g.st].scale_str
 		else
-			output += voice_tb[stv_g.v].scale_str
+			output += 'transform="translate(0,' +
+					(posy - stv_g.dy).toFixed(1) +
+				') scale(' + stv_g.scale.toFixed(2) + ')"'
 	}
 	if (stv_g.color) {
 		if (stv_g.scale != 1)
@@ -322,23 +326,29 @@ function set_sscale(st) {
 	stv_g.scale = new_scale;
 	stv_g.dy = dy;
 	stv_g.st = st;
+	stv_g.v = -1;
 	set_g()
 }
 
 /* -- set the voice or staff scale -- */
 function set_scale(s) {
-	var	new_scale = s.p_v.scale
+    var	new_dy,
+	new_scale = s.p_v.scale
 
 	if (new_scale == 1) {
 		set_sscale(s.st)
 		return
 	}
-/*fixme: KO when both staff and voice are scaled */
+	new_dy = posy
+	if (staff_tb[s.st].staffscale != 1) {
+		new_scale *= staff_tb[s.st].staffscale;
+		new_dy = staff_tb[s.st].y
+	}
 	if (new_scale == stv_g.scale && stv_g.dy == posy)
 		return
 	stv_g.scale = new_scale;
-	stv_g.dy = posy;
-	stv_g.st = -1;
+	stv_g.dy = new_dy;
+	stv_g.st = staff_tb[s.st].staffscale == 1 ? -1 : s.st;
 	stv_g.v = s.v;
 	set_g()
 }
@@ -479,9 +489,9 @@ function sy(y) {
 		return -y
 	if (stv_g.scale == 1)
 		return posy - y
-	if (stv_g.st < 0)
-		return (posy - y) / stv_g.scale	// voice scale
-	return stv_g.dy - y			// staff scale
+	if (stv_g.v >= 0)
+		return (stv_g.dy - y) / voice_tb[stv_g.v].scale
+	return stv_g.dy - y	// staff scale only
 }
 Abc.prototype.sy = sy;
 Abc.prototype.sh = function(h) {
@@ -599,7 +609,6 @@ function out_hyph(x, y, w) {
 		Math.round((d - 5) / stv_g.scale), d * n + 5)
 }
 // stem [and flags]
-// fixme: h is already scaled - change that?
 function out_stem(x, y, h, grace,
 		  nflags, straight) {	// optional
 //fixme: dx KO with half note or longa
@@ -609,8 +618,8 @@ function out_stem(x, y, h, grace,
 	if (h < 0)
 		dx = -dx;		// down
 	x += dx * stv_g.scale
-	if (stv_g.st < 0)
-		slen /= stv_g.scale;
+	if (stv_g.v >= 0)
+		slen /= voice_tb[stv_g.v].scale;
 	out_XYAB('<path class="sW" d="mX YvF"/>\n',	// stem
 		x, y, slen)
 	if (!nflags)
