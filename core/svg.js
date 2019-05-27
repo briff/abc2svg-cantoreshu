@@ -379,13 +379,8 @@ function delayed_update() {
 
 	for (st = 0; st <= nstaff; st++) {
 		if (staff_tb[st].sc_out) {
-			output += '<g transform="translate(0,' +
-					(posy - staff_tb[st].y).toFixed(1) +
-					') scale(' +
-					 staff_tb[st].staffscale.toFixed(2) +
-					')">\n' +
-				staff_tb[st].sc_out +
-				'</g>\n';
+			output += '<g ' + staff_tb[st].scale_str + '>\n' +
+				staff_tb[st].sc_out + '</g>\n';
 			staff_tb[st].sc_out = ""
 		}
 		if (!staff_tb[st].output)
