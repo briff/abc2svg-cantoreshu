@@ -28,6 +28,7 @@ abc2svg.modules = {
 		break: { fn: 'break-1.js' },
 		capo: { fn: 'capo-1.js' },
 		clip: { fn: 'clip-1.js' },
+	clairnote: { fn: 'clair-1.js' },
 		voicecombine: { fn: 'combine-1.js' },
 		diagram: { fn: 'diag-1.js' },
 	equalbars: { fn: 'equalbars-1.js' },

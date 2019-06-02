@@ -94,6 +94,7 @@ build abc2svg-$MAJOR.js: jsc core/abc2svg.js core/deco.js core/draw.js $
 build ambitus-$MAJOR.js: jscu modules/ambitus.js
 build break-$MAJOR.js: jscu modules/break.js
 build capo-$MAJOR.js: jscu modules/capo.js
+build clair-$MAJOR.js: jscu util/midi.js modules/clair.js
 build clip-$MAJOR.js: jscu modules/clip.js
 build combine-$MAJOR.js: jscu modules/combine.js
 build diag-$MAJOR.js: jscu modules/diag.js
@@ -129,7 +130,7 @@ build edit-$MAJOR.js: edit editor/edit.js
 build all: phony abc2svg-$MAJOR.js abcdoc-$MAJOR.js $
  abcemb-$MAJOR.js abcemb1-$MAJOR.js abcemb2-$MAJOR.js json-$MAJOR.js $
  setmidi-$MAJOR.js toaudio-$MAJOR.js play-$MAJOR.js psvg-$MAJOR.js $
- ambitus-$MAJOR.js break-$MAJOR.js capo-$MAJOR.js clip-$MAJOR.js $
+ ambitus-$MAJOR.js break-$MAJOR.js capo-$MAJOR.js clair-$MAJOR.js clip-$MAJOR.js $
  combine-$MAJOR.js diag-$MAJOR.js equalbars-$MAJOR.js grid-$MAJOR.js grid2-$MAJOR.js $
  MIDI-$MAJOR.js page-$MAJOR.js perc-$MAJOR.js soloffs-$MAJOR.js sth-$MAJOR.js $
  temper-$MAJOR.js edit-$MAJOR.css edit-$MAJOR.js edit-$MAJOR.xhtml $

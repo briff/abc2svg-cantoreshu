@@ -16,6 +16,7 @@ cat core/abc2svg.js core/deco.js core/draw.js\
 cp modules/ambitus.js ambitus-$MAJOR.js
 cp modules/break.js break-$MAJOR.js
 cp modules/capo.js capo-$MAJOR.js
+cat util/midi.js modules/clair.js >> clair-$MAJOR.js
 cp modules/clip.js clip-$MAJOR.js
 cp modules/combine.js combine-$MAJOR.js
 cp modules/diag.js diag-$MAJOR.js
