@@ -531,60 +531,58 @@ function memo_kv_parm(vid,	// voice ID (V:) / '*' (K:/V:*)
 // K: key signature
 // return the key and the voice/clef parameters
 function new_key(param) {
-	var	i, clef, key_end, c, tmp,
-		mode = 0,
-		s = {
-			type: C.KEY,
-			k_delta: 0,
-			dur:0
-		}
+    var	i, clef, key_end, c, tmp,
+	sf = "FCGDAEB".indexOf(param[0]) - 1,
+	mode = 0,
+	s = {
+		type: C.KEY,
+		k_delta: 0,
+		dur:0
+	}
 
 	set_ref(s);
 
 	// tonic
 	i = 1
+    if (sf < -1) {
 	switch (param[0]) {
-	case 'A': s.k_sf = 3; break
-	case 'B': s.k_sf = 5; break
-	case 'C': s.k_sf = 0; break
-	case 'D': s.k_sf = 2; break
-	case 'E': s.k_sf = 4; break
-	case 'F': s.k_sf = -1; break
-	case 'G': s.k_sf = 1; break
 	case 'H':				// bagpipe
 		switch (param[1]) {
 		case 'P':
 		case 'p':
 			s.k_bagpipe = param[1];
-			s.k_sf = param[1] == 'P' ? 0 : 2;
+			sf = param[1] == 'P' ? 0 : 2;
 			i++
 			break
 		default:
 			syntax(1, "Unknown bagpipe-like key")
+			key_end = true
 			break
 		}
 		break
 	case 'P':
 		syntax(1, "K:P is deprecated");
+		sf = 0;
 		s.k_drum = true;
 		key_end = true
 		break
 	case 'n':				// none
 		if (param.indexOf("none") == 0) {
-			s.k_sf = 0;
+			sf = 0;
 			s.k_none = true;
 			i = 4
+			break
 		}
 		// fall thru
 	default:
-		key_end = true
-		break
+		return [s, info_split(param)]
 	}
+    }
 
 	if (!key_end) {
 		switch (param[i]) {
-		case '#': s.k_sf += 7; i++; break
-		case 'b': s.k_sf -= 7; i++; break
+		case '#': sf += 7; i++; break
+		case 'b': sf -= 7; i++; break
 		}
 		param = param.slice(i).trim()
 		switch (param.slice(0, 3).toLowerCase()) {
@@ -598,24 +596,24 @@ function new_key(param) {
 			// fall thru ('m')
 		case "aeo":
 		case "m":
-		case "min": s.k_sf -= 3;
+		case "min": sf -= 3;
 			mode = 5
 			break
-		case "dor": s.k_sf -= 2;
+		case "dor": sf -= 2;
 			mode = 1
 			break
 		case "ion":
 		case "maj": break
-		case "loc": s.k_sf -= 5;
+		case "loc": sf -= 5;
 			mode = 6
 			break
-		case "lyd": s.k_sf += 1;
+		case "lyd": sf += 1;
 			mode = 3
 			break
-		case "mix": s.k_sf -= 1;
+		case "mix": sf -= 1;
 			mode = 4
 			break
-		case "phr": s.k_sf -= 4;
+		case "phr": sf -= 4;
 			mode = 2
 			break
 		}
@@ -637,7 +635,7 @@ function new_key(param) {
 			do {
 				var note = parse_acc_pit(tmp)
 				if (!note)
-					return [s, null]
+					break
 				s.k_a_acc.push(note);
 				c = param[tmp.index]
 				while (c == ' ')
@@ -645,12 +643,12 @@ function new_key(param) {
 			} while (c == '^' || c == '_' || c == '=');
 			param = param.slice(tmp.index)
 		} else if (s.k_exp && param.indexOf("none") == 0) {
-			s.k_sf = 0;
 			param = param.replace(/\w+\s*/, '')
 		}
 	}
 
-	s.k_delta = cgd2cde[(s.k_sf + 7) % 7];
+	s.k_delta = cgd2cde[(sf + 7) % 7];
+	s.k_sf = sf;
 	s.k_mode = mode
 
 	return [s, info_split(param)]
