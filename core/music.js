@@ -3002,6 +3002,7 @@ function init_music_line() {
 		if (s2.k_sf || s2.k_a_acc) {
 			s = new_sym(C.KEY, p_voice, last_s);
 			s.k_sf = s2.k_sf;
+			s.k_mode = s2.k_mode;
 			s.k_old_sf = s2.k_sf;	// no key cancel
 			s.k_none = s2.k_none;
 			s.k_a_acc = s2.k_a_acc;
