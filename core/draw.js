@@ -1462,8 +1462,6 @@ function draw_note(s,
 		s2 = s.ts_prev;
 		slen = (s2.stem > 0 ? s2.y : s2.ys) - s.y;
 		slen += staff_tb[s2.st].y - staffb;
-/*fixme:KO when different scales*/
-		slen /= s.p_v.scale;
 		out_stem(x, y, slen)
 	}
 
