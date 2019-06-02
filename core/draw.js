@@ -801,6 +801,7 @@ Abc.prototype.draw_hl = function(x, s, hltype) {
 }
 
 /* -- draw a key signature -- */
+// (possible hook)
 var	sharp_cl = new Int8Array([24, 9, 15, 21, 6, 12, 18]),
 	flat_cl = new Int8Array([12, 18, 24, 9, 15, 21, 6]),
 	sharp1 = new Int8Array([-9, 12, -9, -9, 12, -9]),
@@ -808,7 +809,7 @@ var	sharp_cl = new Int8Array([24, 9, 15, 21, 6, 12, 18]),
 	flat1 = new Int8Array([9, -12, 9, -12, 9, -12]),
 	flat2 = new Int8Array([-12, 9, -12, 9, -12, 9])
 
-function draw_keysig(x, s) {
+Abc.prototype.draw_keysig = function(x, s) {
 	if (s.k_none)
 		return
 	var	old_sf = s.k_old_sf,
@@ -1599,7 +1600,7 @@ function slur_out(x1, y1, x2, y2, dir, height, dotted) {
 	if (dz > .6)
 		dz = .6;
 	dz *= dir
-	
+
 //	var scale_y = stv_g.st < 0 ? stv_g.scale : 1
 	var scale_y = 1			// (see set_dscale())
 	if (!dotted)
@@ -3850,7 +3851,7 @@ function draw_symbols(p_voice) {
 			set_color();
 			set_sscale(s.st);
 			anno_start(s);
-			draw_keysig(x, s);
+			self.draw_keysig(x, s);
 			anno_stop(s)
 			break
 		case C.MREST:
