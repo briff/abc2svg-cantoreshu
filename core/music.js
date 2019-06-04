@@ -4355,9 +4355,14 @@ function set_piece() {
 			l = p_staff.stafflines.length;
 			p_staff.topbar = 6 * (l - 1)
 
-			for (i = 0; i < l - 1; i++)
-				if (p_staff.stafflines[i] != '.')
-					break
+			for (i = 0; i < l - 1; i++) {
+				switch (p_staff.stafflines[i]) {
+				case '.':
+				case '-':
+					continue
+				}
+				break
+			}
 			p_staff.botline = p_staff.botbar = i * 6
 			if (i >= l - 2) {		// 0, 1 or 2 lines
 				if (p_staff.stafflines[i] != '.') {
