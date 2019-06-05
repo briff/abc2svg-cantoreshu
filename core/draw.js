@@ -3485,7 +3485,10 @@ function draw_systems(indent) {
 				st_ws: ws | 0
 			}
 			i = 'stdef' + cfmt.fullsvg;
-			glyphs[i] = ln.replace('path', 'path id="' + i + '"');
+			if (ln.indexOf('<path', 1) < 0)
+				glyphs[i] = ln.replace('path', 'path id="' + i + '"')
+			else
+				glyphs[i] = '<g id="' + i + '">\n' + ln + '\n</g>';
 			xygl(x1, y, i)
 			return
 		}
