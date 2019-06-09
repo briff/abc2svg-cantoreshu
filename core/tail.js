@@ -130,8 +130,6 @@ Abc.prototype.xygl = xygl;
     } // set_hooks()
 }	// end of Abc()
 
-} // end of abc2svg
-
 // compatibility
 var Abc = abc2svg.Abc
 

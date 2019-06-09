@@ -17,11 +17,12 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with abc2svg-core.  If not, see <http://www.gnu.org/licenses/>.
 
-// start of the abc2svg object
-var abc2svg = {
+// define the abc2svg object is not yet done
+if (typeof abc2svg == "undefined")
+	var abc2svg = {};
 
 // constants
-    C: {
+abc2svg.C = {
 	BLEN: 1536,
 
 	// symbol types
@@ -55,10 +56,10 @@ var abc2svg = {
 	SL_AUTO: 0x03,
 	SL_HIDDEN: 0x04,
 	SL_DOTTED: 0x08		// (modifier bit)
-    },
+    };
 
 // start of the Abc object
-  Abc: function(user) {
+abc2svg.Abc = function(user) {
 	"use strict";
 
     // constants

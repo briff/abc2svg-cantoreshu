@@ -83,9 +83,9 @@ These files are:
 When looking at a ABC file in a web browser, you may also use a
 <a href="https://en.wikipedia.org/wiki/Bookmarklet">bookmarklet</a>
 as
-<a href="javascript:(function(){var%20s,n=4,d=document,b=d.body;b.innerHTML=%22\n%25abc-2.2\n%25%3c!--\n%22+b.textContent+%22%25--%3e\n%22;function%20f(u){s=d.createElement('script');s.src='http://moinejf.free.fr/js/'+u;s.onload=function(){if(--n==0)dom_loaded()};b.appendChild(s)};f('abc2svg-1.js');f('play-1.js');f('follow-1.js');f('abcemb-1.js')})();void(0)">this one</a>
+<a href="javascript:(function(){var%20s,n=3,d=document,b=d.body;b.innerHTML=%22\n%25abc-2.2\n%25%3c!--\n%22+b.textContent+%22%25--%3e\n%22;function%20f(u){s=d.createElement('script');s.src='http://moinejf.free.fr/js/'+u;s.onload=function(){if(--n==0)dom_loaded()};b.appendChild(s)};f('play-1.js');f('follow-1.js');f('abcemb-1.js')})();void(0)">this one</a>
 for rendering all tunes, or
-<a href="javascript:(function(){var%20s,n=4,d=document,b=d.body;b.innerHTML=%22\n%25abc-2.2\n%25%3c!--\n%22+b.textContent+%22%25--%3e\n%22;function%20f(u){s=d.createElement('script');s.src='http://moinejf.free.fr/js/'+u;s.onload=function(){if(--n==0)dom_loaded()};b.appendChild(s)};f('abc2svg-1.js');f('play-1.js');f('follow-1.js');f('abcemb1-1.js')})();void(0)">this one</a>
+<a href="javascript:(function(){var%20s,n=3,d=document,b=d.body;b.innerHTML=%22\n%25abc-2.2\n%25%3c!--\n%22+b.textContent+%22%25--%3e\n%22;function%20f(u){s=d.createElement('script');s.src='http://moinejf.free.fr/js/'+u;s.onload=function(){if(--n==0)dom_loaded()};b.appendChild(s)};f('play-1.js');f('follow-1.js');f('abcemb1-1.js')})();void(0)">this one</a>
 for rendering the tunes one by one.
 
 ##### Notes:

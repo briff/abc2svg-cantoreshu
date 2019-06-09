@@ -41,6 +41,8 @@ window.onerror = function(msg, url, line) {
 	return false
 }
 
+var abc2svg = {}
+
 // function called when abc2svg is fully loaded
 function dom_loaded() {
 var	errtxt = '',
@@ -64,7 +66,7 @@ var	errtxt = '',
 	jsdir = (function() {
 		var scrs = document.getElementsByTagName('script')
 		for (var i = 0; i < scrs.length; i++) {
-			var a = scrs[i].src.match(/(.*?\/)abc2svg-.\.js/)
+			var a = scrs[i].src.match(/(.*?\/)abcemb1-.\.js/)
 			if (a)
 				return a[1]
 		}
@@ -405,6 +407,12 @@ function render() {
 } // render()
 
 	// --- abcemb() main code ---
+
+	// load the abc2svg core if not done by <script>
+	if (!abc2svg.Abc) {
+		abc2svg.loadjs("abc2svg-1.js", dom_loaded)
+		return
+	}
 
 	// get the page content
 	page = document.body.innerHTML;
