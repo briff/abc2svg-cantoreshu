@@ -63,7 +63,7 @@ H "History: "',
 	leftmargin: 1.4 * CM,
 	lineskipfac: 1.1,
 	linewarn: true,
-	maxshrink: .65,
+	maxshrink: 1,		// smallest score
 	maxstaffsep: 2000,
 	maxsysstaffsep: 2000,
 	measurefirst: 1,
