@@ -1817,7 +1817,7 @@ function set_lines(	s,		/* first symbol */
 
 /* -- cut the tune into music lines -- */
 function cut_tune(lwidth, indent) {
-	var	s, s2, s3, i, xmin, lwx,
+    var	s2, i,
 //fixme: not usable yet
 //		pg_sav = {
 //			leftmargin: cfmt.leftmargin,
@@ -1825,7 +1825,7 @@ function cut_tune(lwidth, indent) {
 //			pagewidth: cfmt.pagewidth,
 //			scale: cfmt.scale
 //		},
-		s = tsfirst
+	s = tsfirst
 
 	// take care of the voice subnames
 	if (indent != 0) {
@@ -1858,8 +1858,6 @@ function cut_tune(lwidth, indent) {
 	}
 
 	/* cut at explicit end of line, checking the line width */
-	xmin = indent;
-	lwx = lwidth * cfmt.maxshrink;
 	s2 = s
 	for ( ; s; s = s.ts_next) {
 //fixme: not usable yet
@@ -1876,34 +1874,11 @@ function cut_tune(lwidth, indent) {
 //			}
 //			continue
 //		}
-		if (!s.seqst && !s.eoln)
+		if (!s.ts_next)
+			s = s.ts_next
+		else if (!s.eoln)
 			continue
-		xmin += s.shrink
-		if (xmin > lwx) {		// overflow
-			s2 = set_lines(s2, s, lwidth, indent)
-		} else {
-			if (!s.eoln)
-				continue
-			delete s.eoln
-
-			// if eoln on a note or a rest,
-			// check for a smaller duration in an other voice
-			if (s.dur) {
-				for (s3 = s.ts_next; s3; s3 = s3.ts_next) {
-					if (s3.seqst)
-						break
-					if (s3.dur < s.dur) {
-						if (s.next)
-							s = s.next.ts_prev
-						else
-							s = s2 = null
-						break
-					}
-				}
-			}
-			if (s)
-				s2 = set_nl(s, true)
-		}
+		s2 = set_lines(s2, s, lwidth, indent)
 		if (!s2)
 			break
 
@@ -1913,7 +1888,6 @@ function cut_tune(lwidth, indent) {
 			delete s2.nl
 			continue
 		}
-		xmin = s2.shrink;
 		s = s2.ts_prev;		// don't miss an eoln
 		indent = 0
 	}
