@@ -354,15 +354,12 @@ function render() {
 			alert("abc2svg javascript error: " + e.message +
 				"\nStack:\n" + e.stack)
 		}
-		abc2svg.abc_end()		// close the page if %%pageheight
 		if (errtxt) {
-			i = page.indexOf("\n", j);
-			i = page.indexOf("\n", i + 1);
-			alert("Errors in\n" +
-				page.slice(j, i) +
-				"\n...\n\n" + errtxt);
+			new_page += '<pre style="background:#ff8080">' +
+					errtxt + "</pre>\n";
 			errtxt = ""
 		}
+		abc2svg.abc_end()		// close the page if %%pageheight
 		if (page[j] == 'X')
 			new_page += '</div>\n'
 	    } // selection

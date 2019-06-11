@@ -202,8 +202,8 @@ function ready() {
 				"\nStack:\n" + e.stack)
 		}
 		if (errtxt) {
-			new_page += '<p style="background:#ff8080">' +
-					errtxt + "</p>\n";
+			new_page += '<pre style="background:#ff8080">' +
+					errtxt + "</pre>\n";
 			errtxt = ""
 		}
 		try {
