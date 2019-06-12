@@ -405,6 +405,7 @@ function set_format(cmd, param) {
 		set_v_param("uscale", f)
 		break
 	case "bgcolor":
+	case "fgcolor":
 	case "dblrepbar":
 	case "titleformat":
 		cfmt[cmd] = param

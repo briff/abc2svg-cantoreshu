@@ -990,8 +990,14 @@ function svg_flush() {
 
     var	head = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"\n\
 	xmlns:xlink="http://www.w3.org/1999/xlink"\n\
-	color="black" class="music" stroke-width=".7"',
+	color="',
 	g = ''
+
+	if (cfmt.fgcolor)
+		head += cfmt.fgcolor + '" fill="' + cfmt.fgcolor + '"'
+	else
+		head += 'black"';
+	head += ' class="music" stroke-width=".7"'
 
 	if (cfmt.bgcolor)
 		head += ' style="background-color: ' + cfmt.bgcolor + '"';
