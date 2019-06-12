@@ -353,8 +353,8 @@ function draw_gchord(s, gchy_min, gchy_max) {
 		if (gch.wh[0] > w)
 			w = gch.wh[0]
 	}
-	y_above = y_get(s.st, 1, s.x - 2, w);
-	y_below = y_get(s.st, 0, s.x - 2, w)
+	y_above = y_get(s.st, 1, s.x - 3, w);
+	y_below = y_get(s.st, 0, s.x - 3, w)
 	if (y_above < gchy_max)
 		y_above = gchy_max
 	if (y_below > gchy_min)
