@@ -1025,6 +1025,9 @@ function draw_rest(s) {
 	set_scale(s);
 	anno_start(s);
 
+	if (s.notes[0].color)
+		set_color(s.notes[0].color);
+
 	y = s.y;
 
 	i = 5 - s.nflags		/* rest_tb index (5 = C_XFLAGS) */
@@ -1076,6 +1079,7 @@ function draw_rest(s) {
 			x += 3.5
 		}
 	}
+	set_color();
 	anno_stop(s)
 }
 
