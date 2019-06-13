@@ -316,7 +316,7 @@ function get_st_lines(param) {
 }
 
 // create a block symbol in the tune body
-function new_block(subtype, current) {
+function new_block(subtype) {
 	var	s = {
 			type: C.BLOCK,
 			subtype: subtype,
@@ -325,14 +325,7 @@ function new_block(subtype, current) {
 
 	if (parse.state == 2)
 		goto_tune()
-	if (current) {
-		sym_link(s)
-		return s
-	}
-	var voice_s = curvoice;
-	curvoice = voice_tb[par_sy.top_voice]
-	sym_link(s);
-	curvoice = voice_s
+	sym_link(s)
 	return s
 }
 

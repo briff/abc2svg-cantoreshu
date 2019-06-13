@@ -86,7 +86,7 @@ abc2svg.MIDI = {
 		if (this.parse.state >= 2) {
 			if (this.cfmt().sound != "play")
 				break
-			s = this.new_block("midiprog", true);
+			s = this.new_block("midiprog");
 			s.instr = v
 		} else {
 			this.set_v_param("instr", v)
@@ -106,7 +106,7 @@ abc2svg.MIDI = {
 		if (this.parse.state >= 2) {
 			if (this.cfmt().sound != "play")
 				break
-			s = this.new_block("midictl", true);
+			s = this.new_block("midictl");
 			s.ctrl = n;
 			s.val = v
 		} else {
