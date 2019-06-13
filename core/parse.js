@@ -2649,7 +2649,6 @@ function parse_music_line() {
 				}
 				if (a_dcn)
 					syntax(1, "Decoration ignored");
-				s.gr_end = true;
 				grace.extra = grace.next;
 				grace.extra.prev = null;
 				grace.next = null;
