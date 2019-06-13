@@ -83,7 +83,14 @@ abc2svg.MIDI = {
 			this.syntax(1, "Bad program in %%MIDI")
 			return
 		}
-		this.set_v_param("instr", v)
+		if (this.parse.state >= 2) {
+			if (this.cfmt().sound != "play")
+				break
+			s = this.new_block("midiprog", true);
+			s.instr = v
+		} else {
+			this.set_v_param("instr", v)
+		}
 		break
 	case "control":
 		n = parseInt(a[2])
@@ -99,7 +106,7 @@ abc2svg.MIDI = {
 		if (this.parse.state >= 2) {
 			if (this.cfmt().sound != "play")
 				break
-			s = this.new_block("midictl");
+			s = this.new_block("midictl", true);
 			s.ctrl = n;
 			s.val = v
 		} else {
