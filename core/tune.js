@@ -1928,7 +1928,7 @@ function get_voice(parm) {
 		if (a.length != 0)
 			memo_kv_parm(vid, a)
 		if (vid != '*' && parse.state == 1)
-			new_voice(vid)
+			curvoice = new_voice(vid)
 		return
 	}
 
