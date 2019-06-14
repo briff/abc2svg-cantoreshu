@@ -3514,8 +3514,10 @@ function draw_systems(indent) {
 			h = p_staff.topbar * p_staff.staffscale;
 
 		s.ymx = s.ymn + h;
-//		set_sscale(-1);
+
 		anno_start(s)
+		if (s.color)
+			set_color(s.color);
 
 		// compute the middle vertical offset of the staff
 		yb = p_staff.y + 12;
@@ -3549,6 +3551,9 @@ function draw_systems(indent) {
 					out_XYAB(
 			'<path class="bW" stroke-dasharray="A,A" d="MX Yv-G"/>\n',
 						x, bot, w, h)
+				} else if (s.color) {
+					out_XYAB('<path class="bW" d="MX Yv-F"/>\n',
+						x, bot, h)
 				} else {
 					sb.push(new Float32Array([x, bot, h]))
 				}
@@ -3557,7 +3562,11 @@ function draw_systems(indent) {
 //			case "[":
 //			case "]":
 				x -= 3;
-				thb.push(new Float32Array([x + 1.5, bot, h]))
+				if (s.color)
+					out_XYAB('<path class="bthW" d="MX Yv-F"/>\n',
+						x + 1.5, bot, h)
+				else
+					thb.push(new Float32Array([x + 1.5, bot, h]))
 				break
 			case ":":
 				x -= 2;
@@ -3567,7 +3576,7 @@ function draw_systems(indent) {
 			}
 			x -= 3
 		}
-//		set_sscale(-1);
+		set_color();
 		anno_stop(s)
 	} // draw_bar()
 
