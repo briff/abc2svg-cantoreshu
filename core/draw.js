@@ -1957,7 +1957,9 @@ if (two_staves) error(2, k1, "*** multi-staves slurs not treated yet");
 	dx = x2 - x1;
 	a = (y2 - y1) / dx;
 /*fixme: it seems to work with .4, but why?*/
-	addy = y1 - a * x1 + .4 * height
+//	addy = y1 - a * x1 + .4 * height
+//fixme: the following code seems better!
+	addy = y1 - a * x1 + 4 * Math.sqrt(height)
 	if (k1.v == k2.v)
 	    for (k = k1; k != k2; k = k.next) {
 		if (k.st != upstaff)
