@@ -427,9 +427,9 @@ function ToAudio() {
 			top_v = s.sy.top_voice
 			break
 		case C.BLOCK:
-			if (s.subtype != "midictl")
-				break
-			a_e.push(new Float32Array([	// generate a MIDI control
+			switch (s.subtype) {
+			case "midictl":
+			    a_e.push(new Float32Array([	// generate a MIDI control
 				s.istart,
 				p_time,
 				-1,			// MIDI control
@@ -437,6 +437,11 @@ function ToAudio() {
 				s.val,
 				1,
 				s.v]))
+				break
+			case "midiprog":
+				instr[s.v] = s.instr	// %%MIDI program
+				break
+			}
 			break
 		}
 		s = s.ts_next
