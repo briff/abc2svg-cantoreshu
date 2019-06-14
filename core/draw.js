@@ -3407,11 +3407,9 @@ function draw_systems(indent) {
 		xstaff = [],
 		bar_bot = [],
 		bar_height = [],
+		ba = [],		// bars [symbol, bottom, height]
 		sb = [],
-		db = [],
-		thb = [],
-		gl = [],
-		rn = []
+		thb = []
 
 	/* -- set the bottom and height of the measure bars -- */
 	function bar_set() {
@@ -3501,7 +3499,7 @@ function draw_systems(indent) {
 
 	// draw a measure bar
 	function draw_bar(s, bot, h) {
-	    var	i, s2, yb,
+	    var	i, s2, yb, w,
 		bar_type = s.bar_type,
 		st = s.st,
 		p_staff = staff_tb[st],
@@ -3516,7 +3514,7 @@ function draw_systems(indent) {
 			h = p_staff.topbar * p_staff.staffscale;
 
 		s.ymx = s.ymn + h;
-		set_sscale(-1);
+//		set_sscale(-1);
 		anno_start(s)
 
 		// compute the middle vertical offset of the staff
@@ -3530,12 +3528,12 @@ function draw_systems(indent) {
 			if (s.bar_mrep == 1) {
 				for (s2 = s.prev; s2.type != C.REST; s2 = s2.prev)
 					;
-				gl.push([s2.x, yb, st, "mrep"])
+				xygl(s2.x, yb, "mrep")
 			} else {
-				gl.push([x, yb, st, "mrep2"])
+				xygl(x, yb, "mrep2")
 				if (s.v == cur_sy.top_voice)
-					rn.push([x, yb + p_staff.topbar - 9,
-						st, s.bar_mrep.toString()])
+					xy_str(x, yb + p_staff.topbar - 9,
+						s.bar_mrep.toString(), "c")
 			}
 		}
 
@@ -3545,11 +3543,15 @@ function draw_systems(indent) {
 		for (i = bar_type.length; --i >= 0; ) {
 			switch (bar_type[i]) {
 			case "|":
-				if (s.bar_dotted)
-					db.push(new Float32Array([x, bot, h,
-						p_staff.staffscale]))
-				else
+				if (s.bar_dotted) {
+					set_sscale(-1);
+					w = (5 * p_staff.staffscale).toFixed(1);
+					out_XYAB(
+			'<path class="bW" stroke-dasharray="A,A" d="MX Yv-G"/>\n',
+						x, bot, w, h)
+				} else {
 					sb.push(new Float32Array([x, bot, h]))
+				}
 				break
 			default:
 //			case "[":
@@ -3559,21 +3561,35 @@ function draw_systems(indent) {
 				break
 			case ":":
 				x -= 2;
-				gl.push([x + 1, yb - 12, st, "rdots"])
+				set_sscale(st);
+				xygl(x + 1, yb - 12, "rdots")
 				break
 			}
 			x -= 3
 		}
-		set_sscale(-1);
+//		set_sscale(-1);
 		anno_stop(s)
 	} // draw_bar()
 
 	// output all the bars
 	function out_bars() {
-	    var	i, b, w, bx,
-		l = sb.length;
+	    var	i, b, bx,
+		l = ba.length
+
+		set_font("annotation");
+		if (gene.curfont.box) {
+			gene.curfont.box = false
+			bx = true
+		}
+		for (i = 0; i < l; i++) {
+			b = ba[i];		// symbol, bottom, height
+			draw_bar(b[0], b[1], b[2])
+		}
+		if (bx)
+			gene.curfont.box = true
 
 		set_sscale(-1)
+		l = sb.length
 		if (l) {			// single bars [x, y, h]
 			output += '<path class="bW" d="'
 			for (i = 0; i < l; i++) {
@@ -3581,17 +3597,6 @@ function draw_systems(indent) {
 				out_XYAB('MX Yv-F', b[0], b[1], b[2])
 			}
 			output += '"/>\n'
-		}
-
-		l = db.length
-		if (l) {			// dotted bars [x, y, h, scale]
-			for (i = 0; i < l; i++) {
-				b = db[i];
-				w = (5 * b[3]).toFixed(1);
-				out_XYAB('<path class="bW" ' +
-					'stroke-dasharray="' + w + ',' + w + '" d="' +
-					'MX Yv-F"/>\n', b[0], b[1], b[2])
-			}
 		}
 
 		l = thb.length
@@ -3602,31 +3607,6 @@ function draw_systems(indent) {
 				out_XYAB('MX Yv-F', b[0], b[1], b[2])
 			}
 			output += '"/>\n'
-		}
-
-		l = gl.length
-		if (l) {			// glyphs [x, y, staff, glyph]
-			for (i = 0; i < l; i++) {
-				b = gl[i];
-				set_sscale(b[2]);
-				xygl(b[0], b[1], b[3])
-			}
-		}
-			
-		l = rn.length
-		if (l) {			// repeat number [x, y, staff, number]
-			set_font("annotation");
-			if (gene.curfont.box) {
-				gene.curfont.box = false
-				bx = true
-			}
-			for (i = 0; i < l; i++) {
-				b = rn[i];
-				set_sscale(b[2]);
-				xy_str(b[0], b[1], b[3], "c")
-			}
-			if (bx)
-				gene.curfont.box = true
 		}
 	} // out_bars()
 
@@ -3694,11 +3674,10 @@ function draw_systems(indent) {
 			cur_sy = sy;
 			bar_set()
 			continue
-		case C.BAR:
+		case C.BAR:		// display the bars after the staves
 			if (s.second || s.invis || !s.bar_type)
 				break
-			st = s.st;
-			draw_bar(s, bar_bot[st], bar_height[st])
+			ba.push([s, bar_bot[s.st], bar_height[s.st]])
 			break
 		case C.STBRK:
 			if (cur_sy.voices[s.v].range == 0) {
@@ -3755,7 +3734,7 @@ function draw_systems(indent) {
 
 	// and the bars
 	out_bars()
-	set_sscale(-1)
+//	set_sscale(-1)
 }
 
 /* -- draw remaining symbols when the staves are defined -- */
