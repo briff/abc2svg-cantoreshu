@@ -184,15 +184,9 @@ function sort_all() {
 			multi = -1;
 			vn = []
 			for (v = 0; v < nv; v++) {
-				if (!sy.voices[v]) {
-					sy.voices[v] = {
-						range: -1
-					}
+				if (!sy.voices[v])
 					continue
-				}
 				ir = sy.voices[v].range
-				if (ir < 0)
-					continue
 				vn[ir] = v;
 				multi++
 			}
@@ -278,11 +272,8 @@ function sort_all() {
 						break
 				}
 				for (v2 = 0; v2 < nv; v2++) {
-					if (!new_sy.voices[v2])
-						continue
-					ir = new_sy.voices[v2].range
-					if (ir < 0
-					 || sy.voices[v2].range >= 0)
+					if (!new_sy.voices[v2]
+					 || sy.voices[v2])
 						continue
 					vn[ir2++] = v2
 				}
@@ -491,7 +482,7 @@ function new_syst(init) {
 
 	// update the previous system
 	for (v = 0; v < voice_tb.length; v++) {
-	    if (par_sy.voices[v].range >= 0) {
+	    if (par_sy.voices[v]) {
 		st = par_sy.voices[v].st
 		var	sy_staff = par_sy.staves[st],
 			p_voice = voice_tb[v]
@@ -501,9 +492,6 @@ function new_syst(init) {
 		if (p_voice.staffscale)
 			sy_staff.staffscale = p_voice.staffscale;
 	    }
-		sy_new.voices[v] = clone(par_sy.voices[v]);
-		sy_new.voices[v].range = -1;
-		delete sy_new.voices[v].second
 	}
 	for (st = 0; st < par_sy.staves.length; st++) {
 		sy_new.staves[st] = clone(par_sy.staves[st]);
@@ -1216,8 +1204,8 @@ function generate() {
 		p_voice = voice_tb[v];
 		p_voice.time = 0;
 		p_voice.sym = p_voice.last_sym = null;
-		p_voice.st = cur_sy.voices[v].st;
-		p_voice.second = cur_sy.voices[v].second;
+//		p_voice.st = cur_sy.voices[v].st;
+//		p_voice.second = cur_sy.voices[v].second;
 //		p_voice.clef.time = 0;
 		delete p_voice.have_ly;
 		p_voice.hy_st = 0;
@@ -1382,8 +1370,9 @@ function get_staves(cmd, parm) {
 	}
 	if (no_sym				/* if first %%staves */
 	 || (maxtime == 0 && staves_found < 0)) {
-		for (v = 0; v < par_sy.voices.length; v++)
-			par_sy.voices[v].range = -1
+//		for (v = 0; v < par_sy.voices.length; v++)
+//			par_sy.voices[v].range = -1
+		;
 	} else {
 
 		/*
@@ -1392,7 +1381,7 @@ function get_staves(cmd, parm) {
 		 * the previous system - see sort_all
 		 */
 		for (v = 0; v < par_sy.voices.length; v++) {
-			if (par_sy.voices[v].range >= 0) {
+			if (par_sy.voices[v]) {
 				curvoice = voice_tb[v]
 				break
 			}
@@ -1428,8 +1417,9 @@ function get_staves(cmd, parm) {
 			par_sy.top_voice = p_voice.v
 
 		// if the voice is already here, clone it
-		if (par_sy.voices[v].range >= 0) {
+		if (par_sy.voices[v]) {
 			p_voice2 = clone(p_voice);
+//			p_voice2.id += "_c"		// for tests
 			par_sy.voices[voice_tb.length] = clone(par_sy.voices[v]);
 			v = voice_tb.length;
 			p_voice2.v = v;
@@ -1441,6 +1431,8 @@ function get_staves(cmd, parm) {
 				p_voice = p_voice.clone;
 			p_voice.clone = p_voice2;
 			p_voice = p_voice2
+		} else {
+			par_sy.voices[v] = {}
 		}
 		a_vf[i][0] = p_voice;
 		par_sy.voices[v].range = range++
@@ -1538,7 +1530,7 @@ function get_staves(cmd, parm) {
 
 	for (v = 0; v < voice_tb.length; v++) {
 		p_voice = voice_tb[v]
-		if (par_sy.voices[v].range < 0) {
+		if (!par_sy.voices[v]) {
 			p_voice.ignore = true
 			continue
 		}
@@ -1861,9 +1853,9 @@ function new_voice(id) {
 
 	voice_tb.push(p_voice);
 
-	par_sy.voices[v] = {
-		range: -1
-	}
+//	par_sy.voices[v] = {
+//		range: -1
+//	}
 
 	return p_voice
 }
@@ -1948,15 +1940,17 @@ function get_voice(parm) {
 		if (staves_found < 0) {		// if no %%score/%%staves
 			curvoice.st = curvoice.cst = ++nstaff;
 			par_sy.nstaff = nstaff;
-			par_sy.voices[v].st = nstaff;
-			par_sy.voices[v].range = v;
+			par_sy.voices[v] = {
+				st: nstaff,
+				range: v
+			}
 			par_sy.staves[nstaff] = {
 				stafflines: curvoice.stafflines || "|||||",
 				staffscale: 1
 			}
 		}
 	
-		if (par_sy.voices[v].range < 0) {
+		if (!par_sy.voices[v]) {
 //			if (cfmt.alignbars)
 //				syntax(1, "V: does not work with %%alignbars")
 			if (staves_found >= 0)
@@ -2026,9 +2020,11 @@ function goto_tune(is_K) {
 		for (v = 0; v <= nstaff; v++) {
 			p_voice = voice_tb[v];
 			delete p_voice.new;		// old voice
-			p_voice.st = p_voice.cst =
-				par_sy.voices[v].st =
-					par_sy.voices[v].range = v;
+			p_voice.st = p_voice.cst = v;
+			par_sy.voices[v] = {
+				st: v,
+				range: v
+			}
 			par_sy.staves[v] = {
 				stafflines: p_voice.stafflines || "|||||",
 				staffscale: 1

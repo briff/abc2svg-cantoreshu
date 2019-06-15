@@ -3204,7 +3204,7 @@ function draw_vname(indent) {
 	// check if full or sub names
 	for (v = 0; v < voice_tb.length; v++) {
 		p_voice = voice_tb[v]
-		if (!p_voice.sym)
+		if (!p_voice.sym || !cur_sy.voices[v])
 			continue
 		st = cur_sy.voices[v].st
 		if (!cur_sy.st_print[st])
@@ -3220,7 +3220,7 @@ function draw_vname(indent) {
 		return
 	for (v = 0; v < voice_tb.length; v++) {
 		p_voice = voice_tb[v]
-		if (!p_voice.sym)
+		if (!p_voice.sym || !cur_sy.voices[v])
 			continue
 		st = cur_sy.voices[v].st
 		if (!cur_sy.st_print[st])
@@ -3691,13 +3691,15 @@ function draw_systems(indent) {
 			ba.push([s, bar_bot[s.st], bar_height[s.st]])
 			break
 		case C.STBRK:
-			if (cur_sy.voices[s.v].range == 0) {
+			if (cur_sy.voices[s.v]
+			 && cur_sy.voices[s.v].range == 0) {
 				if (s.xmx > 14) {
 
 					/* draw the left system if stbrk in all voices */
 					var nv = 0
 					for (var i = 0; i < voice_tb.length; i++) {
-						if (cur_sy.voices[i].range > 0)
+						if (cur_sy.voices[i]
+						  && cur_sy.voices[i].range > 0)
 							nv++
 					}
 					for (s2 = s.ts_next; s2; s2 = s2.ts_next) {

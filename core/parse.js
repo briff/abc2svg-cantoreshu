@@ -2341,7 +2341,8 @@ function parse_music_line() {
 			case '\n':			// line break
 				if (cfmt.barsperstaff)
 					break
-				if (par_sy.voices[curvoice.v].range == 0
+				if (par_sy.voices[curvoice.v]
+				 && par_sy.voices[curvoice.v].range == 0
 				 && curvoice.last_sym)
 					curvoice.last_sym.eoln = true
 				break
@@ -2706,6 +2707,7 @@ function parse_music_line() {
 	if (no_eol || cfmt.barsperstaff)
 		return
 	if (char_tb['\n'.charCodeAt(0)] == '\n'
+	 && par_sy.voices[curvoice.v]
 	 && par_sy.voices[curvoice.v].range == 0
 	 && curvoice.last_sym)
 		curvoice.last_sym.eoln = true

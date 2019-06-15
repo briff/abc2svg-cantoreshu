@@ -2190,7 +2190,7 @@ function set_clefs() {
 	// set the starting clefs of the staves
 	for (v = 0; v < voice_tb.length; v++) {
 		p_voice = voice_tb[v]
-		if (sy.voices[v].range < 0)
+		if (!sy.voices[v])
 			continue
 		st = sy.voices[v].st
 		if (!sy.voices[v].second) {		// main voices
@@ -2209,7 +2209,7 @@ function set_clefs() {
 	}
 	for (v = 0; v < voice_tb.length; v++) {
 		p_voice = voice_tb[v]
-		if (sy.voices[v].range < 0
+		if (!sy.voices[v]
 		 || sy.voices[v].second)		// main voices
 			continue
 		st = sy.voices[v].st;
@@ -2235,7 +2235,7 @@ function set_clefs() {
 			for (st = 0; st <= nstaff; st++)
 				staff_clef[st].autoclef = true
 			for (v = 0; v < voice_tb.length; v++) {
-				if (sy.voices[v].range < 0)
+				if (!sy.voices[v])
 					continue
 				p_voice = voice_tb[v];
 				st = sy.voices[v].st
@@ -2256,7 +2256,7 @@ function set_clefs() {
 			for (st = 0; st <= sy.nstaff; st++)
 				mid[st] = (sy.staves[st].stafflines.length - 1) * 3
 			for (v = 0; v < voice_tb.length; v++) {
-				if (sy.voices[v].range < 0
+				if (!sy.voices[v]
 				 || sy.voices[v].second)	// main voices
 					continue
 				p_voice = voice_tb[v];
@@ -2358,7 +2358,7 @@ function set_clefs() {
 	/* set a pitch to the symbols of voices with no note */
 	sy = cur_sy
 	for (v = 0; v < voice_tb.length; v++) {
-		if (sy.voices[v].range < 0)
+		if (!sy.voices[v])
 			continue
 		s2 = voice_tb[v].sym
 		if (!s2 || s2.notes[0].pit != 127)
@@ -2888,7 +2888,7 @@ function init_music_line() {
 
 	/* initialize the voices */
 	for (v = 0; v < nv; v++) {
-		if (cur_sy.voices[v].range < 0)
+		if (!cur_sy.voices[v])
 			continue
 		p_voice = voice_tb[v];
 		p_voice.second = cur_sy.voices[v].second;
@@ -2905,7 +2905,7 @@ function init_music_line() {
 	last_s = tsfirst
 	while (last_s && last_s.type == C.CLEF) {	// move the starting clefs
 		v = last_s.v
-		if (cur_sy.voices[v].range >= 0
+		if (cur_sy.voices[v]
 		 && !cur_sy.voices[v].second) {
 			delete last_s.clef_small;	/* normal clef */
 			p_voice = last_s.p_v;
@@ -2917,7 +2917,7 @@ function init_music_line() {
 		p_voice = voice_tb[v]
 		if (p_voice.sym && p_voice.sym.type == C.CLEF)
 			continue
-		if (cur_sy.voices[v].range < 0
+		if (!cur_sy.voices[v]
 		 || (cur_sy.voices[v].second
 		  && !p_voice.bar_start))	// needed for correct linkage
 			continue
@@ -2962,7 +2962,7 @@ function init_music_line() {
 
 	/* add keysig */
 	for (v = 0; v < nv; v++) {
-		if (cur_sy.voices[v].range < 0
+		if (!cur_sy.voices[v]
 		 || cur_sy.voices[v].second
 		 || !cur_sy.st_print[cur_sy.voices[v].st])
 			continue
@@ -2996,7 +2996,7 @@ function init_music_line() {
 		for (v = 0; v < nv; v++) {
 			p_voice = voice_tb[v];
 			s2 = p_voice.meter
-			if (cur_sy.voices[v].range < 0
+			if (!cur_sy.voices[v]
 			 || cur_sy.voices[v].second
 			 || !cur_sy.st_print[cur_sy.voices[v].st]
 			 || s2.a_meter.length == 0)
@@ -3030,7 +3030,7 @@ function init_music_line() {
 
 		if (!s2)
 			continue
-		if (cur_sy.voices[v].range < 0
+		if (!cur_sy.voices[v]
 		 || !cur_sy.st_print[cur_sy.voices[v].st])
 			continue
 
@@ -3287,7 +3287,7 @@ function set_indent(first) {
 
 	for (v = 0; v < nv; v++) {
 		p_voice = voice_tb[v]
-		if (cur_sy.voices[v].range < 0)
+		if (!cur_sy.voices[v])
 			continue
 		st = cur_sy.voices[v].st
 //		if (!cur_sy.st_print[st])
@@ -3711,9 +3711,10 @@ function set_right(s) {
 /* -- shift the notes horizontally when voices overlap -- */
 /* this routine is called only once per tune */
 function set_overlap() {
-	var	s, s1, s2, s3, i, i1, i2, m, sd, t, dp,
-		d, d2, dr, dr2, dx,
-		left1, right1, left2, right2, right3, pl, pr
+    var	s, s1, s2, s3, i, i1, i2, m, sd, t, dp,
+	d, d2, dr, dr2, dx,
+	left1, right1, left2, right2, right3, pl, pr,
+	sy = cur_sy
 
 	// invert the voices
 	function v_invert() {
@@ -3727,8 +3728,11 @@ function set_overlap() {
 
 	for (s = tsfirst; s; s = s.ts_next) {
 		if (s.type != C.NOTE
-		 || s.invis)
+		 || s.invis) {
+			if (s.type == C.STAVES)
+				sy = s.sy
 			continue
+		}
 
 		/* treat the stem on two staves with different directions */
 		if (s.xstem
@@ -3759,7 +3763,7 @@ function set_overlap() {
 		s1 = s
 
 		/* set the dot vertical offset */
-		if (cur_sy.voices[s1.v].range < cur_sy.voices[s2.v].range)
+		if (sy.voices[s1.v].range < sy.voices[s2.v].range)
 			s2.dot_low = true
 		else
 			s1.dot_low = true
