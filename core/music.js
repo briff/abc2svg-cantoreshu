@@ -2202,10 +2202,10 @@ function set_clefs() {
 				sy.staves[st].sep = sy.voices[v].sep
 			if (sy.voices[v].maxsep)
 				sy.staves[st].maxsep = sy.voices[v].maxsep;
+
+			if (!p_voice.clef.clef_auto)
+				staff_clef[st].autoclef = false
 		}
-		if (!sy.voices[v].second
-		 && !p_voice.clef.clef_auto)
-			staff_clef[st].autoclef = false
 	}
 	for (v = 0; v < voice_tb.length; v++) {
 		p_voice = voice_tb[v]
