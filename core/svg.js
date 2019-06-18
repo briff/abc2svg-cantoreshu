@@ -839,7 +839,7 @@ function out_lped(x, y, val, defl) {
 	if (!defl.nost)
 		xygl(x, y, "ped");
 	if (!defl.noen)
-		xygl(x + val, y, "pedoff")
+		xygl(x + val + 6, y, "pedoff")
 }
 function out_8va(x, y, val, defl) {
 	if (!defl.nost) {
