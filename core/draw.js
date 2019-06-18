@@ -1134,7 +1134,8 @@ function draw_gracenotes(s) {
 	 || s.next.type != C.NOTE)
 		return
 	last = g
-	if (last.stem >= 0) {
+	if (((g.stem >= 0 || s.multi < 0) && g.notes[0].pit <= 28)
+	 || g.notes[0].pit < 16) {		// slur below
 		yy = 127
 		for (g = s.extra; g; g = g.next) {
 			if (g.y < yy) {
@@ -1150,7 +1151,7 @@ function draw_gracenotes(s) {
 		}
 		s = s.next;
 		x3 = s.x - 1
-		if (s.stem < 0)
+		if (s.stem < 0 && s.nflags > -2)
 			x3 -= 4;
 		y3 = 3 * (s.notes[0].pit - 18) - 5;
 		dy1 = (x3 - x0) * .4
@@ -1172,7 +1173,7 @@ function draw_gracenotes(s) {
 			x0 = last.x + 2;
 			y0 = last.y - 4
 		}
-	} else {
+	} else {				// slur above
 		yy = -127
 		for (g = s.extra; g; g = g.next) {
 			if (g.y > yy) {
@@ -1188,7 +1189,7 @@ function draw_gracenotes(s) {
 		}
 		s = s.next;
 		x3 = s.x - 1
-		if (s.stem >= 0)
+		if (s.stem >= 0 && s.nflags > -2)
 			x3 -= 2;
 		y3 = 3 * (s.notes[s.nhd].pit - 18) + 5;
 		dy1 = (x0 - x3) * .4
