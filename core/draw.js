@@ -1427,17 +1427,18 @@ function draw_note(s,
 
 	/* output the ledger lines */
 	if (s.grace) {
-		hltype = "ghl"
+		hltype = "ghl";
+		x_hl += 1.5
 	} else {
 		hltype = "hl"
 		switch (s.head) {
 		case C.OVALBARS:
 		case C.OVAL:
-			x_hl = x - .3;
+			x_hl -= .3;
 			hltype = "hl1"
 			break
 		case C.SQUARE:
-			x_hl = x - 2;
+			x_hl -= 2;
 			hltype = "hl1"
 			break
 		}
