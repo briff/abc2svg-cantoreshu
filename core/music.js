@@ -3081,6 +3081,7 @@ function init_music_line() {
 		s = s.ts_next
 	} while (s && !s.seqst);
 	last_s.shrink = s2.wr + shr
+	last_s.space = 0
 }
 
 /* -- set a pitch in all symbols and the start/stop of the beams -- */
