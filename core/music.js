@@ -3071,8 +3071,6 @@ function init_music_line() {
 		if (s == last_s)
 			break
 	}
-	if (!s)
-		return				// no music!
 
 	// update the spacing before the first old time sequence
 	shr = 0
