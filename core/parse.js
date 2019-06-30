@@ -1058,7 +1058,7 @@ function do_info(info_type, text) {
 
 /* -- adjust the duration and time of symbols in a measure when L:auto -- */
 function adjust_dur(s) {
-	var s2, time, auto_time, i, res;
+    var	s2, time, auto_time, i, fac;
 
 	/* search the start of the measure */
 	s2 = curvoice.last_sym
@@ -1073,6 +1073,7 @@ function adjust_dur(s) {
 		s2 = s2.prev;
 	time = s2.time;
 	auto_time = curvoice.time - time
+	fac = curvoice.wmeasure / auto_time
 
 	/* remove the invisible rest at start of tune */
 	if (time == 0) {
@@ -1080,7 +1081,7 @@ function adjust_dur(s) {
 			s2 = s2.next
 		if (s2 && s2.type == C.REST
 		 && s2.invis) {
-			time += s2.dur * curvoice.wmeasure / auto_time
+			time += s2.dur * fac
 			if (s2.prev)
 				s2.prev.next = s2.next
 			else
@@ -1097,14 +1098,13 @@ function adjust_dur(s) {
 		s2.time = time
 		if (!s2.dur || s2.grace)
 			continue
-		s2.dur = s2.dur * curvoice.wmeasure / auto_time;
-		s2.dur_orig = s2.dur_orig * curvoice.wmeasure / auto_time;
+		s2.dur *= fac;
+		s2.dur_orig *= fac;
 		time += s2.dur
 		if (s2.type != C.NOTE && s2.type != C.REST)
 			continue
 		for (i = 0; i <= s2.nhd; i++)
-			s2.notes[i].dur = s2.notes[i].dur
-					 * curvoice.wmeasure / auto_time;
+			s2.notes[i].dur *= fac
 	}
 	curvoice.time = s.time = time
 }
