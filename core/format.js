@@ -70,7 +70,7 @@ H "History: "',
 	measurefont: {name: "serifItalic", size: 10},
 	measurenb: -1,
 	musicspace: 6,
-//	notespacingfactor: 1.414,
+//	notespacingfactor: 1.33
 	partsfont: {name: "serif", size: 15},
 	parskipfac: .4,
 	partsspace: 8,

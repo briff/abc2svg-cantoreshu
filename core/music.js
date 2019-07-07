@@ -28,9 +28,11 @@ var	gene,
 /* width of notes indexed by log2(note_length) */
 	space_tb = new Float32Array([
 // factor 1.3 instead of 1.414 and crotchet 30px instead of 40px
-		8, 10, 14, 18, 23,
-		30,
-		39, 50, 65, 85
+// change again:
+// factor 1.33 instead of 1.3 and crotchet 35px instead of 30px
+		8.4, 11.2, 14.9, 19.8, 26.3,
+		35,
+		46.6, 61.9, 82.3, 109.5
 	]),
 	smallest_duration
 
