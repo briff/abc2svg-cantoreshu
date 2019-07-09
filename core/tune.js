@@ -1635,7 +1635,8 @@ function get_vover(type) {
 		var f_clone = curvoice.clone != undefined ? 1 : 0;
 		range = par_sy.voices[curvoice.v].range
 		for (v = 0; v < par_sy.voices.length; v++) {
-			if (par_sy.voices[v].range > range)
+			if (par_sy.voices[v]
+			 && par_sy.voices[v].range > range)
 				par_sy.voices[v].range += f_clone + 1
 		}
 		par_sy.voices[v2].range = range + 1
