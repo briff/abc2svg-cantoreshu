@@ -68,6 +68,18 @@ function set_unit(p) {
 	return (p / 37.8).toFixed(1) + 'cm'
 }
 
+// replace <>& by XML character references
+function clean_txt(txt) {
+	return txt.replace(/<|>|&.*?;|&/g, function(c) {
+		switch (c) {
+		case '<': return "&lt;"
+		case '>': return "&gt;"
+		case '&': return "&amp;"
+		}
+		return c
+	})
+}
+
 // output a header or a footer
 function gen_hf(type, stype, str) {
     var	c, i, res_left,
@@ -77,6 +89,7 @@ function gen_hf(type, stype, str) {
 
 	if (str[0] == '"')
 		str = str.slice(1, -1)
+	str = clean_txt(str)
 	if (str.indexOf('\t') < 0)		// if no TAB
 		str = '\t' + str		// center
 

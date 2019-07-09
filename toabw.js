@@ -134,7 +134,7 @@ function gen_hf(type, str) {
  props="list-tag:1; table-column-props:6.00cm/6.00cm/6.00cm/;\
 table-column-leftpos:' + (page_type[0] == 'L' ? '0.6in' : '1.5cm') + '">\n';
 
-	a = header_footer(str)
+	a = header_footer(clean_txt(str))
 	for (i = 0; i < 3; i++) {
 		res += '<cell xid="' + (++seq).toString() + '"\
  props="left-attach:' + i + '; right-attach:' + (i + 1).toString() +
@@ -226,9 +226,8 @@ function clean_txt(txt) {
 		switch (c) {
 		case '<': return "&lt;"
 		case '>': return "&gt;"
+		case '&': return "&amp;"
 		}
-		if (c == '&')
-			return "&amp;"
 		return c
 	})
 }

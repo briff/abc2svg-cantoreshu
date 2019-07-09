@@ -152,7 +152,7 @@ abc2svg.abc_init = function() {
 		var	a, i, page,
 			lcr = ["left", "center", "right"];
 
-		a = header_footer(str)
+		a = header_footer(clean_txt(str))
 		for (i = 0; i < 3; i++) {
 			str = a[i]
 			if (!str)
