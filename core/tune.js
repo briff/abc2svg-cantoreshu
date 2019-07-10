@@ -296,7 +296,7 @@ function sort_all() {
 }
 
 // adjust some voice elements
-function voice_adj() {
+function voice_adj(sys_chg) {
 	var p_voice, s, s2, v
 
 	// set the duration of the notes under a feathered beam
@@ -362,6 +362,30 @@ function voice_adj() {
 
 	for (v = 0; v < voice_tb.length; v++) {
 		p_voice = voice_tb[v]
+		if (!sys_chg			// if not %%score
+		 && p_voice.sls.length) {	// and no end of slur
+			while (1) {
+			    var	sn = p_voice.sls.shift()
+
+				if (!sn)
+					break
+				s = sn.sn.s || sn.sn
+				for (s2 = s.next; s2; s2 = s2.next) {
+					if (s2.bar_type && s2.bar_type[0] == ':')
+						break
+				}
+				if (s2) {
+					if (!s.sls)
+						s.sls = []
+					s.sls.push({
+						sn: s2,
+						ty: sn.ty
+					})
+				} else {
+					syntax(1, "Lack of ending slur(s)")
+				}
+			}
+		}
 		if (p_voice.ignore)
 			p_voice.ignore = false
 		for (s = p_voice.sym; s; s = s.next) {
@@ -1208,9 +1232,9 @@ function generate() {
 //		p_voice.second = cur_sy.voices[v].second;
 //		p_voice.clef.time = 0;
 		delete p_voice.have_ly;
+		p_voice.sls = [];
 		p_voice.hy_st = 0;
 		delete p_voice.bar_start
-		delete p_voice.slur_st
 		delete p_voice.s_tie
 		delete p_voice.s_rtie
 	}
@@ -1353,7 +1377,7 @@ function get_staves(cmd, parm) {
 		return
 
 	if (voice_tb.length != 0) {
-		voice_adj();
+		voice_adj(true);
 		dupl_voice()
 	}
 
@@ -1849,6 +1873,7 @@ function new_voice(id) {
 			clef_type: "a",		// auto
 			time: 0
 		},
+		sls: [],		// slurs - used in parsing and in generation
 		hy_st: 0
 	}
 

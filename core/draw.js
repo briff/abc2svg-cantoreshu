@@ -112,8 +112,7 @@ function calculate_beam(bm, s1) {
 		s.beam_st = true
 		delete s.beam_end;
 		s.tmp = true
-		delete s.slur_start
-		delete s.slur_end;
+		delete s.sls;
 		s1 = s
 	}
 
@@ -157,8 +156,7 @@ function calculate_beam(bm, s1) {
 			delete s.beam_st;
 			s.beam_end = true;
 			s.tmp = true
-			delete s.slur_start
-			delete s.slur_end
+			delete s.sls;
 			s.x += 12
 			if (s.x < realwidth - 12)
 				s.x = realwidth - 12;
@@ -1129,7 +1127,7 @@ function draw_gracenotes(s) {
 //fixme: have a full key symbol in voice
 	if (s.p_v.key.k_bagpipe			/* no slur when bagpipe */
 	 || !cfmt.graceslurs
-	 || s.slur_start			/* explicit slur */
+	 || s.sls				// explicit slur
 	 || !s.next
 	 || s.next.type != C.NOTE)
 		return
@@ -1498,19 +1496,7 @@ function draw_note(s,
 		draw_basic_note(x, s, m, y_tb)
 }
 
-/* -- find where to terminate/start a slur -- */
-function next_scut(s) {
-	var prev = s
-
-	for (s = s.next; s; s = s.next) {
-		if (s.rbstop)
-			return s
-		prev = s
-	}
-	/*fixme: KO when no note for this voice at end of staff */
-	return prev
-}
-
+// find where to start a long decoration
 function prev_scut(s) {
 	while (s.prev) {
 		s = s.prev
@@ -1529,12 +1515,33 @@ function prev_scut(s) {
 	return s
 }
 
-/* -- decide whether a slur goes up or down -- */
+/* -- decide whether a slur goes up or down (same voice) -- */
 function slur_direction(k1, k2) {
-	var s, some_upstem, low
+    var	s, some_upstem, low, dir
+
+	// check if slur sequence in a multi-voice staff
+	function slur_multi(s1, s2) {
+//		while (1) {
+//			if (s1.multi)		// if multi voice
+//				//fixme: may change
+//				return s1.multi
+//			if (s1 == s2)
+//				break
+//			s1 = s1.next
+//		}
+		if (s1.multi)
+			return s1.multi
+		if (s2.multi)
+			return s2.multi
+		return 0
+	} // slur_multi()
 
 	if (k1.grace && k1.stem > 0)
 		return -1
+
+	dir = slur_multi(k1, k2)
+	if (dir)
+		return dir
 
 	for (s = k1; ; s = s.next) {
 		if (s.type == C.NOTE) {
@@ -1546,7 +1553,8 @@ function slur_direction(k1, k2) {
 			if (s.notes[0].pit < 22)	/* if under middle staff */
 				low = true
 		}
-		if (s == k2)
+//		if (s == k2)
+		if (s.time == k2.time)		// (k2 may be a grace note)
 			break
 	}
 	if (!some_upstem && !low)
@@ -1632,80 +1640,50 @@ function slur_out(x1, y1, x2, y2, dir, height, dotted) {
 	output += '"/>\n'
 }
 
-/* -- check if slur sequence in a multi-voice staff -- */
-function slur_multi(k1, k2) {
-	while (1) {
-		if (k1.multi)		/* if multi voice */
-			/*fixme: may change*/
-			return k1.multi
-		if (k1 == k2)
-			break
-		k1 = k1.next
-	}
-	return 0
-}
-
 /* -- draw a phrasing slur between two symbols -- */
 /* (the staves are not yet defined) */
 /* (delayed output) */
 /* (not a pretty routine, this) */
-function draw_slur(k1_o, k2, m1, m2, slur_type) {
-	var	k1 = k1_o,
-		k, g, x1, y1, x2, y2, height, addy,
-		a, y, z, h, dx, dy, dir
+function draw_slur(path, m1, m2, slur_type) {
+    var	i,
+	k, g, x1, y1, x2, y2, height, addy,
+	a, y, z, h, dx, dy,
+	dir = (slur_type & 0x07) == C.SL_ABOVE ? 1 : -1,
+	n = path.length,
+	i1 = 0,
+	i2 = n - 1,
+	k1 = path[0],
+	k2 = path[i2]
 
-	while (k1.v != k2.v)
-		k1 = k1.ts_next
 /*fixme: if two staves, may have upper or lower slur*/
-	switch (slur_type & 0x07) {	/* (ignore dotted flag) */
-	case C.SL_ABOVE: dir = 1; break
-	case C.SL_BELOW: dir = -1; break
-	default:
-		dir = slur_multi(k1, k2)
-		if (!dir)
-			dir = slur_direction(k1, k2)
-		break
-	}
 
 	var	nn = 1,
 		upstaff = k1.st,
 		two_staves = false
 
 	set_dscale(k1.st)
-	if (k1 != k2) {
-		k = k1.next
-		while (1) {
-			if (k.type == C.NOTE || k.type == C.REST) {
-				nn++
-				if (k.st != upstaff) {
-					two_staves = true
-					if (k.st < upstaff)
-						upstaff = k.st
-				}
+
+	for (i = 1; i < n; i++) {
+		k = path[i]
+		if (k.type == C.NOTE || k.type == C.REST) {
+			nn++
+			if (k.st != upstaff) {
+				two_staves = true
+				if (k.st < upstaff)
+					upstaff = k.st
 			}
-			if (k == k2)
-				break
-			k = k.next
 		}
 	}
 /*fixme: KO when two staves*/
 if (two_staves) error(2, k1, "*** multi-staves slurs not treated yet");
 
 	/* fix endpoints */
-	x1 = k1_o.x
-	if (k1_o.notes && k1_o.notes[0].shhd)
-		x1 += k1_o.notes[0].shhd
-	if (k1_o != k2) {
-		x2 = k2.x
-		if (k2.notes)
-			x2 += k2.notes[0].shhd
-	} else {		/* (the slur starts on last note of the line) */
-		for (k = k2.ts_next; k; k = k.ts_next)
-//fixme: must check if the staff continues
-			if (k.type == C.STAVES)
-				break
-		x2 = k ? k.x : realwidth
-	}
+	x1 = k1.x
+	if (k1.notes && k1.notes[0].shhd)
+		x1 += k1.notes[0].shhd;
+	x2 = k2.x
+	if (k2.notes)
+		x2 += k2.notes[0].shhd
 
 	if (m1 >= 0) {
 		y1 = 3 * (k1.notes[m1].pit - 18) + 5 * dir
@@ -1809,27 +1787,28 @@ if (two_staves) error(2, k1, "*** multi-staves slurs not treated yet");
 	}
 
 	if (nn >= 3) {
-		if (k1.next.type != C.BAR
-		 && k1.next.x < x1 + 48) {
+		k = path[1]
+		if (k.type != C.BAR
+		 && k.x < x1 + 48) {
 			if (dir > 0) {
-				y = k1.next.ymx - 2
+				y = k.ymx - 2
 				if (y1 < y)
 					y1 = y
 			} else {
-				y = k1.next.ymn + 2
+				y = k.ymn + 2
 				if (y1 > y)
 					y1 = y
 			}
 		}
-		if (k2.prev
-		 && k2.prev.type != C.BAR
-		 && k2.prev.x > x2 - 48) {
+		k = path[i2 - 1]
+		if (k.type != C.BAR
+		 && k.x > x2 - 48) {
 			if (dir > 0) {
-				y = k2.prev.ymx - 2
+				y = k.ymx - 2
 				if (y2 < y)
 					y2 = y
 			} else {
-				y = k2.prev.ymn + 2
+				y = k.ymn + 2
 				if (y2 > y)
 					y2 = y
 			}
@@ -1875,7 +1854,8 @@ if (two_staves) error(2, k1, "*** multi-staves slurs not treated yet");
 	if (k1 != k2
 	 && k1.v == k2.v) {
 	    addy = y1 - a * x1
-	    for (k = k1.next; k != k2 ; k = k.next) {
+	    for (i = 1; i < i2; i++) {
+		k = path[i]
 		if (k.st != upstaff)
 			continue
 		switch (k.type) {
@@ -1966,8 +1946,8 @@ if (two_staves) error(2, k1, "*** multi-staves slurs not treated yet");
 		addy += 4 * Math.sqrt(height)
 	else
 		addy -= 4 * Math.sqrt(-height)
-	if (k1.v == k2.v)
-	    for (k = k1; k != k2; k = k.next) {
+	for (i = 0; i < i2; i++) {
+		k = path[i]
 		if (k.st != upstaff)
 			continue
 		y = a * k.x + addy
@@ -1975,184 +1955,167 @@ if (two_staves) error(2, k1, "*** multi-staves slurs not treated yet");
 			k.ymx = y
 		else if (k.ymn > y)
 			k.ymn = y
-		if (k.next == k2) {
+		if (i == i2 - 1) {
 			dx = x2
 			if (k2.sl1)
-				dx -= 5
+				dx -= 5;
+			y -= 2
 		} else {
-			dx = k.next.x
+			dx = path[i + 1].x
 		}
-		if (k != k1)
+		if (i != 0) {
 			x1 = k.x;
+			y -= 2
+		}
 		dx -= x1;
 		y_set(upstaff, dir > 0, x1, dx, y)
 	}
-	return (dir > 0 ? C.SL_ABOVE : C.SL_BELOW) | (slur_type & C.SL_DOTTED)
 }
 
 /* -- draw the slurs between 2 symbols --*/
-function draw_slurs(first, last) {
-	var	s1, k, gr1, gr2, i, m1, m2, slur_type, cont,
-		s = first
+function draw_slurs(s, last) {
+    var	gr1, i, m, note
 
+	// draw a slur knowing the start and stop elements
+	function draw_sls(s, sl, m) {
+	    var	k, v, i, dir,
+		path = [],
+		s2 = sl.sn			// end of slur
+
+		if (s2.s)			// if towards note
+			s2 = s2.s		// chord
+
+		if (last && s2.time > last.time)
+			return			// will be drawn next time
+
+		// if the slur continues on the next music line,
+		// stop it on the invisible bar at end of current line
+		if (tsnext && s2.time >= tsnext.time) {
+			s.p_v.sls.push(sl);		// continuation on next line
+			s2 = voice_tb[s.v].s_next.prev	// one voice
+			while (s2.next)
+				s2 = s2.next;		// search the ending bar
+			sl = Object.create(sl);		// new slur
+			sl.sn = s2
+		}
+
+		// set the slur position
+		switch (sl.ty & 0x07) {
+		case C.SL_ABOVE: dir = 1; break
+		case C.SL_BELOW: dir = -1; break
+		default:
+			if (s.v != s2.v)
+				dir = -1	// always above ?
+			else
+				dir = slur_direction(s, s2);
+			sl.ty &= ~0x07;
+			sl.ty |= dir > 0 ? C.SL_ABOVE : C.SL_BELOW
+			break
+		}
+
+		// build the path of the symbols under the slur
+		if (gr1				// if start on a grace note
+		 && !(s2.grace			// and not end in the same
+		   && s.v == s2.v		// grace note sequence
+		   && s.time == s2.time)) {
+			do {
+				path.push(s);	// add all grace notes
+				s = s.next
+			} while (s);
+			s = gr1.next
+		} else {
+			path.push(s);
+			s = s.ts_next
+		}
+
+		if (dir *			// if slur on first voice
+			(cur_sy.voices[s.v].range <= cur_sy.voices[s2.v].range ?
+				1 : -1) > 0)
+			v = s.v
+		else
+			v = s2.v
+
+		if (!s2.grace) {		// if end on a normal note
+			while (1) {
+				if (s.v == v)
+					path.push(s)
+				if (s == s2)
+					break
+				s = s.ts_next
+			}
+		} else if (s.grace) {		// if start/end in the same sequence
+			while (1) {
+				if (s.v == v)
+					path.push(s)
+				if (s == s2)
+					break
+				s = s.next
+			}
+		} else {			// end on a grace note
+			k = s2
+			while (k.prev)
+				k = k.prev	// .extra pointer
+			while (1) {
+				if (s.v == v)
+					path.push(s)
+				if (s.extra == k)
+					break
+				s = s.ts_next
+			}
+			s = k
+			while (1) {
+				path.push(s)
+				if (s == s2)
+					break
+				s = s.next
+			}
+		}
+
+		// if some nested slurs, draw them
+		for (i = 1; i < path.length - 1; i++) {
+			s = path[i]
+			if (s.sls || s.sl1)
+				draw_slurs(s, last)
+		}
+		draw_slur(path, m, sl.sn.m == undefined ? -1 : sl.sn.m, sl.ty)
+		return 1			// slur drawn, remove it
+	} // draw_sls()
+
+	// code of draw_slurs()
 	while (1) {
 		if (!s || s == last) {
-			if (!gr1
-			 || !(s = gr1.next)
+			if (!gr1		// if end of grace notes
+			 || !(s = gr1.next)	// return to normal notes
 			 || s == last)
 				break
 			gr1 = null
 		}
-		if (s.type == C.GRACE) {
-			gr1 = s;
+		if (s.type == C.GRACE) {	// if start of grace notes
+			gr1 = s;		// continue in the grace note sequence
 			s = s.extra
 			continue
 		}
-		if ((s.type != C.NOTE && s.type != C.REST
-		  && s.type != C.SPACE)
-		 || (!s.slur_start && !s.sl1)) {
+		if (!s.sls && !s.sl1) {		// if no slur
 			s = s.next
 			continue
 		}
-		k = null;		/* find matching slur end */
-		s1 = s.next
-		var gr1_out = false
-		while (1) {
-			if (!s1) {
-				if (gr2) {
-					s1 = gr2.next;
-					gr2 = null
-					continue
-				}
-				if (!gr1 || gr1_out)
-					break
-				s1 = gr1.next;
-				gr1_out = true
-				continue
+		if (s.sls) {			// slurs from the chord
+			for (i = 0; i < s.sls.length; i++) {
+				if (draw_sls(s, s.sls[i], -1))
+					s.sls.splice(i--, 1)
 			}
-			if (s1.type == C.GRACE) {
-				gr2 = s1;
-				s1 = s1.extra
-				continue
-			}
-			if (s1.type == C.BAR
-			 && (s1.bar_type[0] == ':'
-			  || s1.bar_type == "|]"
-			  || s1.bar_type == "[|"
-			  || (s1.text && s1.text[0] != '1'))) {
-				k = s1
-				break
-			}
-			if (s1.type != C.NOTE && s1.type != C.REST
-			 && s1.type != C.SPACE) {
-				s1 = s1.next
-				continue
-			}
-			if (s1.slur_end || s1.sl2) {
-				k = s1
-				break
-			}
-			if (s1.slur_start || s1.sl1) {
-				if (gr2) {	/* if in grace note sequence */
-					for (k = s1; k.next; k = k.next)
-						;
-					k.next = gr2.next
-					if (gr2.next)
-						gr2.next.prev = k;
-//					gr2.slur_start = C.SL_AUTO
-					k = null
-				}
-				draw_slurs(s1, last)
-				if (gr2
-				 && gr2.next) {
-					gr2.next.prev.next = null;
-					gr2.next.prev = gr2
+		}
+		if (s.sl1) {			// slurs from the note heads
+			for (m = 0; m <= s.nhd; m++) {
+				note = s.notes[m]
+				if (note.sls) {
+					for (i = 0; i < note.sls.length; i++) {
+						if (draw_sls(s, note.sls[i], m))
+							note.sls.splice(i--, 1)
+					}
 				}
 			}
-			if (s1 == last)
-				break
-			s1 = s1.next
 		}
-		if (!s1) {
-			k = next_scut(s)
-		} else if (!k) {
-			s = s1
-			if (s == last)
-				break
-			continue
-		}
-
-		/* if slur in grace note sequence, change the linkages */
-		if (gr1) {
-			for (s1 = s; s1.next; s1 = s1.next)
-				;
-			s1.next = gr1.next
-			if (gr1.next)
-				gr1.next.prev = s1;
-			gr1.slur_start = C.SL_AUTO
-		}
-		if (gr2) {
-			gr2.prev.next = gr2.extra;
-			gr2.extra.prev = gr2.prev;
-			gr2.slur_start = C.SL_AUTO
-		}
-		if (s.slur_start) {
-			slur_type = s.slur_start & 0x0f;
-			s.slur_start >>= 4;
-			m1 = -1
-		} else {
-			for (m1 = 0; m1 <= s.nhd; m1++)
-				if (s.notes[m1].sl1)
-					break
-			slur_type = s.notes[m1].sl1 & 0x0f;
-			s.notes[m1].sl1 >>= 4;
-			s.sl1--
-		}
-		m2 = -1;
-		cont = 0
-		if ((k.type == C.NOTE || k.type == C.REST || k.type == C.SPACE) &&
-		    (k.slur_end || k.sl2)) {
-			if (k.slur_end) {
-				k.slur_end--
-			} else {
-				for (m2 = 0; m2 <= k.nhd; m2++)
-					if (k.notes[m2].sl2)
-						break
-				k.notes[m2].sl2--;
-				k.sl2--
-			}
-		} else {
-			if (k.type != C.BAR
-			 || (k.bar_type[0] != ':'
-			  && k.bar_type != "|]"
-			  && k.bar_type != "[|"
-			  && (!k.text || k.text[0] == '1')))
-				cont = 1
-		}
-		slur_type = draw_slur(s, k, m1, m2, slur_type)
-		if (cont) {
-			if (!k.p_v.slur_start)
-				k.p_v.slur_start = 0;
-			k.p_v.slur_start <<= 4;
-			k.p_v.slur_start += slur_type
-		}
-
-		/* if slur in grace note sequence, restore the linkages */
-		if (gr1
-		 && gr1.next) {
-			gr1.next.prev.next = null;
-			gr1.next.prev = gr1;
-		}
-		if (gr2) {
-			gr2.prev.next = gr2;
-			gr2.extra.prev = null;
-			gr2 = null
-		}
-
-		if (s.slur_start || s.sl1)
-			continue
-		if (s == last)
-			break
 		s = s.next
 	}
 }
@@ -2242,7 +2205,7 @@ function draw_tuplet(s1,
 		nb_only = true
 	} else if (s1.tf[1] == 1) {			/* 'what' == slur */
 		nb_only = true;
-		draw_slur(s1, s2, -1, -1, dir)
+		draw_slur([s1, s2], -1, -1, dir)
 	} else {
 
 		/* search if a bracket is needed */
@@ -2382,7 +2345,7 @@ function draw_tuplet(s1,
 			y2 = ym
 	}
 
-	/* end the backet according to the last note duration */
+	// end the bracket according to the last note duration
 	if (s2.dur > s2.prev.dur) {
 		if (s2.next)
 			x2 = s2.next.x - s2.next.wl - 5
@@ -2932,68 +2895,11 @@ function draw_all_ties(p_voice) {
 /* -- draw all phrasing slurs for one staff -- */
 /* (the staves are not yet defined) */
 function draw_all_slurs(p_voice) {
-	var	k, i, m2,
-		s = p_voice.sym,
-		slur_type = p_voice.slur_start,
-		slur_st = 0
+    var	s = p_voice.sym
 
 	if (!s)
 		return
-
-	/* the starting slur types are inverted */
-	if (slur_type) {
-		p_voice.slur_start = 0
-		while (slur_type != 0) {
-			slur_st <<= 4;
-			slur_st |= (slur_type & 0x0f);
-			slur_type >>= 4
-		}
-	}
-
-	/* draw the slurs inside the music line */
-	draw_slurs(s, undefined)
-
-	/* do unbalanced slurs still left over */
-	for ( ; s; s = s.next) {
-		while (s.slur_end || s.sl2) {
-			if (s.slur_end) {
-				s.slur_end--;
-				m2 = -1
-			} else {
-				for (m2 = 0; m2 <= s.nhd; m2++)
-					if (s.notes[m2].sl2)
-						break
-				s.notes[m2].sl2--;
-				s.sl2--
-			}
-			slur_type = slur_st & 0x0f;
-			k = prev_scut(s);
-			draw_slur(k, s, -1, m2, slur_type)
-			if (k.type != C.BAR
-			 || (k.bar_type[0] != ':'
-			  && k.bar_type != "|]"
-			  && k.bar_type != "[|"
-			  && (!k.text || k.text[0] == '1')))
-				slur_st >>= 4
-		}
-	}
-	s = p_voice.sym
-	while (slur_st != 0) {
-		slur_type = slur_st & 0x0f;
-		slur_st >>= 4;
-		k = next_scut(s);
-		draw_slur(s, k, -1, -1, slur_type)
-		if (k.type != C.BAR
-		 || (k.bar_type[0] != ':'
-		  && k.bar_type != "|]"
-		  && k.bar_type != "[|"
-		  && (!k.text || k.text[0] == '1'))) {
-			if (!p_voice.slur_start)
-				p_voice.slur_start = 0;
-			p_voice.slur_start <<= 4;
-			p_voice.slur_start += slur_type
-		}
-	}
+	draw_slurs(s)
 }
 
 /* -- draw the symbols near the notes -- */

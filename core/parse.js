@@ -1849,11 +1849,50 @@ function sort_pitch(s) {
 			return n1.pit - n2.pit
 		})
 }
+
+// on end of slur, add a slur in a symbol or note
+function slur_add(sn) {
+    var	i, s
+
+	for (i = curvoice.sls.length; --i >= 0; ) {
+		s = curvoice.sls[i].sn
+		if (s != sn && s.s != sn) {
+			if (!s.sls)
+				s.sls = [];
+			s.sls.push({
+				sn: sn,
+				ty: s.ty
+			});
+			curvoice.sls.splice(i, 1)
+			return
+		}
+	}
+//	if (i >= 0)
+//		return
+
+	// the lack of a starting slur may be due to a repeat
+	for (s = (sn.s || sn).prev; s; s = s.prev) {
+		if (s.type == C.BAR
+		 && s.bar_type[0] == ':'
+		 && s.text) {
+			if (!s.sls)
+				s.sls = [];
+			s.sls.push({
+				sn: sn,
+//fixme: should go back to the bar "|1" and find the slur type...
+				ty: C.SL_AUTO
+			})
+			return
+		}
+	}
+	syntax(1, "Lack of starting slur")
+}
+
 // (possible hook)
-function new_note(grace) {
+function new_note(grace, sls) {
 	var	note, s, in_chord, c, dcn, type,
 		i, n, s2, nd, res, num, dur,
-		sl1 = 0,
+		sl1 = [],
 		line = parse.line,
 		a_dcn_sav = a_dcn;	// save parsed decoration names
 
@@ -1868,6 +1907,19 @@ function new_note(grace) {
 		xmx: 0
 	}
 	s.istart = parse.bol + line.index
+
+	// handle the starting slurs
+	if (sls.length) {
+		while (1) {
+			i = sls.shift()
+			if (!i)
+				break
+			curvoice.sls.push({
+				sn: s,
+				ty: i
+			})
+		}
+	}
 
 	if (curvoice.color)
 		s.color = curvoice.color
@@ -1959,8 +2011,7 @@ function new_note(grace) {
 					type = char_tb[i]
 					switch (type[0]) {
 					case '(':
-						sl1 <<= 4;
-						sl1 += parse_vpos();
+						sl1.push(parse_vpos());
 						c = line.char()
 						continue
 					case '!':
@@ -1999,13 +2050,24 @@ function new_note(grace) {
 			// transpose
 			if (curvoice.octave)
 				note.pit += curvoice.octave * 7
-			if (sl1) {
-				note.sl1 = sl1
+
+			// starting slurs
+			if (sl1.length) {
+				while (1) {
+					i = sl1.shift()
+					if (!i)
+						break
+					curvoice.sls.push({
+						sn: note,
+						ty: i
+					})
+				}
+				note.s = s;		// link the note to the chord
+				note.m = s.notes.length	// note index
 				if (s.sl1)
 					s.sl1++
 				else
 					s.sl1 = 1;
-				sl1 = 0
 			}
 			if (a_dcn) {
 				note.a_dcn = a_dcn;
@@ -2020,14 +2082,9 @@ function new_note(grace) {
 			while (1) {
 				switch (c) {
 				case ')':
-					if (note.sl2)
-						note.sl2++
-					else
-						note.sl2 = 1
-					if (s.sl2)
-						s.sl2++
-					else
-						s.sl2 = 1;
+					slur_add(note);
+					note.s = s;
+					note.m = s.notes.length - 1;
 					c = line.next_char()
 					continue
 				case '-':
@@ -2224,7 +2281,7 @@ var nil = ["0"],
 function parse_music_line() {
 	var	grace, last_note_sav, a_dcn_sav, no_eol, s,
 		tp, tp0,
-		slur_start = 0,
+		sls = [],
 		line = parse.line
 
 	// check if a transposing macro matches a source sequence
@@ -2422,9 +2479,8 @@ function parse_music_line() {
 					get_vover('(')
 					break
 				}
-				slur_start <<= 4;
 				line.index--;
-				slur_start += parse_vpos()
+				sls.push(parse_vpos())
 				continue
 			case ')':			// slur end
 				if (curvoice.ignore)
@@ -2445,10 +2501,7 @@ function parse_music_line() {
 					syntax(1, errs.bad_char, c)
 					break
 				}
-				if (s.slur_end)
-					s.slur_end++
-				else
-					s.slur_end = 1
+				slur_add(s)
 				break
 			case '!':			// start of decoration
 				if (!a_dcn)
@@ -2531,15 +2584,9 @@ function parse_music_line() {
 				}
 				// fall thru ('[' is start of chord)
 			case 'n':				// note/rest
-				s = self.new_note(grace)
+				s = self.new_note(grace, sls)
 				if (!s)
 					continue
-				if (s.type == C.NOTE) {
-					if (slur_start) {
-						s.slur_start = slur_start;
-						slur_start = 0
-					}
-				}
 
 				// handle the tuplets
 				if (!tp || grace || !s.notes)

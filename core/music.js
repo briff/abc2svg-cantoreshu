@@ -1217,7 +1217,8 @@ function to_rest(s) {
 	delete s.sl2
 	delete s.a_dd
 	delete s.a_gch
-	s.slur_start = s.slur_end = 0
+	delete s.sls
+//fixme: what if chord / slur in notes / ... ?
 /*fixme: should set many parameters for set_width*/
 //	set_width(s)
 }
@@ -2864,13 +2865,15 @@ function new_sym(type, p_voice,
 		v: p_voice.v,
 		p_v: p_voice,
 		st: p_voice.st,
-		time: last_s.time,
-		next: p_voice.last_sym.next
+		time: last_s.time
 	}
-	if (s.next)
-		s.next.prev = s;
-	p_voice.last_sym.next = s;
-	s.prev = p_voice.last_sym;
+	if (p_voice.last_sym) {
+		s.next = p_voice.last_sym.next
+		if (s.next)
+			s.next.prev = s;
+		p_voice.last_sym.next = s;
+		s.prev = p_voice.last_sym
+	}
 	p_voice.last_sym = s;
 
 	lktsym(s, last_s)
@@ -3015,6 +3018,20 @@ function init_music_line() {
 			s.a_meter = s2.a_meter
 		}
 		insert_meter &= ~1		// no meter any more
+	}
+
+	// add an invisible bar for the various continued elements
+	for (v = 0; v < nv; v++) {
+		p_voice = voice_tb[v]
+		if (p_voice.sls) {
+			s = new_sym(C.BAR, p_voice, last_s);
+			s.bar_type = "|";
+			s.dur = 0;
+			s.multi = 0;
+			s.invis = true;
+			s.sls = p_voice.sls;
+			p_voice.sls = []
+		}
 	}
 
 	/* add bar if needed (for repeat bracket) */

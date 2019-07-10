@@ -40,6 +40,7 @@ function AbcJSON(nindent) {			// indentation level
 			ts_prev: true,
 			extra: true,
 			p_v: true,
+			s: true,
 			dd_st: true
 		}
 	// generate an attribute
