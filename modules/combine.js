@@ -11,7 +11,8 @@ abc2svg.combine = {
 
     // function called at start of the generation when multi-voices
     comb_v: function() {
-    var	C = abc2svg.C
+    var	C = abc2svg.C,
+	delsym = []		// deleted symbols for slurs
 
     // check if voice combine may occur
     function may_combine(s) {
@@ -38,9 +39,7 @@ abc2svg.combine = {
 			return false
 		return true
 	}
-	if (s2.a_ly
-	 || s2.sl1 || s2.sl2
-	 || s2.slur_start || s2.slur_end)
+	if (s2.a_ly)
 		return false
 	if (s2.beam_st != s.beam_st
 	 || s2.beam_end != s.beam_end)
@@ -75,10 +74,10 @@ abc2svg.combine = {
 	// force the tie directions
 	type = s.notes[0].ti1
 	if ((type & 0x0f) == C.SL_AUTO)
-		s.notes[0].ti1 = C.SL_BELOW | (type & ~C.SL_DOTTED);
+		s.notes[0].ti1 = C.SL_BELOW | (type & C.SL_DOTTED);
 	type = s.notes[nhd].ti1
 	if ((type & 0x0f) == C.SL_AUTO)
-		s.notes[nhd].ti1 = C.SL_ABOVE | (type & ~C.SL_DOTTED)
+		s.notes[nhd].ti1 = C.SL_ABOVE | (type & C.SL_DOTTED)
 } // combine_notes()
 
 // combine 2 voices
@@ -102,6 +101,18 @@ function do_combine(s) {
 			combine_notes.call(this, s, s2)
 		}
 
+		if (s2.sls) {
+			if (s.sls)
+				Array.prototype.push.apply(s.sls, s2.sls)
+			else
+				s.sls = s2.sls
+		}
+		if (s2.sl1) {
+			if (s.sl1)
+				s.sl1 += s2.sl1
+			else
+				s.sl1 = s2.sl1
+		}
 		if (s2.a_gch)
 			s.a_gch = s2.a_gch
 		if (s2.a_dd) {
@@ -110,6 +121,10 @@ function do_combine(s) {
 			else
 				Array.prototype.push.apply(s.a_dd, s2.a_dd)
 		}
+
+		// memorize the deleted symbol: it may support slur endings
+		delsym.push({s: s2, r: s});
+
 		this.unlksym(s2)			// remove the next symbol
 
 		// there may be more voices
@@ -118,6 +133,36 @@ function do_combine(s) {
 	}
 } // do_combine()
 
+    // replace slur endings
+    function slur_repl(s) {
+    var	i, j, m, sn, note,
+	n = delsym.length
+
+	if (s.sls) {
+		for (i = 0; i < s.sls.length; i++) {
+			sn = s.sls[i]
+			for (j = 0; j < n; j++) {
+				if (delsym[j].s == sn.sn)
+					sn.sn = delsym[j].r
+			}
+		}
+	}
+	if (!s.sl1)
+		return
+	for (m = 0; m <= s.nhd; m++) {
+		note = s.notes
+		if (note.sls)
+		    for (i = 0; i < note.sls.length; i++) {
+			sn = note.sls[i]
+			for (j = 0; j < n; j++) {
+				if (delsym[j].s == sn.sn)
+					sn.sn = delsym[j].r
+			}
+		    }
+	}
+    } // slur_repl()
+
+	// code of comb_v()
 	var s, s2, g, i, r
 
 	for (s = this.get_tsfirst(); s; s = s.ts_next) {
@@ -169,6 +214,12 @@ function do_combine(s) {
 				s2 = s2.next
 			} while (s2.type != C.NOTE && s2.type != C.REST)
 		}
+	}
+
+	// replace the slur endings
+	for (s = this.get_tsfirst(); s; s = s.ts_next) {
+		if (s.sls || s.sl1)
+			slur_repl(s)
 	}
     }, // comb_v()
 
