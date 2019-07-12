@@ -396,9 +396,18 @@ break
 	} // meter_dump()
 
 	function note_dump(s, note, tie_ch) {
-	    var	p, j
-		if (note.sl1)
-			slti_dump(note.sl1, '(')
+	    var	p, j, sn, s2
+		if (note.sls) {
+			for (j = 0; j < note.sls.length; j++) {
+				sn = note.sls[j];
+				slti_dump(sn.ty, '(');
+				s2 = sn.sn
+				if (s2.sl2)
+					s2.sl2++
+				else
+					s2.sl2 = 1
+			}
+		}
 		if (note.a_dcn) {
 			for (j = 0; j < note.a_dcn.length; j++)
 				line += '!' + note.a_dcn[j] + '!'
@@ -442,8 +451,10 @@ break
 		}
 		if (!tie_ch && note.ti1)
 			slti_dump(note.ti1, '-')
-		if (note.sl2)
-			line += ')'
+		while (note.sl2) {
+			line += ')';
+			note.sl2--
+		}
 	} // note_dump()
 
 	function slti_dump(fl, ty) {
@@ -631,7 +642,7 @@ break
 	} // tuplet_dump()
 
 	function sym_dump(s) {
-	    var	tie_ch
+	    var	tie_ch, i, sn
 
 		if (s.repeat_n) {
 			if (s.repeat_n < 0)
@@ -643,10 +654,15 @@ break
 		}
 		if (s.tp0 || s.tp1)
 			tuplet_dump(s)
-		tmp = s.slur_start
-		while (tmp) {
-			slti_dump(tmp, '(');
-			tmp >>= 4
+		if (s.sls) {
+			for (i = 0; i < s.sls.length; i++) {
+				tmp = s.sls[i];
+				slti_dump(tmp.ty, '(');
+				if (tmp.sn.sl2)
+					tmp.sn.sl2++
+				else
+					tmp.sn.sl2 = 1
+			}
 		}
 		if (s.a_gch)
 			gch_dump(s.a_gch)
@@ -746,7 +762,7 @@ break
 			}
 			if (s.ti1 && tie_ch)
 				slti_dump(s.notes[0].ti1, '-');
-			tmp = s.slur_end
+			tmp = s.sl2
 			while (tmp) {
 				line += ')';
 				tmp--
