@@ -3023,7 +3023,7 @@ function init_music_line() {
 	// add an invisible bar for the various continued elements
 	for (v = 0; v < nv; v++) {
 		p_voice = voice_tb[v]
-		if (p_voice.sls) {
+		if (p_voice.sls.length) {
 			s = new_sym(C.BAR, p_voice, last_s);
 			s.bar_type = "|";
 			s.dur = 0;
