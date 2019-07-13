@@ -2014,6 +2014,13 @@ function draw_slurs(s, last) {
 		}
 
 		// build the path of the symbols under the slur
+		if (dir *			// if slur on first voice
+			(cur_sy.voices[s.v].range <= cur_sy.voices[s2.v].range ?
+				1 : -1) > 0)
+			v = s.v
+		else
+			v = s2.v
+
 		if (gr1				// if start on a grace note
 		 && !(s2.grace			// and not end in the same
 		   && s.v == s2.v		// grace note sequence
@@ -2027,13 +2034,6 @@ function draw_slurs(s, last) {
 			path.push(s);
 			s = s.ts_next
 		}
-
-		if (dir *			// if slur on first voice
-			(cur_sy.voices[s.v].range <= cur_sy.voices[s2.v].range ?
-				1 : -1) > 0)
-			v = s.v
-		else
-			v = s2.v
 
 		if (!s2.grace) {		// if end on a normal note
 			while (1) {
