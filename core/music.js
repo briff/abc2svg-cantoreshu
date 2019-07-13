@@ -1464,7 +1464,7 @@ function custos_add(s) {
 }
 
 /* -- define the beginning of a new music line -- */
-function set_nl(s, eoln) {
+function set_nl(s) {
     var	s2, s3, p_voice, done
 
 	// set the end of line marker
@@ -1550,10 +1550,6 @@ function set_nl(s, eoln) {
 				break		// symbol with a width
 		}
 	}
-
-	/* if explicit EOLN, cut on the next symbol */
-	if (eoln)
-		return set_eol_next(s)
 
 	/* if normal symbol, cut here */
 	switch (s.type) {
@@ -1669,11 +1665,6 @@ function set_lines(	s,		/* first symbol */
 			indent) {	/* for start of tune */
 	var	first, s2, s3, x, xmin, xmid, xmax, wwidth, shrink, space,
 		nlines, cut_here;
-
-	for ( ; last; last = last.ts_next) {
-		if (last.eoln)
-			break
-	}
 
 	/* calculate the whole size of the piece of tune */
 	wwidth = get_width(s, last) + indent
@@ -1882,6 +1873,8 @@ function cut_tune(lwidth, indent) {
 			s = s.ts_next
 		else if (!s.eoln)
 			continue
+		else
+			s.eoln = false
 		s2 = set_lines(s2, s, lwidth, indent)
 		if (!s2)
 			break
