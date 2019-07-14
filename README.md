@@ -78,7 +78,8 @@ These files are:
   for an example.
 
 - `edit-1.xhtml`   
-  This is a simple web ABC editor/player.
+  This is a simple web
+  [ABC editor/player](http://moinejf.free.fr/js/edit-1.xhtml).
 
 When looking at a ABC file in a web browser, you may also use a
 <a href="https://en.wikipedia.org/wiki/Bookmarklet">bookmarklet</a>
