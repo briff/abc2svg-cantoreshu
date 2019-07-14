@@ -2769,6 +2769,9 @@ function draw_all_ties(p_voice) {
 	}
 	if (!s2)
 		return
+
+	set_color(s2.color)
+
 	if (p_voice.s_tie) {			/* tie from previous line */
 		p_voice.s_tie.x = s1.x + s1.wr;
 		s1 = p_voice.s_tie;
