@@ -15,7 +15,7 @@ abc2svg.MIDI = {
     // parse %%MIDI commands
     do_midi: function(parm) {
     var	pits = new Int8Array([0, 0, 1, 2, 2, 3, 3, 4, 5, 5, 6, 6]),
-	accs = new Int8Array([0, 1, 0, -1, 0, 0, 1, 0, -1, 0, -1, 0])
+	accs = new Int8Array([3, 1, 3, -1, 3, 3, 1, 3, -1, 3, -1, 3])
 
     // convert a MIDI pitch to a note
     function tonote(p) {
@@ -28,8 +28,7 @@ abc2svg.MIDI = {
 	note = {
 		pit: p
 	}
-	if (accs[pit])
-		note.acc = accs[pit]
+	note.acc = accs[pit]
 	return note
     } // tonote()
 

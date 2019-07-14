@@ -15,7 +15,7 @@ abc2svg.perc = {
     // parse %%percmap
     do_perc: function(parm) {
     var	pits = new Int8Array([0, 0, 1, 2, 2, 3, 3, 4, 5, 5, 6, 6]),
-	accs = new Int8Array([0, 1, 0, -1, 0, 0, 1, 0, -1, 0, -1, 0])
+	accs = new Int8Array([3, 1, 3, -1, 3, 3, 1, 3, -1, 3, -1, 3])
 
 // GM drum
 // 35 B,,,	Acoustic Bass Drum	a-b-d
@@ -191,8 +191,7 @@ var prn = {
 	note = {
 		pit: p
 	}
-	if (accs[pit])
-		note.acc = accs[pit]
+	note.acc = accs[pit]
 	return note
     } // tonote()
 
