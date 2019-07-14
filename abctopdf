@@ -25,7 +25,11 @@ if ! command -v rsvg-convert >/dev/null 2>&1; then
 fi
 
 # choose a abc2svg batch script with an available JS interpreter
-if command -v jsc >/dev/null 2>&1; then
+# (sorted from fastest to slowest in ARM machines)
+if command -v qjs >/dev/null 2>&1; then
+	abcscr=abcqjs
+	jsc=qjs
+elif command -v jsc >/dev/null 2>&1; then
 	abcscr=abcjsc
 	jsc=jsc
 elif command -v js24 >/dev/null 2>&1; then
@@ -34,6 +38,9 @@ elif command -v js24 >/dev/null 2>&1; then
 elif command -v js52 >/dev/null 2>&1; then
 	abcscr=abcjs52
 	jsc=js52
+elif command -v js60 >/dev/null 2>&1; then
+	abcscr=abcjs60
+	jsc=js60
 elif command -v d8 >/dev/null 2>&1; then
 	abcscr=abcv8
 	jsc=d8

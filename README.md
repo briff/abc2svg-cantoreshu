@@ -174,8 +174,10 @@ After building the **abc2svg** scripts, you will be able to generate music
 sheets from the command line as you did with `abcm2ps`, thanks to the
 following shell scripts (the result goes to stdout):  
 
+- `abcqjs` with `qjs` ([QuickJS from Fabrice Bellard](https://bellard.org/quickjs/))
 - `abcjs24` with `js24` (Mozilla JavaScript shell - Spidermonkey)
 - `abcjs52` with `js52` (Mozilla JavaScript shell - Spidermonkey)
+- `abcjs60` with `js60` (Mozilla JavaScript shell - Spidermonkey)
 - `abcjsc` with `jsc-1` (webkitgtk2)
 - `abcnode` with `node` (nodeJS)
 - `abcv8` with `d8` (Google libv8)
@@ -192,7 +194,7 @@ There are:
   Transposition is applied.   
   The resulting file does not contain the formatting parameters.   
   Example:   
-  `        abcjs52 toabc.js my_file.abc --select X:2 > tune_2.abc`
+  `        abcqjs toabc.js my_file.abc --select X:2 > tune_2.abc`
 
 - `toabw.js`   
   This script outputs a Abiword file (ABW+SVG) which may be read by some

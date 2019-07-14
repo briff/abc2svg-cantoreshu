@@ -1,0 +1,69 @@
+#!/usr/bin/env qjs
+// abc2svg with quickjs (https://bellard.org/quickjs/)
+
+std.loadScript("abc2svg-1.js")
+
+// interpreter specific functions
+abc2svg.print = function(str) {
+	print(str)
+}
+abc2svg.printErr = function(str) {
+	std.err.printf("%s\n", str)
+}
+
+abc2svg.quit = function() {
+	std.exit(1)
+}
+abc2svg.readFile = function(fname) {
+    var	t,
+	b = "",
+	f = std.open(fname, "r")
+
+	while (1) {
+		t = f.getline()
+		if (t == null)
+			break
+		b += t + "\n"
+	} 
+	f.close()
+	return b
+}
+abc2svg.loadjs = function(fn, relay, onerror) {
+	try {
+		std.loadScript(fn)
+		if (relay)
+			relay()
+	} catch(e) {
+		if (onerror)
+			onerror()
+		else
+			printErr('Cannot read file ' + fn)
+	}
+} // loadjs()
+
+std.loadScript("cmdline.js")
+
+// main
+    var	args = scriptArgs
+
+	args.shift()			// the 1st argument is the script name
+
+	if (/\.js$/.test(args[0])) {
+		std.loadScript(args[0])
+		args.shift()
+	}
+	if (typeof abc2svg.abc_init != 'function')
+		std.loadScript("toxhtml.js")
+	if (!args[0]) {
+		abc2svg.printErr('ABC translator with quickjs\
+ and abc2svg-' + abc2svg.version + ' ' + abc2svg.vdate + '\n\
+Usage:\n\
+  abcqjs [script.js] [g_options] ABC_file [f_options] [ABC_file [f_options]]*\n\
+Arguments:\n\
+  script.js  generation script to load - default: toxhtml.js (XHTML+SVG)\n\
+  g_options  global ABC options\n\
+  ABC_file   ABC file\n\
+  f_options  file options')
+		abc2svg.quit()
+	}
+	abc_cmd("abcqjs", args)
