@@ -79,24 +79,20 @@ function ToAudio() {
 
 			mi = p_v.instr || 0
 			if (p_v.midictl) {
+				for (s = p_v.sym; s; s = s.next)
+					if (s.dur)	// search a note/rest
+						break
+				if (!s)
+					continue	// no note in this voice
 				p_v.midictl.forEach(function(val, i) {
-					switch(i) {
-					case 0:		// bank MSB
-						mi += val * 128 * 128
-						break
-					case 32:	// bank LSB
-						mi += val * 128
-						break
-					default:	// generate a MIDI control
-						a_e.push(new Float32Array([
-							p_v.sym.istart,
-							1,	// (time)
-							-1,	// MIDI control
-							i,
-							val,
-							1,
-							v]))
-					}
+					a_e.push(new Float32Array([
+						s.istart,
+						s.time,	// (time)
+						-1,	// MIDI control
+						i,
+						val,
+						1,
+						v]))
 				})
 			}
 			instr[v] = mi;			// MIDI instrument
@@ -289,8 +285,6 @@ function ToAudio() {
 
 	// add() main
 
-	set_voices();			// initialize the voice parameters
-
 	if (!a_e) {			// if first call
 		a_e = []
 		abc_time = rep_st_t = p_time = 0;
@@ -298,6 +292,8 @@ function ToAudio() {
 	} else if (s.time < abc_time) {
 		abc_time = rep_st_t = s.time
 	}
+
+	set_voices()			// initialize the voice parameters
 
 	// loop on the symbols
 	while (s) {

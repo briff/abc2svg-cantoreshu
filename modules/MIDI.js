@@ -47,15 +47,15 @@ abc2svg.MIDI = {
 	return p
     } // norm()
 
-    var	n, v, s,
-	maps = this.get_maps(),
-		a = parm.split(/\s+/)
+    var	n, v, s, maps,
+	a = parm.split(/\s+/)
 
 	switch (a[1]) {
-	case "channel":
+	case "channel":				// channel 10 is bank 128
 		if (a[2] != "10")
-			break
-		this.set_v_param("midictl", "0 1") // channel 10 is bank 128 program 0
+			break			// other channel values are ignored
+		abc2svg.MIDI.do_midi.call(this, "MIDI control 0 1")	// MSB bank
+		abc2svg.MIDI.do_midi.call(this, "MIDI control 32 0")	// LSB bank
 		break
 	case "drummap":
 		if (this.cfmt().sound != "play")
@@ -67,6 +67,7 @@ abc2svg.MIDI = {
 			this.syntax(1, this.errs.bad_val, "%%MIDI drummap")
 			break
 		}
+		maps = this.get_maps()
 		if (!maps.MIDIdrum)
 			maps.MIDIdrum = {}
 		maps.MIDIdrum[n] = [null, v];

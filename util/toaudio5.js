@@ -55,10 +55,11 @@
 //		[0]: index of the note in the ABC source
 //		[1]: time in seconds
 //		[2]: if >= 0: MIDI instrument (MIDI GM number - 1)
-//			else: MIDI control message (not treated here)
-//		[3]: MIDI note pitch (with cents)
-//		[4]: duration
+//			else: MIDI control message
+//		[3]: MIDI note pitch (with cents) / controller
+//		[4]: duration			  / controller value
 //		[5]: volume (0..1 - optional)
+//		[6]: voice number
 //
 // stop() - stop playing
 //
@@ -238,16 +239,35 @@ function Audio5(i_conf) {
 
 	// start loading the instruments
 	function load_res(a_e) {
-		var i, e, instr
+	    var	i, e, instr, v,
+		bk = []				// bank number
 
 		for (i = evt_idx; ; i++) {
 			e = a_e[i]
 			if (!e || evt_idx >= iend)
 				break
 			instr = e[2]
-			if (instr >= 0 && !params[instr]) {
-				params[instr] = [];
-				load_instr(instr, a_e)
+			v = e[6]
+			if (bk[v] == undefined)
+				bk[v] = 0
+			if (instr < 0) {
+				switch (e[3]) {		// controller
+				case 0:			// MSB bank
+					bk[v] = (bk[v] & 0x3fff) | (e[4] << 14)
+					break
+				case 32:		// LSB bank
+					bk[v] = (bk[v] & 0x1fc07f) | (e[4] << 7)
+					break
+				}
+			} else {
+				if (bk[v]) {
+					instr += bk[v]
+					e[2] = instr	// bank + program
+				}
+				if (!params[instr]) {
+					params[instr] = [];
+					load_instr(instr, a_e)
+				}
 			}
 		}
 	}
