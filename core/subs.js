@@ -770,7 +770,7 @@ function write_headform(lwidth) {
 			y = ya[align] + sz
 
 			if (c == 'Q') {			/* special case for tempo */
-				set_width(glovar.tempo)
+				self.set_width(glovar.tempo)
 				if (!glovar.tempo.del) {
 					if (align != 'l') {
 						var w = tempo_width(glovar.tempo)
