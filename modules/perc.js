@@ -256,7 +256,7 @@ var prn = {
 				curvoice.map = {}
 			curvoice.map = a[i + 1];
 			if (!curvoice.midictl)
-				curvoice.midictl = {}
+				curvoice.midictl = []
 			curvoice.midictl[0] = 1		// bank 128
 			break
 		}
