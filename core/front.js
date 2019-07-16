@@ -109,62 +109,65 @@ function cnv_escape(src) {
 			}
 
 			// try unicode combine characters
+			c2 = src[i + 1]
+			if (!/[A-Za-z]/.test(c2))
+				break
 			switch (c) {
 			case '`':
-				dst += src[++i] + "\u0300"	// grave
-				j = i + 1
+				dst += c2 + "\u0300"	// grave
+				j = i + 2
 				continue
 			case "'":
-				dst += src[++i] + "\u0301"	// acute
-				j = i + 1
+				dst += c2 + "\u0301"	// acute
+				j = i + 2
 				continue
 			case '^':
-				dst += src[++i] + "\u0302"	// circumflex
-				j = i + 1
+				dst += c2 + "\u0302"	// circumflex
+				j = i + 2
 				continue
 			case '~':
-				dst += src[++i] + "\u0303"	// tilde
-				j = i + 1
+				dst += c2 + "\u0303"	// tilde
+				j = i + 2
 				continue
 			case '=':
-				dst += src[++i] + "\u0304"	// macron
-				j = i + 1
+				dst += c2 + "\u0304"	// macron
+				j = i + 2
 				continue
 			case '_':
-				dst += src[++i] + "\u0305"	// overline
-				j = i + 1
+				dst += c2 + "\u0305"	// overline
+				j = i + 2
 				continue
 			case '.':
-				dst += src[++i] + "\u0307"	// dot
-				j = i + 1
+				dst += c2 + "\u0307"	// dot
+				j = i + 2
 				continue
 			case '"':
-				dst += src[++i] + "\u0308"	// dieresis
-				j = i + 1
+				dst += c2 + "\u0308"	// dieresis
+				j = i + 2
 				continue
 			case 'o':
-				dst += src[++i] + "\u030a"	// ring
-				j = i + 1
+				dst += c2 + "\u030a"	// ring
+				j = i + 2
 				continue
 			case 'H':
-				dst += src[++i] + "\u030b"	// hungarumlaut
-				j = i + 1
+				dst += c2 + "\u030b"	// hungarumlaut
+				j = i + 2
 				continue
 			case 'v':
-				dst += src[++i] + "\u030c"	// caron
-				j = i + 1
+				dst += c2 + "\u030c"	// caron
+				j = i + 2
 				continue
 //			case ',':
-//				dst += src[++i] + "\u0326"	// comma below
-//				j = i + 1
+//				dst += c2 + "\u0326"	// comma below
+//				j = i + 2
 //				continue
 			case 'c':
-				dst += src[++i] + "\u0327"	// cedilla
-				j = i + 1
+				dst += c2 + "\u0327"	// cedilla
+				j = i + 2
 				continue
 			case ';':
-				dst += src[++i] + "\u0328"	// ogonek
-				j = i + 1
+				dst += c2 + "\u0328"	// ogonek
+				j = i + 2
 				continue
 			}
 			break
@@ -237,7 +240,6 @@ function tosvg(in_fname,		// file name
 
 	// remove the comment at end of text
 	function uncomment(src, do_escape) {
-	    var i
 		if (!src)
 			return src
 		if (src.indexOf('%') >= 0)
@@ -696,7 +698,7 @@ function tosvg(in_fname,		// file name
 		case '|':			// "|:" starts a music line
 			if (parse.state < 2)
 				continue
-			parse.line.buffer = uncomment(file.slice(bol, eol), true);
+			parse.line.buffer = text
 			parse_music_line()
 			continue
 		default:
