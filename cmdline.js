@@ -58,8 +58,11 @@ function do_file(fn) {
 			}
 		}
 	}
-	if (!file)
-		abc2svg.abort(new Error("Cannot read file '" + fn + "'"))
+	if (!file && fn != "default.abc") {
+//		abc2svg.abort(new Error("Cannot read file '" + fn + "'"))
+		user.errmsg("Cannot read file '" + fn + "'")
+		return
+	}
 //	if (typeof(utf_convert) == "function")
 //		file = utf_convert(file)
 
