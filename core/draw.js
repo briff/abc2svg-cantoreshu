@@ -95,7 +95,7 @@ var min_tb = [
 ]
 
 // (possible hook)
-function calculate_beam(bm, s1) {
+Abc.prototype.calculate_beam = function(bm, s1) {
     var	s, s2, g, notes, nflags, st, v, two_staves, two_dir,
 		x, y, ys, a, b, stem_err, max_stem_err,
 		p_min, p_max, s_closest,
@@ -3667,7 +3667,7 @@ function draw_systems(indent) {
 
 /* -- draw remaining symbols when the staves are defined -- */
 // (possible hook)
-function draw_symbols(p_voice) {
+Abc.prototype.draw_symbols = function(p_voice) {
 	var	bm = {},
 		s, g, x, y, st;
 

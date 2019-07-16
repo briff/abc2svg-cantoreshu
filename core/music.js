@@ -559,7 +559,7 @@ function gchord_width(s, wlnote, wlw) {
  * so that successive symbols are still separated when
  * no extra glue is put between them */
 // (possible hook)
-function set_width(s) {
+Abc.prototype.set_width = function(s) {
     var	s2, i, m, xx, w, wlnote, wlw, acc,
 	bar_type, meter, last_acc, n1, n2, esp, tmp
 
@@ -2403,7 +2403,7 @@ var rest_sp = [
 ]
 
 // (possible hook)
-function set_pitch(last_s) {
+Abc.prototype.set_pitch = function(last_s) {
 	var	s, s2, g, st, delta, pitch, note,
 		dur = C.BLEN,
 		m = nstaff + 1,
@@ -2509,7 +2509,7 @@ function set_pitch(last_s) {
 /* -- set the stem direction when multi-voices -- */
 /* this function is called only once per tune */
 // (possible hook)
-function set_stem_dir() {
+Abc.prototype.set_stem_dir = function() {
 	var	t, u, i, st, rvoice, v,
 		v_st,			// voice -> staff 1 & 2
 		st_v, vobj,		// staff -> (v, ymx, ymn)*
@@ -4020,7 +4020,7 @@ function set_overlap() {
 /* -- set the stem height -- */
 /* this routine is called only once per tune */
 // (possible hook)
-function set_stems() {
+Abc.prototype.set_stems = function() {
 	var s, s2, g, slen, scale,ymn, ymx, nflags, ymin, ymax, res
 
 	for (s = tsfirst; s; s = s.ts_next) {
@@ -4534,7 +4534,7 @@ function set_piece() {
 
 /* -- position the symbols along the staff -- */
 // (possible hook)
-function set_sym_glue(width) {
+Abc.prototype.set_sym_glue = function(width) {
     var	s, g, ll,
 	some_grace,
 	spf,			// spacing factor
@@ -4700,7 +4700,7 @@ function gen_init() {
 
 /* -- generate the music -- */
 // (possible hook)
-function output_music() {
+Abc.prototype.output_music = function() {
 	var v, lwidth, indent, line_height
 
 	gen_init()

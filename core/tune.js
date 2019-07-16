@@ -527,7 +527,7 @@ function new_syst(init) {
 
 /* -- set the bar numbers -- */
 // (possible hook)
-function set_bar_num() {
+Abc.prototype.set_bar_num = function() {
 	var	s, s2, tim, bar_time, bar_num, rep_dtime,
 		v = cur_sy.top_voice,
 		wmeasure = voice_tb[v].meter.wmeasure,
@@ -778,7 +778,7 @@ function set_transp() {
 
 /* -- process a pseudo-comment (%% or I:) -- */
 // (possible hook)
-function do_pscom(text) {
+Abc.prototype.do_pscom = function(text) {
     var	h1, val, s, cmd, param, n, k, b
 
 	cmd = text.match(/(\w|-)+/)
@@ -1136,7 +1136,7 @@ function do_pscom(text) {
 
 // treat the %%beginxxx / %%endxxx sequences
 // (possible hook)
-function do_begin_end(type,
+Abc.prototype.do_begin_end = function(type,
 			opt,
 			text) {
 	var i, j, action, s

@@ -371,7 +371,7 @@ function set_page() {
 
 // set a format parameter
 // (possible hook)
-function set_format(cmd, param) {
+Abc.prototype.set_format = function(cmd, param) {
 	var f, f2, v, i
 
 //fixme: should check the type and limits of the parameter values

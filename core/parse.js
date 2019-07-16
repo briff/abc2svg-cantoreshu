@@ -331,7 +331,7 @@ function new_block(subtype) {
 
 // set the voice parameters
 // (possible hook)
-function set_vp(a) {
+Abc.prototype.set_vp = function(a) {
     var	s, item, pos, val, clefpit
 
 	while (1) {
@@ -1886,7 +1886,7 @@ function slur_add(sn) {
 }
 
 // (possible hook)
-function new_note(grace, sls) {
+Abc.prototype.new_note = function(grace, sls) {
 	var	note, s, in_chord, c, dcn, type,
 		i, n, s2, nd, res, num, dur,
 		sl1 = [],

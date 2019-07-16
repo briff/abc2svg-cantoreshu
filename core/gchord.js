@@ -210,7 +210,7 @@ function gch_transp(s) {
 
 // -- build the chord indications / annotations --
 // (possible hook)
-function gch_build(s) {
+Abc.prototype.gch_build = function(s) {
 
 	/* split the chord indications / annotations
 	 * and initialize their vertical offsets */
@@ -339,7 +339,7 @@ function gch_build(s) {
 // (the staves are not yet defined)
 // (unscaled delayed output)
 // (possible hook)
-function draw_gchord(s, gchy_min, gchy_max) {
+Abc.prototype.draw_gchord = function(s, gchy_min, gchy_max) {
     var	gch, text, ix, x, y, y2, hbox, h, y_above, y_below,
 
 	// adjust the vertical offset according to the chord symbols
