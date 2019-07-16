@@ -1084,9 +1084,9 @@ function draw_rest(s) {
 /* -- draw grace notes -- */
 /* (the staves are defined) */
 function draw_gracenotes(s) {
-	var	yy, x0, y0, x1, y1, x2, y2, x3, y3, bet1, bet2,
-		dy1, dy2, g, last, note,
-		bm = {}
+    var	yy, x0, y0, x1, y1, x2, y2, x3, y3, bet1, bet2, slur,
+	dy1, dy2, g, last, note,
+	bm = {}
 
 	/* draw the notes */
 //	bm.s2 = undefined			/* (draw flags) */
@@ -1100,6 +1100,8 @@ function draw_gracenotes(s) {
 		if (g == bm.s2)
 			bm.s2 = null			/* (draw flags again) */
 		anno_stop(g)
+		if (g.sls)
+			slur = true
 		if (!g.next)
 			break			/* (keep the last note) */
 	}
@@ -1127,7 +1129,7 @@ function draw_gracenotes(s) {
 //fixme: have a full key symbol in voice
 	if (s.p_v.key.k_bagpipe			/* no slur when bagpipe */
 	 || !cfmt.graceslurs
-	 || s.sls				// explicit slur
+	 || slur				// explicit slur
 	 || !s.next
 	 || s.next.type != C.NOTE)
 		return
