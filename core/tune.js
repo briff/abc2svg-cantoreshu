@@ -798,11 +798,11 @@ Abc.prototype.do_pscom = function(text) {
 	case "center":
 		if (parse.state >= 2) {
 			s = new_block("text");
-			s.text = cnv_escape(param);
+			s.text = param
 			s.opt = 'c'
 			return
 		}
-		write_text(cnv_escape(param), 'c')
+		write_text(param, 'c')
 		return
 	case "clef":
 		if (parse.state >= 2) {
@@ -1047,11 +1047,11 @@ Abc.prototype.do_pscom = function(text) {
 	case "text":
 		if (parse.state >= 2) {
 			s = new_block(cmd);
-			s.text = cnv_escape(param);
+			s.text = param
 			s.opt = cfmt.textoption
 			return
 		}
-		write_text(cnv_escape(param), cfmt.textoption)
+		write_text(param, cfmt.textoption)
 		return
 	case "transpose":		// (abcm2ps compatibility)
 		if (cfmt.sound)
@@ -1187,11 +1187,11 @@ Abc.prototype.do_begin_end = function(type,
 			action = cfmt.textoption
 		if (parse.state >= 2) {
 			s = new_block(type);
-			s.text = cnv_escape(text);
+			s.text = text
 			s.opt = action
 			break
 		}
-		write_text(cnv_escape(text), action)
+		write_text(text, action)
 		break
 	}
 }

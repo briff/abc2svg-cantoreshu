@@ -1220,7 +1220,6 @@ function new_bar() {
 			}
 			s.text += c
 		}
-		s.text = cnv_escape(s.text);
 		s.rbstop = 2;
 		s.rbstart = 2
 	}

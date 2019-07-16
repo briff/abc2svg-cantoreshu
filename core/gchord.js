@@ -253,7 +253,6 @@ Abc.prototype.gch_build = function(s) {
 					return "&#x1d12b;"
 				});
 		} else {
-			gch.text = cnv_escape(gch.text);
 			if (gch.type == '@'
 			 && !user.anno_start && !user.anno_stop) {
 				gch.wh = [0, 0]
