@@ -254,9 +254,11 @@ function Audio5(i_conf) {
 				switch (e[3]) {		// controller
 				case 0:			// MSB bank
 					bk[v] = (bk[v] & 0x3fff) | (e[4] << 14)
+					e[3] = -1	// don't treat anymore
 					break
 				case 32:		// LSB bank
 					bk[v] = (bk[v] & 0x1fc07f) | (e[4] << 7)
+					e[3] = -1
 					break
 				}
 			} else {
