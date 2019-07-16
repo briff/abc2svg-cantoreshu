@@ -594,8 +594,6 @@ Abc.prototype.set_bar_num = function() {
 				s = s.ts_next
 			break
 		case C.BAR:
-			if (s.bar_num)
-				bar_num = s.bar_num	// (%%setbarnb)
 			if (s.time < bar_time) {	// incomplete measure
 				if (s.text && s.text[0] == '1') {
 					bar_rep = bar_num;
@@ -614,7 +612,10 @@ Abc.prototype.set_bar_num = function() {
 					break
 				s2 = s2.next
 			} while (s2 && s2.time == tim);
-			bar_num++
+			if (s.bar_num)
+				bar_num = s.bar_num	// (%%setbarnb)
+			else
+				bar_num++
 			if (s2 && s2.type == C.BAR && s2.text) {
 				if (s2.text[0] == '1') {
 					rep_dtime = 0;
