@@ -2034,7 +2034,10 @@ function draw_slurs(s, last) {
 			s = gr1.next
 		} else {
 			path.push(s);
-			s = s.ts_next
+			if (s.grace)
+				s = s.next
+			else
+				s = s.ts_next
 		}
 
 		if (!s2.grace) {		// if end on a normal note
