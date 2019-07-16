@@ -2222,12 +2222,14 @@ function tp_adj(s, fact) {
 //fixme: tuplets in grace notes?
 		s.in_tuplet = true
 		if (!s.grace) {
-			s.dur *= fact;
-			s.time = tim;
-			tim += s.dur
+			s.time = Math.round(tim)
+			if (s.dur) {
+				s.dur *= fact
+				tim += s.dur
+			}
 		}
 		if (!s.next) {
-			curvoice.time = Math.round(s.time + s.dur);
+			curvoice.time = Math.round(tim);
 			s.dur = curvoice.time - s.time
 			break
 		}
