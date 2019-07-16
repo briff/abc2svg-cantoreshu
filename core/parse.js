@@ -1851,8 +1851,11 @@ function sort_pitch(s) {
 function slur_add(sn) {
     var	i, s
 
+	// go back and find the last start of slur
 	for (i = curvoice.sls.length; --i >= 0; ) {
 		s = curvoice.sls[i].sn
+
+		// the slur must not start and stop on a same symbol
 		if (s != sn && s.s != sn) {
 			if (!s.sls)
 				s.sls = [];
@@ -2488,6 +2491,12 @@ function parse_music_line() {
 					case C.NOTE:
 					case C.REST:
 					case C.SPACE:
+						break
+					case C.GRACE:
+
+						// stop the slur on the last grace note
+						for (s = s.extra; s.next; s = s.next)
+							;
 						break
 					default:
 						s = null
