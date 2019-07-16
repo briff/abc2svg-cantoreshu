@@ -66,7 +66,6 @@ H "History: "',
 	maxshrink: 1,		// smallest score
 	maxstaffsep: 2000,
 	maxsysstaffsep: 2000,
-	measurefirst: 1,
 	measurefont: {name: "serifItalic", size: 10},
 	measurenb: -1,
 	musicspace: 6,
@@ -384,7 +383,6 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "aligncomposer":
 	case "barsperstaff":
 	case "infoline":
-	case "measurefirst":
 	case "measurenb":
 	case "rbmax":
 	case "rbmin":

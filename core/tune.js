@@ -612,10 +612,12 @@ Abc.prototype.set_bar_num = function() {
 					break
 				s2 = s2.next
 			} while (s2 && s2.time == tim);
+
 			if (s.bar_num)
 				bar_num = s.bar_num	// (%%setbarnb)
 			else
 				bar_num++
+
 			if (s2 && s2.type == C.BAR && s2.text) {
 				if (s2.text[0] == '1') {
 					rep_dtime = 0;
@@ -969,12 +971,13 @@ Abc.prototype.do_pscom = function(text) {
 		return
 	case "setbarnb":
 		val = parseInt(param)
-		if (isNaN(val) || val < 1)
+		if (isNaN(val) || val < 1) {
 			syntax(1, "Bad %%setbarnb value")
-		else if (parse.state >= 2)
-			glovar.new_nbar = val
-		else
-			cfmt.measurefirst = val
+			break
+		}
+		if (parse.state == 2)
+			goto_tune()
+		glovar.new_nbar = val
 		return
 	case "staff":
 		if (parse.state != 3) {
@@ -2010,7 +2013,12 @@ function goto_tune(is_K) {
 	set_page();
 	write_heading();
 	reset_gen();
-	gene.nbar = cfmt.measurefirst;		// measure numbering
+	if (glovar.new_nbar) {
+		gene.nbar = glovar.new_nbar	// measure numbering
+		glovar.new_nbar = 0
+	} else {
+		gene.nbar = 1
+	}
 
 	parse.state = 3;			// in tune body
 
