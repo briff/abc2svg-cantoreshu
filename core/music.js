@@ -74,6 +74,57 @@ var w_note = new Float32Array([
 	7		// SQUARE
 ])
 
+// get head type, dots, flags of note/rest for a duration
+function identify_note(s, dur_o) {
+    var	head, dots, flags,
+	dots = 0,
+	dur = dur_o
+
+	if (dur % 12 != 0)
+		error(1, s, "Invalid note duration $1", dur);
+	dur /= 12			/* see C.BLEN for values */
+	if (dur == 0)
+		error(1, s, "Note too short")
+	for (flags = 5; dur != 0; dur >>= 1, flags--) {
+		if (dur & 1)
+			break
+	}
+	dur >>= 1
+	switch (dur) {
+	case 0: break
+	case 1: dots = 1; break
+	case 3: dots = 2; break
+	case 7: dots = 3; break
+	default:
+		error(1, s, "Invalid note duration $1", dur_o);
+		flags += ((11 - dur) / 4) | 0;
+		dots = 4
+		break
+	}
+	flags -= dots
+	if (flags >= 0) {
+		head = C.FULL
+	} else switch (flags) {
+	default:
+		error(1, s, "Note too long");
+		flags = -4
+		/* fall thru */
+	case -4:
+		head = C.SQUARE
+		break
+	case -3:
+		head = cfmt.squarebreve ? C.SQUARE : C.OVALBARS
+		break
+	case -2:
+		head = C.OVAL
+		break
+	case -1:
+		head = C.EMPTY
+		break
+	}
+	return [head, dots, flags]
+}
+
 function set_head_shift(s) {
 	var	i, i1, i2, d, ps, dx,
 		dx_head = dx_tb[s.head],
