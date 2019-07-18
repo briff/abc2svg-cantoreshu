@@ -78,5 +78,8 @@
   "bugs": {
     "url": "https://chiselapp.com/user/moinejf/repository/abc2svg/reportlist"
   },
-  "homepage": "https://chiselapp.com/user/moinejf/repository/abc2svg"
+  "homepage": "https://chiselapp.com/user/moinejf/repository/abc2svg",
+  "dependencies": {
+    "npm": "^6.10.1"
+  }
 }
