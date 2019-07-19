@@ -184,6 +184,8 @@ function errbld(sev, txt, fn, idx) {
 function error(sev, s, msg, a1, a2, a3, a4) {
 	var i, j, regex, tmp
 
+	if (!sev && cfmt.quiet)
+		return
 	if (user.textrans) {
 		tmp = user.textrans[msg]
 		if (tmp)

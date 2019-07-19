@@ -452,6 +452,7 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "hyphencont":
 	case "keywarn":
 	case "linewarn":
+	case "quiet":
 	case "rbdbstop":
 	case "singleline":
 	case "squarebreve":
