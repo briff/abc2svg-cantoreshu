@@ -99,6 +99,7 @@ var tgls = {
   x: {x:-3.7, y:0, c:"\ue0a9"},		// 'x' note head
   "circle-x": {x:-3.7, y:0, c:"\ue0b3"}, // 'circle-x' note head
   srep: {x:-5, y:0, c:"\ue101"},
+  "dot+": {x:-5, y:0, sc:.7, c:"\ue101"},
   diamond: {x:-4, y:0, c:"\ue1b9"},
   triangle: {x:-4, y:0, c:"\ue1bb"},
   dot: {x:-2, y:0, c:"\ue1e7"},

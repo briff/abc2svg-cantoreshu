@@ -113,6 +113,7 @@ user.textrans = {
 	"No note before '<'": "Falta nota antes de '<'",
 	"No note in voice overlay":
 				"Falta nota em superposição de vozes",
+//	"Non standard note duration $1": "??",
 	"No read_file support": "A função read_file não existe",
 	"No start of !$1!": "Falta início de !$1!",
 	"Not a note in grace note sequence":

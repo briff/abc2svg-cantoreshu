@@ -1274,7 +1274,7 @@ function y_head(s, note) {
 /* (the staves are defined) */
 // sets {x,y}_note
 function draw_basic_note(x, s, m, y_tb) {
-	var	i, k, p, yy, dotx, doty, inv,
+	var	i, p, yy, dotx, doty, inv,
 		old_color = false,
 		note = s.notes[m],
 		staffb = staff_tb[s.st].y,	/* bottom of staff */
@@ -1388,8 +1388,9 @@ function draw_basic_note(x, s, m, y_tb) {
 				y_tb[m] += 3
 		}
 		doty = y_tb[m] + staffb
-		while (--dots >= 0) {
-			xygl(dotx, doty, "dot");
+		i = (note.dur / 12) >> ((5 - nflags) - dots)
+		while (dots-- > 0) {
+			xygl(dotx, doty, (i & (1 << dots)) ? "dot" : "dot+")
 			dotx += 3.5
 		}
 	}
