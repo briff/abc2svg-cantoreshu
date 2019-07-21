@@ -18,6 +18,7 @@
 // along with abc2svg-core.  If not, see <http://www.gnu.org/licenses/>.
 
 var	font_tb = [],
+	font_st = {},	// font style => font_tb index for incomplete user fonts
 	font_scale_tb = {
 		serif: 1,
 		serifBold: 1,
@@ -29,7 +30,7 @@ var	font_tb = [],
 	fmt_lock = {}
 
 var cfmt = {
-	annotationfont: { name: "sans-serif", size: 12 },
+	annotationfont: {name: "sans-serif", size: 12 },
 	aligncomposer: 1,
 //	botmargin: .7 * IN,		// != 1.8 * CM,
 	breaklimit: .7,
@@ -163,13 +164,10 @@ function param_set_font(xxxfont, param) {
 
 	// create a new font
 	font = cfmt[xxxfont];
-	if (!font) {			// set-font-<n> or new element
-		font = {
-			name: "sans-serif",
-			size: 12
-		}
-	}
-	font = Object.create(font);
+	if (!font)			// set-font-<n> or new element
+		font = {}
+	else
+		font = Object.create(font)
 	font.fid = font.used = undefined;
 	cfmt[xxxfont] = font;
 
@@ -215,11 +213,7 @@ function param_set_font(xxxfont, param) {
 	}
 	new_name = a[0]
 	if (new_name != "*") {
-		new_name = new_name.replace('Times-Roman', 'serif');
-		new_name = new_name.replace('Times', 'serif');
-		new_name = new_name.replace('Helvetica', 'sans-serif');
-		new_name = new_name.replace('Courier', 'monospace');
-		font.name = new_name
+		font_def(font, new_name)
 		font.swfac = 0
 	}
 	if (a.length > 1) {
@@ -633,27 +627,45 @@ Abc.prototype.set_format = function(cmd, param) {
 
 // font stuff
 
-// build a font style
-function style_font(font) {
-    var	fn = font.name,
-	r = '',
-	a = fn.match(/-?[bB]old/)
+// extract the font characteristics
+function font_def(font, fn) {
+    var	a = fn.match(/[- ]?[bB]old/)
 
 	if (a) {
-		r += "bold ";
+		font.weight = "bold"
 		fn = fn.replace(a[0], '')
 	}
-	a = fn.match(/-?[iI]talic/)
+	a = fn.match(/[- ]?[iI]talic/)
 	if (a) {
-		r += "italic ";
+		font.style = "italic"
 		fn = fn.replace(a[0], '')
 	}
-	a = fn.match(/-?[oO]blique/)
+	a = fn.match(/[- ]?[oO]blique/)
 	if (a) {
-		r += "oblique ";
+		font.style = "oblique"
 		fn = fn.replace(a[0], '')
 	}
-	return 'font:' + r + font.size.toFixed(1) + 'px ' + fn
+	switch (fn) {
+	case "Times-Roman":
+	case "Times":	fn = "serif"; break
+	case "Helvetica": fn = "sans-serif"; break
+	case "Courier": fn = "monospace"; break
+	}
+	font.name = fn
+}
+
+// build a font style
+function st_font(font) {
+    var	r = ""
+
+	if (font.weight)
+		r += font.weight + " "
+	if (font.style)
+		r += font.style + " "
+	return r + font.size.toFixed(1) + 'px ' + font.name
+}
+function style_font(font) {
+	return 'font:' + st_font(font)
 }
 Abc.prototype.style_font = style_font
 
@@ -681,13 +693,33 @@ function use_font(font) {
 
 // get the font of the 'xxxfont' parameter
 function get_font(fn) {
+    var	font, font2, fid, st
+
 	fn += "font"
-    var	font = cfmt[fn]
+	font = cfmt[fn]
 	if (!font) {
 		syntax(1, "Unknown font $1", '$' + fn[1]);
-		font = gene.curfont
+		return gene.curfont
 	}
 
+	if (!font.name || !font.size) {		// if incomplete user font
+		font2 = Object.create(gene.curfont)
+		if (font.name)
+			font2.name = font.name
+		if (font.weight)
+			font2.weight = font.weight
+		if (font.style)
+			font2.style = font.style
+		if (font.size)
+			font2.size = font.size
+		st = st_font(font2)
+		fid = font_st[st]
+		if (fid != undefined)
+			return font_tb[fid]
+		font_st[st] = font_tb.length
+		font2.fid = font2.used = undefined
+		font = font2
+	}
 	use_font(font)
 	return font
 }
