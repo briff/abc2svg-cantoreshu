@@ -45,8 +45,8 @@ user.textrans = {
 	"Bad %%staff value '$1'": "Valor incorreto '$1' em %%staff",
 	"Bad %%stafflines value": "Valor incorreto em %%stafflines",
 	"Bad %%staffscale value": "Valor incorreto em %%staffscale",
-	"Bad char '$1' in M:": "Caractere inválido '$1' em M:",
-	"Bad character '$1'": "Caractere inválido '$1'",
+	"Bad char '$1' in M:": "Caráter inválido '$1' em M:",
+	"Bad character '$1'": "Caráter inválido '$1'",
 	"Bad controller number in %%MIDI": "Número inválido do controlador em %%MIDI",
 	"Bad controller value in %%MIDI": "Valor incorreto para controlador em %%MIDI",
 	"Bad duration '$1' in M:": "Duração '$1' incorreta em M:",
@@ -59,7 +59,7 @@ user.textrans = {
 	"Bad scale value in %%font": "Tamanho incorreto em %%font",
 	"Bad tie": "Ligadura de prolongamento incorreta",
 	"Bad transpose value": "Valor incorreto de transposição",
-	"Bad user character '$1'": "Caractere ilegal '$1' em U:/%%user",
+	"Bad user character '$1'": "Caráter ilegal '$1' em U:/%%user",
 	"Bad value '$1' in %%linebreak - ignored":
 				"Valor incorreto '$1' em %%linebreak - ignorado",
 	"Bad value in $1": "Valor incorreto em $1",
@@ -113,12 +113,12 @@ user.textrans = {
 	"No note before '<'": "Falta nota antes de '<'",
 	"No note in voice overlay":
 				"Falta nota em superposição de vozes",
-//	"Non standard note duration $1": "??",
+	"Non standard note duration $1": "Duração não padronizada: $1",
 	"No read_file support": "A função read_file não existe",
 	"No start of !$1!": "Falta início de !$1!",
 	"Not a note in grace note sequence":
-				"Caractere inválido em grupo de notinhas ornamentais",
-	"Not an ASCII character": "Não é um caractere ASCII",
+				"Caráter inválido em grupo de notinhas ornamentais",
+	"Not an ASCII character": "Não é um caráter ASCII",
 	"Not enough measure bars for lyric line":
 				"Faltam barras de compasso na linha de palavras (letra)",
 	"Not enough measure bars for symbol line":
