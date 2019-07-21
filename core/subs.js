@@ -203,10 +203,9 @@ function out_str(str) {
 			default:
 				if (c[0] != '$')
 					break
-				if (c[1] == '0') {
-					n_font = gene.deffont;
-					use_font(n_font)
-				} else if (c[1] >= '1' && c[1] <= '9')
+				if (c[1] == '0')
+					n_font = gene.deffont
+				else if (c[1] >= '1' && c[1] <= '9')
 					n_font = get_font("u" + c[1])
 				else
 					break
