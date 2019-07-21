@@ -799,7 +799,7 @@ Abc.prototype.do_pscom = function(text) {
 
 	switch (cmd) {
 	case "center":
-		if (parse.state >= 2) {
+		if (parse.state == 3) {
 			s = new_block("text");
 			s.text = param
 			s.opt = 'c'
@@ -953,7 +953,7 @@ Abc.prototype.do_pscom = function(text) {
 			h2 = h1
 		if (len < 1)
 			len = 90
-		if (parse.state >= 2) {
+		if (parse.state == 3) {
 			s = new_block(cmd);
 			s.x = (lwidth - len) / 2 / cfmt.scale;
 			s.l = len / cfmt.scale;
@@ -1049,7 +1049,7 @@ Abc.prototype.do_pscom = function(text) {
 		}
 		break
 	case "text":
-		if (parse.state >= 2) {
+		if (parse.state == 3) {
 			s = new_block(cmd);
 			s.text = param
 			s.opt = cfmt.textoption
@@ -1108,7 +1108,7 @@ Abc.prototype.do_pscom = function(text) {
 			syntax(1, "%%vskip cannot be negative")
 			return
 		}
-		if (parse.state >= 2) {
+		if (parse.state == 3) {
 			s = new_block(cmd);
 			s.sk = val
 			return
@@ -1150,7 +1150,7 @@ Abc.prototype.do_begin_end = function(type,
 		js_inject(text)
 		break
 	case "ml":
-		if (parse.state >= 2) {
+		if (parse.state == 3) {
 			s = new_block(type);
 			s.text = text
 		} else {
@@ -1189,7 +1189,7 @@ Abc.prototype.do_begin_end = function(type,
 		action = get_textopt(opt);
 		if (!action)
 			action = cfmt.textoption
-		if (parse.state >= 2) {
+		if (parse.state == 3) {
 			s = new_block(type);
 			s.text = text
 			s.opt = action

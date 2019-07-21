@@ -631,6 +631,7 @@ function tosvg(in_fname,		// file name
 			case 0:
 				continue
 			case 1:
+			case 2:
 				if (info.T == undefined)	// (keep empty T:)
 					info.T = text
 				else
