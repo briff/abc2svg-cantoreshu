@@ -3832,7 +3832,8 @@ function set_overlap() {
 		if (same_head(s1, s2))
 			continue
 
-		// special case when only a second
+		// special case when only a second and no dots
+	    if (!s1.dots && !s2.dots)
 		if ((s1.stem > 0 && s2.stem < 0
 		  && s1.notes[0].pit == s2.notes[s2.nhd].pit + 1)
 		 || (s1.stem < 0 && s2.stem > 0
@@ -3841,9 +3842,10 @@ function set_overlap() {
 				s1 = s2;
 				s2 = s
 			}
+			d = s1.notes[0].shhd + 7
 			for (m = 0; m <= s2.nhd; m++)	// shift the lower note(s)
-				s2.notes[m].shhd += 7;
-			s2.xmx += 7;
+				s2.notes[m].shhd += d
+			s2.xmx += d
 			s1.xmx = s2.xmx		// align the dots
 			continue
 		}
@@ -3916,10 +3918,6 @@ function set_overlap() {
 					t = 1
 				break
 			case -1:
-//fixme:dots++
-//				if (s1.dots && s2.dots)
-//					t = 1
-//++--
 				if (s1.dots && s2.dots) {
 					if (s1.notes[i1].pit & 1) {
 						s1.dot_low = false;
@@ -3929,17 +3927,12 @@ function set_overlap() {
 						s2.dot_low = true
 					}
 				}
-//fixme:dots--
 				break
 			case -2:
 				if (s1.dots && s2.dots
 				 && !(s1.notes[i1].pit & 1)) {
-//fixme:dots++
-//					t = 1
-//++--
 					s1.dot_low = false;
 					s2.dot_low = false
-//fixme:dots--
 					break
 				}
 				break
@@ -3966,12 +3959,12 @@ function set_overlap() {
 			if (s2.dots) {
 				if (!t)			/* if no dot clash */
 					sd = 1		/* align the dots */
-//fixme:dots
+			} else {
+				v_invert()		// shift the first voice
 			}
 		} else if (s2.dots) {
 			if (d2 + dr < d + dr2)
 				sd = 1		/* align the dots */
-//fixme:dots
 		}
 		pl = left2;
 		pr = right2
