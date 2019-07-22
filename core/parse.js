@@ -1797,19 +1797,20 @@ function sort_pitch(s) {
 
 // on end of slur, add a slur in a symbol or note
 function slur_add(sn) {
-    var	i, s
+    var	i, s, sl
 
 	// go back and find the last start of slur
 	for (i = curvoice.sls.length; --i >= 0; ) {
-		s = curvoice.sls[i].sn
+		sl = curvoice.sls[i]
+		s = sl.sn
 
 		// the slur must not start and stop on a same symbol
-		if (s != sn && s.s != sn) {
+		if (s != sn && s.s != sn && s != sn.s) {
 			if (!s.sls)
 				s.sls = [];
 			s.sls.push({
 				sn: sn,
-				ty: s.ty
+				ty: sl.ty
 			});
 			curvoice.sls.splice(i, 1)
 			return
@@ -2042,11 +2043,13 @@ Abc.prototype.new_note = function(grace, sls) {
 					continue
 				case '.':
 					c = line.next_char()
-					if (c != '-') {
-						syntax(1, "Misplaced dot")
-						break
+					switch (c) {
+					case '-':
+					case '(':
+						continue
 					}
-					continue
+					syntax(1, "Misplaced dot")
+					break
 				}
 				break
 			}
