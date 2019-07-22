@@ -614,7 +614,6 @@ function tosvg(in_fname,		// file name
 			}
 
 			sav.cfmt = clone(cfmt);
-			cfmt.pos = clone(cfmt.pos);
 			sav.info = clone(info, 1);
 			sav.char_tb = clone(char_tb);
 			sav.glovar = clone(glovar);
