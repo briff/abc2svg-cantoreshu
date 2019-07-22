@@ -2571,17 +2571,18 @@ function parse_music_line() {
 				tp_adj(tp.s, tp.q / tp.p);
 				tp.s = null;
 				tp = tp0;
+				tp0 = null;
 				if (!tp) {
 					s.te0 = true
 					continue	// done
 				}
-				tp0 = null;
 				s.te1 = true
 				if (--tp.r > 0)
 					continue
 				tp_adj(tp.s, tp.q / tp.p);
 				tp.s = null;
 				tp = null
+				s.te0 = true
 				continue
 			case '<':				/* '<' and '>' */
 				if (!curvoice.last_note) {
