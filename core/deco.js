@@ -1360,7 +1360,7 @@ function draw_deco_note() {
 function draw_deco_staff() {
 	var	s, first_gchord, p_voice, x, y, w, i, v, de, dd,
 		gch, gch2, ix, top, bot,
-		minmax = new Array(nstaff),
+		minmax = new Array(nstaff + 1),
 		nd = a_de.length
 
 	/* draw the repeat brackets */

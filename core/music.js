@@ -2212,12 +2212,12 @@ function set_auto_clef(st, s_start, clef_type_start) {
  */
 function set_clefs() {
 	var	s, s2, st, v, p_voice, g, new_type, new_line, p_staff, pit,
-		staff_clef = new Array(nstaff),	// st -> { clef, autoclef }
+		staff_clef = new Array(nstaff + 1),	// st -> { clef, autoclef }
 		sy = cur_sy,
 		mid = []
 
 	// create the staff table
-	staff_tb = new Array(nstaff)
+	staff_tb = new Array(nstaff + 1)
 	for (st = 0; st <= nstaff; st++) {
 		staff_clef[st] = {
 			autoclef: true
