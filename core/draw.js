@@ -1946,9 +1946,9 @@ if (two_staves) error(2, k1, "*** multi-staves slurs not treated yet");
 //fixme: the following code seems better!
 	addy = y1 - a * x1
 	if (height > 0)
-		addy += 4 * Math.sqrt(height)
+		addy += 4 * Math.sqrt(height) - 2
 	else
-		addy -= 4 * Math.sqrt(-height)
+		addy -= 4 * Math.sqrt(-height) - 2
 	for (i = 0; i < i2; i++) {
 		k = path[i]
 		if (k.st != upstaff)
@@ -1962,14 +1962,14 @@ if (two_staves) error(2, k1, "*** multi-staves slurs not treated yet");
 			dx = x2
 			if (k2.sl1)
 				dx -= 5;
-			y -= 2
+			y -= height / 3
 		} else {
 			dx = path[i + 1].x
 		}
-		if (i != 0) {
-			x1 = k.x;
-			y -= 2
-		}
+		if (i != 0)
+			x1 = k.x
+		else
+			y -= height / 3
 		dx -= x1;
 		y_set(upstaff, dir > 0, x1, dx, y)
 	}
