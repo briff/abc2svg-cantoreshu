@@ -123,12 +123,7 @@ function abc_dump(tsfirst, voice_tb, music_types, info) {
 		case "ml":
 			ln += s.text
 			break
-		case "leftmargin":
-		case "rightmargin":
-		case "pagescale":
-		case "pagewidth":
-		case "scale":
-		case "staffwidth":
+		default:
 			ln += s.param
 			break
 		case "sep":
@@ -162,9 +157,6 @@ function abc_dump(tsfirst, voice_tb, music_types, info) {
 		case "title":
 			abc2svg.print('T:' + s.text.replace(/\n/g, '\nT:'))
 			return
-		default:
-			ln += "(unknown)"
-			break
 		}
 		abc2svg.print(ln)
 	} // block_dump()
