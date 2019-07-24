@@ -714,6 +714,19 @@ break
 				line += s.nmes
 			break
 		case C.NOTE:
+			if (s.stem) {			// if forced stem direction
+				if (s.stem > 0) {
+					if (s.p_v.pos.stm != C.SL_ABOVE) {
+						s.p_v.pos.stm = C.SL_ABOVE
+						line += "[I:pos stem up]"
+					}
+				} else {
+					if (s.p_v.pos.stm != C.SL_BELOW) {
+						s.p_v.pos.stm = C.SL_BELOW
+						line += "[I:pos stem down]"
+					}
+				}
+			}
 			if (s.beam_br1)
 				line += "!beambr1!"
 			if (s.beam_br2)
