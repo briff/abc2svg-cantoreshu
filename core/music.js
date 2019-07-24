@@ -3907,12 +3907,16 @@ function set_overlap() {
 			dp = s1.notes[i1].pit - s2.notes[i2].pit
 			switch (dp) {
 			case 0:
-				if (s1.notes[i1].acc != s2.notes[i2].acc) {
+				if (s1.notes[i1].acc != s2.notes[i2].acc
+				 && !s1.notes[i1].acc && !s2.notes[i2].acc) {
 					t = -1
 					break
 				}
-				if (s2.notes[i2].acc)
+				if (s2.notes[i2].acc) {
+					if (!s1.notes[i1].acc)
+						s1.notes[i1].acc = s2.notes[i2].acc
 					s2.notes[i2].acc = 0
+				}
 				if (s1.dots && s2.dots
 				 && (s1.notes[i1].pit & 1))
 					t = 1
