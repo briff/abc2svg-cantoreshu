@@ -96,7 +96,6 @@ function abc_dump(tsfirst, voice_tb, music_types, info) {
 			abc2svg.print(ln)
 		} // vi_out()
 
-		eoln = false
 		if (nv == 1) {
 			if (vo[0].length == 0)
 				return
@@ -104,6 +103,10 @@ function abc_dump(tsfirst, voice_tb, music_types, info) {
 			 && (voice_tb[0].nm || voice_tb[0].snm
 			  || voice_tb[0].scale != 1 || voice_tb[0].uscale))
 				vi_out(0);
+			if (eoln) {
+				eoln = false
+				vo[0][vo[0].length - 1] += "$"
+			}
 			abc2svg.print(vo[0].join(''));
 			vo[0] = []
 			return
@@ -112,6 +115,10 @@ function abc_dump(tsfirst, voice_tb, music_types, info) {
 			if (vo[v].length == 0)
 				continue
 			vi_out(v);
+			if (eoln) {
+				eoln = false
+				vo[v][vo[v].length - 1] += "$"
+			}
 			abc2svg.print(vo[v].join(''));
 			vo[v] = []
 		}
@@ -844,10 +851,8 @@ break
 			vti[s.v] = s.time + s.dur
 		if (s.beam_end)
 			line += ' '
-		if (s.eoln && s.next) {
-			line += '$';
+		if (s.eoln && s.next)
 			eoln = true
-		}
 		if (line)
 			vo[s.v].push(line)
 	}
