@@ -64,7 +64,7 @@ H "History: "',
 	leftmargin: 1.4 * CM,
 	lineskipfac: 1.1,
 	linewarn: true,
-	maxshrink: 1,		// smallest score
+	maxshrink: .65,		// nice scores
 	maxstaffsep: 2000,
 	maxsysstaffsep: 2000,
 	measurefont: {name: "serif", style: "italic", size: 10},
