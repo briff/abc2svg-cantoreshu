@@ -28,7 +28,6 @@ var	a_gch,		// array of parsed guitar chords
 var	qplet_tb = new Int8Array([ 0, 1, 3, 2, 3, 0, 2, 0, 3, 0 ]),
 	ntb = "CDEFGABcdefgab"
 
-
 // set the source references of a symbol
 function set_ref(s) {
 	s.fname = parse.fname;
@@ -2684,15 +2683,21 @@ function parse_music_line() {
 		goto_tune()
 	}
 
+	if (parse.tp) {
+		tp = parse.tp
+		if (parse.tp0) {
+			tp0 = parse.tp0
+			parse.tp0 = null
+		}
+		parse.tp = null
+	}
+
 	parse_seq()
 
 	if (tp) {
-		syntax(1, "No end of tuplet")
-		s = tp.s
-		if (s)
-			s.tp0 = s.tp1 = 0
-		if (tp0 && tp0.s)
-			tp0.s.tp0 = 0
+		parse.tp = tp
+		if (tp0)
+			parse.tp0 = tp0
 	}
 	if (grace) {
 		syntax(1, "No end of grace note sequence");
