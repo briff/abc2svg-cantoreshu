@@ -142,7 +142,7 @@ function mrest_expand(s) {
 /* -- sort all symbols by time and vertical sequence -- */
 // weight of the symbols !! depends on the symbol type !!
 var w_tb = new Uint8Array([
-	2,	// bar
+	4,	// bar
 	1,	// clef
 	8,	// custos
 	0,	// (free)
@@ -1706,6 +1706,17 @@ function get_vover(type) {
 	}
 	p_voice2.time = vover.time;
 	curvoice = p_voice2
+
+	// add a bar at start of the measure overlay
+	// (needed for sort_all() in case of spaces - 'y')
+	if (vover.bar) {
+		sym_link({
+			type: C.BAR,
+			bar_type: type,
+			dur: 0,
+			multi: 0
+		})
+	}
 }
 
 // check if a clef, key or time signature may go at start of the current voice
