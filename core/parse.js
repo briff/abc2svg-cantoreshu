@@ -1245,9 +1245,7 @@ function new_bar() {
 
 	s2 = curvoice.last_sym
 	if (s2 && s2.time == curvoice.time) {
-		if (s2.type == C.SPACE) {
-			s2.time--		// keep the space at the right place
-		} else if (bar_type == "["
+		if (bar_type == "["
 			|| bar_type == "|:") {
 
 			// search if a previous bar at this time
