@@ -2608,7 +2608,7 @@ function draw_note_ties(k1, k2, mhead1, mhead2, job) {
 
 		y = 3 * (p - 18)
 
-		h = (.04 * (x2 - x1) + 10) * dir;
+		h = (.03 * (x2 - x1) + 16) * dir;
 //		anno_start(k1, 'slur');
 		slur_out(x1, staff_tb[st].y + y,
 			 x2, staff_tb[st].y + y,
