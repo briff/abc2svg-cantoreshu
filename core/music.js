@@ -1090,7 +1090,7 @@ function set_sp_tup(s, s_et) {
 	tim = s.time,
 	endtime = s_et.time + s_et.dur,
 	ttim = endtime - tim,
-	space = time2space(s, ttim / s.tq0) * s.tq0 / ttim
+	space = time2space(s, ttim / s.tp[0].q) * s.tp[0].q / ttim
 
 	// start on the second note/rest
 	do {
@@ -1216,12 +1216,14 @@ function set_allsymwidth() {
 			xl[st] = xa
 			if (s2.wr > wr[st])
 				wr[st] = s2.wr
-			if (s2.tp0		// start of tuplet
-			 && ++ntup == 1
-			 && !s_tupc)
-				s_tupc = s2;	// keep the first tuplet address
-			if (s2.te0)		// end of tuplet
-				ntup--;
+			if (s2.tp) {		// start of tuplet
+				if (ntup == 0
+				 && !s_tupc)
+					s_tupc = s2 // keep the first tuplet address
+				ntup += s2.tp.length
+			}
+			if (s2.tpe)		// end of tuplet
+				ntup -= s2.tpe;
 			s2 = s2.ts_next
 		} while (!s2.seqst)
 	}
@@ -1236,20 +1238,20 @@ function set_allsymwidth() {
 		return
 	do {
 		s2 = s;			// start of tuplet
-		ntup = 1
+		ntup = s.tp.length
 		do {			// search the end of the tuplet sequence
 			s = s.ts_next
-			if (s.tp0)
-				ntup++
-			if (s.te0)
-				ntup--
+			if (s.tp)
+				ntup += s.tp.length
+			if (s.tpe)
+				ntup -= s.tpe
 		} while (ntup != 0);
 
 		set_sp_tup(s2, s)
 
 		do {			// search next tuplet
 			s = s.ts_next
-		} while (s && !s.tp0)
+		} while (s && !s.tp)
 	} while (s)
 }
 

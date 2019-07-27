@@ -2180,6 +2180,10 @@ function tp_adj(s, fact) {
 		if (!s.next) {
 			curvoice.time = Math.round(tim);
 			s.dur = curvoice.time - s.time
+			if (s.tpe)
+				s.tpe++
+			else
+				s.tpe = 1
 			break
 		}
 		s = s.next
@@ -2229,8 +2233,9 @@ var nil = ["0"],
 	"8vb(":-1, "8vb)":0, "15mb(":-2, "15mb)":0}
 
 function parse_music_line() {
-	var	grace, last_note_sav, a_dcn_sav, no_eol, s,
-		tp, tp0,
+	var	grace, last_note_sav, a_dcn_sav, no_eol, s, tps,
+		tp = [],
+		tpn = -1,
 		sls = [],
 		line = parse.line
 
@@ -2411,14 +2416,15 @@ function parse_music_line() {
 					if (qplet == 0 || qplet == undefined)
 						qplet = (curvoice.wmeasure % 9) == 0 ?
 									3 : 2;
-					if (tp)
-						tp0 = tp
-					tp = {
+					if (tpn < 0)
+						tpn = tp.length	// new tuplet
+					tp.push({
 						p: pplet,
 						q: qplet,
 						r: rplet,
+						ro: rplet,
 						f: cfmt.tuplets
-					}
+					})
 					continue
 				}
 				if (c == '&') {		// voice overlay start
@@ -2545,44 +2551,39 @@ function parse_music_line() {
 					continue
 
 				// handle the tuplets
-				if (!tp || grace || !s.notes)
+				if (grace || !s.notes)
 					continue
-				if (!tp.s) {	// set the start of the tuplet
-					tp.s = s;
-					s.tf = tp.f
-					if (tp0) {
-						if (!tp0.s) {
-							tp0.s = s;
-							s.tp0 = tp0.p;
-							s.tq0 = tp0.q
-						}
-						s.tp1 = tp.p;
-						s.tq1 = tp.q
-					} else {
-						s.tp0 = tp.p
-						s.tq0 = tp.q
+
+				if (tpn >= 0) {		// new tuplet
+					s.tp = tp.slice(tpn)
+					tpn = -1
+					if (tps)
+						s.tp[0].s = tps	// if nested
+					tps = s
+				} else if (!tps) {
+					continue	// no tuplet active
+				}
+
+				k = tp[tp.length - 1]
+				if (--k.r > 0)
+					continue	// not end of tuplet yet
+
+				while (1) {
+					tp_adj(tps, k.q / k.p)
+					i = k.ro	// number of notes of this tuplet
+					if (k.s)
+						tps = k.s  // start of upper tuplet
+
+					tp.pop()		// previous level
+					if (!tp.length) {
+						tps = null	// done
+						break
 					}
+					k = tp[tp.length - 1]
+					k.r -= i
+					if (k.r > 0)
+						break
 				}
-				if (--tp.r > 0) {
-					if (tp0)
-						--tp0.r
-					continue	// not end of tuplet
-				}
-				tp_adj(tp.s, tp.q / tp.p);
-				tp.s = null;
-				tp = tp0;
-				tp0 = null;
-				if (!tp) {
-					s.te0 = true
-					continue	// done
-				}
-				s.te1 = true
-				if (--tp.r > 0)
-					continue
-				tp_adj(tp.s, tp.q / tp.p);
-				tp.s = null;
-				tp = null
-				s.te0 = true
 				continue
 			case '<':				/* '<' and '>' */
 				if (!curvoice.last_note) {
@@ -2685,19 +2686,15 @@ function parse_music_line() {
 
 	if (parse.tp) {
 		tp = parse.tp
-		if (parse.tp0) {
-			tp0 = parse.tp0
-			parse.tp0 = null
-		}
+		tps = parse.tps
 		parse.tp = null
 	}
 
 	parse_seq()
 
-	if (tp) {
+	if (tp.length) {
 		parse.tp = tp
-		if (tp0)
-			parse.tp0 = tp0
+		parse.tps = tps
 	}
 	if (grace) {
 		syntax(1, "No end of grace note sequence");

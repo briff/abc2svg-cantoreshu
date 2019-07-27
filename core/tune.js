@@ -1202,16 +1202,14 @@ Abc.prototype.do_begin_end = function(type,
 
 /* -- generate a piece of tune -- */
 function generate() {
-	var v, p_voice;
+    var s, v, p_voice;
 
 	if (parse.tp) {
 		syntax(1, "No end of tuplet")
-		s = parse.tp.s
+		s = parse.tps
 		if (s)
-			s.tp0 = s.tp1 = 0
-		if (parse.tp0 && parse.tp0.s)
-			parse.tp0.s.tp0 = 0
-		parse.tp = parse.tp0 = null
+			delete s.tp
+		delete parse.tp
 	}
 
 	if (vover) {

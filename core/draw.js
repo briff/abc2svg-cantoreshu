@@ -2130,12 +2130,14 @@ function draw_slurs(s, last) {
 /* (the staves are not yet defined) */
 /* (delayed output) */
 /* See http://moinejf.free.fr/abcm2ps-doc/tuplets.xhtml
- * for the value of 'tf' */
-function draw_tuplet(s1,
-			lvl) {	// nesting level
-	var	s2, s3, g, upstaff, nb_only, some_slur,
-		x1, x2, y1, y2, xm, ym, a, s0, yy, yx, dy, a, b, dir,
-		p, q, r
+ * for the value of 'tp.f' */
+function draw_tuplet(s1) {
+    var	s2, s3, g, upstaff, nb_only, some_slur,
+	x1, x2, y1, y2, xm, ym, a, s0, yy, yx, dy, a, b, dir, r,
+	tp = s1.tp.shift()		// tuplet parameters
+
+	if (!s1.tp.length)
+		delete s1.tp		// last tuplet
 
 	// check if some slurs and treat the nested tuplets
 	upstaff = s1.st
@@ -2155,23 +2157,16 @@ function draw_tuplet(s1,
 			some_slur = true
 		if (s2.st < upstaff)
 			upstaff = s2.st
-		if (lvl == 0) {
-			if (s2.tp1)
-				draw_tuplet(s2, 1)
-			if (s2.te0)
-				break
-		} else if (s2.te1)
+		if (s2.tp)
+			draw_tuplet(s2)
+		if (s2.tpe)
 			break
 	}
-
 	if (!s2) {
 		error(1, s1, "No end of tuplet in this music line")
-		if (lvl == 0)
-			s1.tp0 = 0
-		else
-			s1.tp1 = 0
 		return
 	}
+	s2.tpe--
 
 	/* draw the slurs fully inside the tuplet */
 	if (some_slur) {
@@ -2190,32 +2185,22 @@ function draw_tuplet(s1,
 			return
 	}
 
-	if (lvl == 0) {
-		p = s1.tp0;
-		s1.tp0 = 0;
-		q = s1.tq0
-	} else {
-		p = s1.tp1;
-		s1.tp1 = 0
-		q = s1.tq1
-	}
-
-	if (s1.tf[0] == 1)			/* if 'when' == never */
+	if (tp.f[0] == 1)			/* if 'when' == never */
 		return
 
-	dir = s1.tf[3]				/* 'where' (C.SL_xxx) */
+	dir = tp.f[3]				/* 'where' (C.SL_xxx) */
 	if (!dir)
 		dir = s1.stem > 0 ? C.SL_ABOVE : C.SL_BELOW
 
 	if (s1 == s2) {				/* tuplet with 1 note (!) */
 		nb_only = true
-	} else if (s1.tf[1] == 1) {			/* 'what' == slur */
+	} else if (tp.f[1] == 1) {			/* 'what' == slur */
 		nb_only = true;
 		draw_slur([s1, s2], -1, -1, dir)
 	} else {
 
 		/* search if a bracket is needed */
-		if (s1.tf[0] == 2		/* if 'when' == always */
+		if (tp.f[0] == 2		/* if 'when' == always */
 		 || s1.type != C.NOTE || s2.type != C.NOTE) {
 			nb_only = false
 		} else {
@@ -2266,7 +2251,7 @@ function draw_tuplet(s1,
 
 	/* if number only, draw it */
 	if (nb_only) {
-		if (s1.tf[2] == 1)		/* if 'which' == none */
+		if (tp.f[2] == 1)		/* if 'which' == none */
 			return
 		xm = (s2.x + s1.x) / 2
 		if (s1 == s2)			/* tuplet with 1 note */
@@ -2297,10 +2282,10 @@ function draw_tuplet(s1,
 				xm -= 1.5
 		}
 		ym = a * xm + b
-		if (s1.tf[2] == 0)		/* if 'which' == number */
-			out_bnum(xm, ym, p)
+		if (tp.f[2] == 0)		/* if 'which' == number */
+			out_bnum(xm, ym, tp.p)
 		else
-			out_bnum(xm, ym, p + ':' +  q)
+			out_bnum(xm, ym, tp.p + ':' + tp.q)
 		if (dir == C.SL_ABOVE) {
 			ym += 10
 			if (s3.ymx < ym)
@@ -2314,12 +2299,12 @@ function draw_tuplet(s1,
 		return
 	}
 
-	if (s1.tf[1] != 0)				/* if 'what' != square */
+	if (tp.f[1] != 0)				/* if 'what' != square */
 		error(2, s1, "'what' value of %%tuplets not yet coded")
 
 /*fixme: two staves not treated*/
 /*fixme: to optimize*/
-	dir = s1.tf[3]				// 'where'
+	dir = tp.f[3]				// 'where'
 	if (!dir)
 		dir = s1.multi >= 0 ? C.SL_ABOVE : C.SL_BELOW
     if (dir == C.SL_ABOVE) {
@@ -2511,12 +2496,12 @@ function draw_tuplet(s1,
 	}
     } /* lower voice */
 
-	if (s1.tf[2] == 1) {			/* if 'which' == none */
+	if (tp.f[2] == 1) {			/* if 'which' == none */
 		out_tubr(x1, y1 + 4, x2 - x1, y2 - y1, dir == C.SL_ABOVE);
 		return
 	}
 	out_tubrn(x1, y1, x2 - x1, y2 - y1, dir == C.SL_ABOVE,
-		s1.tf[2] == 0 ? p.toString() : p + ':' +  q);
+		tp.f[2] == 0 ? tp.p.toString() : tp.p + ':' +  tp.q);
 
 	yy = .5 * (y1 + y2)
 	if (dir == C.SL_ABOVE)
@@ -3063,15 +3048,15 @@ function draw_sym_near() {
 
 		/* draw the tuplets near the notes */
 		for ( ; s; s = s.next) {
-			if (s.tp0)
-				draw_tuplet(s, 0)
+			if (s.tp)
+				draw_tuplet(s)
 		}
 		draw_all_slurs(p_voice)
 
 		/* draw the tuplets over the slurs */
 		for (s = p_voice.sym; s; s = s.next) {
-			if (s.tp0)
-				draw_tuplet(s, 0)
+			if (s.tp)
+				draw_tuplet(s)
 		}
 	}
 
