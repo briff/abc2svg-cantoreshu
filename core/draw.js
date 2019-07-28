@@ -3097,8 +3097,8 @@ function draw_sym_near() {
 
 /* -- draw the name/subname of the voices -- */
 function draw_vname(indent) {
-	var	p_voice, n, st, v, a_p, p, y, name_type,
-		staff_d = []
+    var	p_voice, n, st, v, a_p, p, y, name_type, h, h2,
+	staff_d = []
 
 	for (st = cur_sy.nstaff; st >= 0; st--) {
 		if (cur_sy.st_print[st])
@@ -3136,13 +3136,6 @@ function draw_vname(indent) {
 		p = name_type == 2 ? p_voice.nm : p_voice.snm
 		if (!p)
 			continue
-		if (cur_sy.staves[st].flags & CLOSE_BRACE2) {
-			while (!(cur_sy.staves[st].flags & OPEN_BRACE2))
-				st--
-		} else if (cur_sy.staves[st].flags & CLOSE_BRACE) {
-			while (!(cur_sy.staves[st].flags & OPEN_BRACE))
-				st--
-		}
 		if (!staff_d[st])
 			staff_d[st] = p
 		else
@@ -3151,6 +3144,8 @@ function draw_vname(indent) {
 	if (staff_d.length == 0)
 		return
 	set_font("voice");
+	h = gene.curfont.size
+	h2 = h / 2
 	indent = -indent * .5			/* center */
 	for (st = 0; st < staff_d.length; st++) {
 		if (!staff_d[st])
@@ -3159,22 +3154,17 @@ function draw_vname(indent) {
 		y = staff_tb[st].y
 			+ staff_tb[st].topbar * .5
 				* staff_tb[st].staffscale
-			+ 9 * (a_p.length - 1)
-			- gene.curfont.size * .3;
-		n = st
-		if (cur_sy.staves[st].flags & OPEN_BRACE2) {
-			while (!(cur_sy.staves[n].flags & CLOSE_BRACE2))
-				n++
-		} else if (cur_sy.staves[st].flags & OPEN_BRACE) {
-			while (!(cur_sy.staves[n].flags & CLOSE_BRACE))
-				n++
-		}
-		if (n != st)
-			y -= (staff_tb[st].y - staff_tb[n].y) * .5
+			+ h2 * (a_p.length - 2)
+
+		// if instrument with 2 staves, center the voice name
+		if ((cur_sy.staves[st].flags & OPEN_BRACE)
+		 && (cur_sy.staves[st + 1].flags & CLOSE_BRACE)
+		 && !staff_d[st + 1])
+			y -= (staff_tb[st].y - staff_tb[st + 1].y) * .5
 		for (n = 0; n < a_p.length; n++) {
 			p = a_p[n];
 			xy_str(indent, y, p, "c");
-			y -= 18
+			y -= h
 		}
 	}
 }
