@@ -142,8 +142,8 @@ function set_font_fac(font) {
 }
 
 // %%xxxfont fontname|* [encoding] [size|*]
-function param_set_font(xxxfont, param) {
-    var	font, old_fn, n, a, new_name, new_fn, new_size, scale
+function param_set_font(xxxfont, p) {
+    var	font, n, a
 
 	// "setfont-<n>" goes to "u<n>font"
 	if (xxxfont[xxxfont.length - 2] == '-') {
@@ -163,21 +163,21 @@ function param_set_font(xxxfont, param) {
 	cfmt[xxxfont] = font;
 
 	// fill the values
-	a = param.match(/\s+(no)?box(\s|$)/)
+	a = p.match(/\s+(no)?box(\s|$)/)
 	if (a) {				// if box
 		if (a[1])
 			font.box = false	// nobox
 		else
 			font.box = true;
-		param = param.replace(a[0], a[2])
+		p = p.replace(a[0], a[2])
 	}
 
-	a = param.match(/\s+class=(.*?)(\s|$)/)
+	a = p.match(/\s+class=(.*?)(\s|$)/)
 	if (a) {
 		font.class = a[1];
-		param = param.replace(a[0], a[2])
+		p = p.replace(a[0], a[2])
 	}
-	a = param.match(/\s+wadj=(.*?)(\s|$)/)
+	a = p.match(/\s+wadj=(.*?)(\s|$)/)
 	if (a) {
 	    if (typeof document == "undefined")	// useless if in browser
 		switch (a[1]) {
@@ -194,31 +194,44 @@ function param_set_font(xxxfont, param) {
 			syntax(1, errs.bad_val, "%%" + xxxfont)
 			break
 		}
-		param = param.replace(a[0], a[2])
+		p = p.replace(a[0], a[2])
 	}
 
-	a = info_split(param)
-	if (!a) {
-		syntax(1, errs.bad_val, "%%" + xxxfont)
-		return
-	}
-	new_name = a[0]
-	if (new_name != "*") {
-		font_def(font, new_name)
-		font.swfac = 0
-	}
-	if (a.length > 1) {
-		new_size = a[a.length - 1]
-		if (new_size != '*') {
-			new_size = Number(new_size)
-			if (isNaN(new_size)) {
-				syntax(1, errs.bad_val, "%%" + xxxfont)
-			} else {
-				font.size = new_size;
-				font.swfac = 0
-			}
+	// the font size is the last item
+	a = p.match(/\s+([0-9.]+|\*)$/)
+	if (a) {
+		if (a[1] != "*") {
+			font.size = Number(a[1])
+			font.swfac = 0
 		}
+		p = p.replace(a[0], "")
 	}
+
+	if (!p || p == "*")
+		return
+	font.swfac = 0
+
+	a = p.match(/[- ]?[bB]old/)
+	if (a) {
+		font.weight = "bold"
+		p = p.replace(a[0], '')
+	}
+	a = p.match(/[- ]?[iI]talic/)
+	if (a) {
+		font.style = "italic"
+		p = p.replace(a[0], '')
+	}
+	a = p.match(/[- ]?[oO]blique/)
+	if (a) {
+		font.style = "oblique"
+		p = p.replace(a[0], '')
+	}
+	switch (p.slice(0, 5)) {
+	case "Times":	p = "serif"; break
+	case "Helve": p = "sans-serif"; break
+	case "Couri": p = "monospace"; break
+	}
+	font.name = p
 }
 
 // get a length with a unit - return the number of pixels
@@ -618,42 +631,18 @@ Abc.prototype.set_format = function(cmd, param) {
 
 // font stuff
 
-// extract the font characteristics
-function font_def(font, fn) {
-    var	a = fn.match(/[- ]?[bB]old/)
-
-	if (a) {
-		font.weight = "bold"
-		fn = fn.replace(a[0], '')
-	}
-	a = fn.match(/[- ]?[iI]talic/)
-	if (a) {
-		font.style = "italic"
-		fn = fn.replace(a[0], '')
-	}
-	a = fn.match(/[- ]?[oO]blique/)
-	if (a) {
-		font.style = "oblique"
-		fn = fn.replace(a[0], '')
-	}
-	switch (fn) {
-	case "Times-Roman":
-	case "Times":	fn = "serif"; break
-	case "Helvetica": fn = "sans-serif"; break
-	case "Courier": fn = "monospace"; break
-	}
-	font.name = fn
-}
-
 // build a font style
 function st_font(font) {
-    var	r = ""
+    var	n = font.name,
+	r = ""
 
 	if (font.weight)
 		r += font.weight + " "
 	if (font.style)
 		r += font.style + " "
-	return r + font.size.toFixed(1) + 'px ' + font.name
+	if (n.indexOf(' ') > 0)
+		n = '"' + n.replace(/"/g, "") + '"'	// '
+	return r + font.size.toFixed(1) + 'px ' + n
 }
 function style_font(font) {
 	return 'font:' + st_font(font)
