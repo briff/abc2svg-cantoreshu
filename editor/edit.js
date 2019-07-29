@@ -391,6 +391,9 @@ function saveas() {
 	// create a link for our script to 'click'
 		link = document.createElement("a");
 
+	if (abc_fname[srcidx] == "noname.abc")
+		elt_ref["s" + srcidx].value =
+			abc_fname[srcidx] = prompt(texts.fn, abc_fname[srcidx])
 	link.download = abc_fname[srcidx];
 //	link.innerHTML = "Hidden Link";
 	link.href = "data:text/plain;charset=utf-8," +
