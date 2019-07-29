@@ -87,7 +87,7 @@ function ToAudio() {
 				p_v.midictl.forEach(function(val, i) {
 					a_e.push(new Float32Array([
 						s.istart,
-						s.time,	// (time)
+						0,	// (time)
 						-1,	// MIDI control
 						i,
 						val,
