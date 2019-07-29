@@ -226,10 +226,11 @@ function param_set_font(xxxfont, p) {
 		font.style = "oblique"
 		p = p.replace(a[0], '')
 	}
-	switch (p.slice(0, 5)) {
+	switch (p) {
+	case "Times-Roman":
 	case "Times":	p = "serif"; break
-	case "Helve": p = "sans-serif"; break
-	case "Couri": p = "monospace"; break
+	case "Helvetica": p = "sans-serif"; break
+	case "Courier": p = "monospace"; break
 	}
 	font.name = p
 }
