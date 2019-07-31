@@ -47,6 +47,7 @@
 		downbow: 'v',
 		roll: '~'
 	},
+	old_font = [],
 	mode_tb = [			// key modes
 		[0, ""],
 		[2, "dor"],
@@ -84,8 +85,10 @@ function abc_dump(tsfirst, voice_tb, music_types, info) {
 				if (p_voice.clef
 				 && p_voice.clef.clef_type != 'a')
 					ln += ' ' + clef_dump(p_voice.clef)
-				if (p_voice.nm)
+				if (p_voice.nm) {
 					ln += ' nm="' + p_voice.nm + '"'
+					font_def("voice", p_voice.nm)
+				}
 				if (p_voice.snm)
 					ln += ' snm="' + p_voice.snm + '"';
 				if (p_voice.scale != 1)
@@ -142,6 +145,7 @@ function abc_dump(tsfirst, voice_tb, music_types, info) {
 			ln += s.sk
 			break
 		case "text":
+			font_def("text", s.text)
 			if (s.text.indexOf('\n') <= 0
 			 && (!s.opt || s.opt == 'c')) {
 				if (s.opt == 'c')
@@ -219,6 +223,42 @@ break
 		if (d > 0)
 			line += "//////".slice(0, d)
 	} // dur_dump()
+
+	function font_def(fn, p) {
+	    var	i = p.indexOf('$')
+
+		abc.get_font(fn)		// used font
+// fixme: one '$' only
+		if (i >= 0 && p[i + 1] >= '1' && p[i + 1] <= '9')
+			abc.get_font("u" + p[i + 1])
+		font_dump()		// dump the new fonts
+	} // font_def()
+
+	function font_dump() {
+	    var	k, f, def,
+		cfmt = abc.cfmt()
+//		fs = abc.get_font_style().split("\n").shift()
+
+		for (k in cfmt) {
+			if (k.slice(-4) != "font")
+				continue
+			f = cfmt[k]
+			if (f.fid == undefined)
+				continue	// not used
+			if (old_font[f.fid])
+				continue	// already out
+			old_font[f.fid] = true
+			def = f.name
+			if (f.weight)
+				def += f.weight
+			if (f.style)
+				def += f.style
+			if (k[0] == "u")
+				k = "setfont-" + k[1]
+			abc2svg.print('%%' + k + ' ' +
+				def + ' ' + f.size)
+		}
+	} // font_dump()
 
 	function gch_dump(a_gch) {
 	    var i, j, gch
@@ -304,6 +344,7 @@ break
 	function lyric_dump() {
 	    var	v, s, i, ly, nly, t, w,
 		nb = 0
+		font_def("vocal", "")
 
 		for (v = 0; v < nv; v++) {
 			nly = 0;
@@ -781,6 +822,7 @@ break
 			}
 			break
 		case C.PART:
+			font_def("parts", s.text)
 			info_out('P:' + s.text)
 			break
 		case C.REST:
@@ -818,6 +860,9 @@ break
 			break
 		}
 	} // sym_dump()
+
+	abc2svg.print("")
+	font_dump()
 
 	abc2svg.print('\nX:' + info['X'])
 	header_dump("TC")
