@@ -242,9 +242,9 @@ function Audio5(i_conf) {
 	    var	i, e, instr, v,
 		bk = []				// bank number
 
-		for (i = evt_idx; ; i++) {
+		for (i = evt_idx; i < iend; i++) {
 			e = a_e[i]
-			if (!e || evt_idx >= iend)
+			if (!e)
 				break
 			instr = e[2]
 			v = e[6]
