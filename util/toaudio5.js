@@ -258,6 +258,9 @@ function Audio5(i_conf) {
 				case 32:		// LSB bank
 					bk[v] = (bk[v] & 0x1fc07f) | (e[4] << 7)
 					break
+				case 121:		// reset all controllers
+					bk = []
+					break
 				}
 			} else {
 				if (bk[v]) {

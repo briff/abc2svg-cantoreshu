@@ -72,6 +72,16 @@ function ToAudio() {
 	function set_voices() {
 	    var v, p_v, s, mi
 
+		// reset the audio engine
+		a_e.push(new Float32Array([
+				0,
+				0,	// (time)
+				-1,	// MIDI control
+				121,	// reset all controllers
+				0,
+				1,
+				0]))
+
 		temper = voice_tb[0].temper;	// (set by the module temper.js)
 		transp = new Int8Array(voice_tb.length)
 		for (v = 0; v < voice_tb.length; v++) {

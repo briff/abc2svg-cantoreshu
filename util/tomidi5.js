@@ -160,6 +160,9 @@ function Midi5(i_conf) {
 			case 32:		// LSB bank
 				bk[c] = (bk[c] & 0x3f80) | e[4]
 				break
+			case 121:		// reset all controllers
+				bk = []
+				break
 			}
 		}
 
