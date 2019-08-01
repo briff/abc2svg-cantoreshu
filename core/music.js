@@ -1021,6 +1021,9 @@ function set_space(s) {
 	while (!s.dur) {
 		switch (s.type) {
 		case C.BAR:
+			if (!s.next)
+				return space	// last bar of the voice
+
 			// (hack to have quite the same note widths between measures)
 			return space * .9 - 7
 		case C.CLEF:
