@@ -2188,9 +2188,8 @@ function draw_tuplet(s1) {
 	if (tp.f[0] == 1)			/* if 'when' == never */
 		return
 
-	dir = tp.f[3]				/* 'where' (C.SL_xxx) */
-	if (!dir)
-		dir = s1.stem > 0 ? C.SL_ABOVE : C.SL_BELOW
+	dir = tp.f[3] ||			// 'where'
+		(s1.stem > 0 ? C.SL_ABOVE : C.SL_BELOW)
 
 	if (s1 == s2) {				/* tuplet with 1 note (!) */
 		nb_only = true
@@ -2304,9 +2303,6 @@ function draw_tuplet(s1) {
 
 /*fixme: two staves not treated*/
 /*fixme: to optimize*/
-	dir = tp.f[3]				// 'where'
-	if (!dir)
-		dir = s1.multi >= 0 ? C.SL_ABOVE : C.SL_BELOW
     if (dir == C.SL_ABOVE) {
 
 	/* sole or upper voice: the bracket is above the staff */
