@@ -15,19 +15,27 @@ abc2svg.quit = function() {
 	std.exit(1)
 }
 abc2svg.readFile = function(fname) {
-    var	t,
+    var	l,
 	b = "",
+	bt = "",
+	cnt = 30,
 	f = std.open(fname, "r")
 
 	while (1) {
-		t = f.getline()
-		if (t == null)
+		if (--cnt < 0) {
+			cnt = 30
+			bt += b
+			b = ""
+		}
+		l = f.getline()
+		if (l == null)
 			break
-		b += t + "\n"
-	} 
+		b += l + "\n"
+	}
 	f.close()
-	return b
-}
+	return bt + b
+} // readfile()
+
 abc2svg.loadjs = function(fn, relay, onerror) {
 	try {
 		std.loadScript(fn)
