@@ -225,12 +225,19 @@ break
 	} // dur_dump()
 
 	function font_def(fn, p) {
-	    var	i = p.indexOf('$')
+	    var	c, f,
+		i = p.indexOf('$')
 
 		abc.get_font(fn)		// used font
 // fixme: one '$' only
-		if (i >= 0 && p[i + 1] >= '1' && p[i + 1] <= '9')
-			abc.get_font("u" + p[i + 1])
+		if (i >= 0) {
+			c = p[i + 1]
+			if (c >= '1' && c <= '9') {
+				c = "u" + c
+				f = abc.cfmt()[c + "font"]	// user font
+				f.fid = abc.get_font(c).fid	// dump it!
+			}
+		}
 		font_dump()		// dump the new fonts
 	} // font_def()
 
@@ -248,23 +255,26 @@ break
 			if (old_font[f.fid])
 				continue	// already out
 			old_font[f.fid] = true
-			def = f.name
+			def = f.name || ""
 			if (f.weight)
 				def += f.weight
 			if (f.style)
 				def += f.style
+			if (!def)
+				def = "*"
 			if (k[0] == "u")
 				k = "setfont-" + k[1]
 			abc2svg.print('%%' + k + ' ' +
-				def + ' ' + f.size)
+				def + ' ' + (f.size || "*"))
 		}
 	} // font_dump()
 
 	function gch_dump(a_gch) {
 	    var i, j, gch
 		for (i = 0; i < a_gch.length; i++) {
-			line += '"';
 			gch = a_gch[i]
+			font_def(gch.type == 'g' ? "gchord" : "annotation", gch.text)
+			line += '"';
 			switch (gch.type) {
 			case 'g':
 				for (j = 0; j < gch.text.length; j++) {
