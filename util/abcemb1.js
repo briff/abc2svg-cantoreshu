@@ -398,6 +398,14 @@ function render() {
 			scr_div.innerHTML = stxt;
 			scr_div.addEventListener("click", st_scroll);
 			document.body.appendChild(scr_div)
+
+			// remove the button on print
+			window.onbeforeprint = function() {
+				scr_div.style.display = "none"
+			}
+			window.onafterprint = function() {
+				scr_div.style.display = "block"
+			}
 		}
 	    }
 	}, 500)
