@@ -60,9 +60,7 @@ var	errtxt = '',
 	sY,				// current scroll Y
 
 	page,				// document source
-	src,				// source indexes [start, end]
 	pe,				// playing events
-	glop,				// global sequence for play
 	jsdir = (function() {
 		var scrs = document.getElementsByTagName('script')
 		for (var i = 0; i < scrs.length; i++) {
@@ -177,14 +175,10 @@ function st_scroll() {
 
 // function called on click in the music:
 //	start / stop playing and scrolling
-abc2svg.playseq = function() {
+abc2svg.playseq = function(select) {
     var	outputs
 
 	if (!abcplay) {				// if first time
-		if (typeof AbcPlay == "undefined") {	// as play-1.js not loaded
-			abc2svg.playseq = function(){}	// don't come here anymore
-			return
-		}
 		delete user.img_out;		// stop SVG generation
 		user.get_abcmodel = function(tsfirst, voice_tb) {
 			abcplay.add(tsfirst, voice_tb)
@@ -208,10 +202,10 @@ abc2svg.playseq = function() {
 
 		abcplay.clear();
 		abc.tosvg("play", "%%play")
+		if (select)
+			abc.tosvg(app, "%%select " + select)
 		try {
-			if (glop)
-				abc.tosvg(app, page, glop[0], glop[1])
-			abc.tosvg(app, page, src[0], src[1])
+			abc.tosvg(app, page)
 		} catch(e) {
 			alert(e.message + '\nabc2svg tosvg bug - stack:\n' + e.stack);
 			playing = false;
@@ -253,11 +247,13 @@ function get_sel() {
 		i = page.indexOf("\nX:", i)
 		if (i < 0)
 			break
-		j = page.indexOf("\nT:", i)
+		j = page.indexOf("\nT:", ++i)
 		if (j < 0)
 			break
 		n++;
-		t += '<li><a href="?#' + page.slice(i + 1, j) + '">';
+		t += '<li><a \
+style="cursor:pointer;color:blue;text-decoration:underline" \
+onclick="abc2svg.do_render(\'' + page.slice(i, j) + '\')">'
 		k = page.indexOf("\n", j + 1);
 		t += page.slice(j + 3, k)
 		if (page[k + 1] == 'T' && page[k + 2] == ':') {
@@ -269,36 +265,30 @@ function get_sel() {
 		t += '</a></li>\n';
 		i = k
 	}
-	if (n <= 1)
-		return true;
+	if (n <= 1) {
+		abc2svg.do_render()
+		return
+	}
 
 	t += '</ul>';
 
 	document.body.innerHTML = t
-//	return false
 } // get_sel()
 
+// search/ask the tune to be rendered
 function render() {
-
-	// search the ABC tunes,
-	// replace them by SVG images with play on click
-    var	i = 0, j, k, res, abc,
-	re = /\n%abc|\nX:/g,
-	re_stop = /\nX:|\n<|\n%.begin/g,
-	select = window.location.hash.slice(1)		// after '#'
+    var	select = window.location.hash.slice(1)		// after '#'
 
 	// if no selection and many tunes, get the references of the tunes
 	// and ask which one to display
-	if (!select
-	 && !get_sel())
-		return
+	if (!select)
+		get_sel()
+	else
+		abc2svg.do_render(decodeURIComponent(select))
+} // render()
 
-	select = page.search(decodeURIComponent(select))
-	if (select < 0) {			// tune not found
-		if (!get_sel())
-			return
-		select = 0			// only one tune
-	}	
+// replace the (previous) body by the music
+abc2svg.do_render = function(select) {
 
 	// aweful hack: user.anno_stop must be defined before Abc creation
 	// for being set later by follow() !
@@ -311,70 +301,31 @@ function render() {
 	if (typeof follow == "function")
 		follow(abc, user, playconf)
 
-	for (;;) {
-
-		// get the start of a ABC sequence
-		res = re.exec(page)
-		if (!res)
-			break
-		j = re.lastIndex - res[0].length;
-		new_page += page.slice(i, j);
-
-		// get the end of the ABC sequence
-		// including the %%beginxxx/%%endxxx sequences
-		re_stop.lastIndex = ++j
-		while (1) {
-			res = re_stop.exec(page)
-			if (!res || res[0][1] != "%")
-				break
-			k = page.indexOf(res[0].replace("begin", "end"),
-					re_stop.lastIndex)
-			if (k < 0)
-				break
-			re_stop.lastIndex = k
-		}
-		if (!res || k < 0)
-			k = page.length
-		else
-			k = re_stop.lastIndex - 2;
-
-	    // selection
-	    if (!select || page[j] != 'X' || (select >= j && select < k)) {
-		try {
-
-		// clicking on the music plays this tune
-		    if (page[j] == 'X') {
-			new_page += '<div onclick="abc2svg.playseq()">\n';
-			src = [j, k]
-		    } else if (!glop) {
-			glop = [j, k]
-		    }
-			abc.tosvg(app, page, j, k)
-		} catch (e) {
-			alert("abc2svg javascript error: " + e.message +
-				"\nStack:\n" + e.stack)
-		}
-		if (errtxt) {
-			new_page += '<pre style="background:#ff8080">' +
-					errtxt + "</pre>\n";
-			errtxt = ""
-		}
-		abc2svg.abc_end()		// close the page if %%pageheight
-		if (page[j] == 'X')
-			new_page += '</div>\n'
-	    } // selection
-
-		i = k
-		if (i >= page.length)
-			break
-		if (page[i] == 'X')
-			i--;
-		re.lastIndex = i
+	if (select) {
+		if (typeof AbcPlay != "undefined")
+			new_page += '<div onclick="abc2svg.playseq(\'' +
+					select + '\')">'
+		abc.tosvg(app, "%%select " + select)
+	} else if (typeof AbcPlay != "undefined") {
+		new_page += '<div onclick="abc2svg.playseq()">'
+	}
+	try {
+		abc.tosvg(app, page)
+	} catch (e) {
+		alert("abc2svg javascript error: " + e.message +
+			"\nStack:\n" + e.stack)
+	}
+	if (typeof AbcPlay != "undefined")
+		new_page += '</div>'
+	if (errtxt) {
+		new_page += '<pre style="background:#ff8080">' +
+				errtxt + "</pre>\n";
+		errtxt = ""
 	}
 
 	// change the page
 	try {
-		document.body.innerHTML = new_page + page.slice(i)
+		document.body.innerHTML = new_page
 	} catch (e) {
 		alert("abc2svg bad generated SVG: " + e.message +
 			"\nStack:\n" + e.stack)
