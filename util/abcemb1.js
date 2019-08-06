@@ -179,9 +179,19 @@ window.onclick = function(event) {
 }
 
 // source edit
+abc2svg.src_upd = function() {
+	page = document.getElementById('ta').value
+	abc2svg.get_sel()
+} // src_upd()
+
 abc2svg.src_edit = function() {
-	alert("src_edit coming soon...")
-}
+	// offer a textarea with the ABC source and 2 buttons
+	document.body.innerHTML = '\
+<textarea id="ta" rows="50" cols="80">' + page + '</textarea>\
+<br/>\
+<a href="#" onclick="abc2svg.src_upd()"> Apply </a> - \
+<a href="#" onclick="abc2svg.get_sel()"> Cancel </a>'
+} // src_edit()
 
 // start/stop scrolling when no play
 abc2svg.st_scroll = function() {
