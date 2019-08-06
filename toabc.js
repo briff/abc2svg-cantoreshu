@@ -652,42 +652,20 @@ break
 	} // tempo_dump()
 
 	function tuplet_dump(s) {
-	    var	s2, r
-		if (s.tp0) {
-			line += '(' + s.tp0;
-			r = 1
-			for (s2 = s.next; s2; s2 = s2.next) {
-				if (!s2.dur)
-					continue
-				r++
-				if (s2.te0)
-					break
-			}
-			if (r == s.tp0
-			 && ((s.tp0 == 2 && s.tq0 == 3)
-			  || (s.tp0 == 3 && s.tq0 == 2)
-			  || (s.tp0 == 4 && s.tq0 == 3)))
+	    var	tp
+
+		while (1) {
+			tp = s.tp.shift()
+			if (!tp)
+				break
+			line += '(' + tp.p
+			if (tp.ro == tp.p
+			 && ((tp.p == 2 && tp.q == 3)
+			  || (tp.p == 3 && tp.q == 2)
+			  || (tp.p == 4 && tp.q == 3)))
 				;
 			else
-				line += ':' + s.tq0 + ':' + r
-		}
-		if (s.tp1) {
-			line += '(' + s.tp1;
-			r = 1
-			for (s2 = s.next; s2; s2 = s2.next) {
-				if (!s2.dur)
-					continue
-				r++
-				if (s2.te1)
-					break
-			}
-			if (r == s.tp1
-			 && ((s.tp1 == 2 && s.tq1 == 3)
-			  || (s.tp1 == 3 && s.tq1 == 2)
-			  || (s.tp1 == 4 && s.tq1 == 3)))
-				;
-			else
-				line += ':' + s.tq1 + ':' + r
+				line += ':' + tp.q + ':' + tp.ro
 		}
 	} // tuplet_dump()
 
@@ -702,7 +680,7 @@ break
 				line += "[I:repeat " + s.repeat_n +
 					' ' + s.repeat_k + ']'
 		}
-		if (s.tp0 || s.tp1)
+		if (s.tp)
 			tuplet_dump(s)
 		if (s.sls) {
 			for (i = 0; i < s.sls.length; i++) {
@@ -871,7 +849,6 @@ break
 		}
 	} // sym_dump()
 
-	abc2svg.print("")
 	font_dump()
 
 	abc2svg.print('\nX:' + info['X'])
@@ -910,8 +887,10 @@ break
 		// (all voices are synchronized on %%score)
 		if (s.type != C.STAVES && s.time > vti[s.v]) {
 //fixme: put 'X' if more than one measure
-			line += 'x';
-			dur_dump(s.time - vti[s.v]);
+			if (s.time > vti[s.v] + 2) {
+				line += 'x';
+				dur_dump(s.time - vti[s.v]);
+			}
 			vti[s.v] = s.time
 		}
 		sym_dump(s)
