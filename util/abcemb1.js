@@ -41,22 +41,31 @@ window.onerror = function(msg, url, line) {
 	return false
 }
 
+// remove the menu button on print
+window.onbeforeprint = function() {
+   var	e = document.getElementById("dd")
+	if (e)
+		e.style.display = "none"
+}
+window.onafterprint = function() {
+   var	e = document.getElementById("dd")
+	if (e)
+		e.style.display = "block"
+}
+
 var abc2svg = {}
 
 // function called when abc2svg is fully loaded
 function dom_loaded() {
 var	errtxt = '',
 	app = "abcemb",
-	new_page = '',
+	new_page,
 	playing,
 	abcplay,
 
-	scr_div,			// scroll status
 	tune_dur,			// scroll tune duration
 	scroll_to,			// scroll timeout
 	dt,				// scroll delta per timeout
-	scolor = "lightgreen",		// scroll start button color
-	stxt = "start<br/>scrolling",	// associated text
 	sY,				// current scroll Y
 
 	page,				// document source
@@ -137,10 +146,7 @@ function do_scroll(old) {
 
 		// start scrolling at this time (1/4 of the first screen)
 	    var	ttop = dt * d.clientHeight / 4
-		if (scr_div) {
-			scr_div.style.background = "red";
-			scr_div.innerHTML = "stop<br/>scrolling"
-		}
+		document.getElementById("ss").style.display = "block"
 		scroll_to = setTimeout(do_scroll, ttop * 1000, 1)
 
 		// (in Android Browser, remove the address bar)
@@ -148,10 +154,7 @@ function do_scroll(old) {
 		sY = 0;
 	} else {
 		if (sY == window.pageYOffset) {	// no scroll -> finished
-			if (scr_div) {
-				scr_div.style.background = scolor;
-				scr_div.innerHTML = stxt
-			}
+			document.getElementById("ss").style.display = "none"
 			scroll_to = null
 			return
 		}
@@ -161,12 +164,30 @@ function do_scroll(old) {
 	}
 }
 
+// menu functions
+// click on the menu button
+abc2svg.menu_toggle = function() {
+	document.getElementById("dc").classList.toggle("show")
+}
+// click outside of the menu button
+window.onclick = function(event) {
+	if (!event.target.matches('.db')) {
+	    var	e = document.getElementById("dc")
+		if (e && e.classList.contains("show"))
+			e.classList.remove("show")
+	}
+}
+
+// source edit
+abc2svg.src_edit = function() {
+	alert("src_edit coming soon...")
+}
+
 // start/stop scrolling when no play
-function st_scroll() {
+abc2svg.st_scroll = function() {
 	if (scroll_to) {
 		clearTimeout(scroll_to);
-		scr_div.style.background = scolor;
-		scr_div.innerHTML = stxt;
+		document.getElementById("ss").style.display = "none"
 		scroll_to = null
 	} else {
 		scroll_to = setTimeout(do_scroll, 500, 0)	// scroll start
@@ -236,7 +257,7 @@ abc2svg.playseq = function(select) {
 	} // loadjs()
 
 // build a list of the tunes
-function get_sel() {
+abc2svg.get_sel = function() {
     var	j, k,
 	n = 0,
 	i = 0,
@@ -279,10 +300,23 @@ onclick="abc2svg.do_render(\'' + page.slice(i, j) + '\')">'
 function render() {
     var	select = window.location.hash.slice(1)		// after '#'
 
+	// create styles for the menu
+   var	sty = document.createElement('style')
+	sty.innerHTML = '\
+.dd{position:fixed;top:0;bottom:0;right:0;height:40px;cursor:pointer;font-size:16px}\
+#ss{display:none;background-color:red}\
+.db{display:block;margin:5px; padding:5px;background-color:yellow}\
+.db:hover,.db:focus{background-color:lightgreen}\
+.dc{position:absolute;left:-70px;min-width:100px;display:none;background-color:yellow}\
+.dc label{display:block;padding:0 5px 0 5px;margin:2px}\
+.dc label:hover{outline:solid;outline-width:2px}\
+.show{display:block}'
+	document.head.appendChild(sty)
+
 	// if no selection and many tunes, get the references of the tunes
 	// and ask which one to display
 	if (!select)
-		get_sel()
+		abc2svg.get_sel()
 	else
 		abc2svg.do_render(decodeURIComponent(select))
 } // render()
@@ -296,6 +330,7 @@ abc2svg.do_render = function(select) {
 		user.anno_stop = function(){};
 
 	abc = new abc2svg.Abc(user)
+	new_page = ""
 
 	// initialize the play follow function
 	if (typeof follow == "function")
@@ -323,6 +358,19 @@ abc2svg.do_render = function(select) {
 		errtxt = ""
 	}
 
+	// add the menu
+//--fixme: si play => start scrolling ou play (pas les 2) - pas play: rien
+	new_page += '\
+<div id="dd" class="dd">\
+<label id="db" class="db" onclick="abc2svg.menu_toggle()">|||</label>\
+<div id="dc" class="dc">\
+<label id="edit" onclick="abc2svg.src_edit()">Source edit</label>\
+<label id="list" onclick="abc2svg.get_sel()">Tune list</label>\
+<label id="play" onclick="abc2svg.st_scroll()">Scroll</label>\
+</div>\
+</div>\
+<label id="ss" class="dd" onclick="abc2svg.st_scroll()">Scroll<br/>stop</label>'
+
 	// change the page
 	try {
 		document.body.innerHTML = new_page
@@ -332,37 +380,18 @@ abc2svg.do_render = function(select) {
 		return
 	}
 
-	// if no playing stuff and big tune,
-	// put a button to start/stop scrolling the rendering area
+	// update the menu
 	setTimeout(function() {
-	    if (typeof AbcPlay == "undefined") {	// play-1.js not loaded
-		if (document.documentElement.scrollHeight > window.innerHeight) {
-			scr_div = document.createElement("div");
-			scr_div.style.position = "fixed";
-			scr_div.style.top = 0;
-			scr_div.style.bottom = 0;
-			scr_div.style.right = 0;
-			scr_div.style.height = "40px";
-			scr_div.style.padding = "5px";
-			scr_div.style.cursor = "pointer";
-			scr_div.style.background = scolor;
-			scr_div.innerHTML = stxt;
-			scr_div.addEventListener("click", st_scroll);
-			document.body.appendChild(scr_div)
 
-			// remove the button on print
-			window.onbeforeprint = function() {
-				scr_div.style.display = "none"
-			}
-			window.onafterprint = function() {
-				scr_div.style.display = "block"
-			}
-		}
-	    }
+		// remove scroll in menu if play or not a big tune
+		if (typeof AbcPlay != "undefined"
+		 || document.documentElement.scrollHeight <= window.innerHeight)
+			document.getElementById("play").style.display = "none"
 	}, 500)
+
 } // render()
 
-	// --- abcemb() main code ---
+	// --- dom_loaded() main code ---
 
 	// load the abc2svg core if not done by <script>
 	if (!abc2svg.Abc) {
