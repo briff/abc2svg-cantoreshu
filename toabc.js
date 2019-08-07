@@ -533,7 +533,7 @@ break
 		ln = "%%score "
 		for (v = 0; v < sy.voices.length; v++) {
 			p_v = sy.voices[v]
-			if (p_v.range >= 0)
+			if (p_v)
 				vn[p_v.range] = v
 		}
 		for (v = 0; v < sy.voices.length; v++) {
