@@ -353,7 +353,6 @@ break
 
 	function lyric_dump() {
 	    var	v, s, i, ly, nly, t, w,
-		nb = 0
 		font_def("vocal", "")
 
 		for (v = 0; v < nv; v++) {
@@ -368,29 +367,8 @@ break
 			if (nly == 0)
 				continue
 			for (s = voice_tb[v].sym; s; s = s.next) {
-				switch (s.type) {
-				case C.BAR:
-					if (w.length == 0)
-						continue
-					if (++nb < 4)
-						continue
-					nb = 0
-					if (!s.next)
-						continue
-					for (i = 0; i < nly; i++)
-						w[i] += '\n'
-//					t =  "|"
-//					if (++nb >= 4) {
-//						nb = 0;
-//						t = "|\n"
-//					}
-//					for (i = 0; i < nly; i++)
-//						w[i] += t
-				default:
+				if (s.type != C.NOTE)
 					continue
-				case C.NOTE:
-					break
-				}
 				ly = s.a_ly
 				if (!ly) {
 					for (i = 0; i < nly; i++)
@@ -416,7 +394,9 @@ break
 						t = t.replace(/ /g, '~')
 						t = t.replace(/-/g, '\\-')
 						t = t.replace(/\n/g, '-');
-						w[i] += t + ' '
+						if (t.slice(-1) != "-")
+							t += ' '
+						w[i] += t
 						break
 					}
 				}
@@ -425,7 +405,7 @@ break
 				if (voice_tb.length > 1)
 					abc2svg.print("V:" + voice_tb[v].id)
 				for (i = 0; i < w.length; i++)
-					abc2svg.print("w:" + w[i].replace(/\n/g, '\n+:'))
+					abc2svg.print("w:" + w[i].replace(/\*+$/,""))
 			}
 		}
 	} // lyric_dump()
