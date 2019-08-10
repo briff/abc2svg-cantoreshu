@@ -1,7 +1,12 @@
 #!/usr/bin/env qjs
 // abc2svg with quickjs (https://bellard.org/quickjs/)
 
-std.loadScript("abc2svg-1.js")
+    var	args = scriptArgs,
+	path = args.shift().	// the 1st argument is the script name
+			match(/(.*\/).*/)
+	path = path ? path[1] : ""
+
+std.loadScript(path + "abc2svg-1.js")
 
 // interpreter specific functions
 abc2svg.print = function(str) {
@@ -38,7 +43,7 @@ abc2svg.readFile = function(fname) {
 
 abc2svg.loadjs = function(fn, relay, onerror) {
 	try {
-		std.loadScript(fn)
+		std.loadScript(path + fn)
 		if (relay)
 			relay()
 	} catch(e) {
@@ -49,19 +54,15 @@ abc2svg.loadjs = function(fn, relay, onerror) {
 	}
 } // loadjs()
 
-std.loadScript("cmdline.js")
+std.loadScript(path + "cmdline.js")
 
 // main
-    var	args = scriptArgs
-
-	args.shift()			// the 1st argument is the script name
-
 	if (/\.js$/.test(args[0])) {
 		std.loadScript(args[0])
 		args.shift()
 	}
 	if (typeof abc2svg.abc_init != 'function')
-		std.loadScript("toxhtml.js")
+		std.loadScript(path + "toxhtml.js")
 	if (!args[0]) {
 		abc2svg.printErr('ABC translator with quickjs\
  and abc2svg-' + abc2svg.version + ' ' + abc2svg.vdate + '\n\
