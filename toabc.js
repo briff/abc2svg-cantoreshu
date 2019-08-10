@@ -896,10 +896,12 @@ break
 		sym_dump(s)
 		if (s.dur)
 			vti[s.v] = s.time + s.dur
-		if (s.beam_end)
-			line += ' '
-		if (s.eoln && s.next)
-			eoln = true
+		if (s.next) {
+			if (s.beam_end && !s.beam_st && !s.next.beam_end)
+				line += ' '
+			if (s.eoln)
+				eoln = true
+		}
 		if (line)
 			vo[s.v].push(line)
 	}
