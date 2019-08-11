@@ -352,7 +352,8 @@ break
 	} // key_dump()
 
 	function lyric_dump() {
-	    var	v, s, i, ly, nly, t, w,
+	    var	v, s, i, ly, nly, t, w
+
 		font_def("vocal", "")
 
 		for (v = 0; v < nv; v++) {
