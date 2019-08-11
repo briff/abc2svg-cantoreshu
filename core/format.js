@@ -155,11 +155,15 @@ function param_set_font(xxxfont, p) {
 
 	// create a new font
 	font = cfmt[xxxfont];
-	if (!font)			// set-font-<n> or new element
+	if (!font) {			// set-font-<n> or new element
 		font = {}
-	else
-		font = Object.create(font)
-	font.fid = font.used = undefined;
+	} else {
+		font = {
+			name: font.name,
+			size: font.size,
+			box: font.box
+		}
+	}
 	cfmt[xxxfont] = font;
 
 	// fill the values
@@ -207,9 +211,11 @@ function param_set_font(xxxfont, p) {
 		p = p.replace(a[0], "")
 	}
 
-	if (!p || p == "*")
-		return
-	font.swfac = 0
+	a = p.match(/[- ]?[nN]ormal/)
+	if (a) {
+		font.normal = true
+		p = p.replace(a[0], '')
+	}
 
 	a = p.match(/[- ]?[bB]old/)
 	if (a) {
@@ -227,11 +233,14 @@ function param_set_font(xxxfont, p) {
 		p = p.replace(a[0], '')
 	}
 	switch (p) {
+	case "":
+	case "*": return
 	case "Times-Roman":
 	case "Times":	p = "serif"; break
 	case "Helvetica": p = "sans-serif"; break
 	case "Courier": p = "monospace"; break
 	}
+	font.swfac = 0
 	font.name = p
 }
 
@@ -687,10 +696,19 @@ function get_font(fn) {
 		font2 = Object.create(gene.curfont)
 		if (font.name)
 			font2.name = font.name
-		if (font.weight)
-			font2.weight = font.weight
-		if (font.style)
-			font2.style = font.style
+		if (font.normal) {
+			if (font2.weight)	// !! don't use delete !!
+				font2.weight = null
+			if (font2.style)
+				font2.style = null
+		} else {
+			if (font.weight)
+				font2.weight = font.weight
+			if (font.style)
+				font2.style = font.style
+		}
+		if (font.class)
+			font2.class = font.class
 		if (font.size)
 			font2.size = font.size
 		st = st_font(font2)
