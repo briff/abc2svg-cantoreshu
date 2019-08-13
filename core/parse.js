@@ -1583,8 +1583,7 @@ function parse_acc_pit(line) {
 	note = {
 		pit: pit,
 		shhd: 0,
-		shac: 0,
-		ti1: 0
+		shac: 0
 	}
 	if (acc) {
 		note.acc = acc
@@ -1656,8 +1655,7 @@ function parse_basic_note(line, ulen) {
 }
 
 function parse_vpos() {
-	var	c,
-		line = parse.line,
+	var	line = parse.line,
 		ti1 = 0
 
 	if (line.buffer[line.index - 1] == '.' && !a_dcn)
@@ -2498,14 +2496,12 @@ function parse_music_line() {
 				parse_gchord(type)
 				break
 			case '-':
-			    var tie_pos = 0
-
 				if (!curvoice.last_note
 				 || curvoice.last_note.type != C.NOTE) {
 					syntax(1, "No note before '-'")
 					break
 				}
-				tie_pos = parse_vpos();
+			    var	tie_pos = parse_vpos()
 				s = curvoice.last_note
 				for (i = 0; i <= s.nhd; i++) {
 					if (!s.notes[i].ti1)
