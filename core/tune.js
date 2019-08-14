@@ -1364,7 +1364,7 @@ function acc_same_pitch(pitch) {
 			}
 			for (i = 0; i <= s.nhd; i++) {
 				if (s.notes[i].pit == pitch
-				 && s.notes[i].ti1)
+				 && s.notes[i].tie)
 					return s.notes[i].acc
 			}
 			return //undefined

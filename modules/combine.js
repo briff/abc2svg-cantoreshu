@@ -12,7 +12,7 @@ abc2svg.combine = {
     // function called at start of the generation when multi-voices
     comb_v: function() {
     var	C = abc2svg.C,
-	delsym = []		// deleted symbols for slurs
+	delsym = []		// deleted symbols for slurs and ties
 
     // check if voice combine may occur
     function may_combine(s) {
@@ -72,12 +72,12 @@ abc2svg.combine = {
 	s.ymn = 3 * (s.notes[0].pit - 18) - 4;
 
 	// force the tie directions
-	type = s.notes[0].ti1
+	type = s.notes[0].tie_ty
 	if ((type & 0x0f) == C.SL_AUTO)
-		s.notes[0].ti1 = C.SL_BELOW | (type & C.SL_DOTTED);
-	type = s.notes[nhd].ti1
+		s.notes[0].tie_ty = C.SL_BELOW | (type & C.SL_DOTTED);
+	type = s.notes[nhd].tie_ty
 	if ((type & 0x0f) == C.SL_AUTO)
-		s.notes[nhd].ti1 = C.SL_ABOVE | (type & C.SL_DOTTED)
+		s.notes[nhd].tie_ty = C.SL_ABOVE | (type & C.SL_DOTTED)
 } // combine_notes()
 
 // combine 2 voices
@@ -99,6 +99,8 @@ function do_combine(s) {
 				delete s.invis
 		} else {
 			combine_notes.call(this, s, s2)
+			if (s2.tie_s)
+				s.tie_s = s2.tie_s
 		}
 
 		if (s2.sls) {
@@ -122,7 +124,7 @@ function do_combine(s) {
 				Array.prototype.push.apply(s.a_dd, s2.a_dd)
 		}
 
-		// memorize the deleted symbol: it may support slur endings
+		// memorize the deleted symbol: it may support slur or tie endings
 		delsym.push({s: s2, r: s});
 
 		this.unlksym(s2)			// remove the next symbol
@@ -161,6 +163,32 @@ function do_combine(s) {
 		    }
 	}
     } // slur_repl()
+
+    // replace tie endings
+    function tie_repl(s) {
+    var	m, m2, s2, pit, pit2,
+	s1 = s.tie_s,
+	i = delsym.length
+
+	while (--i >= 0) {
+		if (delsym[i].s == s1) {
+			s.tie_s = s2 = delsym[i].r
+			for (m = 0; m <= s.nhd; m++) {
+				if (s.notes[m].tie_m == undefined)
+					continue
+				pit = s.notes[m].opit || s.notes[m].pit
+				for (m2 = 0; m2 <= s2.nhd; m2++) {
+					pit2 = s2.notes[m2].opit || s2.notes[m2].pit
+					if (pit2 == pit) {
+						s.notes[m].tie_m = m2
+						break
+					}
+				}
+			}
+			break
+		}
+	}
+    } // tie_repl()
 
 	// code of comb_v()
 	var s, s2, g, i, r
@@ -220,6 +248,8 @@ function do_combine(s) {
 	for (s = this.get_tsfirst(); s; s = s.ts_next) {
 		if (s.sls || s.sl1)
 			slur_repl(s)
+		if (s.tie_s)
+			tie_repl(s)
 	}
     }, // comb_v()
 

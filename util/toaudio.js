@@ -214,7 +214,7 @@ function ToAudio() {
 			if (note.pit == pit) {
 				d += s.dur / play_factor;
 				note.ti2 = true
-				return note.ti1 ? do_tie(s, note, d) : d
+				return note.tie_ty ? do_tie(s, note, d) : d
 			}
 		}
 		return d
@@ -287,7 +287,7 @@ function ToAudio() {
 				t,
 				instr[s.v],
 				pit2mid(s, i),
-				note.ti1 ? do_tie(s, note, d) : d,
+				note.tie_ty ? do_tie(s, note, d) : d,
 				1,
 				s.v]))
 		}

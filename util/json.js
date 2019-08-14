@@ -41,6 +41,8 @@ function AbcJSON(nindent) {			// indentation level
 			extra: true,
 			p_v: true,
 			s: true,
+			sn: true,
+			tie_s: true,
 			dd_st: true
 		}
 	// generate an attribute

@@ -177,7 +177,7 @@ function AbcMIDI() {
 						}
 					}
 					note.midi = pit2midi(p, note.acc)
-					if (note.ti1) {
+					if (note.tie_ty) {
 						tie_map[p] = map[p];
 						tie_time[p] = s.time + s.dur
 					}

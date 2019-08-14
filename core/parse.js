@@ -1656,19 +1656,19 @@ function parse_basic_note(line, ulen) {
 
 function parse_vpos() {
 	var	line = parse.line,
-		ti1 = 0
+		ty = 0
 
 	if (line.buffer[line.index - 1] == '.' && !a_dcn)
-		ti1 = C.SL_DOTTED
+		ty = C.SL_DOTTED
 	switch (line.next_char()) {
 	case "'":
 		line.index++
-		return ti1 + C.SL_ABOVE
+		return ty + C.SL_ABOVE
 	case ",":
 		line.index++
-		return ti1 + C.SL_BELOW
+		return ty + C.SL_BELOW
 	}
-	return ti1 + C.SL_AUTO
+	return ty + C.SL_AUTO
 }
 
 var	cde2fcg = new Int8Array([0, 2, 4, -1, 1, 3, 5]),
@@ -1834,11 +1834,17 @@ function slur_add(sn) {
 
 // (possible hook)
 Abc.prototype.new_note = function(grace, sls) {
-	var	note, s, in_chord, c, dcn, type,
+    var	note, s, in_chord, c, dcn, type, tie_s,
 		i, n, s2, nd, res, num, dur,
 		sl1 = [],
 		line = parse.line,
 		a_dcn_sav = a_dcn;	// save parsed decoration names
+
+	if (!grace) {
+		tie_s = curvoice.tie_s
+		if (tie_s)		// tie from previous note / grace note
+			curvoice.tie_s = null
+	}
 
 	a_dcn = null;
 	parse.stemless = false;
@@ -1914,6 +1920,8 @@ Abc.prototype.new_note = function(grace, sls) {
 			s.width = line.get_int()
 		else
 			s.width = 10
+		if (tie_s)
+			curvoice.tie_s = tie_s
 		break
 	case 'x':
 		s.invis = true
@@ -1995,6 +2003,41 @@ Abc.prototype.new_note = function(grace, sls) {
 			if (curvoice.octave)
 				note.pit += curvoice.octave * 7
 
+			// ending ties
+			if (tie_s) {		// if some ties are ending here
+				if (tie_s.type != C.GRACE) {
+				    for (i = 0; i <= tie_s.nhd; i++) {
+					if (!tie_s.notes[i].tie_ty
+					 || tie_s.notes[i].tie_m != undefined)
+						continue
+					switch (tie_s.notes[i].pit - note.pit) {
+					default:
+						continue
+					case 1:
+					case -1:
+						if (tie_s.notes[i].acc == note.acc)
+							continue
+					case 0:
+						tie_s.notes[i].tie_m = s.notes.length
+						break
+					}
+					break
+				    }
+				} else {
+				    for (s2 = tie_s.extra; s2; s2 = s2.next) {
+					if (!s2.notes[0].tie_ty
+					 || s2.notes[0].tie_m != undefined)
+						continue
+					if (s2.notes[0].pit == note.pit) {
+						s2.tie_s = s
+						s2.notes[0].tie_m = s.notes.length
+						break
+					}
+				    }
+				}
+				tie_s.tie_s = s
+			}
+
 			// starting slurs
 			if (sl1.length) {
 				while (1) {
@@ -2032,8 +2075,8 @@ Abc.prototype.new_note = function(grace, sls) {
 					c = line.next_char()
 					continue
 				case '-':
-					note.ti1 = parse_vpos();
-					s.ti1 = true;
+					note.tie_ty = parse_vpos()
+					curvoice.tie_s = s
 					c = line.char()
 					continue
 				case '.':
@@ -2072,7 +2115,7 @@ Abc.prototype.new_note = function(grace, sls) {
 	}
 
 	if (s.notes) {				// if note or rest
-		if (!s.grace) {
+		if (!grace) {
 			switch (curvoice.pos.stm) {
 			case C.SL_ABOVE: s.stem = 1; break
 			case C.SL_BELOW: s.stem = -1; break
@@ -2496,22 +2539,18 @@ function parse_music_line() {
 				parse_gchord(type)
 				break
 			case '-':
-				if (!curvoice.last_note
-				 || curvoice.last_note.type != C.NOTE) {
+				s = curvoice.last_note
+				if (!s || s.type != C.NOTE) {
 					syntax(1, "No note before '-'")
 					break
 				}
-			    var	tie_pos = parse_vpos()
-				s = curvoice.last_note
-				for (i = 0; i <= s.nhd; i++) {
-					if (!s.notes[i].ti1)
-						s.notes[i].ti1 = tie_pos
-					else if (s.nhd == 0)
-						syntax(1, "Too many ties")
-				}
-				s.ti1 = true
+			    var	ty = parse_vpos()
+				for (i = 0; i <= s.nhd; i++)
+					s.notes[i].tie_ty = ty
 				if (grace)
-					grace.ti1 = true
+					grace.tie_s = curvoice.tie_s = grace
+				else
+					curvoice.tie_s = s
 				continue
 			case '[':
 			    var c_next = line.buffer[line.index + 1]

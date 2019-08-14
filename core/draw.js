@@ -1130,6 +1130,7 @@ function draw_gracenotes(s) {
 	if (s.p_v.key.k_bagpipe			/* no slur when bagpipe */
 	 || !cfmt.graceslurs
 	 || slur				// explicit slur
+	 || s.tie_s				// some tie
 	 || !s.next
 	 || s.next.type != C.NOTE)
 		return
@@ -2507,18 +2508,19 @@ function draw_tuplet(s1) {
 }
 
 /* -- draw the ties between two notes/chords -- */
-function draw_note_ties(k1, k2, mhead1, mhead2, job) {
-	var i, dir, m1, m2, p, p2, y, st, k, x1, x2, h, sh, time
+function draw_note_ties(k1, k2, mhead1, job) {
+    var	i, dir, m1, m2, p, p2, y, st, k, x1, x2, h, sh, time, note
 
 	for (i = 0; i < mhead1.length; i++) {
 		m1 = mhead1[i];
-		p = k1.notes[m1].pit;
-		m2 = mhead2[i];
+		note = k1.notes[m1]
+		p = note.pit
+		m2 = note.tie_m
 		p2 = job != 2 ? k2.notes[m2].pit : p;
-		dir = (k1.notes[m1].ti1 & 0x07) == C.SL_ABOVE ? 1 : -1;
+		dir = (note.tie_ty & 0x07) == C.SL_ABOVE ? 1 : -1
 
 		x1 = k1.x;
-		sh = k1.notes[m1].shhd		/* head shift */
+		sh = note.shhd		/* head shift */
 		if (dir > 0) {
 			if (m1 < k1.nhd && p + 1 == k1.notes[m1 + 1].pit)
 				if (k1.notes[m1 + 1].shhd > sh)
@@ -2593,7 +2595,7 @@ function draw_note_ties(k1, k2, mhead1, mhead2, job) {
 //		anno_start(k1, 'slur');
 		slur_out(x1, staff_tb[st].y + y,
 			 x2, staff_tb[st].y + y,
-			 dir, h, k1.notes[m1].ti1 & C.SL_DOTTED)
+			 dir, h, note.tie_ty & C.SL_DOTTED)
 //		anno_stop(k1, 'slur')
 	}
 }
@@ -2604,9 +2606,8 @@ function draw_ties(k1, k2,
 				// 1: no starting note
 				// 2: no ending note
 				// 3: no start for clef or staff change
-	var	k3, i, j, m1, pit, pit2, tie2,
+	var	k3, i, j, m1, pit, pit2, tie2, note,
 		mhead1 = [],
-		mhead2 = [],
 		mhead3 = [],
 		nh1 = k1.nhd,
 		time = k1.time + k1.dur
@@ -2614,44 +2615,28 @@ function draw_ties(k1, k2,
 	/* half ties from last note in line or before new repeat */
 	if (job == 2) {
 		for (i = 0; i <= nh1; i++) {
-			if (k1.notes[i].ti1)
+			if (k1.notes[i].tie_ty) {
 				mhead3.push(i)
+				k1.notes[i].tie_m = i
+			}
 		}
-		draw_note_ties(k1, k2 || k1, mhead3, mhead3, job)
+		draw_note_ties(k1, k2 || k1, mhead3, job)
 		return
 	}
 
 	/* set up list of ties to draw */
 	for (i = 0; i <= nh1; i++) {
-		if (!k1.notes[i].ti1)
+		note = k1.notes[i]
+		if (!note.tie_ty)
 			continue
-		tie2 = -1;
-		pit = k1.notes[i].opit || k1.notes[i].pit
-		for (m1 = k2.nhd; m1 >= 0; m1--) {
-			pit2 = k2.notes[m1].opit || k2.notes[m1].pit
-			switch (pit2 - pit) {
-			case 1:			/* maybe ^c - _d */
-			case -1:		/* _d - ^c */
-				if (k1.notes[i].acc != k2.notes[m1].acc)
-					tie2 = m1
-			default:
-				continue
-			case 0:
-				tie2 = m1
-				break
-			}
-			break
-		}
-		if (tie2 >= 0) {		/* 1st or 2nd choice */
-			mhead1.push(i);
-			mhead2.push(tie2)
-		} else {
+		if (note.tie_m != undefined)
+			mhead1.push(i)
+		else
 			mhead3.push(i)		/* no match */
-		}
 	}
 
 	/* draw the ties */
-	draw_note_ties(k1, k2, mhead1, mhead2, job)
+	draw_note_ties(k1, k2, mhead1, job)
 
 	/* if any bad tie, try an other voice of the same staff */
 	if (!mhead3.length)
@@ -2667,7 +2652,6 @@ function draw_ties(k1, k2,
 			continue
 		}
 		mhead1.length = 0;
-		mhead2.length = 0
 		for (i = mhead3.length; --i >= 0; ) {
 			j = mhead3[i];
 			pit = k1.notes[j].opit || k1.notes[j].pit
@@ -2675,56 +2659,34 @@ function draw_ties(k1, k2,
 				pit2 = k3.notes[m1].opit || k3.notes[m1].pit
 				if (pit2 == pit) {
 					mhead1.push(j);
-					mhead2.push(m1);
+					k1.notes[j].tie_m = m1
 					mhead3[i] = mhead3.pop()
 					break
 				}
 			}
 		}
-		if (mhead1.length > 0) {
+		if (mhead1.length) {
 			draw_note_ties(k1, k3,
-					mhead1, mhead2,
+					mhead1,
 					job == 1 ? 1 : 0)
-			if (mhead3.length == 0)
+			if (!mhead3.length)
 				return
 		}
 		k3 = k3.ts_next
 	}
 
-	if (mhead3.length != 0)
+	if (mhead3.length)
 		error(1, k1, "Bad tie")
-}
-
-/* -- try to get the symbol of a ending tie when combined voices -- */
-function tie_comb(s) {
-	var	s1, time, st;
-
-	time = s.time + s.dur;
-	st = s.st
-	for (s1 = s.ts_next; s1; s1 = s1.ts_next) {
-		if (s1.st != st)
-			continue
-		if (s1.time == time) {
-			if (s1.type == C.NOTE)
-				return s1
-			continue
-		}
-		if (s1.time > time)
-			return s		// bad tie
-	}
-	return //null				// no ending tie
 }
 
 /* -- draw all ties between neighboring notes -- */
 function draw_all_ties(p_voice) {
-	var s1, s2, s3, clef_chg, time, s_rtie, s_tie, x, dx
+    var s, s1, s2, clef_chg, time, s_rtie, x, dx, s_next
 
 	function draw_ties_g(s1, s2, job) {
-		var g
-
 		if (s1.type == C.GRACE) {
-			for (g = s1.extra; g; g = g.next) {
-				if (g.ti1)
+			for (var g = s1.extra; g; g = g.next) {
+				if (g.tie_s)
 					draw_ties(g, s2, job)
 			}
 		} else {
@@ -2771,9 +2733,10 @@ function draw_all_ties(p_voice) {
 
 	/* search the start of ties */
 //	clef_chg = false
+	s_next = s2
 	while (1) {
-		for (s1 = s2; s1; s1 = s1.next) {
-			if (s1.ti1)
+		for (s1 = s_next; s1; s1 = s1.next) {
+			if (s1.tie_s)
 				break
 			if (!s_rtie)
 				continue
@@ -2793,67 +2756,43 @@ function draw_all_ties(p_voice) {
 				s1 = null
 				break
 			}
-			s_tie = clone(s_rtie);
-			s_tie.x = s1.x;
-			s_tie.next = s2;
-			s_tie.st = s2.st;
-			s_tie.time = s2.time - s_tie.dur;
-			draw_ties(s_tie, s2, 1)
+			s = clone(s_rtie);
+			s.x = s1.x;
+			s.next = s2;
+			s.st = s2.st;
+			s.time = s2.time - s.dur;
+			draw_ties(s, s2, 1)
 		}
 		if (!s1)
 			break
+		s_next = s1.next
 
-		/* search the end of the tie
-		 * and notice the clef changes (may occur in an other voice) */
-		time = s1.time + s1.dur
-		for (s2 = s1.next; s2; s2 = s2.next) {
-			if (s2.dur)
-				break
-			if (s2.type == C.BAR && s2.text) {	// repeat bar
-				if (s2.text[0] != '1')
-					break
-				s_rtie = s1		/* 1st repeat bar */
-			}
-		}
-		if (!s2) {
-			for (s2 = s1.ts_next; s2; s2 = s2.ts_next) {
-				if (s2.st != s1.st)
-					continue
-				if (s2.time < time)
-					continue
-				if (s2.time > time) {
-					s2 = null
+		// check if some repeat ending
+		s2 = s1.tie_s				// tie ending note
+		for (s = s1.ts_next; s && s != s2; s = s.ts_next) {
+			if (s.type == C.BAR) {
+				if (s.text && s.text[0] != '1') {	// new ending
+					s2 = s
 					break
 				}
-				if (s2.dur)
-					break
-			}
-			if (!s2) {
-				draw_ties_g(s1, null, 2);
-				p_voice.s_tie = s1
-				break
-			}
-		} else {
-			if (s2.type != C.NOTE
-			 && s2.type != C.BAR) {
-				error(1, s1, "Bad tie")
-				continue
-			}
-			if (s2.time != time) {
-				s3 = tie_comb(s1)
-				if (s3 == s1) {
-					error(1, s1, "Bad tie")
-					continue
-				}
-				s2 = s3
+				s_rtie = s1		// 1st repeat bar
 			}
 		}
-		for (s3 = s1.ts_next; s3; s3 = s3.ts_next) {
-			if (s3.st != s1.st)
+
+		if (!s) {				// end of line
+			draw_ties_g(s1, null, 2);
+			p_voice.s_tie = s1
+			break
+		}
+
+		// check if some clef changes (may occur in an other voice)
+		time = s1.time + s.dur
+		for (s = s1.ts_next; s != s2; s = s.ts_next) {
+			if (s.st != s1.st)
 				continue
-			if (s3.time > time)
+			if (s.time > time)
 				break
-			if (s3.type == C.CLEF) {
+			if (s.type == C.CLEF) {
 				clef_chg = true
 				continue
 			}
@@ -3799,20 +3738,20 @@ function draw_all_sym() {
 
 /* -- set the tie directions for one voice -- */
 function set_tie_dir(sym) {
-	var s, i, ntie, dir, sec, pit, ti
+	var s, i, ntie, dir, sec, pit, ty
 
 	for (s = sym; s; s = s.next) {
-		if (!s.ti1)
+		if (!s.tie_s)
 			continue
 
 		/* if other voice, set the ties in opposite direction */
 		if (s.multi != 0) {
 			dir = s.multi > 0 ? C.SL_ABOVE : C.SL_BELOW
 			for (i = 0; i <= s.nhd; i++) {
-				ti = s.notes[i].ti1;
-				if (!((ti & 0x07) == C.SL_AUTO))
+				ty = s.notes[i].tie_ty
+				if (!((ty & 0x07) == C.SL_AUTO))
 					continue
-				s.notes[i].ti1 = (ti & C.SL_DOTTED) | dir
+				s.notes[i].tie_ty = (ty & C.SL_DOTTED) | dir
 			}
 			continue
 		}
@@ -3821,7 +3760,7 @@ function set_tie_dir(sym) {
 		sec = ntie = 0;
 		pit = 128
 		for (i = 0; i <= s.nhd; i++) {
-			if (s.notes[i].ti1) {
+			if (s.notes[i].tie_ty) {
 				ntie++
 				if (pit < 128
 				 && s.notes[i].pit <= pit + 1)
@@ -3832,11 +3771,11 @@ function set_tie_dir(sym) {
 		if (ntie <= 1) {
 			dir = s.stem < 0 ? C.SL_ABOVE : C.SL_BELOW
 			for (i = 0; i <= s.nhd; i++) {
-				ti = s.notes[i].ti1
-				if (ti) {
-					if ((ti & 0x07) == C.SL_AUTO)
-						s.notes[i].ti1 =
-							(ti & C.SL_DOTTED) | dir
+				ty = s.notes[i].tie_ty
+				if (ty) {
+					if ((ty & 0x07) == C.SL_AUTO)
+						s.notes[i].tie_ty =
+							(ty & C.SL_DOTTED) | dir
 					break
 				}
 			}
@@ -3850,16 +3789,16 @@ function set_tie_dir(sym) {
 				ntie = (ntie - 1) / 2;
 				dir = C.SL_BELOW
 				for (i = 0; i <= s.nhd; i++) {
-					ti = s.notes[i].ti1
-					if (ti == 0)
+					ty = s.notes[i].tie_ty
+					if (!ty)
 						continue
 					if (ntie == 0) {	/* central tie */
 						if (s.notes[i].pit >= 22)
 							dir = C.SL_ABOVE
 					}
-					if ((ti & 0x07) == C.SL_AUTO)
-						s.notes[i].ti1 =
-							(ti & C.SL_DOTTED) | dir
+					if ((ty & 0x07) == C.SL_AUTO)
+						s.notes[i].tie_ty =
+							(ty & C.SL_DOTTED) | dir
 					if (ntie-- == 0)
 						dir = C.SL_ABOVE
 				}
@@ -3869,12 +3808,12 @@ function set_tie_dir(sym) {
 			ntie /= 2;
 			dir = C.SL_BELOW
 			for (i = 0; i <= s.nhd; i++) {
-				ti = s.notes[i].ti1
-				if (ti == 0)
+				ty = s.notes[i].tie_ty
+				if (!ty)
 					continue
-				if ((ti & 0x07) == C.SL_AUTO)
-					s.notes[i].ti1 =
-						(ti & C.SL_DOTTED) | dir
+				if ((ty & 0x07) == C.SL_AUTO)
+					s.notes[i].tie_ty =
+						(ty & C.SL_DOTTED) | dir
 				if (--ntie == 0)
 					dir = C.SL_ABOVE
 			}
@@ -3886,7 +3825,7 @@ function set_tie_dir(sym) {
  * opposition; then fill in the remaining notes of the chord accordingly */
 			pit = 128
 			for (i = 0; i <= s.nhd; i++) {
-				if (s.notes[i].ti1) {
+				if (s.notes[i].tie_ty) {
 					if (pit < 128
 					 && s.notes[i].pit <= pit + 1) {
 						ntie = i
@@ -3897,13 +3836,14 @@ function set_tie_dir(sym) {
 			}
 			dir = C.SL_BELOW
 			for (i = 0; i <= s.nhd; i++) {
-				ti = s.notes[i].ti1
-				if (ti == 0)
+				ty = s.notes[i].tie_ty
+				if (!ty)
 					continue
 				if (ntie == i)
 					dir = C.SL_ABOVE
-				if ((ti & 0x07) == C.SL_AUTO)
-					s.notes[i].ti1 = (ti & C.SL_DOTTED) | dir
+				if ((ty & 0x07) == C.SL_AUTO)
+					s.notes[i].tie_ty =
+						(ty & C.SL_DOTTED) | dir
 			}
 /*fixme..
 			continue
@@ -3928,13 +3868,15 @@ function set_tie_room() {
 			continue
 		set_tie_dir(s)
 		for ( ; s; s = s.next) {
-			if (!s.ti1)
+			if (!s.tie_s)
 				continue
 			if (s.notes[0].pit < 20
-			 && (s.notes[0].ti1 & 0x07) == C.SL_BELOW)
+			 && s.notes[0].tie_ty
+			 && (s.notes[0].tie_ty & 0x07) == C.SL_BELOW)
 				;
 			else if (s.notes[s.nhd].pit > 24
-			      && (s.notes[s.nhd].ti1 & 0x07) == C.SL_ABOVE)
+			      && s.notes[s.nhd].tie_ty
+			      && (s.notes[s.nhd].tie_ty & 0x07) == C.SL_ABOVE)
 				;
 			else
 				continue

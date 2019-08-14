@@ -708,7 +708,7 @@ Abc.prototype.set_width = function(s) {
 				}
 
 				/* have ties wide enough */
-				if (s2.ti1) {
+				if (s2.tie) {
 					if (wlw < 14)
 						wlw = 14
 				}
@@ -4180,7 +4180,7 @@ Abc.prototype.set_stems = function() {
 					slen -= 2
 			}
 			s.y = ymn
-			if (s.notes[0].ti1)
+			if (s.notes[0].tie)
 				ymn -= 3;
 			s.ymn = ymn - 4;
 			s.ys = ymx + slen
@@ -4201,7 +4201,7 @@ Abc.prototype.set_stems = function() {
 			s.ymn = (s.ys - 2.5) | 0;
 			s.y = ymx
 /*fixme:the tie may be lower*/
-			if (s.notes[s.nhd].ti1)
+			if (s.notes[s.nhd].tie)
 				ymx += 3;
 			s.ymx = ymx + 4
 		}
