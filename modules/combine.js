@@ -172,20 +172,25 @@ function do_combine(s) {
 
 	while (--i >= 0) {
 		if (delsym[i].s == s1) {
-			s.tie_s = s2 = delsym[i].r
+			s.tie_s = s1 = delsym[i].r
+			break
+		}
+	}
+	i = delsym.length
+	while (--i >= 0) {
+		if (delsym[i].r == s1) {
 			for (m = 0; m <= s.nhd; m++) {
 				if (s.notes[m].tie_m == undefined)
 					continue
 				pit = s.notes[m].opit || s.notes[m].pit
-				for (m2 = 0; m2 <= s2.nhd; m2++) {
-					pit2 = s2.notes[m2].opit || s2.notes[m2].pit
+				for (m2 = 0; m2 <= s1.nhd; m2++) {
+					pit2 = s1.notes[m2].opit || s1.notes[m2].pit
 					if (pit2 == pit) {
 						s.notes[m].tie_m = m2
 						break
 					}
 				}
 			}
-			break
 		}
 	}
     } // tie_repl()
