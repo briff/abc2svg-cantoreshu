@@ -480,8 +480,8 @@ break
 				}
 			}
 		}
-		if (!tie_ch && note.ti1)
-			slti_dump(note.ti1, '-')
+		if (!tie_ch && note.tie_m)
+			slti_dump(note.tie_m, '-')
 		while (note.sl2) {
 			line += ')';
 			note.sl2--
@@ -757,7 +757,7 @@ break
 				note_dump(s, s.notes[0], tie_ch)
 			} else {
 				for (i = 0; i < s.notes.length; i++) {
-					if (!s.notes[i].ti1) {
+					if (!s.notes[i].tie_m) {
 						tie_ch = false
 						break
 					}
@@ -782,8 +782,8 @@ break
 					tmp /= 2;
 				dur_dump(tmp)
 			}
-			if (s.ti1 && tie_ch)
-				slti_dump(s.notes[0].ti1, '-');
+			if (s.tie_s && tie_ch)
+				slti_dump(s.notes[0].tie_ty, '-');
 			tmp = s.sl2
 			while (tmp) {
 				line += ')';
