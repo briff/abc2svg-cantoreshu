@@ -2589,12 +2589,11 @@ function draw_note_ties(k1, k2, mhead1, job) {
 			x2 -= 1.5
 		}
 
-		y = 3 * (p - 18)
+		y = staff_tb[st].y + 3 * (p - 18)
 
 		h = (.03 * (x2 - x1) + 16) * dir;
 //		anno_start(k1, 'slur');
-		slur_out(x1, staff_tb[st].y + y,
-			 x2, staff_tb[st].y + y,
+		slur_out(x1, y, x2, y,
 			 dir, h, note.tie_ty & C.SL_DOTTED)
 //		anno_stop(k1, 'slur')
 	}
@@ -3737,10 +3736,10 @@ function draw_all_sym() {
 }
 
 /* -- set the tie directions for one voice -- */
-function set_tie_dir(sym) {
-	var s, i, ntie, dir, sec, pit, ty
+function set_tie_dir(s) {
+    var i, ntie, dir, sec, pit, ty
 
-	for (s = sym; s; s = s.next) {
+	for ( ; s; s = s.next) {
 		if (!s.tie_s)
 			continue
 
