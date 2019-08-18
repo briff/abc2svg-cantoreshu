@@ -1414,9 +1414,8 @@ function get_staves(cmd, parm) {
 	}
 	if (no_sym				/* if first %%staves */
 	 || (maxtime == 0 && staves_found < 0)) {
-//		for (v = 0; v < par_sy.voices.length; v++)
-//			par_sy.voices[v].range = -1
-		;
+		par_sy.staves = []
+		par_sy.voices = []
 	} else {
 
 		/*
