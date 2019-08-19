@@ -1691,14 +1691,18 @@ function get_ck_width() {
 }
 
 // get the width of the symbols up to the next eoln or eof
+// also, set a x (nice spacing) to all symbols
+// two returned values: width of nice spacing, width with max shrinking
 function get_width(s, last) {
-	var	shrink, space,
-		w = 0,
-		sp_fac = (1 - cfmt.maxshrink)
+    var	shrink, space,
+	w = 0,
+	wmx = 0,
+	sp_fac = (1 - cfmt.maxshrink)
 
 	do {
 		if (s.seqst) {
 			shrink = s.shrink
+			wmx += shrink
 			if ((space = s.space) < shrink)
 				w += shrink
 			else
@@ -1710,7 +1714,7 @@ function get_width(s, last) {
 			break
 		s = s.ts_next
 	} while (s)
-	return w;
+	return [w, wmx]
 }
 
 /* -- search where to cut the lines according to the staff width -- */
@@ -1718,13 +1722,19 @@ function set_lines(	s,		/* first symbol */
 			last,		/* last symbol / null */
 			lwidth,		/* w - (clef & key sig) */
 			indent) {	/* for start of tune */
-	var	first, s2, s3, x, xmin, xmid, xmax, wwidth, shrink, space,
-		nlines, cut_here;
+    var	first, s2, s3, x, xmin, xmid, xmax, wwidth, shrink, space,
+	nlines, cut_here,
+	ws = get_width(s, last)		// 2 widths: nice and shrinked
 
-	/* calculate the whole size of the piece of tune */
-	wwidth = get_width(s, last) + indent
+	// check if the symbols can enter in one line
+	if (ws[1] + indent < lwidth) {
+		if (last)
+			last = set_nl(last)
+		return last
+	}
 
 	/* loop on cutting the tune into music lines */
+	wwidth = ws[0] + indent
 	while (1) {
 		nlines = Math.ceil(wwidth / lwidth)
 		if (nlines <= 1) {
@@ -4785,7 +4795,7 @@ Abc.prototype.output_music = function() {
 	/* if single line, adjust the page width */
 	if (cfmt.singleline) {
 		v = get_ck_width();
-		lwidth = indent + v[0] + v[1] + get_width(tsfirst, null);
+		lwidth = indent + v[0] + v[1] + get_width(tsfirst, null)[0];
 		img.width = lwidth * cfmt.scale + img.lm + img.rm + 2
 	} else {
 
