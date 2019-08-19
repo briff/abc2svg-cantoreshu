@@ -4323,7 +4323,7 @@ function block_gen(s) {
 		set_page();
 		vskip(s.sk1);
 		output += '<path class="stroke"\n\td="M';
-		out_sxsy(s.x, ' ', 0);
+		out_sxsy((img.width -s.l) / 2 - img.lm, ' ', 0)
 		output += 'h' + s.l.toFixed(1) + '"/>\n';
 		vskip(s.sk2);
 		break
