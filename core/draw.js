@@ -67,19 +67,19 @@ function b_pos(grace, stem, nflags, b) {
 }
 
 /* duplicate a note for beaming continuation */
-function sym_dup(s_orig) {
-	var	m, note,
-		s = clone(s_orig);
+function sym_dup(s) {
+    var	m, note
 
+	s = clone(s)
 	s.invis = true
 	delete s.extra;
 	delete s.text
 	delete s.a_gch
 	delete s.a_ly
 	delete s.a_dd;
-	s.notes = clone(s_orig.notes)
+	s.notes = clone(s.notes)
 	for (m = 0; m <= s.nhd; m++) {
-		note = s.notes[m] = clone(s_orig.notes[m])
+		note = s.notes[m] = clone(s.notes[m])
 		delete note.a_dcn
 	}
 	return s
@@ -1644,15 +1644,18 @@ function slur_out(x1, y1, x2, y2, dir, height, dotted) {
 	output += '"/>\n'
 }
 
-/* -- draw a phrasing slur between two symbols -- */
+// draw a slur between two chords / notes
 /* (the staves are not yet defined) */
 /* (delayed output) */
 /* (not a pretty routine, this) */
-function draw_slur(path, m1, m2, slur_type) {
+function draw_slur(path,	// list of symbols under the slur
+		not1,		// note if start on a note head
+		sl) {		// ending variables: type, note, end on a note
     var	i,
 	k, g, x1, y1, x2, y2, height, addy,
 	a, y, z, h, dx, dy,
-	dir = (slur_type & 0x07) == C.SL_ABOVE ? 1 : -1,
+	ty = sl.ty,
+	dir = (ty & 0x07) == C.SL_ABOVE ? 1 : -1,
 	n = path.length,
 	i1 = 0,
 	i2 = n - 1,
@@ -1689,9 +1692,10 @@ if (two_staves) error(2, k1, "*** multi-staves slurs not treated yet");
 	if (k2.notes)
 		x2 += k2.notes[0].shhd
 
-	if (m1 >= 0) {
-		y1 = 3 * (k1.notes[m1].pit - 18) + 5 * dir
-	} else {
+	if (not1) {					// start on a note
+		y1 = 3 * (not1.pit - 18) + 2 * dir
+		x1 += 3
+	} else {					// start on a chord
 		y1 = dir > 0 ? k1.ymx + 2 : k1.ymn - 2
 		if (k1.type == C.NOTE) {
 			if (dir > 0) {
@@ -1739,9 +1743,11 @@ if (two_staves) error(2, k1, "*** multi-staves slurs not treated yet");
 			}
 		}
 	}
-	if (m2 >= 0) {
-		y2 = 3 * (k2.notes[m2].pit - 18) + 5 * dir
-	} else {
+
+	if (sl.is_note) {				// end on a note
+		y2 = 3 * (sl.note.pit - 18) + 2 * dir
+		x2 -= 3
+	} else {					// end on a chord
 		y2 = dir > 0 ? k2.ymx + 2 : k2.ymn - 2
 		if (k2.type == C.NOTE) {
 			if (dir > 0) {
@@ -1936,7 +1942,7 @@ if (two_staves) error(2, k1, "*** multi-staves slurs not treated yet");
 	height *= cfmt.slurheight;
 
 //	anno_start(k1_o, 'slur');
-	slur_out(x1, y1, x2, y2, dir, height, slur_type & C.SL_DOTTED);
+	slur_out(x1, y1, x2, y2, dir, height, ty & C.SL_DOTTED);
 //	anno_stop(k1_o, 'slur');
 
 	/* have room for other symbols */
@@ -1981,13 +1987,13 @@ function draw_slurs(s, last) {
     var	gr1, i, m, note
 
 	// draw a slur knowing the start and stop elements
-	function draw_sls(s, sl, m) {
+	function draw_sls(s,		// start symbol
+			sl,		// stop note
+			snote) {	// optional start note
 	    var	k, v, i, dir,
 		path = [],
-		s2 = sl.sn			// end of slur
-
-		if (s2.s)			// if towards note
-			s2 = s2.s		// chord
+		enote = sl.note,
+		s2 = enote.s			// end of slur
 
 		if (last && s2.time > last.time)
 			return			// will be drawn next time
@@ -2000,7 +2006,9 @@ function draw_slurs(s, last) {
 			while (s2.next)
 				s2 = s2.next;		// search the ending bar
 			sl = Object.create(sl);		// new slur
-			sl.sn = s2
+			sl.note = {
+				s: s2
+			}
 		}
 
 		// set the slur position
@@ -2078,13 +2086,15 @@ function draw_slurs(s, last) {
 			}
 		}
 
-		// if some nested slurs, draw them
+		// if some nested slurs/tuplets, draw them
 		for (i = 1; i < path.length - 1; i++) {
 			s = path[i]
 			if (s.sls || s.sl1)
 				draw_slurs(s, last)
+			if (s.tp)
+				draw_tuplet(s)
 		}
-		draw_slur(path, m, sl.sn.m == undefined ? -1 : sl.sn.m, sl.ty)
+		draw_slur(path, snote, sl)
 		return 1			// slur drawn, remove it
 	} // draw_sls()
 
@@ -2102,13 +2112,9 @@ function draw_slurs(s, last) {
 			s = s.extra
 			continue
 		}
-		if (!s.sls && !s.sl1) {		// if no slur
-			s = s.next
-			continue
-		}
 		if (s.sls) {			// slurs from the chord
 			for (i = 0; i < s.sls.length; i++) {
-				if (draw_sls(s, s.sls[i], -1))
+				if (draw_sls(s, s.sls[i]))
 					s.sls.splice(i--, 1)
 			}
 		}
@@ -2117,7 +2123,7 @@ function draw_slurs(s, last) {
 				note = s.notes[m]
 				if (note.sls) {
 					for (i = 0; i < note.sls.length; i++) {
-						if (draw_sls(s, note.sls[i], m))
+						if (draw_sls(s, note.sls[i], note))
 							note.sls.splice(i--, 1)
 					}
 				}
@@ -2132,7 +2138,7 @@ function draw_slurs(s, last) {
 /* (delayed output) */
 /* See http://moinejf.free.fr/abcm2ps-doc/tuplets.xhtml
  * for the value of 'tp.f' */
-function draw_tuplet(s1) {
+function draw_tuplet(s1, tp) {
     var	s2, s3, g, upstaff, nb_only, some_slur,
 	x1, x2, y1, y2, xm, ym, a, s0, yy, yx, dy, a, b, dir, r,
 	tp = s1.tp.shift()		// tuplet parameters
@@ -2140,22 +2146,21 @@ function draw_tuplet(s1) {
 	if (!s1.tp.length)
 		delete s1.tp		// last tuplet
 
-	// check if some slurs and treat the nested tuplets
+	// treat the slurs and the nested tuplets
 	upstaff = s1.st
 	set_dscale(s1.st)
 	for (s2 = s1; s2; s2 = s2.next) {
 		if (s2.type != C.NOTE && s2.type != C.REST) {
 			if (s2.type == C.GRACE) {
 				for (g = s2.extra; g; g = g.next) {
-					if (g.slur_start || g.sl1)
-						some_slur = true
+					if (g.sls || g.sl1)
+						draw_slurs(g)
 				}
 			}
 			continue
 		}
-		if (s2.slur_start || s2.slur_end /* if slur start/end */
-		 || s2.sl1 || s2.sl2)
-			some_slur = true
+		if (s2.sls || s2.sl1)
+			draw_slurs(s2)
 		if (s2.st < upstaff)
 			upstaff = s2.st
 		if (s2.tp)
@@ -2167,24 +2172,8 @@ function draw_tuplet(s1) {
 		error(1, s1, "No end of tuplet in this music line")
 		return
 	}
+
 	s2.tpe--
-
-	/* draw the slurs fully inside the tuplet */
-	if (some_slur) {
-		draw_slurs(s1, s2)
-
-		// don't draw the tuplet when a slur starts or stops inside it
-		if (s1.slur_start || s1.sl1)
-			return
-		for (s3 = s1.next; s3 != s2; s3 = s3.next) {
-			if (s3.slur_start || s3.slur_end
-			 || s3.sl1 || s3.sl2)
-				return
-		}
-
-		if (s2.slur_end || s2.sl2)
-			return
-	}
 
 	if (tp.f[0] == 1)			/* if 'when' == never */
 		return
@@ -2196,7 +2185,7 @@ function draw_tuplet(s1) {
 		nb_only = true
 	} else if (tp.f[1] == 1) {			/* 'what' == slur */
 		nb_only = true;
-		draw_slur([s1, s2], -1, -1, dir)
+		draw_slur([s1, s2], null, {ty: dir})
 	} else {
 
 		/* search if a bracket is needed */
@@ -2508,95 +2497,94 @@ function draw_tuplet(s1) {
 }
 
 /* -- draw the ties between two notes/chords -- */
-function draw_note_ties(k1, k2, mhead1, job) {
-    var	i, dir, m1, m2, p, p2, y, st, k, x1, x2, h, sh, time, note
+function draw_note_ties(not1, job) {
+    var	m, x1, x2, s, y, h,
+	not2 = not1.tie_n,
+	p = job == 2 ? not1.pit : not2.pit,
+	dir = (not1.tie_ty & 0x07) == C.SL_ABOVE ? 1 : -1,
+	s1 = not1.s,
+	st = s1.st,
+	s2 = not2.s,
+	x2 = s2.x,
+	sh = not1.shhd			// head shift
 
-	for (i = 0; i < mhead1.length; i++) {
-		m1 = mhead1[i];
-		note = k1.notes[m1]
-		p = note.pit
-		m2 = note.tie_m
-		p2 = job != 2 ? k2.notes[m2].pit : p;
-		dir = (note.tie_ty & 0x07) == C.SL_ABOVE ? 1 : -1
-
-		x1 = k1.x;
-		sh = note.shhd		/* head shift */
-		if (dir > 0) {
-			if (m1 < k1.nhd && p + 1 == k1.notes[m1 + 1].pit)
-				if (k1.notes[m1 + 1].shhd > sh)
-					sh = k1.notes[m1 + 1].shhd
-		} else {
-			if (m1 > 0 && p == k1.notes[m1 - 1].pit + 1)
-				if (k1.notes[m1 - 1].shhd > sh)
-					sh = k1.notes[m1 - 1].shhd
-		}
-		x1 += sh * .6;
-
-		x2 = k2.x
-		if (job != 2) {
-			sh = k2.notes[m2].shhd
-			if (dir > 0) {
-				if (m2 < k2.nhd && p2 + 1 == k2.notes[m2 + 1].pit)
-					if (k2.notes[m2 + 1].shhd < sh)
-						sh = k2.notes[m2 + 1].shhd
-			} else {
-				if (m2 > 0 && p2 == k2.notes[m2 - 1].pit + 1)
-					if (k2.notes[m2 - 1].shhd < sh)
-						sh = k2.notes[m2 - 1].shhd
-			}
-			x2 += sh * .6
-		}
-
-		st = k1.st
-		switch (job) {
-		case 0:
-			if (p != p2 && !(p & 1))
-				p = p2
+	for (m = 0; m < s1.nhd; m++)
+		if (s1.notes[m] == not1)
 			break
-		case 3:				/* clef or staff change */
-			dir = -dir
-			// fall thru
-		case 1:				/* no starting note */
-			x1 = k1.x
-			if (x1 > x2 - 20)
-				x1 = x2 - 20;
-			p = p2;
-			st = k2.st
-			break
-/*		case 2:				 * no ending note */
-		default:
-			if (k1 != k2) {
-				x2 -= k2.wl
-				if (k2.type == C.BAR)
-					x2 += 5
-			} else {
-				time = k1.time + k1.dur
-				for (k = k1.ts_next; k; k = k.ts_next)
-//(fixme: must check if the staff continues??)
-					if (k.time > time)
-						break
-				x2 = k ? k.x : realwidth
-			}
-			if (x2 < x1 + 16)
-				x2 = x1 + 16
-			break
-		}
-		if (x2 - x1 > 20) {
-			x1 += 3.5;
-			x2 -= 3.5
-		} else {
-			x1 += 1.5;
-			x2 -= 1.5
-		}
-
-		y = staff_tb[st].y + 3 * (p - 18)
-
-		h = (.03 * (x2 - x1) + 16) * dir;
-//		anno_start(k1, 'slur');
-		slur_out(x1, y, x2, y,
-			 dir, h, note.tie_ty & C.SL_DOTTED)
-//		anno_stop(k1, 'slur')
+	if (dir > 0) {
+		if (m < s1.nhd && p + 1 == s1.notes[m + 1].pit)
+			if (s1.notes[m + 1].shhd > sh)
+				sh = s1.notes[m + 1].shhd
+	} else {
+		if (m > 0 && p == s1.notes[m - 1].pit + 1)
+			if (s1.notes[m - 1].shhd > sh)
+				sh = s1.notes[m - 1].shhd
 	}
+	x1 = s1.x + sh * .6
+
+	if (job != 2) {
+		for (m = 0; m < s2.nhd; m++)
+			if (s2.notes[m] == not2)
+				break
+		sh = s2.notes[m].shhd
+		if (dir > 0) {
+			if (m < s2.nhd && p + 1 == s2.notes[m + 1].pit)
+				if (s2.notes[m + 1].shhd < sh)
+					sh = s2.notes[m + 1].shhd
+		} else {
+			if (m > 0 && p == s2.notes[m - 1].pit + 1)
+				if (s2.notes[m - 1].shhd < sh)
+					sh = s2.notes[m - 1].shhd
+		}
+		x2 += sh * .6
+	}
+
+	switch (job) {
+	case 0:
+		p = job == 2 || (not1.pit & 1) ? not1.pit : not2.pit
+		break
+	case 3:				/* clef or staff change */
+		dir = -dir
+		// fall thru
+	case 1:				/* no starting note */
+		x1 = s1.x
+		if (x1 > x2 - 20)
+			x1 = x2 - 20
+		p = not2.pit
+		st = s2.st
+		break
+/*	case 2:				 * no ending note */
+	default:
+		if (s1 != s2) {
+			x2 -= s2.wl
+			if (s2.type == C.BAR)
+				x2 += 5
+		} else {
+			time = s1.time + s1.dur
+			for (s = s1.ts_next; s; s = s.ts_next)
+//(fixme: must check if the staff continues??)
+				if (s.time > time)
+					break
+			x2 = s ? s.x : realwidth
+		}
+		if (x2 < x1 + 16)
+			x2 = x1 + 16
+		break
+	}
+	if (x2 - x1 > 20) {
+		x1 += 3.5
+		x2 -= 3.5
+	} else {
+		x1 += 1.5
+		x2 -= 1.5
+	}
+
+	y = staff_tb[st].y + 3 * (p - 18)
+
+	h = (.03 * (x2 - x1) + 16) * dir
+//	anno_start(k1, 'slur')
+	slur_out(x1, y, x2, y, dir, h, not1.tie_ty & C.SL_DOTTED)
+//	anno_stop(k1, 'slur')
 }
 
 /* -- draw ties between neighboring notes/chords -- */
@@ -2605,43 +2593,42 @@ function draw_ties(k1, k2,
 				// 1: no starting note
 				// 2: no ending note
 				// 3: no start for clef or staff change
-	var	k3, i, j, m1, pit, pit2, tie2, note,
-		mhead1 = [],
-		mhead3 = [],
-		nh1 = k1.nhd,
-		time = k1.time + k1.dur
+    var	k3, i, j, not1, not3, time, pit, pit2,
+	mhead3 = [],
+	nh1 = k1.nhd
 
 	/* half ties from last note in line or before new repeat */
 	if (job == 2) {
 		for (i = 0; i <= nh1; i++) {
-			if (k1.notes[i].tie_ty) {
-				mhead3.push(i)
-				k1.notes[i].tie_m = i
+			not1 = k1.notes[i]
+			if (not1.tie_ty) {
+				if (!not1.tie_n)
+					not1.tie_n = { s: k1 }
+				draw_note_ties(not1, job)
 			}
 		}
-		draw_note_ties(k1, k2 || k1, mhead3, job)
 		return
 	}
 
-	/* set up list of ties to draw */
+	// draw the ties or memorize the ones without ending
 	for (i = 0; i <= nh1; i++) {
-		note = k1.notes[i]
-		if (!note.tie_ty)
+		not1 = k1.notes[i]
+		if (!not1.tie_ty)
 			continue
-		if (note.tie_m != undefined)
-			mhead1.push(i)
+		if (not1.tie_n)
+			draw_note_ties(not1, job)
 		else
-			mhead3.push(i)		/* no match */
+			mhead3.push(not1)	/* no match */
 	}
-
-	/* draw the ties */
-	draw_note_ties(k1, k2, mhead1, job)
 
 	/* if any bad tie, try an other voice of the same staff */
 	if (!mhead3.length)
 		return				/* no bad tie */
 
+	time = k1.time + k1.dur
 	k3 = k1.ts_next
+	if (job != 1)
+		job = 0
 	while (k3 && k3.time < time)
 		k3 = k3.ts_next
 	while (k3 && k3.time == time) {
@@ -2650,27 +2637,22 @@ function draw_ties(k1, k2,
 			k3 = k3.ts_next
 			continue
 		}
-		mhead1.length = 0;
 		for (i = mhead3.length; --i >= 0; ) {
-			j = mhead3[i];
-			pit = k1.notes[j].opit || k1.notes[j].pit
-			for (m1 = k3.nhd; m1 >= 0; m1--) {
-				pit2 = k3.notes[m1].opit || k3.notes[m1].pit
+			not1 = mhead3[i]
+			pit = not1.opit || not1.pit
+			for (j = k3.nhd; j >= 0; j--) {
+				not3 = k3.notes[j]
+				pit2 = not3.opit || not3.pit
 				if (pit2 == pit) {
-					mhead1.push(j);
-					k1.notes[j].tie_m = m1
-					mhead3[i] = mhead3.pop()
+					not1.tie_n = not3
+					draw_note_ties(not1, job)
+					mhead3[i++] = mhead3.pop()
 					break
 				}
 			}
 		}
-		if (mhead1.length) {
-			draw_note_ties(k1, k3,
-					mhead1,
-					job == 1 ? 1 : 0)
-			if (!mhead3.length)
-				return
-		}
+		if (!mhead3.length)
+			return
 		k3 = k3.ts_next
 	}
 
@@ -2820,16 +2802,6 @@ function draw_all_ties(p_voice) {
 	p_voice.s_rtie = s_rtie
 }
 
-/* -- draw all phrasing slurs for one staff -- */
-/* (the staves are not yet defined) */
-function draw_all_slurs(p_voice) {
-    var	s = p_voice.sym
-
-	if (!s)
-		return
-	draw_slurs(s)
-}
-
 /* -- draw the symbols near the notes -- */
 /* (the staves are not yet defined) */
 /* order:
@@ -2837,9 +2809,8 @@ function draw_all_slurs(p_voice) {
  *   - beams
  *   - decorations near the notes
  *   - measure bar numbers
- *   - n-plets
+ *   - tuplets and slurs
  *   - decorations tied to the notes
- *   - slurs
  * - not scaled
  *   - chord symbols
  *   - staff decorations
@@ -2980,17 +2951,12 @@ function draw_sym_near() {
 //    continue
 //  }
 
-		/* draw the tuplets near the notes */
+		// draw the slurs and tuplets
 		for ( ; s; s = s.next) {
 			if (s.tp)
 				draw_tuplet(s)
-		}
-		draw_all_slurs(p_voice)
-
-		/* draw the tuplets over the slurs */
-		for (s = p_voice.sym; s; s = s.next) {
-			if (s.tp)
-				draw_tuplet(s)
+			if (s.sls || s.sl1)
+				draw_slurs(s)
 		}
 	}
 

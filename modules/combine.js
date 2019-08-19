@@ -55,6 +55,8 @@ abc2svg.combine = {
     function combine_notes(s, s2) {
     var	nhd, type, m;
 
+	for (m = 0; m <= s2.nhd; m++)	// change the container of the notes
+		s2.notes[m].s = s
 	Array.prototype.push.apply(s.notes, s2.notes);
 	s.nhd = nhd = s.notes.length - 1;
 	this.sort_pitch(s)		// sort the notes by pitch
@@ -73,10 +75,10 @@ abc2svg.combine = {
 
 	// force the tie directions
 	type = s.notes[0].tie_ty
-	if ((type & 0x0f) == C.SL_AUTO)
+	if ((type & 0x07) == C.SL_AUTO)
 		s.notes[0].tie_ty = C.SL_BELOW | (type & C.SL_DOTTED);
 	type = s.notes[nhd].tie_ty
-	if ((type & 0x0f) == C.SL_AUTO)
+	if ((type & 0x07) == C.SL_AUTO)
 		s.notes[nhd].tie_ty = C.SL_ABOVE | (type & C.SL_DOTTED)
 } // combine_notes()
 
@@ -109,12 +111,8 @@ function do_combine(s) {
 			else
 				s.sls = s2.sls
 		}
-		if (s2.sl1) {
-			if (s.sl1)
-				s.sl1 += s2.sl1
-			else
-				s.sl1 = s2.sl1
-		}
+		if (s2.sl1)
+			s.sl1 = true
 		if (s2.a_gch)
 			s.a_gch = s2.a_gch
 		if (s2.a_dd) {
@@ -135,62 +133,15 @@ function do_combine(s) {
 	}
 } // do_combine()
 
-    // replace slur endings
-    function slur_repl(s) {
-    var	i, j, m, sn, note,
-	n = delsym.length
-
-	if (s.sls) {
-		for (i = 0; i < s.sls.length; i++) {
-			sn = s.sls[i]
-			for (j = 0; j < n; j++) {
-				if (delsym[j].s == sn.sn)
-					sn.sn = delsym[j].r
-			}
-		}
-	}
-	if (!s.sl1)
-		return
-	for (m = 0; m <= s.nhd; m++) {
-		note = s.notes
-		if (note.sls)
-		    for (i = 0; i < note.sls.length; i++) {
-			sn = note.sls[i]
-			for (j = 0; j < n; j++) {
-				if (delsym[j].s == sn.sn)
-					sn.sn = delsym[j].r
-			}
-		    }
-	}
-    } // slur_repl()
-
     // replace tie endings
     function tie_repl(s) {
-    var	m, m2, s2, pit, pit2,
-	s1 = s.tie_s,
+    var	s1 = s.tie_s,
 	i = delsym.length
 
 	while (--i >= 0) {
 		if (delsym[i].s == s1) {
-			s.tie_s = s1 = delsym[i].r
+			s.tie_s = delsym[i].r
 			break
-		}
-	}
-	i = delsym.length
-	while (--i >= 0) {
-		if (delsym[i].r == s1) {
-			for (m = 0; m <= s.nhd; m++) {
-				if (s.notes[m].tie_m == undefined)
-					continue
-				pit = s.notes[m].opit || s.notes[m].pit
-				for (m2 = 0; m2 <= s1.nhd; m2++) {
-					pit2 = s1.notes[m2].opit || s1.notes[m2].pit
-					if (pit2 == pit) {
-						s.notes[m].tie_m = m2
-						break
-					}
-				}
-			}
 		}
 	}
     } // tie_repl()
@@ -249,10 +200,8 @@ function do_combine(s) {
 		}
 	}
 
-	// replace the slur endings
+	// replace the tie endings
 	for (s = this.get_tsfirst(); s; s = s.ts_next) {
-		if (s.sls || s.sl1)
-			slur_repl(s)
 		if (s.tie_s)
 			tie_repl(s)
 	}

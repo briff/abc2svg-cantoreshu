@@ -365,11 +365,11 @@ function voice_adj(sys_chg) {
 		if (!sys_chg			// if not %%score
 		 && p_voice.sls.length) {	// and no end of slur
 			while (1) {
-			    var	sn = p_voice.sls.shift()
+			    var	sl = p_voice.sls.shift()
 
-				if (!sn)
+				if (!sl)
 					break
-				s = sn.sn.s || sn.sn
+				s = sl.note.s
 				for (s2 = s.next; s2; s2 = s2.next) {
 					if (s2.bar_type && s2.bar_type[0] == ':')
 						break
@@ -378,8 +378,8 @@ function voice_adj(sys_chg) {
 					if (!s.sls)
 						s.sls = []
 					s.sls.push({
-						sn: s2,
-						ty: sn.ty
+						ty: sl.ty,
+						note: {s: s2}
 					})
 				} else {
 					syntax(1, "Lack of ending slur(s)")
@@ -1372,7 +1372,7 @@ function acc_same_pitch(pitch) {
 			}
 			for (i = 0; i <= s.nhd; i++) {
 				if (s.notes[i].pit == pitch
-				 && s.notes[i].tie)
+				 && s.notes[i].tie_ty)
 					return s.notes[i].acc
 			}
 			return //undefined

@@ -427,12 +427,12 @@ break
 	} // meter_dump()
 
 	function note_dump(s, note, tie_ch) {
-	    var	p, j, sn, s2
+	    var	p, j, sl, s2
 		if (note.sls) {
 			for (j = 0; j < note.sls.length; j++) {
-				sn = note.sls[j];
-				slti_dump(sn.ty, '(');
-				s2 = sn.sn
+				sl = note.sls[j];
+				slti_dump(sl.ty, '(');
+				s2 = sl.note.s
 				if (s2.sl2)
 					s2.sl2++
 				else
@@ -480,8 +480,8 @@ break
 				}
 			}
 		}
-		if (!tie_ch && note.tie_m)
-			slti_dump(note.tie_m, '-')
+		if (!tie_ch && note.tie_ty)
+			slti_dump(note.tie_ty, '-')
 		while (note.sl2) {
 			line += ')';
 			note.sl2--
@@ -651,7 +651,7 @@ break
 	} // tuplet_dump()
 
 	function sym_dump(s) {
-	    var	tie_ch, i, sn
+	    var	tie_ch, i, sl
 
 		if (s.repeat_n) {
 			if (s.repeat_n < 0)
@@ -665,12 +665,19 @@ break
 			tuplet_dump(s)
 		if (s.sls) {
 			for (i = 0; i < s.sls.length; i++) {
-				tmp = s.sls[i];
-				slti_dump(tmp.ty, '(');
-				if (tmp.sn.sl2)
-					tmp.sn.sl2++
-				else
-					tmp.sn.sl2 = 1
+				sl = s.sls[i];
+				slti_dump(sl.ty, '(');
+				if (sl.is_note) {
+					if (sl.note.sl2)
+						sl.note.sl2++
+					else
+						sl.note.sl2 = 1
+				} else {
+					if (sl.note.s.sl2)
+						sl.note.s.sl2++
+					else
+						sl.note.s.sl2 = 1
+				}
 			}
 		}
 		if (s.a_gch)
@@ -757,7 +764,7 @@ break
 				note_dump(s, s.notes[0], tie_ch)
 			} else {
 				for (i = 0; i < s.notes.length; i++) {
-					if (!s.notes[i].tie_m) {
+					if (!s.notes[i].tie_n) {
 						tie_ch = false
 						break
 					}

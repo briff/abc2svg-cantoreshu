@@ -1783,49 +1783,62 @@ function note_transp(s) {
 	}
 }
 
-/* sort the notes of the chord by pitch (lowest first) */
-function sort_pitch(s) {
-	s.notes = s.notes.sort(function(n1, n2) {
-			return n1.pit - n2.pit
-		})
-}
-
-// on end of slur, add a slur in a symbol or note
-function slur_add(sn) {
-    var	i, s, sl
+// on end of slur, create the slur
+function slur_add(enote, e_is_note) {
+    var	i, s, sl, snote, s_is_note
 
 	// go back and find the last start of slur
 	for (i = curvoice.sls.length; --i >= 0; ) {
 		sl = curvoice.sls[i]
-		s = sl.sn
+		snote = sl.note
+		s_is_note = sl.is_note
+		delete sl.is_note
 
 		// the slur must not start and stop on a same symbol
-		if (s != sn && s.s != sn && s != sn.s) {
+		if (snote.s != enote.s) {
+			if (enote.grace && !sl.grace) {
+				error(1, enote.s, errs.bad_slur_end)
+				return
+			}
+			sl.note = enote
+			if (e_is_note)
+				sl.is_note = e_is_note
+			s = s_is_note ? snote : snote.s
 			if (!s.sls)
 				s.sls = [];
-			s.sls.push({
-				sn: sn,
-				ty: sl.ty
-			});
+			s.sls.push(sl)
 			curvoice.sls.splice(i, 1)
+
+			// set a flag on the start symbol if slur from a note
+			if (s_is_note)
+				snote.s.sl1 = true
+
+			// set a flag if the slur starts on a grace note
+			if (sl.grace)
+				sl.grace.sl1 = true
 			return
 		}
 	}
-//	if (i >= 0)
-//		return
+
+	if (enote.grace) {
+		error(1, enote.s, errs.bad_slur_end)
+		return
+	}
 
 	// the lack of a starting slur may be due to a repeat
-	for (s = (sn.s || sn).prev; s; s = s.prev) {
+	for (s = enote.s.prev; s; s = s.prev) {
 		if (s.type == C.BAR
 		 && s.bar_type[0] == ':'
 		 && s.text) {
 			if (!s.sls)
 				s.sls = [];
 			s.sls.push({
-				sn: sn,
+				note: enote,
 //fixme: should go back to the bar "|1" and find the slur type...
 				ty: C.SL_AUTO
 			})
+			if (e_is_note)
+				s.sls[s.sls.length - 1].is_note = e_is_note
 			return
 		}
 	}
@@ -1834,7 +1847,7 @@ function slur_add(sn) {
 
 // (possible hook)
 Abc.prototype.new_note = function(grace, sls) {
-    var	note, s, in_chord, c, dcn, type, tie_s,
+    var	note, s, in_chord, c, dcn, type, tie_s, not2,
 		i, n, s2, nd, res, num, dur,
 		sl1 = [],
 		line = parse.line,
@@ -1857,19 +1870,6 @@ Abc.prototype.new_note = function(grace, sls) {
 		xmx: 0
 	}
 	s.istart = parse.bol + line.index
-
-	// handle the starting slurs
-	if (sls.length) {
-		while (1) {
-			i = sls.shift()
-			if (!i)
-				break
-			curvoice.sls.push({
-				sn: s,
-				ty: i
-			})
-		}
-	}
 
 	if (curvoice.color)
 		s.color = curvoice.color
@@ -2008,7 +2008,7 @@ Abc.prototype.new_note = function(grace, sls) {
 				if (tie_s.type != C.GRACE) {
 				    for (i = 0; i <= tie_s.nhd; i++) {
 					if (!tie_s.notes[i].tie_ty
-					 || tie_s.notes[i].tie_m != undefined)
+					 || tie_s.notes[i].tie_n)
 						continue
 					switch (tie_s.notes[i].pit - note.pit) {
 					default:
@@ -2018,19 +2018,22 @@ Abc.prototype.new_note = function(grace, sls) {
 						if (tie_s.notes[i].acc == note.acc)
 							continue
 					case 0:
-						tie_s.notes[i].tie_m = s.notes.length
+						tie_s.notes[i].tie_n = note
+						note.s = s
+						tie_s.notes[i].s = tie_s
 						break
 					}
 					break
 				    }
 				} else {
 				    for (s2 = tie_s.extra; s2; s2 = s2.next) {
-					if (!s2.notes[0].tie_ty
-					 || s2.notes[0].tie_m != undefined)
+					if (!s2.notes[0].tie_ty)
 						continue
 					if (s2.notes[0].pit == note.pit) {
 						s2.tie_s = s
-						s2.notes[0].tie_m = s.notes.length
+						s2.notes[0].tie_n = note
+						note.s = s
+						s2.notes[0].s = s2
 						break
 					}
 				    }
@@ -2045,16 +2048,12 @@ Abc.prototype.new_note = function(grace, sls) {
 					if (!i)
 						break
 					curvoice.sls.push({
-						sn: note,
+						is_note: true,
+						note: note,
 						ty: i
 					})
 				}
 				note.s = s;		// link the note to the chord
-				note.m = s.notes.length	// note index
-				if (s.sl1)
-					s.sl1++
-				else
-					s.sl1 = 1;
 			}
 			if (a_dcn) {
 				note.a_dcn = a_dcn;
@@ -2069,9 +2068,8 @@ Abc.prototype.new_note = function(grace, sls) {
 			while (1) {
 				switch (c) {
 				case ')':
-					slur_add(note);
-					note.s = s;
-					note.m = s.notes.length - 1;
+					note.s = s
+					slur_add(note, true)
 					c = line.next_char()
 					continue
 				case '-':
@@ -2102,6 +2100,23 @@ Abc.prototype.new_note = function(grace, sls) {
 					note.dur = note.dur * nd[0] / nd[1]
 				}
 				break
+			}
+		}
+
+		// handle the starting slurs
+		if (sls.length) {
+			while (1) {
+				i = sls.shift()
+				if (!i)
+					break
+				s.notes[0].s = s
+				curvoice.sls.push({
+					note: s.notes[0],
+					ty: i
+				})
+				if (grace)
+					curvoice.sls[curvoice.sls.length - 1].grace =
+										grace
 			}
 		}
 
@@ -2485,9 +2500,13 @@ function parse_music_line() {
 				s = curvoice.last_sym
 				if (s) {
 					switch (s.type) {
+					case C.SPACE:
+						if (!s.notes) {
+							s.notes = []
+							s.notes[0] = {}
+						}
 					case C.NOTE:
 					case C.REST:
-					case C.SPACE:
 						break
 					case C.GRACE:
 
@@ -2504,7 +2523,8 @@ function parse_music_line() {
 					syntax(1, errs.bad_char, c)
 					break
 				}
-				slur_add(s)
+				s.notes[0].s = s
+				slur_add(s.notes[0])
 				break
 			case '!':			// start of decoration
 				if (!a_dcn)

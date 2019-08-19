@@ -239,6 +239,13 @@ function acc_shift(notes, dx_head) {
 	}
 }
 
+/* sort the notes of the chord by pitch (lowest first) */
+function sort_pitch(s) {
+	s.notes.sort(function(n1, n2) {
+			return n1.pit - n2.pit
+		})
+}
+
 /* set the horizontal shift of accidentals */
 /* this routine is called only once per tune */
 function set_acc_shft() {
@@ -285,7 +292,6 @@ function set_acc_shft() {
 		}
 		for ( ; s != s2; s = s.ts_next)
 			Array.prototype.push.apply(st.notes, s.notes);
-		sort_pitch(st);
 		acc_shift(st.notes, dx_head)
 	}
 }
@@ -1264,7 +1270,6 @@ function to_rest(s) {
 // just keep nl and seqst
 	delete s.in_tuplet
 	delete s.sl1
-	delete s.sl2
 	delete s.a_dd
 	delete s.a_gch
 	delete s.sls
@@ -3147,6 +3152,7 @@ function init_music_line() {
 }
 
 /* -- set a pitch in all symbols and the start/stop of the beams -- */
+// and sort the pitches in the chords
 function set_words(p_voice) {
 	var	s, s2, nflags, lastnote, res,
 		start_flag = true,
@@ -3172,6 +3178,10 @@ function set_words(p_voice) {
 //			 && s.prev.dur >= C.BLEN * 2)
 			 && s.prev.head == C.OVALBARS)
 				s.prev.head = C.SQUARE
+			break
+		case C.GRACE:
+			for (s2 = s.extra; s2; s2 = s2.next)
+				sort_pitch(s2)
 			break
 		case C.NOTE:
 		case C.REST:
