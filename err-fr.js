@@ -133,8 +133,6 @@ user.textrans = {
 	"Note too long": "Durée de note trop longue",
 	"Note too short": "Durée de note trop courte",
 	"s: without music": "s: sans musique",
-	"The slur cannot end on a grace note":
-			"La liaison ne peut pas se terminer sur une note d'agrément",
 	"Too many elements in symbol line": "Trop d'éléments dans ligne s:",
 	"Too many include levels": "Trop de niveaux d'inclusion de fichier",
 	"Too many ties": "Trop de liaisons de prolongation",

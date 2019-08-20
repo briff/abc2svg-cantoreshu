@@ -1796,10 +1796,6 @@ function slur_add(enote, e_is_note) {
 
 		// the slur must not start and stop on a same symbol
 		if (snote.s != enote.s) {
-			if (enote.grace && !sl.grace) {
-				error(1, enote.s, errs.bad_slur_end)
-				return
-			}
 			sl.note = enote
 			if (e_is_note)
 				sl.is_note = e_is_note
