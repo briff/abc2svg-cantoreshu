@@ -163,20 +163,36 @@ var w_tb = new Uint8Array([
 ])
 
 function sort_all() {
-	var	s, s2, p_voice, v, time, w, wmin, ir, multi,
-		prev, nb, ir2, v2, sy,
-		nv = voice_tb.length,
-		vtb = [],
-		vn = [],			/* voice indexed by range */
-		mrest_time = -1
+    var	s, s2, p_voice, v, time, w, wmin, ir, multi,
+	prev, nb, ir2, v2, fl, new_sy,
+	nv = voice_tb.length,
+	vtb = [],
+	vn = [],			// voice indexed by range
+	mrest_time = -1,
+	sy = cur_sy
 
 	for (v = 0; v < nv; v++)
 		vtb.push(voice_tb[v].sym)
 
-	/* initialize the voice order */
-	var	fl = 1,				// start a new time sequence
-		new_sy = cur_sy
+	// set the first symbol
+	ir2 = nv
+	multi = -1
+	for (v = 0; v < nv; v++) {
+		if (!sy.voices[v])
+			continue
+		ir = sy.voices[v].range
+		if (ir < ir2)
+			ir2 = ir
+		vn[ir] = v
+		multi++
+	}
+	v = vn[ir2]
+	tsfirst = prev = vtb[v]
+	vtb[v] = tsfirst.next
+	prev.seqst = true
+	fl = !w_tb[prev.type] || tsfirst.type == tsfirst.next
 
+	// loop on the symbols of all voices
 	while (1) {
 		if (new_sy && fl) {
 			sy = new_sy;
@@ -283,10 +299,7 @@ function sort_all() {
 				s.seqst = true
 			}
 			s.ts_prev = prev
-			if (prev)
-				prev.ts_next = s
-			else
-				tsfirst = s;
+			prev.ts_next = s
 			prev = s
 
 			vtb[v] = s.next
