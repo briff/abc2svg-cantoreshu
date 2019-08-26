@@ -2002,7 +2002,7 @@ function draw_slurs(s, last) {
 		// stop it on the invisible bar at end of current line
 		if (tsnext && s2.time >= tsnext.time) {
 			s.p_v.sls.push(sl);		// continuation on next line
-			s2 = voice_tb[s.v].s_next.prev	// one voice
+			s2 = s.p_v.s_next.prev		// one voice
 			while (s2.next)
 				s2 = s2.next;		// search the ending bar
 			sl = Object.create(sl);		// new slur
