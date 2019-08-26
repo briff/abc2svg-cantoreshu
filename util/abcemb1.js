@@ -171,7 +171,7 @@ abc2svg.menu_toggle = function() {
 }
 // click outside of the menu button
 window.onclick = function(event) {
-	if (!event.target.matches('.db')) {
+	if (!event.target.className != "db") {
 	    var	e = document.getElementById("dc")
 		if (e && e.classList.contains("show"))
 			e.classList.remove("show")
