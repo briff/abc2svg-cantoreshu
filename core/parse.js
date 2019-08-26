@@ -2219,18 +2219,18 @@ Abc.prototype.new_note = function(grace, sls) {
 function tp_adj(s, fact) {
     var	tim = s.time
 
+	curvoice.time = s.time + (curvoice.time - s.time) * fact
 	while (1) {
 //fixme: tuplets in grace notes?
 		s.in_tuplet = true
 		if (!s.grace) {
-			s.time = Math.round(tim)
+			s.time = tim
 			if (s.dur) {
-				s.dur *= fact
+				s.dur = Math.round(s.dur * fact)
 				tim += s.dur
 			}
 		}
 		if (!s.next) {
-			curvoice.time = Math.round(tim);
 			s.dur = curvoice.time - s.time
 			if (s.tpe)
 				s.tpe++
