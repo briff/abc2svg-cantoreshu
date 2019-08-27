@@ -39,14 +39,14 @@ These files are:
   it must be enclosed in a XML comment (starting after the first `X:` or `%abc`).
 
 - `abcemb1-1.js`   
-  This script is also to be used with the core in (X)HTML files.  
+  This script is to be used with the core in (X)HTML files.  
   It works quite the same as the previous script, but replaces the whole
   page by the selected tune.
   When there is no selection ('#' + string at the end of the URL),
   a list of the tunes is displayed.   
   When a tune is displayed, a menu offers the edition of the ABC source and
-  the automatic scroll of the music (this is done according to the tempo
-  - repeats and parts are not handled).   
+  the automatic scroll of the music (this is done according to the tempo -
+  repeats and parts are not handled).   
   See [this tune](http://moinejf.free.fr/abc/boyvin-2-2.html)
   for an example.   
 
