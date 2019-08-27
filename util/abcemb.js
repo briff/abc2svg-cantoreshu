@@ -156,6 +156,16 @@ function render() {
 
 	abc = new abc2svg.Abc(user)
 
+	// handle MEI files
+	j = page.indexOf("<mei ")
+	if (j >= 0) {
+		k = page.indexOf("</mei>") + 6
+		abc.mei2mus(page.slice(j, k))
+		document.body.innerHTML = new_page
+		// no play yet
+		return
+	}
+
 	// initialize the play follow function
 	if (typeof follow == "function")
 		follow(abc, user, playconf)
@@ -249,16 +259,19 @@ function render() {
 		}
 } // render()
 
-	// --- abcemb() main code ---
+	// --- dom_loaded() main code ---
+
+	// get the page content
+	page = document.body.innerHTML
 
 	// load the abc2svg core if not done by <script>
 	if (!abc2svg.Abc) {
-		abc2svg.loadjs("abc2svg-1.js", dom_loaded)
+		abc2svg.loadjs(page.indexOf("<mei ") >= 0 ?
+					"mei2svg-1.js" :
+					"abc2svg-1.js",
+						dom_loaded)
 		return
 	}
-
-	// get the page content
-	page = document.body.innerHTML;
 
 	// accept page formatting
 	abc2svg.abc_end = function() {}

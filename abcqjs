@@ -2,11 +2,22 @@
 // abc2svg with quickjs (https://bellard.org/quickjs/)
 
     var	args = scriptArgs,
+	i,
+	core = "abc2svg-1.js",
 	path = args.shift().	// the 1st argument is the script name
 			match(/(.*\/).*/)
+
 	path = path ? path[1] : ""
 
-std.loadScript(path + "abc2svg-1.js")
+	i = args.length
+	while (--i >= 0) {
+		if (/\.mei$/.test(args[i])) {
+			core = "mei2svg-1.js"
+			break
+		}
+	}
+
+std.loadScript(path + core)
 
 // interpreter specific functions
 abc2svg.print = function(str) {
@@ -20,11 +31,20 @@ abc2svg.quit = function() {
 	std.exit(1)
 }
 abc2svg.readFile = function(fname) {
-    var	l,
+    var	l, f,
 	b = "",
 	bt = "",
-	cnt = 30,
-	f = std.open(fname, "r")
+	cnt = 30
+
+	try {
+		f = std.open(fname, "r")
+	} catch(e) {
+		if (onerror)
+			onerror()
+		else
+			printErr('Cannot read file ' + fn)
+		return
+	}
 
 	while (1) {
 		if (--cnt < 0) {

@@ -38,7 +38,7 @@ var user = {
 	else
 		user.errmsg = function(msg, l, c) { user.errtxt += msg + '\n' }
 
-var	abc = new abc2svg.Abc(user)		// (global for 'toxxx.js')
+var	abc				// (global for 'toxxx.js')
 
 // treat a file
 function do_file(fn) {
@@ -66,6 +66,13 @@ function do_file(fn) {
 //	if (typeof(utf_convert) == "function")
 //		file = utf_convert(file)
 
+	if (fn.slice(-4) == ".mei") {
+		if (!abc.mei2mus)
+			abc2svg.abort(new Error("No MEI support"));
+		abc.mei2mus(file)
+		return
+	}
+
 	// load the required modules (synchronous)
 	abc2svg.modules.load(file)
 
@@ -81,6 +88,7 @@ function abc_cmd(cmd, args) {
 	var	arg, parm, fn;
 
 	// initialize the backend
+	abc = new abc2svg.Abc(user)
 	abc2svg.abc_init(args)
 
 	// load 'default.abc'

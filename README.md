@@ -27,10 +27,9 @@ These files are:
   where ABC rendering is needed (in `<script src=` tags).
 
 - `abcemb-1.js`   
-  This script is to be used with the core in (X)HTML files.  
-  It replaces the ABC sequences by SVG images of the music
+  This script replaces the ABC or MEI sequences by SVG images of the music
   (the ABC sequences start on `X:` or `%abc` at start of line,
-  and stop on any ML tag).  
+  and stop on any ML tag - see below for MEI).  
   See the
   [%%beginml documentation](http://moinejf.free.fr/abcm2ps-doc/beginml.xhtml)
   for an example.   
@@ -44,7 +43,10 @@ These files are:
   It works quite the same as the previous script, but replaces the whole
   page by the selected tune.
   When there is no selection ('#' + string at the end of the URL),
-  a list of the tunes is proposed.   
+  a list of the tunes is displayed.   
+  When a tune is displayed, a menu offers the edition of the ABC source and
+  the automatic scroll of the music (this is done according to the tempo
+  - repeats and parts are not handled).   
   See [this tune](http://moinejf.free.fr/abc/boyvin-2-2.html)
   for an example.   
 
@@ -54,6 +56,7 @@ These files are:
   - the ABC sequences are replaced in HTML elements with the class `abc`,
   - the string after '#' in the URL does a real %%select (i.e. this may
     select many tunes),
+  - there is no menu nor list of tunes
   - if the ABC sequences contain the characters '<', '>' or '&',
     either these sequences must be enclosed in a XML comment, or the characters
     must be replaced by their XML counterparts ('&amp;lt;', '&amp;gt;' or '&amp;amp;').
@@ -176,7 +179,8 @@ After building the **abc2svg** scripts, you will be able to generate music
 sheets from the command line as you did with `abcm2ps`, thanks to the
 following shell scripts (the result goes to stdout):  
 
-- `abcqjs` with `qjs` ([QuickJS from Fabrice Bellard](https://bellard.org/quickjs/))
+- `abcqjs` with `qjs` 
+   ([QuickJS by Fabrice Bellard and Charlie Gordon](https://bellard.org/quickjs/))
 - `abcjs24` with `js24` (Mozilla JavaScript shell - Spidermonkey)
 - `abcjs52` with `js52` (Mozilla JavaScript shell - Spidermonkey)
 - `abcjs60` with `js60` (Mozilla JavaScript shell - Spidermonkey)
@@ -207,6 +211,11 @@ There are:
   Example:   
   `        abcv8 toabw.js my_file.abc > my_file.abw`
 
+- `tomei.js`   
+  This script outputs the music as a [MEI](https://music-encoding.org/) file.   
+  Indeed, only one tune may be translated from ABC to MEI (multi-tunes ABC
+  generates bad MEI).
+
 - `toodt.js`   
   This script creates an Open Document (ODT+SVG) which may be read by most
   word processors (abiword, libreoffice...).   
@@ -225,3 +234,16 @@ As a constraint, the used music font must be installed and defined by
 `%%musicfont <fontname>`.   
 Example:   
 `        abctopdf my_file.abc -o my_file.pdf`
+
+### MEI support
+
+As an experimental feature, an extented core `mei2svg-1.js` may be generated.
+This one may handle both the ABC and [MEI](https://music-encoding.org/) notations.
+
+In browser mode, the script `abcemb-1.js` loads either abc2svg-1.js or
+mei2svg-1.js after checking the music notation type (`%abc` or `X:` is ABC,
+`<mei` is MEI - see
+[this tune](http://moinejf.free.fr/abc/Czerny_op603_6.html) for an example).
+
+In batch mode, the script `abcqjs` also loads the right abc2svg core
+according to the source file extension (`.abc` or `.mei`).
