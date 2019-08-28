@@ -1,4 +1,4 @@
-#!/usr/bin/env qjs
+#!/usr/bin/env -S qjs --std
 // abc2svg with quickjs (https://bellard.org/quickjs/)
 
     var	args = scriptArgs,
