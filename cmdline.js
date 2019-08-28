@@ -89,6 +89,8 @@ function abc_cmd(cmd, args) {
 
 	// initialize the backend
 	abc = new abc2svg.Abc(user)
+	if (typeof global == "object" && !global.abc)
+		global.abc = abc
 	abc2svg.abc_init(args)
 
 	// load 'default.abc'
@@ -124,7 +126,6 @@ function abc_cmd(cmd, args) {
 
 // nodejs
 if (typeof module == 'object' && typeof exports == 'object') {
-	exports.abc = abc;
 	exports.user = user;
 	exports.abc_cmd = abc_cmd
 }
