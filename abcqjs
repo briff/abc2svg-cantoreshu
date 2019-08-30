@@ -1,9 +1,15 @@
-#!/usr/bin/env -S qjs --std
+:;# convert ABC or MEI music notation to other format using abc2svg
+
+if [ -f /tmp/abcqjs.js ]; then
+	exec qjs --std /tmp/abcqjs.js $0 "$@"
+fi
+cat > /tmp/abcqjs.js << EOF
 // abc2svg with quickjs (https://bellard.org/quickjs/)
 
-    var	args = scriptArgs,
-	i,
-	core = "abc2svg-1.js",
+    var	i,
+	args = scriptArgs
+	args.shift()		// remove '/tmp/abcqjs.js'
+    var	core = "abc2svg-1.js",
 	path = args.shift().	// the 1st argument is the script name
 			match(/(.*\/).*/)
 
@@ -96,3 +102,9 @@ Arguments:\n\
 		abc2svg.quit()
 	}
 	abc_cmd("abcqjs", args)
+EOF
+exec qjs --std /tmp/abcqjs.js $0 "$@"
+
+The previous solution with the shebang line as
+#!/usr/bin/env -S qjs --std
+did not work with non-GNU versions of env
