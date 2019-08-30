@@ -88,7 +88,7 @@ abc2svg.clair = {
 // draw the key signature
     draw_keysig: function(of, x, s) {
 	if (!s.p_v.clair) {
-		of(x, s, hltype)
+		of(x, s)
 		return
 	}
 
