@@ -1,7 +1,7 @@
 //#javascript
 // Set the MIDI pitches in the notes
 //
-// Copyright (C) 2015-2017 Jean-Francois Moine
+// Copyright (C) 2015-2019 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -38,15 +38,33 @@
 
 // AbcMIDI creation
 function AbcMIDI() {
-    var	C = abc2svg.C
+    var	C = abc2svg.C,
+	// key table - index = number of accidentals + 7
+	keys = [
+		new Int8Array([-1,-1,-1,-1,-1,-1,-1 ]),	// 7 flat signs
+		new Int8Array([-1,-1,-1, 0,-1,-1,-1 ]),	// 6 flat signs
+		new Int8Array([ 0,-1,-1, 0,-1,-1,-1 ]),	// 5 flat signs
+		new Int8Array([ 0,-1,-1, 0, 0,-1,-1 ]),	// 4 flat signs
+		new Int8Array([ 0, 0,-1, 0, 0,-1,-1 ]),	// 3 flat signs
+		new Int8Array([ 0, 0,-1, 0, 0, 0,-1 ]),	// 2 flat signs
+		new Int8Array([ 0, 0, 0, 0, 0, 0,-1 ]),	// 1 flat signs
+		new Int8Array([ 0, 0, 0, 0, 0, 0, 0 ]),	// no accidental
+		new Int8Array([ 0, 0, 0, 1, 0, 0, 0 ]),	// 1 sharp signs
+		new Int8Array([ 1, 0, 0, 1, 0, 0, 0 ]),	// 2 sharp signs
+		new Int8Array([ 1, 0, 0, 1, 1, 0, 0 ]),	// 3 sharp signs
+		new Int8Array([ 1, 1, 0, 1, 1, 0, 0 ]),	// 4 sharp signs
+		new Int8Array([ 1, 1, 0, 1, 1, 1, 0 ]),	// 5 sharp signs
+		new Int8Array([ 1, 1, 1, 1, 1, 1, 0 ]),	// 6 sharp signs
+		new Int8Array([ 1, 1, 1, 1, 1, 1, 1 ])	// 7 sharp signs
+	],
+	scale = new Int8Array([0, 2, 4, 5, 7, 9, 11])	// note to pitch
+				
 
 	// add MIDI pitches
 	AbcMIDI.prototype.add = function(s,		// starting symbol
 					voice_tb) {	// voice table
 
-		var	scale = new Int8Array(		// note to pitch
-					[0, 2, 4, 5, 7, 9, 11]),
-			bmap = new Int8Array(7),	// measure base map
+	    var bmap,					// measure base map
 			map = new Int8Array(70),	// current map - 10 octaves
 			tie_map,			// index = MIDI pitch
 			tie_time,
@@ -55,40 +73,47 @@ function AbcMIDI() {
 
 		// re-initialize the map on bar
 		function bar_map() {
-			for (var j = 0; j < 10; j++)
-				for (var i = 0; i < 7; i++)
-					map[j * 7 + i] = bmap[i]
+			for (var i = 0; i < 10; i++)
+				map.set(bmap, i * 7)
 		} // bar_map()
 
 		// define the note map
 		function key_map(s) {
-			for (var i = 0; i < 7; i++)
-				bmap[i] = 0
-			switch (s.k_sf) {
-			case 7: bmap[6] = 1
-			case 6: bmap[2] = 1
-			case 5: bmap[5] = 1
-			case 4: bmap[1] = 1
-			case 3: bmap[4] = 1
-			case 2: bmap[0] = 1
-			case 1: bmap[3] = 1; break
-			case -7: bmap[3] = -1
-			case -6: bmap[0] = -1
-			case -5: bmap[4] = -1
-			case -4: bmap[1] = -1
-			case -3: bmap[5] = -1
-			case -2: bmap[2] = -1
-			case -1: bmap[6] = -1; break
-			}
+			bmap = keys[s.k_sf + 7]
 			bar_map()
 		} // key_map()
 
 		// convert ABC pitch to MIDI
-		function pit2midi(p, a) {
-			if (a)
-				map[p] = a == 3 ? 0 : a; // (3 = natural)
-			return ((p / 7) | 0) * 12 + scale[p % 7] +
-					(tie_time[p] ? tie_map[p] :  map[p])
+		function pit2midi(s, note) {
+		    var	a = note.acc
+			p = note.pit + 19 + transp	// (+19 for pitch from C-1)
+
+			if (a) {
+				if (a == 3)		 // (3 = natural)
+					a = 0
+				else if (note.micro_n)
+					a = (a < 0 ? -note.micro_n : note.micro_n) /
+								note.micro_d * 2
+				map[p] = a
+			} else {
+				a = map[p]
+			}
+
+			if (tie_time[p]) {
+				if (s.time > tie_time[p]) {
+					delete tie_map[p]
+					delete tie_time[p]
+				} else {
+					a = tie_map[p]
+				}
+			}
+
+			note.midi = ((p / 7) | 0) * 12 + scale[p % 7] + a
+
+			if (note.tie_ty) {
+				tie_map[p] = a
+				tie_time[p] = s.time + s.dur
+			}
 		} // pit2midi()
 
 		// initialize the clefs and keys
@@ -96,12 +121,8 @@ function AbcMIDI() {
 			if (!voice_tb[v].sym)
 				continue
 			s = voice_tb[v].clef
-			if (!s.clef_octave
-			 || s.clef_oct_transp)
-				transp = 0
-			else
-				transp = s.clef_octave
-
+			transp = (s.clef_octave && !s.clef_oct_transp) ?
+					s.clef_octave : 0
 			key_map(voice_tb[v].key);	// init acc. map from key sig.
 
 			// and loop on the symbols of the voice
@@ -130,9 +151,8 @@ function AbcMIDI() {
 					if (s.text[0] == '1') {	// 1st time
 						rep_tie_map = [];
 						rep_tie_time = []
-						for (i = 0; i < tie_map.length; i++)
-							rep_tie_map[i] = tie_map[i]
-					} else if (rep_tie_map.length != 0) {
+						rep_tie_map.set(tie_map)
+					} else if (rep_tie_map.length) {
 						tie_map = []
 						tie_time = []
 						for (i = 0; i < rep_tie_map.length; i++) {
@@ -145,43 +165,23 @@ function AbcMIDI() {
 					bar_map()
 				break
 			case C.CLEF:
-				if (!s.clef_octave
-				 || s.clef_oct_transp)
-					transp = 0
-				else
-					transp = s.clef_octave
+				transp = (s.clef_octave && !s.clef_oct_transp) ?
+						s.clef_octave : 0
 				break
 			case C.GRACE:
 				for (g = s.extra; g; g = g.next) {
 					if (!g.type != C.NOTE)
 						continue
-					for (i = 0; i <= g.nhd; i++) {
-						note = g.notes[i];
-						p = note.pit + 19 + transp;
-						note.midi = pit2midi(p, note.acc)
-					}
+					for (i = 0; i <= g.nhd; i++)
+						note.midi = pit2midi(s, g.notes[i])
 				}
 				break
 			case C.KEY:
 				key_map(s)
 				break
 			case C.NOTE:
-				for (i = 0; i <= s.nhd; i++) {
-					note = s.notes[i];
-					p = note.pit + 19 +	// pitch from C-1
-							transp
-					if (tie_time[p]) {
-						if (s.time > tie_time[p]) {
-							delete tie_map[p]
-							delete tie_time[p]
-						}
-					}
-					note.midi = pit2midi(p, note.acc)
-					if (note.tie_ty) {
-						tie_map[p] = map[p];
-						tie_time[p] = s.time + s.dur
-					}
-				}
+				for (i = 0; i <= s.nhd; i++)
+					pit2midi(s, s.notes[i])
 				break
 			}
 			s = s.next
