@@ -85,7 +85,7 @@ std.loadScript(path + "cmdline.js")
 
 // main
 	if (/\.js$/.test(args[0])) {
-		std.loadScript(args[0])
+		std.loadScript(path + args[0])
 		args.shift()
 	}
 	if (typeof abc2svg.abc_init != 'function')
