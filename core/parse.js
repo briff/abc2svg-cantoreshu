@@ -1676,9 +1676,8 @@ var	cde2fcg = new Int8Array([0, 2, 4, -1, 1, 3, 5]),
 	acc2 = new Int8Array([-2, -1, 3, 1, 2])
 
 /* transpose a note / chord */
-function note_transp(s) {
-	var	i, j, n, d, a, acc, i1, i3, i4, note,
-		m = s.nhd,
+function note_transp(note) {
+	var	i, j, n, d, a, acc, i1, i3, i4,
 		sf_old = curvoice.okey.k_sf,
 		i2 = curvoice.ckey.k_sf - sf_old,
 		dp = cgd2cde[(i2 + 4 * 7) % 7],
@@ -1687,8 +1686,6 @@ function note_transp(s) {
 	if (t < 0 && dp != 0)
 		dp -= 7;
 	dp += ((t / 3 / 12) | 0) * 7
-	for (i = 0; i <= m; i++) {
-		note = s.notes[i];
 
 		// pitch
 		n = note.pit;
@@ -1727,7 +1724,7 @@ function note_transp(s) {
 		} else if (curvoice.ckey.k_none) {
 			if (a == 3		// natural
 			 || acc_same_pitch(note.pit))
-				continue
+				return
 		} else if (curvoice.ckey.a_acc) {	/* acc list */
 			i4 = cgd2cde[(i3 + 16 * 7) % 7]
 			for (j = 0; j < curvoice.ckey.a_acc.length; j++) {
@@ -1736,9 +1733,9 @@ function note_transp(s) {
 					break
 			}
 			if (j < curvoice.ckey.a_acc.length)
-				continue
+				return
 		} else {
-			continue
+			return
 		}
 		i1 = note.acc;
 		d = note.micro_d
@@ -1780,7 +1777,6 @@ function note_transp(s) {
 			}
 		}
 		note.acc = a
-	}
 }
 
 // on end of slur, create the slur
@@ -1999,6 +1995,13 @@ Abc.prototype.new_note = function(grace, sls) {
 			if (curvoice.octave)
 				note.pit += curvoice.octave * 7
 
+			if (curvoice.vtransp)
+				note_transp(note)
+
+			if (curvoice.map
+			 && maps[curvoice.map])
+				set_map(note)
+
 			// ending ties
 			if (tie_s) {		// if some ties are ending here
 				if (tie_s.type != C.GRACE) {
@@ -2183,16 +2186,6 @@ Abc.prototype.new_note = function(grace, sls) {
 	}
 
 	sym_link(s)
-
-	if (s.type == C.NOTE) {
-		if (curvoice.vtransp)
-			note_transp(s)
-		if (curvoice.map
-		 && maps[curvoice.map]) {
-			for (i = 0; i <= s.nhd; i++)
-				set_map(s.notes[i])
-		}
-	}
 
 	if (cfmt.shiftunison)
 		s.shiftunison = cfmt.shiftunison

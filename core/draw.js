@@ -2615,6 +2615,8 @@ function draw_ties(k1, k2,
 		not1 = k1.notes[i]
 		if (!not1.tie_ty)
 			continue
+		if (!not1.s)
+			not1.s = k1
 		if (not1.tie_n)
 			draw_note_ties(not1, job)
 		else
@@ -2645,14 +2647,16 @@ function draw_ties(k1, k2,
 				pit2 = not3.opit || not3.pit
 				if (pit2 == pit) {
 					not1.tie_n = not3
+					if (!not3.s)
+						not3.s = k3
 					draw_note_ties(not1, job)
-					mhead3[i++] = mhead3.pop()
+					mhead3.splice(i, 1)
 					break
 				}
 			}
 		}
 		if (!mhead3.length)
-			return
+			break
 		k3 = k3.ts_next
 	}
 
