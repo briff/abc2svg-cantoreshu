@@ -83,7 +83,8 @@ n=0
 # - rsvg-convert always gets the SVG images at 72ppi, ignoring the -p/-d values
 cat > /tmp/fix.abc << EOF
 %%pageheight 29.7cm
-%%fullsvg 1 
+%%fullsvg 1
+%%musicfont abc2svg
 %%beginjs
     var fix_out
 function font_bug(str) {
