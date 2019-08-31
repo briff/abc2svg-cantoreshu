@@ -165,7 +165,7 @@ done
 
 # convert the SVG images to PDF
 if [ -f /tmp/abc1.svg ]; then
- rsvg-convert -f pdf /tmp/abc*.svg -o $out
+ rsvg-convert -f pdf $(ls -rt /tmp/abc*.svg) -o $out
 else
  echo 'Errors during the generation'
 fi
