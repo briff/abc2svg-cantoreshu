@@ -1,9 +1,8 @@
 :;# shell script to convert ABC or MEI music notation to other format
 # using abc2svg and quickjs (https://bellard.org/quickjs/)
 
-if [ -f /tmp/abcqjs.js ]; then
-	exec qjs --std /tmp/abcqjs.js $0 "$@"
-fi
+test -f /tmp/abcqjs.js && exec qjs --std /tmp/abcqjs.js $0 "$@"
+
 cat > /tmp/abcqjs.js << EOF
 //javascript
 
