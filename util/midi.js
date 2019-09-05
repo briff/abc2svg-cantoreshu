@@ -39,26 +39,7 @@
 // AbcMIDI creation
 function AbcMIDI() {
     var	C = abc2svg.C,
-	// key table - index = number of accidentals + 7
-	keys = [
-		new Int8Array([-1,-1,-1,-1,-1,-1,-1 ]),	// 7 flat signs
-		new Int8Array([-1,-1,-1, 0,-1,-1,-1 ]),	// 6 flat signs
-		new Int8Array([ 0,-1,-1, 0,-1,-1,-1 ]),	// 5 flat signs
-		new Int8Array([ 0,-1,-1, 0, 0,-1,-1 ]),	// 4 flat signs
-		new Int8Array([ 0, 0,-1, 0, 0,-1,-1 ]),	// 3 flat signs
-		new Int8Array([ 0, 0,-1, 0, 0, 0,-1 ]),	// 2 flat signs
-		new Int8Array([ 0, 0, 0, 0, 0, 0,-1 ]),	// 1 flat signs
-		new Int8Array([ 0, 0, 0, 0, 0, 0, 0 ]),	// no accidental
-		new Int8Array([ 0, 0, 0, 1, 0, 0, 0 ]),	// 1 sharp signs
-		new Int8Array([ 1, 0, 0, 1, 0, 0, 0 ]),	// 2 sharp signs
-		new Int8Array([ 1, 0, 0, 1, 1, 0, 0 ]),	// 3 sharp signs
-		new Int8Array([ 1, 1, 0, 1, 1, 0, 0 ]),	// 4 sharp signs
-		new Int8Array([ 1, 1, 0, 1, 1, 1, 0 ]),	// 5 sharp signs
-		new Int8Array([ 1, 1, 1, 1, 1, 1, 0 ]),	// 6 sharp signs
-		new Int8Array([ 1, 1, 1, 1, 1, 1, 1 ])	// 7 sharp signs
-	],
 	scale = new Int8Array([0, 2, 4, 5, 7, 9, 11])	// note to pitch
-				
 
 	// add MIDI pitches
 	AbcMIDI.prototype.add = function(s,		// starting symbol
@@ -79,7 +60,7 @@ function AbcMIDI() {
 
 		// define the note map
 		function key_map(s) {
-			bmap = keys[s.k_sf + 7]
+			bmap = s.k_map
 			bar_map()
 		} // key_map()
 

@@ -165,9 +165,8 @@ function parse_gchord(type) {
 var	note_names = "CDEFGAB",
 	acc_name = ["bb", "b", "", "#", "##"]
 
-	function gch_tr1(p, i2) {
-	    var	i, o, new_txt,
-		n, i1, i3, i4, ix, a, ip,
+	function gch_tr1(p, transp) {
+	    var	i, o, n, a, ip, b40,
 		csa = p.split('/')
 
 		for (i = 0; i < csa.length; i++) {	// main and optional bass
@@ -185,26 +184,24 @@ var	note_names = "CDEFGAB",
 				a--;
 				ip++
 			}
-			n = note_names.indexOf(p[o]);
-			i3 = cde2fcg[n] + i2 + a * 7;
-			i4 = cgd2cde[(i3 + 16 * 7) % 7];	// note
-			i1 = ((((i3 + 22) / 7) | 0) + 159) % 5;	// accidental
+			n = note_names.indexOf(p[o]) + 16
+			b40 = abc2svg.pab40(n, a) + transp + 200
 			csa[i] = p.slice(0, o) +
-					note_names[i4] + acc_name[i1] +
+					note_names[(abc2svg.b40p(b40) + 19) % 7] +
+					acc_name[abc2svg.b40a(b40) + 2] +
 					p.slice(ip)
 		}
 		return csa.join('/')
-	} // get_tr1
+	} // gch_tr1
 
 function gch_transp(s) {
     var	gch,
-		i = 0,
-		i2 = curvoice.ckey.k_sf - curvoice.okey.k_sf
+	i = s.a_gch.length
 
-	for (i = 0; i < s.a_gch.length; i++) {
+	while (--i >= 0) {
 		gch = s.a_gch[i]
 		if (gch.type == 'g')
-			gch.text = gch_tr1(gch.text, i2)
+			gch.text = gch_tr1(gch.text, curvoice.vtransp)
 	}
 }
 

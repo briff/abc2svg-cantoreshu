@@ -58,6 +58,91 @@ abc2svg.C = {
 	SL_DOTTED: 0x08		// (modifier bit)
     };
 
+	// key table - index = number of accidentals + 7
+abc2svg.keys = [
+	new Int8Array([-1,-1,-1,-1,-1,-1,-1 ]),	// 7 flat signs
+	new Int8Array([-1,-1,-1, 0,-1,-1,-1 ]),	// 6 flat signs
+	new Int8Array([ 0,-1,-1, 0,-1,-1,-1 ]),	// 5 flat signs
+	new Int8Array([ 0,-1,-1, 0, 0,-1,-1 ]),	// 4 flat signs
+	new Int8Array([ 0, 0,-1, 0, 0,-1,-1 ]),	// 3 flat signs
+	new Int8Array([ 0, 0,-1, 0, 0, 0,-1 ]),	// 2 flat signs
+	new Int8Array([ 0, 0, 0, 0, 0, 0,-1 ]),	// 1 flat signs
+	new Int8Array([ 0, 0, 0, 0, 0, 0, 0 ]),	// no accidental
+	new Int8Array([ 0, 0, 0, 1, 0, 0, 0 ]),	// 1 sharp signs
+	new Int8Array([ 1, 0, 0, 1, 0, 0, 0 ]),	// 2 sharp signs
+	new Int8Array([ 1, 0, 0, 1, 1, 0, 0 ]),	// 3 sharp signs
+	new Int8Array([ 1, 1, 0, 1, 1, 0, 0 ]),	// 4 sharp signs
+	new Int8Array([ 1, 1, 0, 1, 1, 1, 0 ]),	// 5 sharp signs
+	new Int8Array([ 1, 1, 1, 1, 1, 1, 0 ]),	// 6 sharp signs
+	new Int8Array([ 1, 1, 1, 1, 1, 1, 1 ])	// 7 sharp signs
+]
+
+// base-40 representation of musical pitch
+// (http://www.ccarh.org/publications/reprints/base40/)
+abc2svg.p_b40 = new Int8Array(			// staff pitch to base-40
+//		  C  D   E   F   G   A   B
+		[ 2, 8, 14, 19, 25, 31, 37 ])
+abc2svg.b40_p = new Int8Array(			// base-40 to staff pitch
+//		       C		 D
+		[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1,
+//	      E		     F		       G
+	2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4,
+//	      A			B
+	5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6 ])
+abc2svg.b40_a = new Int8Array(			// base-40 to accidental
+//		         C		     D
+		[-2, -1, 0, 1, 2, 0, -2, -1, 0, 1, 2, 0,
+//		E		 F		     G
+	-2, -1, 0, 1, 2, -2, -1, 0, 1, 2, 0, -2, -1, 0, 1, 2, 0,
+//		A		    B
+	-2, -1, 0, 1, 2, 0, -2, -1, 0, 1, 2 ])
+abc2svg.b40_m = new Int8Array(			// base-40 to midi
+//			 C		   D
+		[-2, -1, 0, 1, 2, 0, 0, 1, 2, 3, 4, 0,
+//	      E		     F		       G
+	2, 3, 4, 5, 6, 3, 4, 5, 6, 7, 0, 5, 6, 7, 8, 9, 0,
+//	      A			    B
+	7, 8, 9, 10, 11, 0, 9, 10, 11, 12, 13 ])
+abc2svg.b40k =  new Int8Array(		// base-40 interval to possible transposition
+//		        C		  D
+		[36, 1, 2, 3, 8, 2, 2, 7, 8,13,14, 2,
+//		    37
+//	       E	      F		        G
+	 8,13,14,19,20,13,14,19,20,25, 2,19,24,25,30,31, 2,
+//					    20
+//	       A		 B
+	25,30,31,36,37, 2,31,36,37,38, 3 ])
+//				    2
+abc2svg.b40sf = new Int8Array(		// base-40 interval to key signature
+//		        C		   D
+		[-2,-7, 0, 7, 2, 88, 0,-5, 2,-3, 4, 88,
+//	       E	      F		        G
+	 2,-3, 4,-1, 6,-3, 4,-1, 6, 1,88,-1,-6, 1,-4, 3,88,
+//	       A		 B
+	 1,-4, 3,-2, 5,88, 3,-2, 5, 0, 7 ])
+abc2svg.isb40 = new Int8Array(		// interval with sharp to base-40 interval
+	[0, 1, 6,11,12,17,18,23,28,29,34,35])
+abc2svg.ifb40 = new Int8Array(		// interval with flat to base-40 interval
+	[0, 5, 6,11,12,17,22,23,28,29,34,39])
+
+abc2svg.pab40 = function(p, a) {
+	p += 19				// staff pitch from C-1
+   var	b40 = ((p / 7) | 0) * 40 + abc2svg.p_b40[p % 7]
+	if (a && a != 3)		// if some accidental, but not natural
+		b40 += a
+	return b40
+} // pit2b40()
+abc2svg.b40p = function(b) {
+	return ((b / 40) | 0) * 7 + abc2svg.b40_p[b % 40] - 19
+} // b40p()
+abc2svg.b40a = function(b) {
+	return abc2svg.b40_a[b % 40]
+} // b40a()
+abc2svg.b40m = function(b) {
+	return ((b / 40) | 0) * 12 + abc2svg.b40_m[b % 40]
+} // b40m()
+
+
 // start of the Abc object
 abc2svg.Abc = function(user) {
 	"use strict";

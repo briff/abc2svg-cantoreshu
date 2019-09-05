@@ -1,3 +1,4 @@
+
 // abc2svg - parse.js - ABC parse
 //
 // Copyright (C) 2014-2019 Jean-Francois Moine
@@ -123,36 +124,27 @@ function new_clef(clef_def) {
 	return s
 }
 
-var note_pit = new Int8Array([0, 2, 4, 5, 7, 9, 11])
-
-// get a transposition value
+// get a transposition value as a base-40 interval
 function get_transp(param,
 			type) {		// undefined or "instr"
-	var	i, val, tmp, note,
-		pit = []
-
 	if (param[0] == '0')
 		return 0
+
+    var	i, val, tmp, note, pit,
+	ts = [0, 1, 6,11,12,17,18,23,28,29,34,35],
+	tf = [0, 5, 6,11,12,17,22,23,28,29,34,39]
+
 	if ("123456789-+".indexOf(param[0]) >= 0) {	// by semi-tone
-		val = parseInt(param) * 3
-		if (isNaN(val) || val < -108 || val > 108) {
+		val = parseInt(param)
+		if (isNaN(val) || val < -36 || val > 36) {
 //fixme: no source reference...
 			syntax(1, "Bad transpose value")
 			return
 		}
-		switch (param.slice(-1)) {
-		default:
-			return val
-		case '#':
-			val++
-			break
-		case 'b':
-			val += 2
-			break
-		}
-		if (val > 0)
-			return val
-		return val - 3
+		return ((val / 12) | 0) * 40 +
+			(param.slice(-1) == 'b' ?
+					oabc2svg.ifb40 :
+					abc2svg.isb40)[(val + 36) % 12]
 	}
 
 	// by music interval
@@ -172,37 +164,16 @@ function get_transp(param,
 
 	tmp = new scanBuf;
 	tmp.buffer = param
+	pit = []
 	for (i = 0; i < 2; i++) {
 		note = tmp.buffer[tmp.index] ? parse_acc_pit(tmp) : null
 		if (!note) {
 			syntax(1, "Bad transpose value")
 			return
 		}
-		note.pit += 124;	// 126 - 2 for value > 0 and 'C' % 7 == 0
-		val = ((note.pit / 7) | 0) * 12 + note_pit[note.pit % 7]
-		if (note.acc && note.acc != 3)		// if not natural
-			val += note.acc;
-		pit[i] = val
+		pit[i] = abc2svg.pab40(note.pit, note.acc)
 	}
-
-	val = (pit[1] - pit[0]) * 3
-	if (note) {
-		switch (note.acc) {
-		default:
-			return val
-		case 2:
-		case 1:
-			val++
-			break
-		case -1:
-		case -2:
-			val += 2
-			break
-		}
-	}
-	if (val > 0)
-		return val
-	return val - 3
+	return pit[1] - pit[0]
 }
 
 // set the linebreak character
@@ -532,10 +503,68 @@ function new_key(param) {
 	mode = 0,
 	s = {
 		type: C.KEY,
-		k_delta: 0,
 		dur:0
 	}
 
+	// set the accidentals when K: with modified accidentals
+	function set_k_acc(s, sf) {
+	    var i, j, n, nacc, p_acc,
+		accs = [],
+		pits = [],
+		m_n = [],
+		m_d = []
+
+		if (sf > 0) {
+			for (nacc = 0; nacc < sf; nacc++) {
+				accs[nacc] = 1;			// sharp
+				pits[nacc] = [26, 23, 27, 24, 21, 25, 22][nacc]
+			}
+		} else {
+			for (nacc = 0; nacc < -sf; nacc++) {
+				accs[nacc] = -1;		// flat
+				pits[nacc] = [22, 25, 21, 24, 20, 23, 26][nacc]
+			}
+		}
+		n = s.k_a_acc.length
+		for (i = 0; i < n; i++) {
+			p_acc = s.k_a_acc[i]
+			for (j = 0; j < nacc; j++) {
+				if (pits[j] == p_acc.pit) {
+					accs[j] = p_acc.acc
+					if (p_acc.micro_n) {
+						m_n[j] = p_acc.micro_n;
+						m_d[j] = p_acc.micro_d
+					}
+					break
+				}
+			}
+			if (j == nacc) {
+				accs[j] = p_acc.acc;
+				pits[j] = p_acc.pit
+				if (p_acc.micro_n) {
+					m_n[j] = p_acc.micro_n;
+					m_d[j] = p_acc.micro_d
+				}
+				nacc++
+			}
+		}
+		for (i = 0; i < nacc; i++) {
+			p_acc = s.k_a_acc[i]
+			if (!p_acc)
+				p_acc = s.k_a_acc[i] = {}
+			p_acc.acc = accs[i];
+			p_acc.pit = pits[i]
+			if (m_n[i]) {
+				p_acc.micro_n = m_n[i];
+				p_acc.micro_d = m_d[i]
+			} else {
+				delete p_acc.micro_n
+				delete p_acc.micro_d
+				}
+		}
+	} // set_k_acc()
+
+	// code of new_key()
 	set_ref(s);
 
 	// tonic
@@ -637,15 +666,31 @@ function new_key(param) {
 				while (c == ' ')
 					c = param[++tmp.index]
 			} while (c == '^' || c == '_' || c == '=');
+			if (!s.k_exp)
+				set_k_acc(s, sf)
 			param = param.slice(tmp.index)
 		} else if (s.k_exp && param.indexOf("none") == 0) {
 			param = param.replace(/\w+\s*/, '')
 		}
 	}
 
-	s.k_delta = cgd2cde[(sf + 7) % 7];
 	s.k_sf = sf;
+
+	// set the map of the notes with accidentals
+	if (s.k_a_acc) {
+		s.k_map = []
+		i = s.k_a_acc.length
+		while (--i >= 0) {
+			note = s.k_a_acc[i]
+			s.k_map[(note.pit + 77) % 7] = note.acc
+		}
+	} else {
+		s.k_map = abc2svg.keys[sf + 7]
+	}
 	s.k_mode = mode
+
+	// key note as base-40
+	s.k_b40 = [1,24,7,30,13,36,19, 2 ,25,8,31,14,37,20,3][sf + 7]
 
 	return [s, info_split(param)]
 }
@@ -1612,15 +1657,17 @@ function note2abc(note) {
 
 /* set the mapping of a note */
 function set_map(note) {
-    var	map = maps[curvoice.map],	// never null
+    var	delta,
+	map = maps[curvoice.map],	// never null
 	nn = note2abc(note)
 
 	if (!map[nn]) {
 		nn = 'octave,' + nn.replace(/[',]/g, '')	// octave '
 		if (!map[nn]) {
+			delta = abc2svg.p_b40[(note.pit + 77) % 7] -
+					curvoice.ckey.k_b40
 			nn = 'key,' +			// 'key,'
-				'abcdefg'[(note.pit + 77 -
-						curvoice.ckey.k_delta) % 7]
+				'abcdefg'[abc2svg.b40_p[delta + 2]]
 			if (!map[nn]) {
 				nn = 'all'		// 'all'
 				if (!map[nn])
@@ -1669,114 +1716,6 @@ function parse_vpos() {
 		return ty + C.SL_BELOW
 	}
 	return ty + C.SL_AUTO
-}
-
-var	cde2fcg = new Int8Array([0, 2, 4, -1, 1, 3, 5]),
-	cgd2cde = new Int8Array([0, 4, 1, 5, 2, 6, 3]),
-	acc2 = new Int8Array([-2, -1, 3, 1, 2])
-
-/* transpose a note / chord */
-function note_transp(note) {
-	var	i, j, n, d, a, acc, i1, i3, i4,
-		sf_old = curvoice.okey.k_sf,
-		i2 = curvoice.ckey.k_sf - sf_old,
-		dp = cgd2cde[(i2 + 4 * 7) % 7],
-		t = curvoice.vtransp
-
-	if (t < 0 && dp != 0)
-		dp -= 7;
-	dp += ((t / 3 / 12) | 0) * 7
-
-		// pitch
-		n = note.pit;
-		note.pit += dp;
-
-		// accidental
-		i1 = cde2fcg[(n + 5 + 16 * 7) % 7];	/* fcgdaeb */
-		a = note.acc
-		if (!a) {
-			if (!curvoice.okey.a_acc) {
-				if (sf_old > 0) {
-					if (i1 < sf_old - 1)
-						a = 1	// sharp
-				} else if (sf_old < 0) {
-					if (i1 >= sf_old + 6)
-						a = -1	// flat
-				}
-			} else {
-				for (j = 0; j < curvoice.okey.a_acc.length; j++) {
-					acc = curvoice.okey.a_acc[j]
-					if ((n + 16 * 7 - acc.pit) % 7 == 0) {
-						a = acc.acc
-						break
-					}
-				}
-			}
-		}
-		i3 = i1 + i2
-		if (a && a != 3)				// ! natural
-			i3 += a * 7;
-
-		i1 = ((((i3 + 1 + 21) / 7) | 0) + 2 - 3 + 32 * 5) % 5;
-		a = acc2[i1]
-		if (note.acc) {
-			;
-		} else if (curvoice.ckey.k_none) {
-			if (a == 3		// natural
-			 || acc_same_pitch(note.pit))
-				return
-		} else if (curvoice.ckey.a_acc) {	/* acc list */
-			i4 = cgd2cde[(i3 + 16 * 7) % 7]
-			for (j = 0; j < curvoice.ckey.a_acc.length; j++) {
-				if ((i4 + 16 * 7 - curvoice.ckey.a_acc[j].pits) % 7
-							== 0)
-					break
-			}
-			if (j < curvoice.ckey.a_acc.length)
-				return
-		} else {
-			return
-		}
-		i1 = note.acc;
-		d = note.micro_d
-		if (d				/* microtone */
-		 && i1 != a) {			/* different accidental type */
-			n = note.micro_n
-//fixme: double sharps/flats ?*/
-//fixme: does not work in all cases (tied notes, previous accidental)
-			switch (a) {
-			case 3:			// natural
-				if (n > d / 2) {
-					n -= d / 2;
-					note.micro_n = n;
-					a = i1
-				} else {
-					a = -i1
-				}
-				break
-			case 2:			// double sharp
-				if (n > d / 2) {
-					note.pit += 1;
-					n -= d / 2
-				} else {
-					n += d / 2
-				}
-				a = i1;
-				note.micro_n = n
-				break
-			case -2:		// double flat
-				if (n >= d / 2) {
-					note.pit -= 1;
-					n -= d / 2
-				} else {
-					n += d / 2
-				}
-				a = i1;
-				note.micro_n = n
-				break
-			}
-		}
-		note.acc = a
 }
 
 // on end of slur, create the slur
@@ -1994,9 +1933,6 @@ Abc.prototype.new_note = function(grace, sls) {
 			// transpose
 			if (curvoice.octave)
 				note.pit += curvoice.octave * 7
-
-			if (curvoice.vtransp)
-				note_transp(note)
 
 			if (curvoice.map
 			 && maps[curvoice.map])

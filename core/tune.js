@@ -769,7 +769,7 @@ function set_transp() {
 	s = curvoice.last_sym
 	if (!s) {				// no symbol yet
 		curvoice.key = clone(curvoice.okey);
-		key_transp(curvoice.key);
+		curvoice.key.k_transp = transp
 		curvoice.ckey = clone(curvoice.key)
 		if (curvoice.key.k_none)
 			curvoice.key.k_sf = 0
@@ -786,11 +786,144 @@ function set_transp() {
 		}
 		s = s.prev
 	}
-	key_transp(s);
+	s.k_transp = transp
 	curvoice.ckey = clone(s)
 	if (curvoice.key.k_none)
 		s.k_sf = 0
 }
+
+/* transpose a note / chord */
+function note_transp(s, sk, note) {
+    var	ak, an, d, b40,
+	n = note.pit,
+	a = note.acc
+
+	if (!a && sk.k_a_acc)			// if accidental list
+		a = sk.k_map[(n + 77) % 7]	// invisible accidental
+
+	b40 = abc2svg.pab40(n, a) + sk.k_transp	// base-40 transposition
+
+	note.pit = abc2svg.b40p(b40)		// new pitch
+
+	if (!a) {				// if no old accidental
+		if (!sk.k_a_acc			// if no accidental list
+		 && !sk.k_none)			// and normal key
+			return			// same accidental (in the key)
+	}
+
+	an = abc2svg.b40a(b40)			// new accidental
+	if (a) {
+		if (sk.k_a_acc) {		// if accidental list
+			ak = sk.k_map[(note.pit + 77) % 7]
+			if (ak == an)
+				an = 0		// accidental in the key
+		}
+		if (!an && a == 3)
+			an = 3
+	} else if (sk.k_none) {			// if no key
+		if (acc_same_pitch(s, note.pit)) // and accidental from previous notes
+			return			// no change
+	} else if (sk.k_a_acc) {		// if accidental list
+		if (acc_same_pitch(s, note.pit)) // and accidental from previous notes
+			return			// no change
+		ak = sk.k_map[(note.pit + 77) % 7]
+		if (ak)
+			an = 3		// natural
+	} else {
+		return			// same accidental (in the key)
+	}
+
+	d = note.micro_d
+	if (d				/* microtone */
+	 && a != an) {			/* different accidental type */
+		n = note.micro_n
+//fixme: double sharps/flats ?*/
+//fixme: does not work in all cases (tied notes, previous accidental)
+		switch (an) {
+		case 3:			// natural
+			if (n > d / 2) {
+				n -= d / 2;
+				note.micro_n = n;
+				an = a
+			} else {
+				an = -a
+			}
+			break
+		case 2:			// double sharp
+			if (n > d / 2) {
+				note.pit += 1;
+				n -= d / 2
+			} else {
+				n += d / 2
+			}
+			an = a
+			note.micro_n = n
+			break
+		case -2:		// double flat
+			if (n >= d / 2) {
+				note.pit -= 1;
+				n -= d / 2
+			} else {
+				n += d / 2
+			}
+			an = a
+			note.micro_n = n
+			break
+		}
+	}
+	note.acc = an
+}
+
+// adjust the pitches according to the transposition(s)
+function pit_adj() {
+    var	p_v, transp, s, sk,
+	nv = voice_tb.length
+
+	while (--nv >= 0) {
+		p_v = voice_tb[nv]
+		if (p_v.vtransp == undefined)
+			continue	// no transposition in this voice
+		if (p_v.key.k_transp) {
+			sk = p_v.key
+			key_transp(sk)
+		} else {
+			sk = null
+		}
+		s = p_v.sym
+		while (s) {
+
+			// search a transposing key signature
+			if (!sk) {
+				for (; s; s = s.next) {
+					if (s.type == C.KEY
+					 && s.k_transp)
+						break
+				}
+			}
+
+			// transpose
+			for (; s; s = s.next) {
+				switch (s.type) {
+				case C.NOTE:
+					for (i = 0; i <= s.nhd; i++)
+						note_transp(s, sk, s.notes[i])
+					continue
+				case C.KEY:
+					if (!s.k_transp) // end of transposition
+						break
+					if (!sk || sk.k_transp != s.k_transp) {
+						sk = s
+						key_transp(s)
+					}
+				default:
+					continue
+				}
+				break
+			}
+			sk = null
+		}
+	}
+} // pit_adj()
 
 /* -- process a pseudo-comment (%% or I:) -- */
 // (possible hook)
@@ -1238,7 +1371,7 @@ function generate() {
 		get_vover(vover.bar ? '|' : ')')
 	}
 
-	if (voice_tb.length == 0)
+	if (!voice_tb.length)
 		return
 	voice_adj();
 	dupl_voice();
@@ -1246,8 +1379,7 @@ function generate() {
 	if (!tsfirst)
 		return
 	self.set_bar_num()
-	if (!tsfirst)
-		return				/* no more symbol */
+	pit_adj()
 
 	// give the parser result to the application
 	if (user.get_abcmodel)
@@ -1276,97 +1408,38 @@ function generate() {
 
 // transpose a key
 //fixme: transpose of the accidental list is not done
-function key_transp(s_key) {
-	var	t = (curvoice.vtransp / 3) | 0,
-		sf = (t & ~1) + (t & 1) * 7 + s_key.k_sf
+function key_transp(sk) {
+	if (sk.k_a_acc || sk.k_none)		// same displayed key
+		return
+    var	d,
+	k_b40 = sk.k_b40,
+	n_b40 = (k_b40 + 200 + sk.k_transp) % 40
 
-	switch ((curvoice.vtransp + 210) % 3) {
-	case 1:
-		sf = (sf + 4 + 12 * 4) % 12 - 4	/* more sharps */
-		break
-	case 2:
-		sf = (sf + 7 + 12 * 4) % 12 - 7	/* more flats */
-		break
-	default:
-		sf = (sf + 5 + 12 * 4) % 12 - 5	/* Db, F# or B */
-		break
+	d = abc2svg.b40k[n_b40] - n_b40
+	if (d) {
+		if (sk.k_transp > 0)
+			sk.k_transp += d
+		else
+			sk.k_transp -= d
+		n_b40 += d
 	}
-	s_key.k_sf = sf;
-	s_key.k_delta = cgd2cde[(sf + 7) % 7]
-}
+	sk.k_b40 = n_b40
 
-/* -- set the accidentals when K: with modified accidentals -- */
-function set_k_acc(s) {
-	var i, j, n, nacc, p_acc,
-		accs = [],
-		pits = [],
-		m_n = [],
-		m_d = []
-
-	if (s.k_sf > 0) {
-		for (nacc = 0; nacc < s.k_sf; nacc++) {
-			accs[nacc] = 1;			// sharp
-			pits[nacc] = [26, 23, 27, 24, 21, 25, 22][nacc]
-		}
-	} else {
-		for (nacc = 0; nacc < -s.k_sf; nacc++) {
-			accs[nacc] = -1;		// flat
-			pits[nacc] = [22, 25, 21, 24, 20, 23, 26][nacc]
-		}
-	}
-	n = s.k_a_acc.length
-	for (i = 0; i < n; i++) {
-		p_acc = s.k_a_acc[i]
-		for (j = 0; j < nacc; j++) {
-			if (pits[j] == p_acc.pit) {
-				accs[j] = p_acc.acc
-				if (p_acc.micro_n) {
-					m_n[j] = p_acc.micro_n;
-					m_d[j] = p_acc.micro_d
-				}
-				break
-			}
-		}
-		if (j == nacc) {
-			accs[j] = p_acc.acc;
-			pits[j] = p_acc.pit
-			if (p_acc.micro_n) {
-				m_n[j] = p_acc.micro_n;
-				m_d[j] = p_acc.micro_d
-			}
-			nacc++
-		}
-	}
-	for (i = 0; i < nacc; i++) {
-		p_acc = s.k_a_acc[i]
-		if (!p_acc)
-			p_acc = s.k_a_acc[i] = {}
-		p_acc.acc = accs[i];
-		p_acc.pit = pits[i]
-		if (m_n[i]) {
-			p_acc.micro_n = m_n[i];
-			p_acc.micro_d = m_d[i]
-		} else {
-			delete p_acc.micro_n
-			delete p_acc.micro_d
-		}
-	}
+   var sf = abc2svg.b40sf[n_b40]
+	sk.k_sf_old = sk.k_sf
+	sk.k_sf = sf
+	sk.k_map = abc2svg.keys[sf + 7]	// map of the notes with accidentals
 }
 
 /*
  * for transpose purpose, check if a pitch is already in the measure or
  * if it is tied from a previous note, and return the associated accidental
  */
-function acc_same_pitch(pitch) {
-	var	i, time,
-		s = curvoice.last_sym.prev
-
-	if (!s)
-		return //undefined;
-
+function acc_same_pitch(s, pit) {
+    var	i,
 	time = s.time
 
-	for (; s; s = s.prev) {
+	for (s = s.prev; s; s = s.prev) {
 		switch (s.type) {
 		case C.BAR:
 			if (s.time < time)
@@ -1384,14 +1457,14 @@ function acc_same_pitch(pitch) {
 					return //undefined
 			}
 			for (i = 0; i <= s.nhd; i++) {
-				if (s.notes[i].pit == pitch
+				if (s.notes[i].pit == pit
 				 && s.notes[i].tie_ty)
 					return s.notes[i].acc
 			}
 			return //undefined
 		case C.NOTE:
 			for (i = 0; i <= s.nhd; i++) {
-				if (s.notes[i].pit == pitch)
+				if (s.notes[i].pit == pit)
 					return s.notes[i].acc
 			}
 			break
@@ -1783,10 +1856,6 @@ function get_key(parm) {
 		s_key = a[0];
 
 	a = a[1]
-	if (s_key.k_sf
-	 && !s_key.k_exp
-	 && s_key.k_a_acc)
-		set_k_acc(s_key)
 
 	switch (parse.state) {
 	case 1:				// in tune header (first K:)
@@ -1829,7 +1898,7 @@ function get_key(parm) {
 	curvoice.okey = clone(s_key)
 	if (transp) {
 		curvoice.vtransp = transp;
-		key_transp(s_key)
+		s_key.k_transp = transp
 	}
 
 	s_key.k_old_sf = curvoice.ckey.k_sf;	// memorize the key changes
