@@ -876,7 +876,7 @@ function note_transp(s, sk, note) {
 
 // adjust the pitches according to the transposition(s)
 function pit_adj() {
-    var	p_v, transp, s, sk,
+    var	i, p_v, transp, s, sk,
 	nv = voice_tb.length
 
 	while (--nv >= 0) {
