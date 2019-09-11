@@ -45,11 +45,7 @@ abc2svg.readFile = function(fname) {
 	try {
 		f = std.open(fname, "r")
 	} catch(e) {
-		if (onerror)
-			onerror()
-		else
-			printErr('Cannot read file ' + fn)
-		return
+		return ""
 	}
 
 	while (1) {
