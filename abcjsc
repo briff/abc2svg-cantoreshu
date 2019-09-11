@@ -44,6 +44,9 @@ load(progdir + 'abc2svg-1.js')
 abc2svg.print = function(str) {
 	print(str)
 }
+abc2svg.printErr = function(str) {
+	printErr(str)
+}
 abc2svg.quit = function() {
 	quit(1)
 }
