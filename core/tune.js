@@ -188,6 +188,8 @@ function sort_all() {
 	}
 	v = vn[ir2]
 	tsfirst = prev = vtb[v]
+	if (!tsfirst)
+		return				// no music
 	vtb[v] = tsfirst.next
 	prev.seqst = true
 	fl = !w_tb[prev.type] || tsfirst.type == tsfirst.next
@@ -1388,7 +1390,10 @@ function generate() {
 	if (user.img_out)		// if SVG generation
 		self.output_music()
 
-	/* reset the parser */
+	// if inside multicol, reset the parser
+	if (!multicol)
+		return
+	voice_tb = Object.create(voice_tb)
 	for (v = 0; v < voice_tb.length; v++) {
 		p_voice = voice_tb[v];
 		p_voice.time = 0;
