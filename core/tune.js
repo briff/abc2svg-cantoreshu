@@ -982,7 +982,7 @@ Abc.prototype.do_pscom = function(text) {
 		}
 		break
 	case "multicol":
-		generate()
+		generate(1)
 		switch (param) {
 		case "start":
 			blk_out();
@@ -1357,7 +1357,7 @@ Abc.prototype.do_begin_end = function(type,
 }
 
 /* -- generate a piece of tune -- */
-function generate() {
+function generate(in_mc) {
     var s, v, p_voice;
 
 	if (parse.tp) {
@@ -1391,7 +1391,7 @@ function generate() {
 		self.output_music()
 
 	// if inside multicol, reset the parser
-	if (!multicol)
+	if (!in_mc)
 		return
 	voice_tb = Object.create(voice_tb)
 	for (v = 0; v < voice_tb.length; v++) {
