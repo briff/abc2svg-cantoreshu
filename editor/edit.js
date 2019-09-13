@@ -32,7 +32,8 @@ window.onerror = function(msg, url, line) {
 var	abc_images,			// image buffer
 	abc_fname = ["noname.abc", ""],	// file names
 	abc,				// Abc object
-	srcend,				// source symbol end index
+	syms,				// music symbol at source index
+	ctxMenu,			// context menu for play
 	elt_ref = {},			// pointers to page HTML elements
 	selx = [0, 0],			// selected source indexes
 	selx_sav = [],			// (saved while playing/printing)
@@ -65,15 +66,15 @@ var user = {
 			elt_ref.diverr.innerHTML += msg + "<br/>\n"
 	},
 	// image output
-	my_img_out: function(str) {
+	img_out: function(str) {
 		abc_images += str
 	},
 	// -- optional methods
 	// annotations
-	anno_stop: function(type, start, stop, x, y, w, h) {
+	anno_stop: function(type, start, stop, x, y, w, h, s) {
 		if (["beam", "slur", "tuplet"].indexOf(type) >= 0)
 			return
-		srcend[start] = stop;	// source index of the end of the element
+		syms[start] = s		// music symbol
 
 		// create a rectangle
 		abc.out_svg('<rect class="abcr _' + start +
@@ -188,6 +189,7 @@ function render() {
 	content = elt_ref.source.value;
 
 	play.a_pe = null
+	abc2svg.tunes = []		// list of tsfirst and voice_tb by tune
 	if (!content)
 		return			// empty source
 
@@ -215,15 +217,12 @@ function render2() {
 	if (!abc2svg.modules.load(content + elt_ref.src1.value, render2))
 		return
 
-	user.img_out = user.my_img_out;
-	user.get_abcmodel = null;
-
 	abc = new abc2svg.Abc(user);
 	abc_images = '';
 	abc.tosvg('edit', '%%bgcolor white');
 
 //	document.body.style.cursor = "wait";
-	srcend = []
+	syms = []
 	try {
 		abc.tosvg(abc_fname[0], content)
 	} catch(e) {
@@ -262,15 +261,14 @@ function gotoabc(l, c) {
 	}
 	c = Number(c) + idx;
 	s.focus();
-	s.setSelectionRange(c, srcend[c] || c + 1)
+	s.setSelectionRange(c, syms[c].iend || c + 1)
 }
 
 // click in the target
 function selsvg(evt) {
     var	v,
 	elt = evt.target,
-	cl = elt.getAttribute('class'),
-	ctxMenu = document.getElementById("ctxMenu");
+	cl = elt.getAttribute('class')
 
 	play.loop = false;
 
@@ -294,7 +292,7 @@ function selsvg(evt) {
 	s = elt_ref.source;
 	if (cl && cl.substr(0, 4) == 'abcr') {
 		v = Number(cl.slice(6, -1));
-		s.setSelectionRange(v, srcend[v])
+		s.setSelectionRange(v, syms[v].iend)
 	} else {
 		s.setSelectionRange(0, 0)
 	}
@@ -362,12 +360,12 @@ function seltxt(evt) {
 		return
 	}
 
-	if (srcend) {
-		srcend.forEach(function(ie, is) {
+	if (syms) {
+		syms.forEach(function(sym, is) {
 			if (!s) {
 				if (is >= start)
 					s = is
-			} else if (ie <= end) {
+			} else if (sym.iend <= end) {
 				e = is
 			}
 		})
@@ -486,6 +484,9 @@ function endplay() {
 //	2: Loop
 //	3: Continue
 function play_tune(what) {
+    var	i, si, ei, elt,
+	s = elt_ref.source.value
+
 	if (play.playing) {
 		if (!play.stop) {
 			play.stop = -1;
@@ -495,81 +496,146 @@ function play_tune(what) {
 	}
 
 	// search a playing event from a source index
-	function get_se(si) {			// get highest starting event
-	    var	i, s, tim,
-		sih = 1000000,
-		pa = play.a_pe,
-		ci = 0
 
-		if (si <= pa[0][0])
-			return 0
-		if (si >= pa[pa.length - 1][0])
-			return pa.length
+	function gnrn(sym, loop) {	// go to the next real note (not tied)
+	    var	i
+		while (1) {
+			while (!sym.dur) {
+				if (!sym.ts_next) {
+					if (!loop)
+						return gprn(sym, 1)
+					return sym
+				}
+				sym = sym.ts_next
+			}
+			i = sym.nhd + 1
+			while (--i >= 0) {
+				if (sym.notes[i].ti2)
+					break
+			}
+			if (i < 0)
+				return sym
+			if (!sym.ts_next) {
+				if (!loop)
+					return gprn(sym, 1)
+				return sym
+			}
+			sym = sym.ts_next
+		}
+		// not reached
+	}
+	function gprn(sym, loop) {	// go to the previous real note (not tied)
+	    var	i
+		while (1) {
+			while (!sym.dur) {
+				if (!sym.ts_prev) {
+					if (!loop)
+						return gnrn(sym, 1)
+					return sym
+				}
+				sym = sym.ts_prev
+			}
+			i = sym.nhd + 1
+			while (--i >= 0) {
+				if (sym.notes[i].ti2)
+					break
+			}
+			if (i < 0)
+				return sym
+			if (!sym.ts_prev) {
+				if (!loop)
+					return gnrn(sym, 1)
+				return sym
+			}
+			sym = sym.ts_prev
+		}
+		// not reached
+	}
 
-		si = go_note(si);
+	function gsot(si) {	// go to the first playable symbol of a tune
+	    var	i,
+		sym = syms[si],
+		pa = play.a_pe
 
+		sym = gprn(sym.p_v.sym)	// first symbol of the voice
+		si = sym.istart
+		for (i = 0; i < pa.length; i++) {
+			if (pa[i][0] == si)
+				return i
+		}
+		return pa.length
+	}
+	function geot(si) {	// go to the last playable symbol of a tune
+	    var	i,
+		sym = syms[si],
+		pa = play.a_pe
+
+		while (sym.ts_next)	// go to the end of the tune
+			sym = sym.ts_next
+		sym = gprn(sym)
+
+		si = sym.istart
 		i = pa.length
 		while (--i > 0) {
-			s = pa[i][0]
-			if (s < si)
-				continue
-			if (s == si) {
-				ci = i
+			if (pa[i][0] == si)
+				return i + 1
+		}
+		return i
+	}
+	function gof(i) {	// go to the first played symbol at this time
+	    var	s, 
+		pa = play.a_pe,
+		tim = pa[i][1]
+		while (1) {
+			if (!pa[--i])
 				break
-			}
-			if (s < sih) {
-				ci = i;
-				sih = s
-			}
+			if (pa[i][1] < tim)
+				break
 		}
+		return ++i
+	}
+	function gol(i) {	// go to the last played symbol at this time
+	    var	s, 
+		pa = play.a_pe,
+		tim = pa[i][1]
+		while (1) {
+			if (!pa[++i])
+				break
+			if (pa[i][1] != tim)
+				break
+		}
+		return i
+	}
+	function get_se(si) {		// get the starting event
+	    var	i,
+		sym = syms[si],
+		pa = play.a_pe
 
-		// go to the first voice at this time
-		if (ci < pa.length) {
-			tim = pa[ci][1]
-			while (--ci >= 0) {
-				if (pa[ci][1] != tim)
-					break
-			}
+		sym = gnrn(sym)
+
+		si = sym.istart
+		i = pa.length
+		while (1) {
+			if (pa[--i][0] == si)
+				break
 		}
-		return ci + 1
+		return gof(i)
 	} // get_se()
 
-	function get_ee(si, i) {		// get lowest ending event
-	    var	s, tim,
-		sil = 0,
-		pa = play.a_pe,
-		ci = 0
+	function get_ee(si) {			// get the ending event
+	    var	i,
+		sym = syms[si],
+		pa = play.a_pe
 
-		if (si <= pa[0][0])
-			return 0
-		if (si >= pa[pa.length - 1][0])
-			return pa.length
+		sym = gprn(sym)
 
-		si = go_note(si)
-
-		for ( ; i < pa.length; i++) {
-			s = pa[i][0]
-			if (s > si)
-				continue
-			if (s == si) {
-				ci = i
+		si = sym.istart
+		i = pa.length
+		while (1) {
+			if (pa[--i][0] == si)
 				break
-			}
-			if (s > sil) {
-				ci = i;
-				sil = s
-			}
 		}
-
-		// go to after the last voice at this time
-		if (ci > 0) {
-			tim = pa[ci++][1]
-			for ( ; ci < pa.length; ci++) {
-				if (pa[ci][1] != tim)
-					break
-			}
-		}
-		return ci
+		return gol(i)
 	} // get_ee()
 
 	// start playing
@@ -584,39 +650,18 @@ function play_tune(what) {
 	}
 
 	// play tune()
-    var	abc, i, si, ei, elt, tim,
-	s = elt_ref.source.value,
-	ctxMenu = document.getElementById("ctxMenu");
-
-	// search a note/rest in the source from a selection
-	function go_note(si) {
-		for (var i = si; ; i++) {
-			if (!s[i])
-				return si
-			if ('ABCDEFGabcdefg[^_='.indexOf(s[i]) >= 0)
-				break
-		}
-		return i
-	}
-
 	ctxMenu.style.display = "none";	// remove the play menu
 
 	play.playing = true;
 	if (!play.a_pe) {		// if no playing event
-		user.img_out = null	// get the schema and stop SVG generation
-		user.get_abcmodel = play.abcplay.add // inject the model in the play engine
-
-		abc = new abc2svg.Abc(user);
-
 		play.abcplay.clear();
-		abc.tosvg("play", "%%play")
-		try {
-			abc.tosvg(abc_fname[0], s)
-		} catch(e) {
-			alert(e.message + '\nabc2svg tosvg bug - stack:\n' + e.stack);
-			play.playing = false;
-			play.a_pe = null
-			return
+
+		// generate all the play events of all tunes
+		while (1) {
+			elt = abc2svg.tunes.shift()
+			if (!elt)
+				break
+			play.abcplay.add(elt[0], elt[1])
 		}
 		play.a_pe = play.abcplay.clear(); // keep the playing events
 
@@ -640,57 +685,30 @@ function play_tune(what) {
 	}
 
 	// get the starting and ending play indexes, and start playing
+
 	if (what == 3 && play.stop > 0) {	// if stopped and continue
 		play_start(get_se(play.stop), play.ei)
 		return
 	}
 	if (what != 0 && selx[0] && selx[1]) {	// if full selection
 		si = get_se(selx[0]);
-		ei = get_ee(selx[1], si)
+		ei = get_ee(selx[1])
 	} else if (what != 0 && selx[0]) {	// if selection without end
 		si = get_se(selx[0]);
-		i = s.indexOf('\nX:', selx[0]);
-		ei = i < 0 ? play.a_pe.length : get_ee(i, si)
+		ei = geot(selx[0])
 	} else if (what != 0 && selx[1]) {	// if selection without start
-		i = s.lastIndexOf('\nX:', selx[1]);
-		si = i < 0 ? 0 : get_se(i);
-		ei = get_ee(selx[1], si)
+		si = gsot(selx[1])
+		ei = get_ee(selx[1])
 	} else {				// no selection => tune
-		si = play.click.svg.getElementsByClassName('abcr');
 		elt = play.click.svg		// (dummy)
-		for (i = 0; ; i++) {
-			if (!si[i]) {
-				elt = null
-				break
-			}
-			if (si[i].parentNode == elt.parentNode)
-				continue		// same container
-			elt = si[i];
-			ei = elt.parentNode.getBoundingClientRect()
-			if (ei.y < play.click.Y
-			 && ei.y + ei.height > play.click.Y)
-				break
-		}
-		i = elt ? Number(elt.getAttribute('class').slice(6, -1)) : 0;
-		si = ei = 0
-		if (s[0] == 'X' && s[1] == ':')
-			si = 1
-		while (1) {		// search the start and end of the tune
-			ei = s.indexOf('\nX:', ei)
-			if (ei < 0 || ei > i)
-				break
-			si = s.indexOf('\nK:', ++ei)
-			if (si < 0)
-				break
-			ei = s.indexOf('\n', si + 1) + 1
-		}
-		if (si <= 0) {
+		si = elt.getElementsByClassName('abcr') // symbols in the SVG
+		if (!si.length) {
 			play.playing = false
-			return		// no tune!
+			return			// not in a tune!
 		}
-
-		si = get_se(si);
-		ei = ei < 0 ? play.a_pe.length : get_ee(ei, si)
+		i = Number(si[0].getAttribute('class').slice(6, -1))
+		si = gsot(i)
+		ei = geot(i)
 	}
 
 	if (what != 3) {		// if not continue
@@ -832,7 +850,7 @@ function edit_init() {
 				Y: evt.pageY
 			}
 
-			var ctxMenu = document.getElementById("ctxMenu");
+			ctxMenu = document.getElementById("ctxMenu");
 			ctxMenu.style.display = "block";
 			x = evt.pageX - elt_ref.target.parentNode.offsetLeft
 					+ elt_ref.target.parentNode.scrollLeft;
@@ -841,6 +859,18 @@ function edit_init() {
 			ctxMenu.style.top = (y - 10) + "px"
 			return false
 		} // oncontextmenu
+
+		// function called when a new tune is generated
+		// memorize the symbols by time and voice
+		abc2svg.out_mus = function(of) {
+			abc2svg.tunes.push([this.get_tsfirst(),
+						this.get_voice_tb()])
+			of()
+		}
+
+		abc2svg.modules.hooks.push(function(abc) {
+			abc.output_music = abc2svg.out_mus.bind(abc, abc.output_music)
+		})
 	}
 	set_pref()	// set the preferences from local storage
 }
