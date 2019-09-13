@@ -4471,7 +4471,7 @@ function set_piece() {
 			break
 		}
 		if (!s.ts_next)
-			last = s		// keep the last symbol
+			last = s	// keep the last symbol of the tune
 		switch (s.type) {
 		case C.STAVES:
 			set_brace();
@@ -4714,16 +4714,22 @@ Abc.prototype.set_sym_glue = function(width) {
 
 // set the starting symbols of the voices for the new music line
 function set_sym_line() {
-	var	p_voice, s, v,
-		nv = voice_tb.length
+    var	p_v, s,
+	v = voice_tb.length
 
 	// set the first symbol of each voice
-	for (v = 0; v < nv; v++) {
-		p_voice = voice_tb[v];
-		s = p_voice.s_next;		// (set in set_piece)
-		p_voice.sym = s
-		if (s)
+	while (--v >= 0) {
+		p_v = voice_tb[v]
+		if (p_v.s_prev)
+			p_v.sym.prev = p_v.s_prev
+		s = p_v.s_next			// (set in set_piece)
+		p_v.sym = s
+		if (s) {
+			if (s.prev)
+				s.prev.next = s
+			p_v.s_prev = s.prev	// (save for play)
 			s.prev = null
+		}
 	}
 }
 
@@ -4768,7 +4774,7 @@ function gen_init() {
 /* -- generate the music -- */
 // (possible hook)
 Abc.prototype.output_music = function() {
-	var v, lwidth, indent, line_height
+    var v, lwidth, indent, line_height, ts1st, tslast, p_v
 
 	gen_init()
 	if (!tsfirst)
@@ -4804,6 +4810,12 @@ Abc.prototype.output_music = function() {
 		cut_tune(lwidth, indent)
 	}
 
+	// save symbol pointers for play
+	ts1st = tsfirst
+	v = voice_tb.length
+	while (--v >= 0)
+		voice_tb[v].osym = voice_tb[v].sym
+
 	spf_last = 1.2				// last spacing factor
 	while (1) {				/* loop per music line */
 		set_piece();
@@ -4825,22 +4837,34 @@ Abc.prototype.output_music = function() {
 				block_gen(blocks.shift())
 		}
 
-		tsfirst = tsnext
 		if (cfmt.splittune)
 			blk_flush()
 		else
 			svg_flush()
+		if (tslast)
+			tslast.ts_next.ts_prev = tslast
 		if (!tsnext)
 			break
+		tsnext.ts_prev.ts_next =		// (restore for play)
+			tsfirst = tsnext
 
 		// next line
 		gen_init()
 		if (!tsfirst)
 			break
+		tslast = tsfirst.ts_prev
 		tsfirst.ts_prev = null;
 		set_sym_line();
 		lwidth = get_lwidth()	// the image size may have changed
 		indent = set_indent()
+	}
+
+	// restore for play
+	tsfirst = ts1st
+	v = voice_tb.length
+	while (--v >= 0) {
+		p_v = voice_tb[v]
+		p_v.sym = p_v.osym
 	}
 }
 
