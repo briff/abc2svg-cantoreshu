@@ -385,11 +385,9 @@ Abc.prototype.set_vp = function(a) {
 				curvoice.scale = val
 			break
 		case "score=":
+			item = a.shift()
 			if (cfmt.sound)
 				break
-			item = a.shift()
-			if (item.indexOf('/') < 0)
-				item += '/c';
 			curvoice.transp = get_transp(item)
 			break
 		case "shift=":
@@ -397,9 +395,10 @@ Abc.prototype.set_vp = function(a) {
 			break
 		case "sound=":
 		case "transpose=":		// (abcMIDI compatibility)
+			item = a.shift()
 			if (!cfmt.sound)
 				break
-			curvoice.transp = get_transp(a.shift())
+			curvoice.transp = get_transp(item)
 			break
 		case "subname=":
 		case "sname=":
