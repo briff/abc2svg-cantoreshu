@@ -2029,7 +2029,7 @@ function set_yval(s) {
 
 // set the ottava decorations and the associated pitch shift
 function set_ottava() {
-    var	s, st, delta, note,
+    var	s, st, delta, note, g,
 	m = nstaff + 1,
 	staff_d = new Int16Array(new Array(m * 2)),	// (-ottava)
 	staff_noo = new Int8Array(new Array(m))		// number of ottava values
@@ -2076,6 +2076,20 @@ function set_ottava() {
 					if (!note.opit)
 						note.opit = note.pit;
 					note.pit += delta
+				}
+			}
+			break
+		case C.GRACE:
+			for (g = s.extra; g; g = g.next) {
+				delta = staff_d[st]
+				if (delta != 0
+				 && !s.p_v.key.k_drum) {
+					for (m = 0; m <= g.nhd; m++) {
+						note = g.notes[m]
+						if (!note.opit)
+							note.opit = note.pit
+						note.pit += delta
+					}
 				}
 			}
 			break
