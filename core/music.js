@@ -2514,6 +2514,7 @@ Abc.prototype.set_pitch = function(last_s) {
 				 && !s.p_v.key.k_drum) {
 					for (m = 0; m <= g.nhd; m++) {
 						note = g.notes[m];
+						note.opit = note.pit
 						note.pit += delta
 					}
 				}
@@ -2550,8 +2551,9 @@ Abc.prototype.set_pitch = function(last_s) {
 			if (delta != 0
 			 && !s.p_v.key.k_drum) {
 				for (m = s.nhd; m >= 0; m--) {
-					s.notes[m].opit = s.notes[m].pit;
-					s.notes[m].pit += delta
+					note = s.notes[m]
+					note.opit = note.pit
+					note.pit += delta
 				}
 			}
 			if (s.type == C.NOTE) {
