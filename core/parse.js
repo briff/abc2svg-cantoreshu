@@ -143,7 +143,7 @@ function get_transp(param,
 		}
 		return ((val / 12) | 0) * 40 +
 			(param.slice(-1) == 'b' ?
-					oabc2svg.ifb40 :
+					abc2svg.ifb40 :
 					abc2svg.isb40)[(val + 36) % 12]
 	}
 
