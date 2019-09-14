@@ -2073,7 +2073,8 @@ function set_ottava() {
 			 && !s.p_v.key.k_drum) {
 				for (m = s.nhd; m >= 0; m--) {
 					note = s.notes[m];
-					note.opit = note.pit;
+					if (!note.opit)
+						note.opit = note.pit;
 					note.pit += delta
 				}
 			}
