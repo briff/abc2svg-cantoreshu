@@ -749,9 +749,9 @@ function get_map(text) {
 	}
 }
 
-// set the transposition in the previous or starting key
+// set the transposition in the previous or first key signature
 function set_transp() {
-	var	s, transp, vtransp
+    var	s, transp
 
 	if (curvoice.ckey.k_bagpipe || curvoice.ckey.k_drum)
 		return
@@ -759,12 +759,14 @@ function set_transp() {
 	if (cfmt.transp && curvoice.transp)	// if %%transpose and score=
 		syntax(0, "Mix of old and new transposition syntaxes");
 
-	transp = (cfmt.transp || 0) +		// %%transpose
-		(curvoice.transp || 0) +	// score= / sound=
-		(curvoice.shift || 0);		// shift=
-	vtransp = curvoice.vtransp || 0
-	if (transp == vtransp)
+	if (cfmt.transp == undefined
+	 && curvoice.transp == undefined
+	 && curvoice.shift == undefined)
 		return
+
+	transp = (cfmt.transp || 0) +		// %%transpose
+		(curvoice.transp || 0) +	// score= / sound= / instrument=
+		(curvoice.shift || 0);		// shift=
 
 	curvoice.vtransp = transp;
 
@@ -911,12 +913,12 @@ function pit_adj() {
 						note_transp(s, sk, s.notes[i])
 					continue
 				case C.KEY:
+					if (sk)
+						s.k_sf = sk.k_sf
+					key_transp(s)
 					if (!s.k_transp) // end of transposition
 						break
-					if (!sk || sk.k_transp != s.k_transp) {
-						sk = s
-						key_transp(s)
-					}
+					sk = s
 				default:
 					continue
 				}
@@ -1431,7 +1433,7 @@ function key_transp(sk) {
 	sk.k_b40 = n_b40
 
    var sf = abc2svg.b40sf[n_b40]
-	sk.k_sf_old = sk.k_sf
+	sk.k_old_sf = sk.k_sf
 	sk.k_sf = sf
 	sk.k_map = abc2svg.keys[sf + 7]	// map of the notes with accidentals
 }
@@ -1888,20 +1890,23 @@ function get_key(parm) {
 	if (a.length != 0)
 		set_kv_parm(a);
 
-	if (!curvoice.ckey.k_bagpipe && !curvoice.ckey.k_drum)
+	if (!curvoice.ckey.k_bagpipe && !curvoice.ckey.k_drum
+	 && (cfmt.transp != undefined
+	  || curvoice.transp != undefined
+	  || curvoice.shift != undefined))
 	    transp = (cfmt.transp || 0) +
 		(curvoice.transp || 0) +
 		(curvoice.shift || 0)
 
 	if (s_key.k_sf == undefined) {
 		if (!s_key.k_a_acc
-		 && !transp)
+		 && transp == undefined)
 			return
 		s_key.k_sf = curvoice.okey.k_sf
 	}
 
 	curvoice.okey = clone(s_key)
-	if (transp) {
+	if (transp != undefined) {
 		curvoice.vtransp = transp;
 		s_key.k_transp = transp
 	}
@@ -2047,9 +2052,9 @@ function do_cloning(vs) {
 
 // treat a 'V:' info
 function get_voice(parm) {
-	var	v, transp, vtransp, vs,
-		a = info_split(parm),
-		vid = a.shift();
+    var	v, vs,
+	a = info_split(parm),
+	vid = a.shift()
 
 	if (!vid)
 		return				// empty V:
