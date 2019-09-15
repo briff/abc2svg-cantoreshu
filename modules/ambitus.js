@@ -64,6 +64,7 @@ abc2svg.ambitus = {
 				'" stroke-width=".6"/>\n');
 		}
 		s.x += 26;
+		s.nhd = 0
 		p_voice.clef.nhd = 0
 	}
 	of(p_voice)
