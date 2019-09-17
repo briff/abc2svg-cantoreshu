@@ -1912,6 +1912,8 @@ function get_key(parm) {
 	}
 
 	s_key.k_old_sf = curvoice.ckey.k_sf;	// memorize the key changes
+	if (!s_key.k_b40)
+		s_key.k_b40 = curvoice.ckey.k_b40
 
 	curvoice.ckey = s_key
 
