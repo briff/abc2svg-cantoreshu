@@ -816,6 +816,11 @@ Abc.prototype.set_width = function(s) {
 		s.wr = s.clef_small ? 7 : 12
 		return
 	case C.KEY:
+		if ((!s.k_a_acc && !s.k_sf && !s.k_old_sf) // if no accidental
+		 || s.k_none) {				// or no key
+			s.wl = s.wr = 0			// no width
+			return
+		}
 		s.wl = 3;
 		esp = 4
 		if (!s.k_a_acc) {
