@@ -185,10 +185,11 @@ var	note_names = "CDEFGAB",
 				ip++
 			}
 			n = note_names.indexOf(p[o]) + 16
-			b40 = abc2svg.pab40(n, a) + transp + 200
+			b40 = (abc2svg.pab40(n, a) + transp + 200) % 40
+			b40 = abc2svg.b40k[b40]
 			csa[i] = p.slice(0, o) +
-					note_names[(abc2svg.b40p(b40) + 19) % 7] +
-					acc_name[abc2svg.b40a(b40) + 2] +
+					note_names[abc2svg.b40_p[b40]] +
+					acc_name[abc2svg.b40_a[b40] + 2] +
 					p.slice(ip)
 		}
 		return csa.join('/')
