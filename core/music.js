@@ -1567,8 +1567,11 @@ function set_nl(s) {
 			case C.CLEF:
 				continue
 			case C.KEY:
-				if (!cfmt.keywarn)
+				if (!cfmt.keywarn
+				 || (!s2.k_a_acc && !s2.k_sf && !s2.k_old_sf)
+				 || s2.k_none)
 					continue
+				// fall thru
 			case C.METER:
 				if (s2.type == C.METER && !cfmt.timewarn)
 					continue
