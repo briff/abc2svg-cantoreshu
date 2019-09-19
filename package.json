@@ -17,6 +17,7 @@
     "abcdoc-1.js",
     "abcemb-1.js",
     "abcemb2-1.js",
+    "abctopdf",
     "ambitus-1.js",
     "break-1.js",
     "capo-1.js",
@@ -63,7 +64,8 @@
   },
   "bin": {
     "abc2odt": "./abc2odt",
-    "abc2svg": "./abc2svg"
+    "abc2svg": "./abc2svg",
+    "abctopdf": "./abctopdf"
   },
   "repository": {
     "type": "fossil",
