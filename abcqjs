@@ -26,6 +26,9 @@ cat > /tmp/abcqjs.js << EOF
 std.loadScript(path + core)
 
 // interpreter specific functions
+function load(fn) {
+	return std.loadScript(fn)
+}
 abc2svg.print = function(str) {
 	print(str)
 }
@@ -80,7 +83,10 @@ std.loadScript(path + "cmdline.js")
 
 // main
 	if (/\.js$/.test(args[0])) {
-		std.loadScript(path + args[0])
+		if (args[0][0] == "/")
+			std.loadScript(args[0])
+		else
+			std.loadScript(path + args[0])
 		args.shift()
 	}
 	if (typeof abc2svg.abc_init != 'function')
