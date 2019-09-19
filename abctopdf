@@ -38,6 +38,8 @@ elif command -v js60 >/dev/null 2>&1; then
 	abcscr=abcjs60
 elif command -v d8 >/dev/null 2>&1; then
 	abcscr=abcv8
+elif command -v abc2svg >/dev/null 2>&1; then
+	abcscr=abc2svg
 elif command -v node >/dev/null 2>&1; then
 	abcscr=abcnode
 else
