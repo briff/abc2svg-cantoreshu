@@ -4372,9 +4372,6 @@ function block_gen(s) {
 		vskip(s.sk);
 //		blk_out()
 		break
-	default:
-		error(2, s, 'Block $1 not treated', s.subtype)
-		break
 	}
 }
 
