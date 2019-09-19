@@ -822,7 +822,7 @@ function note_transp(s, sk, note) {
 			if (ak == an)
 				an = 0		// accidental in the key
 		}
-		if (!an && a == 3)
+		if (!an)
 			an = 3
 	} else if (sk.k_none) {			// if no key
 		if (acc_same_pitch(s, note.pit)) // and accidental from previous notes
