@@ -1187,6 +1187,8 @@ function new_bar() {
 		a_dcn = null
 	}
 
+	curvoice.acc = []			// no accidental anymore
+
 	// set the start/stop of ottava
 	if (parse.ottava.length) {
 		s2 = s
@@ -1915,6 +1917,18 @@ Abc.prototype.new_note = function(grace, sls) {
 						curvoice.ulen)
 			if (!note)
 				return //null
+
+			// get the explicit or implicit accidental
+			// and keep the absolute pitch in base-40
+			i = note.acc
+			if (i) {
+				curvoice.acc[note.pit + 19] = i
+			} else {
+				i = curvoice.acc[note.pit + 19]
+				if (!i)
+				    i = curvoice.ckey.k_map[(note.pit + 21) % 7] || 0
+			}
+			note.b40 = abc2svg.pab40(note.pit, i)
 
 			// transpose
 			if (curvoice.octave)
