@@ -98,6 +98,14 @@ Abc.prototype.mei2mus = function(mei) {
 		mu: C.BLEN / 4,
 		pt: .01			// default unit ! en cm
 	},
+	acc_ty = {
+		"ff": -2,
+		"f": -1,
+		"s": 1,
+		"x": 2,
+//		"ss": 2,
+		"n": 3
+	},
 	bar_ty = {
 		dashed: ".|",
 		dbl: "||",
@@ -121,13 +129,8 @@ Abc.prototype.mei2mus = function(mei) {
 	    var	s = curr.s,
 		note = s.notes[s.nhd]
 
-		switch (tag.accid) {
-		case "ss": note.acc = -2; break
-		case "f": note.acc = -1; break
-		case "s": note.acc = 1; break
-		case "x": note.acc = 2; break
-		case "n": note.acc = 3; break
-		}
+		if (acc_ty[tag.accid])
+			note.acc = acc_ty[tag.accid]
 	}, // accid()
 
 	arpeg: function(tag) {
@@ -679,13 +682,8 @@ return true
 			do_delayed(id, curr.chord ? note : s)
 		}
 		note.dur = dur
-		switch (tag.accid) {
-		case "ff": note.acc = -2; break
-		case "f": note.acc = -1; break
-		case "s": note.acc = 1; break
-		case "x": note.acc = 2; break
-		case "n": note.acc = 3; break
-		}
+		if (acc_ty[tag.accid])
+			note.acc = acc_ty[tag.accid]
 
 //fixme: may have notes of the chord on different staves
 		if (tag.staff)
