@@ -817,7 +817,8 @@ Abc.prototype.set_width = function(s) {
 		return
 	case C.KEY:
 		if ((!s.k_a_acc && !s.k_sf && !s.k_old_sf) // if no accidental
-		 || s.k_none) {				// or no key
+		 || s.k_none				// or no key
+		 || s.k_play) {				// or key for play
 			s.wl = s.wr = 0			// no width
 			return
 		}
@@ -1569,7 +1570,8 @@ function set_nl(s) {
 			case C.KEY:
 				if (!cfmt.keywarn
 				 || (!s2.k_a_acc && !s2.k_sf && !s2.k_old_sf)
-				 || s2.k_none)
+				 || s2.k_none
+				 || s2.k_play)		// play only
 					continue
 				// fall thru
 			case C.METER:
@@ -3067,7 +3069,6 @@ function init_music_line() {
 			s.k_sf = s2.k_sf;
 			s.k_mode = s2.k_mode;
 			s.k_old_sf = s2.k_sf;	// no key cancel
-			s.k_none = s2.k_none;
 			s.k_a_acc = s2.k_a_acc;
 			s.istart = s2.istart;
 			s.iend = s2.iend

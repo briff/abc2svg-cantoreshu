@@ -124,43 +124,9 @@ function new_clef(clef_def) {
 	return s
 }
 
-// get a transposition value as a base-40 interval
-function get_transp(param,
-			type) {		// undefined or "instr"
-	if (param[0] == '0')
-		return 0
-
-    var	i, val, tmp, note, pit,
-	ts = [0, 1, 6,11,12,17,18,23,28,29,34,35],
-	tf = [0, 5, 6,11,12,17,22,23,28,29,34,39]
-
-	if ("123456789-+".indexOf(param[0]) >= 0) {	// by semi-tone
-		val = parseInt(param)
-		if (isNaN(val) || val < -36 || val > 36) {
-//fixme: no source reference...
-			syntax(1, "Bad transpose value")
-			return
-		}
-		return ((val / 12) | 0) * 40 +
-			(param.slice(-1) == 'b' ?
-					abc2svg.ifb40 :
-					abc2svg.isb40)[(val + 36) % 12]
-	}
-
-	// by music interval
-	if (type == "instr") {	// convert instrument= into score= or sound=
-		tmp = param.indexOf('/')
-		if (!cfmt.sound) {
-			if (tmp < 0)
-				return 0	// written pitch
-			param = param.replace('/', '')
-		} else {
-			if (tmp < 0)
-				param = 'c' + param
-			else
-				param = param.replace(/.*\//, 'c')
-		}
-	}
+// convert an interval to a base-40 interval
+function get_interval(param, score) {
+    var	i, val, tmp, note, pit
 
 	tmp = new scanBuf;
 	tmp.buffer = param
@@ -168,10 +134,14 @@ function get_transp(param,
 	for (i = 0; i < 2; i++) {
 		note = tmp.buffer[tmp.index] ? parse_acc_pit(tmp) : null
 		if (!note) {
-			syntax(1, "Bad transpose value")
-			return
+			if (i != 1 || !score) {
+				syntax(1, "Bad transpose value")
+				return
+			}
+			pit[i] = 23			// 'c' (C5)
+		} else {
+			pit[i] = abc2svg.pab40(note.pit, note.acc)
 		}
-		pit[i] = abc2svg.pab40(note.pit, note.acc)
 	}
 	return pit[1] - pit[0]
 }
@@ -350,7 +320,20 @@ Abc.prototype.set_vp = function(a) {
 			curvoice.scale = a.shift() == 'on' ? .7 : 1
 			break
 		case "instrument=":
-			curvoice.transp = get_transp(a.shift(), 'instr')
+
+			// instrument=M/N => score=MN and sound=cN
+			// (instrument=M == instrument=M/M)
+			item = a.shift()
+			val = item.indexOf('/')
+			if (val < 0) {
+				val = 0
+				curvoice.sndtran = get_interval('c' + item)
+			} else {
+				curvoice.sndtran = get_interval('c' +
+							item.slice(val + 1))
+				val = get_interval(item.replace('/', ''))
+			}
+			curvoice.transp = cfmt.sound ? curvoice.sndtran : val
 			break
 		case "map=":			// %%voicemap
 			curvoice.map = a.shift()
@@ -385,20 +368,24 @@ Abc.prototype.set_vp = function(a) {
 				curvoice.scale = val
 			break
 		case "score=":
+			// score=MN
+			// (score=M == score=Mc)
 			item = a.shift()
 			if (cfmt.sound)
 				break
-			curvoice.transp = get_transp(item)
+			curvoice.transp = get_interval(item, 'c')
 			break
 		case "shift=":
-			curvoice.shift = get_transp(a.shift())
+			curvoice.shift = curvoice.sndsh = get_interval(a.shift())
 			break
 		case "sound=":
 		case "transpose=":		// (abcMIDI compatibility)
-			item = a.shift()
-			if (!cfmt.sound)
-				break
-			curvoice.transp = get_transp(item)
+// concert-score display: apply sound=
+// sounding-score display: apply sound= only if M != c/C
+// sound: apply sound=
+			curvoice.sndtran = get_interval(a.shift())
+			if (cfmt.sound)
+				curvoice.transp = curvoice.sndtran
 			break
 		case "subname=":
 		case "sname=":

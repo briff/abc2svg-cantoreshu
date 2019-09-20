@@ -751,7 +751,7 @@ function get_map(text) {
 
 // set the transposition in the previous or first key signature
 function set_transp() {
-    var	s, transp
+    var	s, transp, sndtran
 
 	if (curvoice.ckey.k_bagpipe || curvoice.ckey.k_drum)
 		return
@@ -759,38 +759,42 @@ function set_transp() {
 	if (cfmt.transp && curvoice.transp)	// if %%transpose and score=
 		syntax(0, "Mix of old and new transposition syntaxes");
 
-	if (cfmt.transp == undefined
-	 && curvoice.transp == undefined
-	 && curvoice.shift == undefined)
-		return
 
-	transp = (cfmt.transp || 0) +		// %%transpose
-		(curvoice.transp || 0) +	// score= / sound= / instrument=
-		(curvoice.shift || 0);		// shift=
-
-	curvoice.vtransp = transp;
-
-	s = curvoice.last_sym
-	if (!s) {				// no symbol yet
-		curvoice.key = clone(curvoice.okey);
-		curvoice.key.k_transp = transp
-		curvoice.ckey = clone(curvoice.key)
-		if (curvoice.key.k_none)
-			curvoice.key.k_sf = 0
-		return
+	if (cfmt.transp != undefined
+	 || curvoice.transp != undefined
+	 || curvoice.shift != undefined)
+		transp = (cfmt.transp || 0) +	 // %%transpose
+			(curvoice.transp || 0) + // score= / sound= / instrument=
+			(curvoice.shift || 0)	 // shift=
+	if (curvoice.sndtran != undefined
+	 || curvoice.sndsh != undefined)
+		sndtran = (curvoice.sndtran || 0) +
+			(curvoice.sndsh || 0)
+	if (transp == undefined) {
+		if (sndtran == undefined)
+			return
+	} else {
+		curvoice.vtransp = transp
 	}
 
-	// set the transposition in the previous K:
-	while (1) {
-		if (s.type == C.KEY)
-			break
-		if (!s.prev) {
-			s = curvoice.key
-			break
+	if (is_voice_sig()) {			// if no symbol yet
+		curvoice.key = s = clone(curvoice.okey)
+	} else {
+		s = curvoice.last_sym
+		while (1) {	// set the transposition in the previous K:
+			if (s.type == C.KEY)
+				break
+			s = s.prev
+			if (!s) {
+				s = curvoice.key
+				break
+			}
 		}
-		s = s.prev
 	}
-	s.k_transp = transp
+	if (transp != undefined)
+		s.k_transp = transp
+	if (sndtran != undefined)
+		s.k_sndtran = sndtran
 	curvoice.ckey = clone(s)
 	if (curvoice.key.k_none)
 		s.k_sf = 0
@@ -928,6 +932,25 @@ function pit_adj() {
 		}
 	}
 } // pit_adj()
+
+// get a transposition value as a base-40 interval
+function get_transp(param) {
+	if (param[0] == '0')
+		return 0
+	if ("123456789-+".indexOf(param[0]) >= 0) {	// by semi-tone
+	    var	val = parseInt(param)
+		if (isNaN(val) || val < -36 || val > 36) {
+//fixme: no source reference...
+			syntax(1, "Bad transpose value")
+			return
+		}
+		return ((val / 12) | 0) * 40 +
+			(param.slice(-1) == 'b' ?
+					abc2svg.ifb40 :
+					abc2svg.isb40)[(val + 36) % 12]
+	}
+	return get_interval(param)
+} // get_transp()
 
 /* -- process a pseudo-comment (%% or I:) -- */
 // (possible hook)
@@ -1220,11 +1243,10 @@ Abc.prototype.do_pscom = function(text) {
 			// fall thru
 		case 1:
 		case 2:
-			cfmt.transp = (cfmt.transp || 0) + get_transp(param)
+			val = get_transp(param)
+			if (val)
+				cfmt.transp = (cfmt.transp || 0) + val
 			return
-//		case 2:
-//			goto_tune()
-//			break
 		}
 		for (s = curvoice.last_sym; s; s = s.prev) {
 			switch (s.type) {
@@ -1857,7 +1879,7 @@ function get_clef(s) {
 
 // treat K: (kp = key signature + parameters)
 function get_key(parm) {
-	var	v, p_voice, s, transp,
+	var	v, p_voice, s, transp, sndtran,
 //		[s_key, a] = new_key(parm)	// KO with nodejs
 		a = new_key(parm),
 		s_key = a[0];
@@ -1897,11 +1919,18 @@ function get_key(parm) {
 	    transp = (cfmt.transp || 0) +
 		(curvoice.transp || 0) +
 		(curvoice.shift || 0)
+	if (curvoice.sndtran != undefined
+	 || curvoice.sndsh != undefined)
+		sndtran = (curvoice.sndtran || 0) +
+			(curvoice.sndsh || 0)
 
 	if (s_key.k_sf == undefined) {
 		if (!s_key.k_a_acc
-		 && transp == undefined)
-			return
+		 && transp == undefined) {
+			if (sndtran == undefined)
+				return		// not a key signature
+			s_key.k_play = true	// play only
+		}
 		s_key.k_sf = curvoice.okey.k_sf
 	}
 
@@ -1910,6 +1939,8 @@ function get_key(parm) {
 		curvoice.vtransp = transp;
 		s_key.k_transp = transp
 	}
+	if (sndtran != undefined)
+		s_key.k_sndtran = sndtran
 
 	s_key.k_old_sf = curvoice.ckey.k_sf;	// memorize the key changes
 	if (!s_key.k_b40)

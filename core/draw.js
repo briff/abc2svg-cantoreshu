@@ -808,7 +808,7 @@ var	sharp_cl = new Int8Array([24, 9, 15, 21, 6, 12, 18]),
 	flat2 = new Int8Array([-12, 9, -12, 9, -12, 9])
 
 Abc.prototype.draw_keysig = function(x, s) {
-	if (s.k_none)
+	if (s.k_none || s.k_play)
 		return
 	var	old_sf = s.k_old_sf,
 		st = s.st,
