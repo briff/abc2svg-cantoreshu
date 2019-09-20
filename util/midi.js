@@ -19,6 +19,9 @@
 // along with abc2svg-core.  If not, see <http://www.gnu.org/licenses/>.
 
 // Usage:
+//	// Create a AbcMIDI object
+//	var abcmidi = AbcMIDI()
+//
 //	// Define a get_abcmodel() callback function
 //	// This one is called by abc2svg after ABC parsing 
 //	user.get_abcmodel = my_midi_callback
@@ -26,10 +29,7 @@
 //	// In this function
 //	function my_midi_callback(tsfirst, voice_tb, music_types, info) {
 //
-//		// Create a AbcMIDI instance
-//		var abcmidi = new AbcMIDI();
-//
-//		// and set the MIDI pitches
+//		// set the MIDI pitches
 //		abcmidi.add(tsfirst, voice_tb);
 //
 //		// The MIDI pitches are stored in the notes
@@ -39,14 +39,14 @@
 // AbcMIDI creation
 function AbcMIDI() {
     var	C = abc2svg.C,
-	scale = new Int8Array([0, 2, 4, 5, 7, 9, 11])	// note to pitch
+	scale = new Int8Array([0, 2, 4, 5, 7, 9, 11]),	// note to pitch
+	map = new Int8Array(70)				// current map - 10 octaves
 
-	// add MIDI pitches
-	AbcMIDI.prototype.add = function(s,		// starting symbol
-					voice_tb) {	// voice table
-
+	return {					// returned object
+	  // add MIDI pitches
+	  add: function(s,				// starting symbol
+			voice_tb) {			// voice table
 	    var bmap,					// measure base map
-			map = new Int8Array(70),	// current map - 10 octaves
 			tie_map,			// index = MIDI pitch
 			tie_time,
 			v,
@@ -66,11 +66,11 @@ function AbcMIDI() {
 
 		// convert ABC pitch to MIDI
 		function pit2midi(s, note) {
-		    var	a = note.acc
+		    var	a = note.acc,
 			p = note.pit + 19 + transp	// (+19 for pitch from C-1)
 
 			if (a) {
-				if (a == 3)		 // (3 = natural)
+				if (a == 3)		// (3 = natural)
 					a = 0
 				else if (note.micro_n)
 					a = (a < 0 ? -note.micro_n : note.micro_n) /
@@ -168,5 +168,6 @@ function AbcMIDI() {
 			s = s.next
 		}
 	    } // vloop()
-	} // add()
+	  } // add()
+	} // returned object
 } // end AbcMidi
