@@ -2028,6 +2028,7 @@ function new_voice(id) {
 			clef_type: "a",		// auto
 			time: 0
 		},
+		acc: [],		// accidentals of the measure (parse)
 		sls: [],		// slurs - used in parsing and in generation
 		hy_st: 0
 	}
