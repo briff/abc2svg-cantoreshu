@@ -1,4 +1,3 @@
-
 // abc2svg - parse.js - ABC parse
 //
 // Copyright (C) 2014-2019 Jean-Francois Moine
@@ -668,7 +667,7 @@ function new_key(param) {
 		i = s.k_a_acc.length
 		while (--i >= 0) {
 			note = s.k_a_acc[i]
-			s.k_map[(note.pit + 77) % 7] = note.acc
+			s.k_map[(note.pit + 19) % 7] = note.acc
 		}
 	} else {
 		s.k_map = abc2svg.keys[sf + 7]
@@ -1187,8 +1186,6 @@ function new_bar() {
 		a_dcn = null
 	}
 
-	curvoice.acc = []			// no accidental anymore
-
 	// set the start/stop of ottava
 	if (parse.ottava.length) {
 		s2 = s
@@ -1271,6 +1268,33 @@ function new_bar() {
 	 && curvoice.norepbra
 	 && !curvoice.second)
 		s.norepbra = true
+
+	// handle the accidentals (ties and repeat)
+	if (s.text) {
+		if (s.text[0] == '1') {
+			if (curvoice.tie_s)
+				curvoice.tie_s_rep = curvoice.tie_s
+			if (curvoice.acc_tie)
+				curvoice.acc_tie_rep = curvoice.acc_tie.slice()
+		} else {
+			if (curvoice.tie_s_rep) {
+				curvoice.tie_s = clone(curvoice.tie_s_rep)
+				curvoice.tie_s.notes = clone(curvoice.tie_s.notes)
+				for (var m = 0; m <= curvoice.tie_s.nhd; m++) {
+					curvoice.tie_s.notes[m] =
+						clone(curvoice.tie_s.notes[m])
+					curvoice.tie_s.notes[m].s =
+						curvoice.tie_s
+				}
+			}
+			if (curvoice.acc_tie_rep)
+				curvoice.acc_tie = curvoice.acc_tie_rep.slice()
+		}
+	}
+	if (curvoice.acc_tie)
+		curvoice.acc = curvoice.acc_tie	// reset the tied accidentals
+	else
+		curvoice.acc = []		// no accidental anymore
 
 	if (curvoice.ulen < 0)			// L:auto
 		adjust_dur(s);
@@ -1772,10 +1796,10 @@ Abc.prototype.new_note = function(grace, sls) {
 		line = parse.line,
 		a_dcn_sav = a_dcn;	// save parsed decoration names
 
-	if (!grace) {
+	if (!grace
+	 && curvoice.tie_s) {		// if tie from previous note / grace note
 		tie_s = curvoice.tie_s
-		if (tie_s)		// tie from previous note / grace note
-			curvoice.tie_s = null
+		curvoice.tie_s = null
 	}
 
 	a_dcn = null;
@@ -1918,6 +1942,10 @@ Abc.prototype.new_note = function(grace, sls) {
 			if (!note)
 				return //null
 
+			// transpose
+			if (curvoice.octave)
+				note.pit += curvoice.octave * 7
+
 			// get the explicit or implicit accidental
 			// and keep the absolute pitch in base-40
 			i = note.acc
@@ -1926,13 +1954,9 @@ Abc.prototype.new_note = function(grace, sls) {
 			} else {
 				i = curvoice.acc[note.pit + 19]
 				if (!i)
-				    i = curvoice.ckey.k_map[(note.pit + 21) % 7] || 0
+				    i = curvoice.ckey.k_map[(note.pit + 19) % 7] || 0
 			}
 			note.b40 = abc2svg.pab40(note.pit, i)
-
-			// transpose
-			if (curvoice.octave)
-				note.pit += curvoice.octave * 7
 
 			if (curvoice.map
 			 && maps[curvoice.map])
@@ -1942,38 +1966,39 @@ Abc.prototype.new_note = function(grace, sls) {
 			if (tie_s) {		// if some ties are ending here
 				if (tie_s.type != C.GRACE) {
 				    for (i = 0; i <= tie_s.nhd; i++) {
-					if (!tie_s.notes[i].tie_ty
-					 || tie_s.notes[i].tie_n)
+					if (!tie_s.notes[i].tie_ty)
 						continue
-					switch (tie_s.notes[i].pit - note.pit) {
-					default:
-						continue
-					case 1:
-					case -1:
-						if (tie_s.notes[i].acc == note.acc)
-							continue
-					case 0:
+					// (tie_s.notes[i].tie_n may exist
+					//  on repeat restart)
+					if (tie_s.notes[i].b40 == note.b40) {
 						tie_s.notes[i].tie_n = note
-						note.s = s
 						tie_s.notes[i].s = tie_s
+						note.s = s
+						tie_s.tie_s = s
+						if (curvoice.acc_tie
+						 && curvoice.acc_tie[note.pit + 19])
+							curvoice.acc_tie[note.pit + 19] = 0
 						break
 					}
-					break
 				    }
 				} else {
 				    for (s2 = tie_s.extra; s2; s2 = s2.next) {
 					if (!s2.notes[0].tie_ty)
 						continue
-					if (s2.notes[0].pit == note.pit) {
+					if (s2.notes[0].b40 == note.b40) {
 						s2.tie_s = s
 						s2.notes[0].tie_n = note
 						note.s = s
 						s2.notes[0].s = s2
+						tie_s.tie_s = s
+						if (curvoice.acc_tie
+						 && curvoice.acc_tie[note.pit + 19])
+							curvoice.acc_tie[note.pit + 19] = 0
 						break
 					}
 				    }
 				}
-				tie_s.tie_s = s
+				s.ti2 = tie_s
 			}
 
 			// starting slurs
@@ -2010,6 +2035,12 @@ Abc.prototype.new_note = function(grace, sls) {
 				case '-':
 					note.tie_ty = parse_vpos()
 					curvoice.tie_s = s
+					if (curvoice.acc[note.pit + 19]) {
+						if (!curvoice.acc_tie)
+							curvoice.acc_tie = []
+						curvoice.acc_tie[note.pit + 19] =
+							curvoice.acc[note.pit + 19]
+					}
 					c = line.char()
 					continue
 				case '.':
@@ -2289,7 +2320,7 @@ function parse_music_line() {
 
 	// parse a music sequence
 	function parse_seq(in_mac) {
-	    var	c, idx, type, k, s, dcn, i, n, text
+	    var	c, idx, type, k, s, dcn, i, n, text, note
 
 		while (1) {
 			c = line.char()
@@ -2496,6 +2527,15 @@ function parse_music_line() {
 					grace.tie_s = curvoice.tie_s = grace
 				else
 					curvoice.tie_s = s
+				for (i = 0; i <= s.nhd; i++) {
+					note = s.notes[i]
+					if (curvoice.acc[note.pit + 19]) {
+						if (!curvoice.acc_tie)
+							curvoice.acc_tie = []
+						curvoice.acc_tie[note.pit + 19] =
+							curvoice.acc[note.pit + 19]
+					}
+				}
 				continue
 			case '[':
 			    var c_next = line.buffer[line.index + 1]

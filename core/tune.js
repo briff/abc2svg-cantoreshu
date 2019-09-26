@@ -807,7 +807,7 @@ function note_transp(s, sk, note) {
 	a = note.acc
 
 	if (!a && sk.k_a_acc)			// if accidental list
-		a = sk.k_map[(n + 77) % 7]	// invisible accidental
+		a = sk.k_map[(n + 19) % 7]	// invisible accidental
 
 	b40 = abc2svg.pab40(n, a) + sk.k_transp	// base-40 transposition
 
@@ -822,7 +822,7 @@ function note_transp(s, sk, note) {
 	an = abc2svg.b40a(b40)			// new accidental
 	if (a) {
 		if (sk.k_a_acc) {		// if accidental list
-			ak = sk.k_map[(note.pit + 77) % 7]
+			ak = sk.k_map[(note.pit + 19) % 7]
 			if (ak == an)
 				an = 0		// accidental in the key
 		}
@@ -834,7 +834,7 @@ function note_transp(s, sk, note) {
 	} else if (sk.k_a_acc) {		// if accidental list
 		if (acc_same_pitch(s, note.pit)) // and accidental from previous notes
 			return			// no change
-		ak = sk.k_map[(note.pit + 77) % 7]
+		ak = sk.k_map[(note.pit + 19) % 7]
 		if (ak)
 			an = 3		// natural
 	} else {
@@ -884,7 +884,7 @@ function note_transp(s, sk, note) {
 
 // adjust the pitches according to the transposition(s)
 function pit_adj() {
-    var	i, p_v, transp, s, sk,
+    var	i, p_v, s, sk, g,
 	nv = voice_tb.length
 
 	while (--nv >= 0) {
@@ -912,6 +912,12 @@ function pit_adj() {
 			// transpose
 			for (; s; s = s.next) {
 				switch (s.type) {
+				case C.GRACE:
+					for (g = s.extra; g; g = g.next) {
+						for (i = 0; i <= g.nhd; i++)
+							note_transp(g, sk, g.notes[i])
+					}
+					continue
 				case C.NOTE:
 					for (i = 0; i <= s.nhd; i++)
 						note_transp(s, sk, s.notes[i])
@@ -1429,8 +1435,6 @@ function generate(in_mc) {
 		p_voice.sls = [];
 		p_voice.hy_st = 0;
 		delete p_voice.bar_start
-		delete p_voice.s_tie
-		delete p_voice.s_rtie
 	}
 	staves_found = 0			// (for compress/dup the voices)
 }

@@ -38,131 +38,77 @@
 
 // AbcMIDI creation
 function AbcMIDI() {
-    var	C = abc2svg.C,
-	scale = new Int8Array([0, 2, 4, 5, 7, 9, 11]),	// note to pitch
-	map = new Int8Array(70)				// current map - 10 octaves
+    var	C = abc2svg.C
 
 	return {					// returned object
 	  // add MIDI pitches
 	  add: function(s,				// starting symbol
 			voice_tb) {			// voice table
-	    var bmap,					// measure base map
-			tie_map,			// index = MIDI pitch
-			tie_time,
-			v,
-			transp				// clef transpose
-
-		// re-initialize the map on bar
-		function bar_map() {
-			for (var i = 0; i < 10; i++)
-				map.set(bmap, i * 7)
-		} // bar_map()
-
-		// define the note map
-		function key_map(s) {
-			bmap = s.k_map
-			bar_map()
-		} // key_map()
-
-		// convert ABC pitch to MIDI
-		function pit2midi(s, note) {
-		    var	a = note.acc,
-			p = note.pit + 19 + transp	// (+19 for pitch from C-1)
-
-			if (a) {
-				if (a == 3)		// (3 = natural)
-					a = 0
-				else if (note.micro_n)
-					a = (a < 0 ? -note.micro_n : note.micro_n) /
-								note.micro_d * 2
-				map[p] = a
-			} else {
-				a = map[p]
-			}
-
-			if (tie_time[p]) {
-				if (s.time > tie_time[p]) {
-					delete tie_map[p]
-					delete tie_time[p]
-				} else {
-					a = tie_map[p]
-				}
-			}
-
-			note.midi = ((p / 7) | 0) * 12 + scale[p % 7] + a
-
-			if (note.tie_ty) {
-				tie_map[p] = a
-				tie_time[p] = s.time + s.dur
-			}
-		} // pit2midi()
+	    var p_v, s,
+		temper = voice_tb[0].temper,		// (set by the module temper.js)
+		v = voice_tb.length
 
 		// initialize the clefs and keys
-		for (v = 0; v < voice_tb.length; v++) {
-			if (!voice_tb[v].sym)
+		while (--v >= 0) {
+			p_v = voice_tb[v]
+			if (!p_v.sym)
 				continue
-			s = voice_tb[v].clef
-			transp = (s.clef_octave && !s.clef_oct_transp) ?
-					s.clef_octave : 0
-			key_map(voice_tb[v].key);	// init acc. map from key sig.
+			if (p_v.key.k_bagpipe)
+	// detune in cents for just intonation in A
+	//  C    ^C     D    _E     E     F    ^F     G    _A     A    _B     B
+	// 15.3 -14.0  -2.0 -10.0   1.9  13.3 -16.0 -31.8 -12.0   0.0  11.4   3.8
+	// (C is ^C,			F is ^F and G is =G)
+	// 86				 84
+	// temp = [100-14, -14, -2, -10, 2, 100-16, -16, -32, -12, 0, 11, 4]
+	// but 'A' bagpipe = 480Hz => raise Math.log2(480/440)*1200 = 151
+				temper = new Float32Array([
+	2.37, 1.37, 1.49, 1.41, 1.53, 2.35, 1.35, 1.19, 1.39, 1.51, 1.62, 1.55
+				])
 
-			// and loop on the symbols of the voice
-			vloop(v)
+			s = p_v.clef
+			vloop(p_v.sym,
+				p_v.key.k_sndtran || 0,
+				s.clef_octave && !s.clef_oct_transp ?
+					(s.clef_octave / 7 * 12) : 0)
 		}
-	    function vloop(v) {
-		var	i, g, p, note,
-			s = voice_tb[v].sym,
-			vtime = s.time,		// next time
-			rep_tie_map = []
 
-		tie_map = []
-		tie_time = []
+	    function vloop(s, sndtran, ctrans) {
+		var	i, g, note,
+			transp = sndtran + ctrans
+
+		function midi_set(note) {
+		    var m = abc2svg.b40m(note.b40) + transp
+			if (temper		// if not equal temperament
+			 && (!note.acc
+			  || note.a | 0 == note.a)) // and not micro-tone
+				m += temper[m % 12]
+			note.midi = m
+		}
+
 		while (s) {
-			if (s.time > vtime) {	// if time skip
-				bar_map()	// force a measure bar
-				vtime = s.time
-			}
-			if (s.dur)
-				vtime = s.time + s.dur
 			switch (s.type) {
-			case C.BAR:
-//fixme: pb when lack of measure bar (voice overlay, new voice)
-				// x times repeat
-				if (s.text) {
-					if (s.text[0] == '1') {	// 1st time
-						rep_tie_map = [];
-						rep_tie_time = []
-						rep_tie_map.set(tie_map)
-					} else if (rep_tie_map.length) {
-						tie_map = []
-						tie_time = []
-						for (i = 0; i < rep_tie_map.length; i++) {
-							tie_map[i] = rep_tie_map[i];
-							tie_time[i] = s.time
-						}
-					}
-				}
-				if (!s.invis)
-					bar_map()
-				break
 			case C.CLEF:
-				transp = (s.clef_octave && !s.clef_oct_transp) ?
-						s.clef_octave : 0
+				ctrans = (s.clef_octave && !s.clef_oct_transp) ?
+						(s.clef_octave / 7 * 12) : 0
+				transp = ctrans + sndtran
+				break
+			case C.KEY:
+				if (s.k_sndtran != undefined) {
+					sndtran = s.k_sndtran
+					transp = ctrans + sndtran
+				}
 				break
 			case C.GRACE:
 				for (g = s.extra; g; g = g.next) {
 					if (!g.type != C.NOTE)
 						continue
 					for (i = 0; i <= g.nhd; i++)
-						note.midi = pit2midi(s, g.notes[i])
+						midi_set(g.notes[i])
 				}
-				break
-			case C.KEY:
-				key_map(s)
 				break
 			case C.NOTE:
 				for (i = 0; i <= s.nhd; i++)
-					pit2midi(s, s.notes[i])
+					midi_set(s.notes[i])
 				break
 			}
 			s = s.next

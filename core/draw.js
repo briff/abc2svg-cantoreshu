@@ -2666,7 +2666,7 @@ function draw_ties(k1, k2,
 
 /* -- draw all ties between neighboring notes -- */
 function draw_all_ties(p_voice) {
-    var s, s1, s2, clef_chg, time, s_rtie, x, dx, s_next
+    var s, s1, s2, clef_chg, time, x, dx, s_next, m
 
 	function draw_ties_g(s1, s2, job) {
 		if (s1.type == C.GRACE) {
@@ -2688,85 +2688,49 @@ function draw_all_ties(p_voice) {
 		}
 		break
 	}
-	s_rtie = p_voice.s_rtie			/* tie from 1st repeat bar */
+
 	for (s2 = s1; s2; s2 = s2.next) {
 		if (s2.dur
 		 || s2.type == C.GRACE)
 			break
-		if (s2.type != C.BAR
-		 || !s2.text)			// not a repeat bar
-			continue
-		if (s2.text[0] == '1')		/* 1st repeat bar */
-			s_rtie = p_voice.s_tie
-		else
-			p_voice.s_tie = s_rtie
 	}
 	if (!s2)
 		return
 
 	set_color(s2.color)
 
-	if (p_voice.s_tie) {			/* tie from previous line */
-		p_voice.s_tie.x = s1.x + s1.wr;
-		s1 = p_voice.s_tie;
-		p_voice.s_tie = null;
-		s1.st = s2.st;
-		s1.ts_next = s2.ts_next;	/* (for tie to other voice) */
-		s1.time = s2.time - s1.dur;	/* (if after repeat sequence) */
-		draw_ties(s1, s2, 1)		/* tie to 1st note */
-	}
-
 	/* search the start of ties */
 //	clef_chg = false
 	s_next = s2
 	while (1) {
 		for (s1 = s_next; s1; s1 = s1.next) {
+			if (s1.ti2 && s1 != s_next) {	// if no tie start
+				s = s1.ti2
+				s.x = s1.x
+				s.next = s1
+				s.st = s1.st
+				s.time = s1.time - s.dur
+				for (m = 0; m <= s.nhd; m++) {
+					s.notes[m].s = s
+				}
+				draw_ties(s, s1, 1)
+			}
 			if (s1.tie_s)
 				break
-			if (!s_rtie)
-				continue
-			if (s1.type != C.BAR
-			 || !s1.text)			// not a repeat bar
-				continue
-			if (s1.text[0] == '1') {	/* 1st repeat bar */
-				s_rtie = null
-				continue
-			}
-			if (s1.bar_type == '|')
-				continue		// not a repeat
-			for (s2 = s1.next; s2; s2 = s2.next)
-				if (s2.type == C.NOTE)
-					break
-			if (!s2) {
-				s1 = null
-				break
-			}
-			s = clone(s_rtie);
-			s.x = s1.x;
-			s.next = s2;
-			s.st = s2.st;
-			s.time = s2.time - s.dur;
-			draw_ties(s, s2, 1)
 		}
 		if (!s1)
 			break
-		s_next = s1.next
 
-		// check if some repeat ending
-		s2 = s1.tie_s				// tie ending note
+		// check if tied note in this line
+		s2 = s1.tie_s				// ending note of the tie
+		s_next = s2.v == s1.v ? s2 : s1.next
 		for (s = s1.ts_next; s && s != s2; s = s.ts_next) {
-			if (s.type == C.BAR) {
-				if (s.text && s.text[0] != '1') {	// new ending
-					s2 = s
-					break
-				}
-				s_rtie = s1		// 1st repeat bar
-			}
+			if (s.dur)
+				break
 		}
 
 		if (!s) {				// end of line
 			draw_ties_g(s1, null, 2);
-			p_voice.s_tie = s1
 			break
 		}
 
@@ -2803,7 +2767,6 @@ function draw_all_ties(p_voice) {
 		}
 		draw_ties_g(s1, s2, s2.type == C.NOTE ? 0 : 2)
 	}
-	p_voice.s_rtie = s_rtie
 }
 
 /* -- draw the symbols near the notes -- */
