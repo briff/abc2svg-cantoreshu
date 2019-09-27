@@ -25,35 +25,43 @@ if ! command -v rsvg-convert >/dev/null 2>&1; then
 fi
 
 # choose a abc2svg batch script with an available JS interpreter
-# (sorted from fastest to slowest in ARM machines)
-if command -v qjs >/dev/null 2>&1; then
-	abcscr=abcqjs
-elif command -v jsc >/dev/null 2>&1; then
-	abcscr=abcjsc
-elif command -v js24 >/dev/null 2>&1; then
-	abcscr=abcjs24
-elif command -v js52 >/dev/null 2>&1; then
-	abcscr=abcjs52
-elif command -v js60 >/dev/null 2>&1; then
-	abcscr=abcjs60
-elif command -v d8 >/dev/null 2>&1; then
-	abcscr=abcv8
-elif command -v abc2svg >/dev/null 2>&1; then
-	abcscr=abc2svg
-elif command -v node >/dev/null 2>&1; then
-	abcscr=abcnode
-else
-	echo "$0: could not find a javascript interpreter - abort"
-	exit 1
-fi
 if [ ${0#./} != $0 ]; then
-	abcscr="./$abcscr"
+	bdir="./"
 else
 	bdir=`dirname $0`
 	if [ $bdir != '.' ]; then
-		abcscr="$bdir/$abcscr"
+		bdir="$bdir/"
+	else
+		bdir=''
 	fi
 fi
+# (sorted from fastest to slowest in ARM machines)
+for c in qjs jsc js24 js52 js60 d8 abc2svg node end; do
+	if [ $c = 'end' ]; then
+		echo "$0: could not find a javascript interpreter - abort"
+		exit 1
+	fi
+	if command -v $c >/dev/null 2>&1; then
+		case $c in
+		(qjs) c=abcqjs;;
+		(jsc) c=abcjsc;;
+		(js24) c=abcjs24;;
+		(js52) c=abcjs52;;
+		(js60) c=abcjs60;;
+		(d8) c=abcv8;;
+		(abc2svg) c=abc2svg;;
+		(node) c=abcnode;;
+		esac
+		if command -v $c >/dev/null 2>&1; then
+			abcscr=$c
+			break
+		fi
+		if command -v $bdir$c >/dev/null 2>&1; then
+			abcscr=$bdir$c
+			break
+		fi
+	fi
+done
 echo "Using $abcscr"
 
 # get the output file name (after '-o')
