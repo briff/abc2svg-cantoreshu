@@ -1181,8 +1181,7 @@ function add_end_bar(s) {
 }
 
 /* -- set the width and space of all symbols -- */
-/* this function is called once for the whole tune
- * then, once per music line up to the first sequence */
+// this function is called once for the whole tune
 function set_allsymwidth() {
     var	maxx, new_val, s_tupc, s_tupn, st, s_chs,
 	s = tsfirst,
@@ -4257,8 +4256,8 @@ Abc.prototype.set_stems = function() {
 /* -- split up unsuitable bars at end of staff -- */
 // return true if the bar type has changed
 function check_bar(s) {
-	var	bar_type, i, b1, b2,
-		p_voice = s.p_v
+    var	bar_type, i, b1, b2, s_bs, s2,
+	p_voice = s.p_v
 
 	/* search the last bar */
 	while (s.type == C.CLEF || s.type == C.KEY || s.type == C.METER) {
@@ -4285,15 +4284,59 @@ function check_bar(s) {
 	if (bar_type.slice(-1) != ':')		// if not left repeat bar
 		return
 
-	if (!p_voice.bar_start)
-		p_voice.bar_start = clone(s)
+	// add a left repeat bar in the next music line
+	s2 = p_voice.s_next
+	while (1) {
+		switch (s2.type) {
+		case C.BAR:
+		case C.GRACE:
+		case C.NOTE:
+		case C.REST:
+			break
+		default:
+			s2 = s2.next
+			if (!s2)
+				return
+		}
+		break
+	}
+	if (s2.type == C.BAR) {
+		s_bs = s2		// bar start
+	} else {
+		s_bs = clone(s)
+		s_bs.next = s2
+		s_bs.prev = s2.prev
+		if (s2 == p_voice.s_next)
+			p_voice.s_next = s_bs
+		else
+			s2.prev.next = s_bs
+		s2.prev = s_bs
+		s_bs.ts_next = s2
+		s_bs.ts_prev = s2.ts_prev
+		if (s2 == tsnext)
+			tsnext = s_bs
+		else
+			s2.ts_prev.ts_next = s_bs
+		s2.ts_prev = s_bs
+		delete s_bs.seqst
+		if (s2.type != C.BAR) {
+			if (s2.seqst)
+				s_bs.seqst = true
+			else {
+				s2.seqst = true
+				s2.shrink = s_bs.wr + s2.wl
+				s2.space = 0
+			}
+		}
+	}
+
 	if (bar_type[0] != ':') {		// 'xx:' (not ':xx:')
 		if (bar_type == "||:") {
-			p_voice.bar_start.bar_type = "[|:";
+			s_bs.bar_type = "[|:"
 			s.bar_type = "||"
 			return true
 		}
-		p_voice.bar_start.bar_type = bar_type
+		s_bs.bar_type = bar_type
 		if (s.prev && s.prev.type == C.BAR)
 			unlksym(s)
 		else
@@ -4310,11 +4353,11 @@ function check_bar(s) {
 		i = bar_type.length - 1
 		while (bar_type[i] == ':')
 			i--;
-		p_voice.bar_start.bar_type = '[|' + bar_type.slice(i + 1)
+		s_bs.bar_type = '[|' + bar_type.slice(i + 1)
 	} else {
 		i = (bar_type.length / 2) |0;			// '::::' !
 		s.bar_type = bar_type.slice(0, i) + '|]';
-		p_voice.bar_start.bar_type = '[|' + bar_type.slice(i)
+		s_bs.bar_type = '[|' + bar_type.slice(i)
 	}
 	return true
 }
