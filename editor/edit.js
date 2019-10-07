@@ -485,6 +485,7 @@ function endplay() {
 //	3: Continue
 function play_tune(what) {
     var	i, si, ei, elt,
+	C = abc2svg.C,
 	s = elt_ref.source.value
 
 	if (play.playing) {
@@ -500,21 +501,27 @@ function play_tune(what) {
 	function gnrn(sym, loop) {	// go to the next real note (not tied)
 	    var	i
 		while (1) {
-			while (!sym.dur) {
-				if (!sym.ts_next) {
-					if (!loop)
-						return gprn(sym, 1)
+			switch (sym.type) {
+			case C.NOTE:
+				i = sym.nhd + 1
+				while (--i >= 0) {
+					if (sym.notes[i].ti2)
+						break
+				}
+				if (i < 0)
+					return sym
+				break
+			case C.REST:
+			case C.GRACE:
+				return sym
+			case C.BLOCK:
+				switch (sym.subtype) {
+				case "midictl":
+				case "midiprog":
 					return sym
 				}
-				sym = sym.ts_next
+				break
 			}
-			i = sym.nhd + 1
-			while (--i >= 0) {
-				if (sym.notes[i].ti2)
-					break
-			}
-			if (i < 0)
-				return sym
 			if (!sym.ts_next) {
 				if (!loop)
 					return gprn(sym, 1)
@@ -527,21 +534,27 @@ function play_tune(what) {
 	function gprn(sym, loop) {	// go to the previous real note (not tied)
 	    var	i
 		while (1) {
-			while (!sym.dur) {
-				if (!sym.ts_prev) {
-					if (!loop)
-						return gnrn(sym, 1)
+			switch (sym.type) {
+			case C.NOTE:
+				i = sym.nhd + 1
+				while (--i >= 0) {
+					if (sym.notes[i].ti2)
+						break
+				}
+				if (i < 0)
+					return sym
+				break
+			case C.REST:
+			case C.GRACE:
+				return sym
+			case C.BLOCK:
+				switch (sym.subtype) {
+				case "midictl":
+				case "midiprog":
 					return sym
 				}
-				sym = sym.ts_prev
+				break
 			}
-			i = sym.nhd + 1
-			while (--i >= 0) {
-				if (sym.notes[i].ti2)
-					break
-			}
-			if (i < 0)
-				return sym
 			if (!sym.ts_prev) {
 				if (!loop)
 					return gnrn(sym, 1)
@@ -557,7 +570,7 @@ function play_tune(what) {
 		sym = syms[si],
 		pa = play.a_pe
 
-		sym = gprn(sym.p_v.sym)	// first symbol of the voice
+		sym = gnrn(sym.p_v.sym)	// first symbol of the voice
 		si = sym.istart
 		for (i = 0; i < pa.length; i++) {
 			if (pa[i][0] == si)
