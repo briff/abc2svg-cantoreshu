@@ -369,7 +369,6 @@ abc2svg.do_render = function(select) {
 	}
 
 	// add the menu
-//--fixme: si play => start scrolling ou play (pas les 2) - pas play: rien
 	new_page += '\
 <div id="dd" class="dd">\
 <label id="db" class="db" onclick="abc2svg.menu_toggle()">|||</label>\
