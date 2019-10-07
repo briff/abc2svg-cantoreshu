@@ -210,37 +210,33 @@ var prn = {
 	return p
     } // norm()
 
-    var	n, v,
+    var	vpr, vpl,
 	maps = this.get_maps(),
-	a = parm.split(/\s+/);
+	a = parm.split(/\s+/),
+	n = norm(a[1])				// note
 
-	n = norm(a[1])
 	if (!n) {
 		this.syntax(1, this.errs.bad_val, "%%percmap")
 		return
 	}
-	if (this.cfmt().sound != "play") {		// !play
-		if (!a[3])
-			return
-		if (!maps.MIDIdrum)
-			maps.MIDIdrum = {}
-		v = tonote(n)
-		if (!v) {
-			this.syntax(1, this.errs.bad_val, "%%percmap")
-			return
-		}
-		delete v.acc
-		maps.MIDIdrum[n] = [[a[3]], v]
-	} else {					// play
-		v = tonote(a[2])
-		if (!v) {
-			this.syntax(1, this.errs.bad_val, "%%percmap")
-			return
-		}
-		if (!maps.MIDIdrum)
-			maps.MIDIdrum = {}
-		maps.MIDIdrum[n] = [null, v]
+
+	vpr = tonote(n)
+	if (!vpr) {
+		this.syntax(1, this.errs.bad_val, "%%percmap")
+		return
 	}
+	delete vpr.acc				// no accidental
+
+	vpl = tonote(a[2])
+	if (!vpl) {
+		this.syntax(1, this.errs.bad_val, "%%percmap")
+		return
+	}
+	a = a[3] ? [a[3]] : null		// head
+	if (!maps.MIDIdrum)
+		maps.MIDIdrum = {}
+	maps.MIDIdrum[n] = [a, vpr, null, vpl]	// [heads, print, color, play]
+
 	this.set_v_param("perc", "MIDIdrum")
     }, // do_perc()
 

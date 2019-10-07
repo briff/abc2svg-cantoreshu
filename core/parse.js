@@ -23,8 +23,9 @@ var	a_gch,		// array of parsed guitar chords
 	maps = {}	// maps object - hashcode = map name
 			//	-> object - hashcode = note
 			//	[0] array of heads
-			//	[1] print
+			//	[1] print (note)
 			//	[2] color
+			//	[3] play (note)
 var	qplet_tb = new Int8Array([ 0, 1, 3, 2, 3, 0, 2, 0, 3, 0 ]),
 	ntb = "CDEFGABcdefgab"
 
@@ -1688,10 +1689,13 @@ function set_map(note) {
 		}
 	}
 	note.map = map[nn]
-	if (note.map[1]) {
-		note.pit = note.map[1].pit;		// print/play
+	if (note.map[1]) {				// if print map
+		note.pit = note.map[1].pit
 		note.acc = note.map[1].acc
 	}
+	nn = note.map[3]
+	if (nn)					// if play map
+		note.b40 = abc2svg.pab40(nn.pit, nn.acc)
 }
 
 /* -- parse note or rest with pitch and length -- */

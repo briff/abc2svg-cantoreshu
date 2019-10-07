@@ -190,6 +190,7 @@ var errs = {
 	not_ascii: "Not an ASCII character",
 	not_enough_n: 'Not enough notes/rests for %%repeat',
 	not_enough_m: 'Not enough measures for %%repeat',
+	not_enough_p: "Not enough parameters in %%map",
 	not_in_tune: "Cannot have '$1' inside a tune"
 }
 

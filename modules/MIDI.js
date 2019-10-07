@@ -58,8 +58,6 @@ abc2svg.MIDI = {
 		abc2svg.MIDI.do_midi.call(this, "MIDI control 32 0")	// LSB bank
 		break
 	case "drummap":
-		if (this.cfmt().sound != "play")
-			break
 //fixme: should have a 'MIDIdrum' per voice?
 		n = norm(a[2]);
 		v = tonote(a[3]);
@@ -70,7 +68,7 @@ abc2svg.MIDI = {
 		maps = this.get_maps()
 		if (!maps.MIDIdrum)
 			maps.MIDIdrum = {}
-		maps.MIDIdrum[n] = [null, v];
+		maps.MIDIdrum[n] = [null, null, null, v];
 		this.set_v_param("mididrum", "MIDIdrum")
 		break
 	case "program":
@@ -84,8 +82,6 @@ abc2svg.MIDI = {
 			return
 		}
 		if (this.parse.state == 3) {
-			if (this.cfmt().sound != "play")
-				break
 			s = this.new_block("midiprog");
 			s.instr = v
 		} else {
@@ -104,8 +100,6 @@ abc2svg.MIDI = {
 			return
 		}
 		if (this.parse.state == 3) {
-			if (this.cfmt().sound != "play")
-				break
 			s = this.new_block("midictl");
 			s.ctrl = n;
 			s.val = v

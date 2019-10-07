@@ -672,7 +672,7 @@ function get_map(text) {
 		a = info_split(text)
 
 	if (a.length < 3) {
-		syntax(1, "Not enough parameters in %%map")
+		syntax(1, not_enough_p)
 		return
 	}
 	ns = a[1]
@@ -701,7 +701,7 @@ function get_map(text) {
 	if (!map)
 		notes[ns] = map = []
 
-	/* try the optional 'print' and 'heads' parameters */
+	/* try the optional 'print', 'play' and 'heads' parameters */
 	if (!a[2])
 		return
 	i = 2
@@ -723,27 +723,36 @@ function get_map(text) {
 	for (; i < a.length; i++) {
 		switch (a[i]) {
 		case "heads=":
-			map[0] = a[++i].split(',')
+			if (!a[++i]) {
+				syntax(1, not_enough_p)
+				break
+			}
+			map[0] = a[i].split(',')
 			break
 		case "print=":
-			if (cfmt.sound == "play")
+			if (!a[++i]) {
+				syntax(1, not_enough_p)
 				break
+			}
 			tmp = new scanBuf;
-			tmp.buffer = a[++i];
+			tmp.buffer = a[i];
 			map[1] = parse_acc_pit(tmp)
 			break
-//		case "transpose=":
-//			switch (a[++i][0]) {
-//			case "n":
-//				map[2] = false
-//				break
-//			case "y":
-//				map[2] = true
-//				break
-//			}
-//			break
 		case "color=":
-			map[2] = a[++i]
+			if (!a[++i]) {
+				syntax(1, not_enough_p)
+				break
+			}
+			map[2] = a[i]
+			break
+		case "play=":
+			if (!a[++i]) {
+				syntax(1, not_enough_p)
+				break
+			}
+			tmp = new scanBuf
+			tmp.buffer = a[i]
+			map[3] = parse_acc_pit(tmp)
 			break
 		}
 	}
