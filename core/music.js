@@ -4416,6 +4416,8 @@ function block_gen(s) {
 		vskip(s.sk);
 //		blk_out()
 		break
+	default:
+		return true			// keep (for play)
 	}
 }
 
@@ -4555,9 +4557,6 @@ function set_piece() {
 		// the block symbols will be treated after music line generation
 		case C.BLOCK:
 			blocks.push(s);
-			unlksym(s)
-			if (last)
-				last = s.ts_prev
 			continue
 		}
 		st = s.st
@@ -4827,7 +4826,8 @@ function gen_init() {
 			cur_sy = s.sy
 			break
 		case C.BLOCK:
-			block_gen(s)
+			if (block_gen(s))
+				continue	// keep for play
 			break
 		}
 		unlksym(s)
