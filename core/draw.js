@@ -2541,7 +2541,7 @@ function draw_note_ties(not1, job) {
 
 	switch (job) {
 	case 0:
-		p = job == 2 || (not1.pit & 1) ? not1.pit : not2.pit
+		p = (not1.pit & 1) ? not1.pit : not2.pit
 		break
 	case 3:				/* clef or staff change */
 		dir = -dir
@@ -2602,9 +2602,10 @@ function draw_ties(k1, k2,
 		for (i = 0; i <= nh1; i++) {
 			not1 = k1.notes[i]
 			if (not1.tie_ty) {
-				if (!not1.tie_n)
-					not1.tie_n = { s: k1 }
+				k3 = not1.tie_n
+				not1.tie_n = { s: k2 || k1 }
 				draw_note_ties(not1, job)
+				not1.tie_n = k3
 			}
 		}
 		return
@@ -2708,16 +2709,38 @@ function draw_all_ties(p_voice) {
 		s2 = s1.tie_s				// ending note of the tie
 		if (s2.v == s1.v) {
 			s_next = s2
-			for (s = s1.next; s && s != s2; s = s.next)
-				{}
+			s = s1
+			while (1) {
+				if (!s.next) {
+					s2 = s
+					s = null
+					break
+				}
+				s = s.next
+				if (s == s2)
+					break
+			}
 		} else {
 			s_next = s1.next
-			for (s = s1.ts_next; s && s != s2; s = s.ts_next)
-				{}
+			s = s1
+			while (1) {
+				if (!s.ts_next) {
+					s = null
+					break
+				}
+				s = s.ts_next
+				if (s == s2)
+					break
+			}
+			if (!s) {
+				s2 = s1
+				while (s2.next)
+					s2 = s2.next
+			}
 		}
 
 		if (!s) {				// end of line
-			draw_ties_g(s1, null, 2);
+			draw_ties_g(s1, s2, 2);
 			break
 		}
 
