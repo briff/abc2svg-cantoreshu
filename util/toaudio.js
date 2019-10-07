@@ -127,7 +127,7 @@ function ToAudio() {
 		while (--i >= 0) {
 			note = s.notes[i]
 			if (note.b40 == b40) {
-				note.ti2 = true	// don't generate any sound
+				note.ti2 = true	// don't generate sound anymore
 				d += s.dur / play_factor;
 				return note.tie_ty ? do_tie(s, b40, d) : d
 			}
@@ -216,10 +216,10 @@ function ToAudio() {
 
 	if (!a_e) {			// if first call
 		a_e = []
-		abc_time = rep_st_t = p_time = 0;
+		abc_time = p_time = 0;
 		play_factor = C.BLEN / 4 * 120 / 60	// default: Q:1/4=120
 	} else if (s.time < abc_time) {
-		abc_time = rep_st_t = s.time
+		abc_time = s.time
 	}
 
 	set_voices()			// initialize the voice parameters
@@ -242,23 +242,19 @@ function ToAudio() {
 			abc_time = s.time
 		}
 
-		if (s == rep_en_s) {			// repeat end
-			s = rep_nx_s
-			if (!s)
-				break
-			abc_time = s.time
-		}
-
 		switch (s.type) {
 		case C.BAR:
 			if (!s.seqst)
 				break
 
+			// end of repeat
+			if (s == rep_en_s) {
+				s = rep_nx_s
+				abc_time = s.time
+
 			// right repeat
-			if (s.bar_type[0] == ':') {
+			} else if (s.bar_type[0] == ':') {
 				rep_nx_s = s		// repeat next
-				while (rep_nx_s && rep_nx_s.type == C.BAR)
-					rep_nx_s = rep_nx_s.ts_next
 				if (!rep_en_s)		// if no "|1"
 					rep_en_s = s	// repeat end
 				if (rep_st_s) {		// if left repeat
@@ -277,7 +273,6 @@ function ToAudio() {
 				rep_st_s = s;
 				rep_en_s = null
 				rep_st_fac = play_factor
-				break
 
 			// 1st time repeat
 			} else if (s.text && s.text[0] == '1') {
