@@ -2679,34 +2679,16 @@ function draw_all_ties(p_voice) {
 		}
 	} // draw_ties_g()
 
-	for (s1 = p_voice.sym; s1; s1 = s1.next) {
-		switch (s1.type) {
-		case C.CLEF:
-		case C.KEY:
-		case C.METER:
-			continue
-		}
-		break
-	}
-
-	for (s2 = s1; s2; s2 = s2.next) {
-		if (s2.dur
-		 || s2.type == C.GRACE)
-			break
-	}
-	if (!s2)
-		return
-
-	set_color(s2.color)
-
 	/* search the start of ties */
 //	clef_chg = false
-	s_next = s2
+	s_next = p_voice.sym
+	set_color(s_next.color)
 	while (1) {
 		for (s1 = s_next; s1; s1 = s1.next) {
 			if (s1.ti2 && s1 != s_next) {	// if no tie start
 				s = s1.ti2
 				s.x = s1.x
+				s2 = s.next
 				s.next = s1
 				s.st = s1.st
 				s.time = s1.time - s.dur
@@ -2714,6 +2696,7 @@ function draw_all_ties(p_voice) {
 					s.notes[m].s = s
 				}
 				draw_ties(s, s1, 1)
+				s.next = s2	// restore the linkage for play
 			}
 			if (s1.tie_s)
 				break
@@ -2721,12 +2704,16 @@ function draw_all_ties(p_voice) {
 		if (!s1)
 			break
 
-		// check if tied note in this line
+		// check if the tied note is in this line
 		s2 = s1.tie_s				// ending note of the tie
-		s_next = s2.v == s1.v ? s2 : s1.next
-		for (s = s1.ts_next; s && s != s2; s = s.ts_next) {
-			if (s.dur)
-				break
+		if (s2.v == s1.v) {
+			s_next = s2
+			for (s = s1.next; s && s != s2; s = s.next)
+				{}
+		} else {
+			s_next = s1.next
+			for (s = s1.ts_next; s && s != s2; s = s.ts_next)
+				{}
 		}
 
 		if (!s) {				// end of line
@@ -2743,7 +2730,7 @@ function draw_all_ties(p_voice) {
 				break
 			if (s.type == C.CLEF) {
 				clef_chg = true
-				continue
+				break
 			}
 		}
 
