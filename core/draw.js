@@ -2686,16 +2686,17 @@ function draw_all_ties(p_voice) {
 	set_color(s_next.color)
 	while (1) {
 		for (s1 = s_next; s1; s1 = s1.next) {
-			if (s1.ti2 && s1 != s_next) {	// if no tie start
+			if (s1.ti2			// if no tie start
+			 && (s1 != s_next
+			  || !s_next.prev)) {		// (at start of line)
 				s = s1.ti2
 				s.x = s1.x
 				s2 = s.next
 				s.next = s1
 				s.st = s1.st
 				s.time = s1.time - s.dur
-				for (m = 0; m <= s.nhd; m++) {
+				for (m = 0; m <= s.nhd; m++)
 					s.notes[m].s = s
-				}
 				draw_ties(s, s1, 1)
 				s.next = s2	// restore the linkage for play
 			}
