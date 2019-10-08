@@ -165,15 +165,13 @@ function do_scroll(old) {
 }
 
 // menu functions
-// click on the menu button
-abc2svg.menu_toggle = function() {
-	document.getElementById("dc").classList.toggle("show")
-}
-// click outside of the menu button
-window.onclick = function(event) {
-	if (!event.target.className != "db") {
-	    var	e = document.getElementById("dc")
-		if (e && e.classList.contains("show"))
+// click inside/outside of the menu button
+window.onmouseup = function(event) {
+    var	e = document.getElementById("dc")
+	if (e) {
+		if (event.target.className == "db")
+			e.classList.toggle("show")
+		else if (e.classList.contains("show"))
 			e.classList.remove("show")
 	}
 }
@@ -371,7 +369,7 @@ abc2svg.do_render = function(select) {
 	// add the menu
 	new_page += '\
 <div id="dd" class="dd">\
-<label id="db" class="db" onclick="abc2svg.menu_toggle()">|||</label>\
+<label class="db">|||</label>\
 <div id="dc" class="dc">\
 <label id="edit" onclick="abc2svg.src_edit()">Source edit</label>\
 <label id="list" onclick="abc2svg.get_sel()">Tune list</label>\
