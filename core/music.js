@@ -4311,6 +4311,9 @@ function check_bar(s) {
 		else
 			s2.prev.next = s_bs
 		s2.prev = s_bs
+
+		while (!s2.seqst)
+			s2 = s2.ts_prev
 		s_bs.ts_next = s2
 		s_bs.ts_prev = s2.ts_prev
 		if (s2 == tsnext)
@@ -4319,10 +4322,10 @@ function check_bar(s) {
 			s2.ts_prev.ts_next = s_bs
 		s2.ts_prev = s_bs
 		delete s_bs.seqst
-		if (s2.type != C.BAR) {
-			if (s2.seqst)
+		if (s_bs == tsnext || s2.ts_prev.type != C.BAR) {
+			if (s2.seqst) {
 				s_bs.seqst = true
-			else {
+			} else {
 				s2.seqst = true
 				s2.shrink = s_bs.wr + s2.wl
 				s2.space = 0
