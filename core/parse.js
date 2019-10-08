@@ -1176,6 +1176,8 @@ function new_bar() {
 			s.bar_dotted = true
 		} else {
 			s.rbstop = 2		// right repeat with end
+			if (curvoice.tie_s)
+				curvoice.tie_s.tie_s = s
 		}
 	}
 
@@ -1976,7 +1978,6 @@ Abc.prototype.new_note = function(grace, sls) {
 					//  on repeat restart)
 					if (tie_s.notes[i].b40 == note.b40) {
 						tie_s.notes[i].tie_n = note
-						tie_s.notes[i].s = tie_s
 						note.s = s
 						tie_s.tie_s = s
 						if (curvoice.acc_tie
@@ -2038,6 +2039,7 @@ Abc.prototype.new_note = function(grace, sls) {
 					continue
 				case '-':
 					note.tie_ty = parse_vpos()
+					note.s = s
 					curvoice.tie_s = s
 					if (curvoice.acc[note.pit + 19]) {
 						if (!curvoice.acc_tie)
@@ -2525,8 +2527,10 @@ function parse_music_line() {
 					break
 				}
 			    var	ty = parse_vpos()
-				for (i = 0; i <= s.nhd; i++)
+				for (i = 0; i <= s.nhd; i++) {
 					s.notes[i].tie_ty = ty
+					s.notes[i].s = s
+				}
 				if (grace)
 					grace.tie_s = curvoice.tie_s = grace
 				else
