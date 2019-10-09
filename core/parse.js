@@ -1427,7 +1427,7 @@ function parse_staves(p) {
 	a = p.match(/\w+|[^\s]/g)
 
 	if (!a) {
-		syntax(1, errs.bad_val, "%%staves")
+		syntax(1, errs.bad_val, "%%score")
 		return // null
 	}
 	while (1) {
@@ -1477,7 +1477,7 @@ function parse_staves(p) {
 			break
 		default:
 			if (!/\w/.test(e)) {
-				syntax(1, "Bad voice ID in %%staves");
+				syntax(1, "Bad voice ID in %%score");
 				err = true
 				break
 			}
@@ -1539,7 +1539,7 @@ function parse_staves(p) {
 		}
 	}
 	if (flags_st != 0) {
-		syntax(1, "'}', ')' or ']' missing in %%staves");
+		syntax(1, "'}', ')' or ']' missing in %%score");
 		err = true
 	}
 	if (err || a_vf.length == 0)

@@ -183,7 +183,7 @@ var errs = {
 	bad_val: "Bad value in $1",
 	bar_grace: "Cannot have a bar in grace notes",
 	ignored: "$1: inside tune - ignored",
-	misplaced: "Misplaced '$1' in %%staves",
+	misplaced: "Misplaced '$1' in %%score",
 	must_note: "!$1! must be on a note",
 	must_note_rest: "!$1! must be on a note or a rest",
 	nonote_vo: "No note in voice overlay",

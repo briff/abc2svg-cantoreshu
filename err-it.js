@@ -10,8 +10,8 @@ user.textrans = {
 			"+: linea di simboli senza musica",
 	"+: without previous info field": "Nessun campo di informazioni prima di +:",
 	"'{' in grace note": "'{' in nota di abbellimento",
-	"'}', ')' or ']' missing in %%staves":
-				"'}', ')' o ']' mancanti in %%staves",
+	"'}', ')' or ']' missing in %%score":
+				"'}', ')' o ']' mancanti in %%score",
 	"',' lacking in annotation '@x,y'":
 				"Manca una ',' nell'annotazione '@x,y'",
 	"'$1' is not a note": "'$1' non è una nota",
@@ -64,7 +64,7 @@ user.textrans = {
 	"Bad value '$1' in %%linebreak - ignored":
 				"Valore errato '$1' in %%linebreak - ignorato",
 	"Bad value in $1": "Valore errato in $1",
-	"Bad voice ID in %%staves": "ID di voce non valido in %%staves",
+	"Bad voice ID in %%score": "ID di voce non valido in %%score",
 	"Bar in repeat sequence": "Stanghetta in sequenza ripetuta",
 	"Cannot have !$1! on a head": "!$1! non è consentito su una nota",
 	"Cannot have '$1' inside a tune": "'$1' non è consentito entro il brano",
@@ -92,7 +92,7 @@ user.textrans = {
 		"Problema di linea divisa - modificare maxshrink e/o breaklimit",
 	"Line too much shrunk $1 $2 $3": "Linea troppo compressa $1 $2 $3",
 	"Line underfull ($1pt of $2pt)": "Linea troppo vuota ($1pt di $2pt)",
-	"Misplaced '$1' in %%staves": "'$1' in posizione errata in %%staves",
+	"Misplaced '$1' in %%score": "'$1' in posizione errata in %%score",
 	"Misplaced dot": "Punto in posizione errata",
 	"Mix of old and new transposition syntaxes":
 			"Sintassi di trasposizione vecchia e nuova allo stesso tempo",
