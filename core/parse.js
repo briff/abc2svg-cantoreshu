@@ -1424,7 +1424,7 @@ function parse_staves(p) {
 		parenth = 0,
 		flags_st = 0,
 	e,
-	a = p.match(/\w+|[^\s]/g)
+	a = p.match(/[A-Za-zÀ-ÿ]+|[^\s]/g)
 
 	if (!a) {
 		syntax(1, errs.bad_val, "%%score")
@@ -1476,7 +1476,7 @@ function parse_staves(p) {
 			flags |= MASTER_VOICE
 			break
 		default:
-			if (!/\w/.test(e)) {
+			if (!/^[A-Za-zÀ-ÿ]+$/.test(e)) {
 				syntax(1, "Bad voice ID in %%score");
 				err = true
 				break
