@@ -1246,10 +1246,6 @@ function new_bar() {
 				line.index++
 				break
 			}
-			if (c == '\\') {
-				s.text += c;
-				c = line.next_char()
-			}
 			s.text += c
 		}
 		s.rbstop = 2;
