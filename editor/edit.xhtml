@@ -104,7 +104,8 @@
 <!-- context menu -->
 <div id="ctxMenu" title="Play">
 	<ul class="droplinks">
-	<li id="cmpa" onclick="play_tune(-1)">All</li>
+<!-- 'All' does not work anymore -->
+	<li id="cmpa" onclick="play_tune(-1)" style="display:none">All</li>
 	<li id="cmpt" onclick="play_tune(0)">Tune</li>
 	<li id="cmps" onclick="play_tune(1)">Selection</li>
 	<li id="cmpl" onclick="play_tune(2)">Loop</li>

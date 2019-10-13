@@ -188,7 +188,6 @@ function render() {
     var	i, j,
 	content = elt_ref.source.value;
 
-	play.a_pe = null
 	abc2svg.tunes = []		// list of tsfirst and voice_tb by tune
 	if (!content)
 		return			// empty source
@@ -464,12 +463,13 @@ function notehlight(i, on) {
 		elts[0].style.fillOpacity = on ? 0.4 : 0
 	}
 }
-function endplay() {
+function endplay(repv) {
 	if (play.loop) {
-		play.abcplay.play(play.si, play.ei, play.a_pe)
+		play.abcplay.play(play.si, play.ei)
 		return
 	}
 	play.playing = false;
+	play.repv = repv		// repeat variant number for continue
 
 	// redisplay the selection
 	selx[0] = selx[1] = 0;
@@ -478,7 +478,7 @@ function endplay() {
 }
 
 // start playing
-//	-1: All
+//	-1: All (removed)
 //	0: Tune
 //	1: Selection
 //	2: Loop
@@ -496,7 +496,7 @@ function play_tune(what) {
 		return
 	}
 
-	// search a playing event from a source index
+	// search a symbol to play
 
 	function gnrn(sym, loop) {	// go to the next real note (not tied)
 	    var	i
@@ -535,6 +535,9 @@ function play_tune(what) {
 	    var	i
 		while (1) {
 			switch (sym.type) {
+//			case C.BAR:
+//fixme: there may be a right repeat!
+//			break
 			case C.NOTE:
 				i = sym.nhd + 1
 				while (--i >= 0) {
@@ -566,130 +569,73 @@ function play_tune(what) {
 	}
 
 	function gsot(si) {	// go to the first playable symbol of a tune
-	    var	i,
-		sym = syms[si],
-		pa = play.a_pe
-
-		sym = gnrn(sym.p_v.sym)	// first symbol of the voice
-		si = sym.istart
-		for (i = 0; i < pa.length; i++) {
-			if (pa[i][0] == si)
-				return i
-		}
-		return pa.length
+		return gnrn(syms[si].p_v.sym)
 	}
 	function geot(si) {	// go to the last playable symbol of a tune
-	    var	i,
-		sym = syms[si],
-		pa = play.a_pe
+	    var	sym = syms[si]
 
 		while (sym.ts_next)	// go to the end of the tune
 			sym = sym.ts_next
-		sym = gprn(sym)
-
-		si = sym.istart
-		i = pa.length
-		while (--i > 0) {
-			if (pa[i][0] == si)
-				return i + 1
-		}
-		return i
+		return gprn(sym)
 	}
-	function gof(i) {	// go to the first played symbol at this time
-	    var	s, 
-		pa = play.a_pe,
-		tim = pa[i][1]
-		while (1) {
-			if (!pa[--i])
-				break
-			if (pa[i][1] < tim)
-				break
-		}
-		return ++i
-	}
-	function gol(i) {	// go to the last played symbol at this time
-	    var	s, 
-		pa = play.a_pe,
-		tim = pa[i][1]
-		while (1) {
-			if (!pa[++i])
-				break
-			if (pa[i][1] != tim)
-				break
-		}
-		return i
-	}
-	function get_se(si) {		// get the starting event
-	    var	i,
-		sym = syms[si],
-		pa = play.a_pe
+	function get_se(si) {			// get the starting symbol
+	    var	sym = syms[si]
 
-		sym = gnrn(sym)
-
-		si = sym.istart
-		i = pa.length
-		while (1) {
-			if (pa[--i][0] == si)
-				break
-		}
-		return gof(i)
+		while (!sym.seqst)
+			sym = sym.ts_prev
+		return sym
 	} // get_se()
 
-	function get_ee(si) {			// get the ending event
-	    var	i,
-		sym = syms[si],
-		pa = play.a_pe
+	function get_ee(si) {			// get the ending symbol
+	    var	sym = syms[si]
 
-		sym = gprn(sym)
-
-		si = sym.istart
-		i = pa.length
-		while (1) {
-			if (pa[--i][0] == si)
-				break
-		}
-		return gol(i)
+		while (sym.ts_next && !sym.ts_next.seqst)
+			sym = sym.ts_next
+		return sym
 	} // get_ee()
 
 	// start playing
 	function play_start(si, ei) {
+		if (!si || !ei)
+			return
 		selx_sav[0] = selx[0];		// remove the colors
 		selx_sav[1] = selx[1];
 		setsel(0, 0);
 		setsel(1, 0);
 
 		play.stop = 0;
-		play.abcplay.play(si, ei, play.a_pe)	// start playing
+		play.abcplay.play(si, ei, play.repv)
 	}
 
 	// play tune()
 	ctxMenu.style.display = "none";	// remove the play menu
 
 	play.playing = true;
-	if (!play.a_pe) {		// if no playing event
-		play.abcplay.clear();
+	if (abc2svg.tunes.length) {	// if new display
 
-		// generate all the play events of all tunes
+		// generate the play data of all tunes
 		while (1) {
 			elt = abc2svg.tunes.shift()
 			if (!elt)
 				break
 			play.abcplay.add(elt[0], elt[1])
 		}
-		play.a_pe = play.abcplay.clear(); // keep the playing events
 
-		play.si = play.ei = play.stop = 0;
+		play.si = play.ei = null
+		play.stop = 0
 		play.loop = false
 	}
 
 	// play all
-	if (what < 0) {
-		play.loop = false;
-		play.si = 0;
-		play.ei = play.a_pe.length;
-		play_start(play.si, play.ei)
-		return
-	}
+//--fixme: for play all, keep the tune array (abc2svg.tunes)
+//-- and play next tune after play end
+//	if (what < 0) {
+//		play.loop = false
+//		play.si = ...
+//		play.ei = ...
+//		play_start(play.si, play.ei)
+//		return
+//	}
 
 	// if loop again
 	if (what == 2 && play.loop) {
@@ -728,6 +674,7 @@ function play_tune(what) {
 		play.si = si;
 		play.ei = ei;
 		play.loop = what == 2
+		play.repv = 0
 	}
 
 	play_start(si, ei)
@@ -823,7 +770,7 @@ function edit_init() {
 	// if playing is possible, load the playing script
 	if (window.AudioContext || window.webkitAudioContext
 	 || navigator.requestMIDIAccess) {
-		abc2svg.loadjs("play-@MAJOR@.js", function() {
+		abc2svg.loadjs("snd-@MAJOR@.js", function() {
 			play.abcplay = AbcPlay({
 					onend: endplay,
 					onnote:notehlight,
