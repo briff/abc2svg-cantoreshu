@@ -43,6 +43,8 @@ cp util/midi.js setmidi-$MAJOR.js
 cp util/toaudio.js toaudio-$MAJOR.js
 cat util/play.js util/toaudio.js util/toaudio5.js util/midi.js\
  util/sf2-parser.js util/tomidi5.js > play-$MAJOR.js
+cat util/play.js util/sndgen.js util/sndaud.js util/midi.js\
+ util/sf2-parser.js util/sndmid.js > snd-$MAJOR.js
 
 sed "s+@MAJOR@+$MAJOR+" editor/edit.xhtml > edit-$MAJOR.xhtml
 sed "s+@MAJOR@+$MAJOR+" editor/abckbd.js > abckbd-$MAJOR.js

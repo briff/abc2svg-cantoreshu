@@ -125,6 +125,8 @@ build setmidi-$MAJOR.js: jscu util/midi.js
 build toaudio-$MAJOR.js: jscu util/toaudio.js
 build play-$MAJOR.js: jscu util/play.js util/toaudio.js $
  util/toaudio5.js util/midi.js util/sf2-parser.js util/tomidi5.js
+build snd-$MAJOR.js: jscu util/play.js util/sndgen.js $
+ util/sndaud.js util/midi.js util/sf2-parser.js util/sndmid.js
 
 build edit-$MAJOR.xhtml: cpm editor/edit.xhtml
 build abckbd-$MAJOR.js: edit editor/abckbd.js
@@ -133,7 +135,7 @@ build edit-$MAJOR.js: edit editor/edit.js
 
 build all: phony abc2svg-$MAJOR.js abcdoc-$MAJOR.js $
  abcemb-$MAJOR.js abcemb1-$MAJOR.js abcemb2-$MAJOR.js json-$MAJOR.js $
- setmidi-$MAJOR.js toaudio-$MAJOR.js play-$MAJOR.js psvg-$MAJOR.js $
+ setmidi-$MAJOR.js toaudio-$MAJOR.js snd-$MAJOR.js play-$MAJOR.js psvg-$MAJOR.js $
  ambitus-$MAJOR.js break-$MAJOR.js capo-$MAJOR.js clair-$MAJOR.js clip-$MAJOR.js $
  combine-$MAJOR.js diag-$MAJOR.js equalbars-$MAJOR.js grid-$MAJOR.js grid2-$MAJOR.js $
  MIDI-$MAJOR.js page-$MAJOR.js perc-$MAJOR.js soloffs-$MAJOR.js sth-$MAJOR.js $
