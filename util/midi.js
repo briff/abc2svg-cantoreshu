@@ -100,8 +100,6 @@ function AbcMIDI() {
 				break
 			case C.GRACE:
 				for (g = s.extra; g; g = g.next) {
-					if (!g.type != C.NOTE)
-						continue
 					for (i = 0; i <= g.nhd; i++)
 						midi_set(g.notes[i])
 				}
