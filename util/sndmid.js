@@ -145,7 +145,7 @@ function Midi5(i_conf) {
 				while (s.ts_next && s.ts_next.type == C.BAR)
 					s = s.ts_next
 			}
-			if (s.time != end_time)
+			if (s.time > end_time)
 				return d
 			if (s.type == C.NOTE && s.v == v)
 				break
@@ -155,7 +155,7 @@ function Midi5(i_conf) {
 			note = s.notes[i]
 			if (note.b40 == b40) {
 				note.ti2 = true		// the sound is generated
-				d += s.pdur / conf.speed
+				d += s.pdur / conf.speed * 1000
 				return note.tie_ty ? do_tie(s, b40, d) : d
 			}
 		}
@@ -269,7 +269,7 @@ function Midi5(i_conf) {
 			}
 			if (s == s_end || !s.ts_next) {
 				setTimeout(onend,
-					(t - ac.currentTime + d) * 1000),
+					t - window.performance.now() + d,
 					repv)
 				s_cur = s
 				return
