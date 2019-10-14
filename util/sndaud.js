@@ -23,7 +23,8 @@
 //	ac: audio context - (default: created on play start)
 //	sfu: soundfont URL (sf2 base64 encoded - default: "Scc1t2")
 //	onend: callback function called at end of playing
-//		(no arguments)
+//		Argument:
+//			repv: last repeat variant number
 //	onnote: callback function called on note start/stop playing
 //		Arguments:
 //			i: start index of the note in the ABC source
@@ -51,7 +52,7 @@
 // play() - start playing
 // @start -
 // @stop: start and stop music symbols
-// @level: repeat level (optional - 1..n)
+// @level: repeat variant (optional, default = 0)
 //
 // stop() - stop playing
 //
@@ -353,7 +354,7 @@ function Audio5(i_conf) {
 		maxt = t + 2			// max time = now + 2 seconds
 
 		if (!s_end) {			// stop
-			onend()
+			onend(repv)
 			return
 		}
 
@@ -441,7 +442,8 @@ function Audio5(i_conf) {
 			}
 			if (s == s_end || !s.ts_next) {
 				setTimeout(onend,
-					(t - ac.currentTime + d) * 1000)
+					(t - ac.currentTime + d) * 1000,
+					repv)
 				s_cur = s
 				return
 			}
@@ -460,7 +462,7 @@ function Audio5(i_conf) {
 	// wait for all resources, then start playing
 	function play_start() {
 		if (!s_end) {		// play stop
-			onend()
+			onend(repv)
 			return
 		}
 
