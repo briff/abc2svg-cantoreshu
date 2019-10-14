@@ -46,7 +46,8 @@
 // stop() - stop playing
 
 function Midi5(i_conf) {
-    var	conf = i_conf,		// configuration
+    var	C = abc2svg.C,
+	conf = i_conf,		// configuration
 	onend = function() {},
 	onnote = function() {},
 	rf,			// get_outputs result function
