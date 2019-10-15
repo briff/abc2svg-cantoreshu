@@ -315,7 +315,7 @@ function build_grid(chords, bars, font, wmx) {
 			chord = [];
 			cur_beat = s.time;	// synchronize in case of error
 			beat_i = 0
-			if (bt.indexOf(':'))
+			if (bt.indexOf(':') >= 0)
 				rep = true	// some repeat
 			while (s.ts_next && s.ts_next.type == C.BAR)
 				s = s.ts_next
