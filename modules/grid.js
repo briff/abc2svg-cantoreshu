@@ -273,7 +273,7 @@ function build_grid(chords, bars, font, wmx) {
 	// scan the first voice of the tune
 	cur_beat = beat_i = n = wmx = 0;
 	bars.push('|')
-	for (s = voice_tb[0].sym; s; s = s.next) {
+	for (s = tsfirst; s; s = s.ts_next) {
 		while (s.time > cur_beat) {
 			if (beat_i < 3)		// only 2, 3 or 4 beats / measure...
 				beat_i++;
@@ -317,6 +317,8 @@ function build_grid(chords, bars, font, wmx) {
 			beat_i = 0
 			if (bt.indexOf(':'))
 				rep = true	// some repeat
+			while (s.ts_next && s.ts_next.type == C.BAR)
+				s = s.ts_next
 			break
 		case C.METER:
 			beat = get_beat(s)
