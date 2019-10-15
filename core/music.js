@@ -4788,7 +4788,7 @@ function set_sym_line() {
 	// set the first symbol of each voice
 	while (--v >= 0) {
 		p_v = voice_tb[v]
-		if (p_v.s_prev)
+		if (p_v.sym && p_v.s_prev)
 			p_v.sym.prev = p_v.s_prev
 		s = p_v.s_next			// (set in set_piece)
 		p_v.sym = s
@@ -4797,6 +4797,8 @@ function set_sym_line() {
 				s.prev.next = s
 			p_v.s_prev = s.prev	// (save for play)
 			s.prev = null
+		} else {
+			p_v.s_prev = null
 		}
 	}
 }
@@ -4933,6 +4935,8 @@ Abc.prototype.output_music = function() {
 	v = voice_tb.length
 	while (--v >= 0) {
 		p_v = voice_tb[v]
+		if (p_v.sym && p_v.s_prev)
+			p_v.sym.prev = p_v.s_prev
 		p_v.sym = p_v.osym
 	}
 }
