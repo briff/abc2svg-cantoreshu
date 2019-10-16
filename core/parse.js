@@ -2092,7 +2092,7 @@ Abc.prototype.new_note = function(grace, sls) {
 		s.dur = s.notes[0].dur * curvoice.dur_fact
 	}
 	if (s.grace && s.type != C.NOTE) {
-		syntax(1, "Not a note in grace note sequence")
+		syntax(1, errs.bad_grace)
 		return //null
 	}
 
@@ -2391,7 +2391,7 @@ function parse_music_line() {
 				break
 			case '&':			// voice overlay
 				if (grace) {
-					syntax(1, errs.bad_char, c)
+					syntax(1, errs.bad_grace)
 					break
 				}
 				c = line.next_char()
@@ -2404,6 +2404,10 @@ function parse_music_line() {
 			case '(':			// slur start - tuplet - vover
 				c = line.next_char()
 				if (c > '0' && c <= '9') {	// tuplet
+					if (grace) {
+						syntax(1, errs.bad_grace)
+						break
+					}
 				    var	pplet = line.get_int(),
 					qplet = qplet_tb[pplet],
 					rplet = pplet,
@@ -2442,7 +2446,7 @@ function parse_music_line() {
 				}
 				if (c == '&') {		// voice overlay start
 					if (grace) {
-						syntax(1, errs.bad_char, c)
+						syntax(1, errs.bad_grace)
 						break
 					}
 					get_vover('(')
@@ -2513,6 +2517,10 @@ function parse_music_line() {
 				}
 				break
 			case '"':
+				if (grace) {
+					syntax(1, errs.bad_grace)
+					break
+				}
 				parse_gchord(type)
 				break
 			case '-':
@@ -2553,6 +2561,10 @@ function parse_music_line() {
 					continue
 				}
 				if (line.buffer[line.index + 2] == ':') {
+					if (grace) {
+						syntax(1, errs.bad_grace)
+						break
+					}
 					i = line.buffer.indexOf(']', line.index + 1)
 					if (i < 0) {
 						syntax(1, "Lack of ']'")

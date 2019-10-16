@@ -45,6 +45,8 @@ user.textrans = {
     "Bad %%staffscale value": "fehlerhafter Wert für %%staffscale",
     "Bad char '$1' in M:": "fehlerhaftes Zeichen '$1' in M:",
     "Bad character '$1'": "fehlerhaftes Zeichen '$1'",
+	"Bad character in grace note sequence":
+				"fehlerhaftes Zeichen in Sequenz von Vorschlagnoten",
 	"Bad controller number in %%MIDI": "Bad controller number in %%MIDI",
 	"Bad controller value in %%MIDI": "Bad controller value in %%MIDI",
     "Bad duration '$1' in M:": "fehlerhafte Dauer '$1' in M:",
@@ -105,7 +107,6 @@ user.textrans = {
 //	"Non standard note duration $1": "??",
     "No read_file support": "Einlesen von Files nicht unterstützt",
     "No start of !$1!": "kein Start von  !$1!",
-    "Not a note in grace note sequence":  "Keine Note in Sequenz von Vorschlagnoten",
     "Not an ASCII character": "kein ASCII - Zeichen",
     "Not enough measure bars for lyric line": "nicht genug Takte für Liedtextzeile",
 	"Not enough measure bars for symbol line":

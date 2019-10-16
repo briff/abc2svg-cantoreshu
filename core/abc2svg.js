@@ -180,6 +180,7 @@ var	OPEN_BRACE = 0x01,
 // error texts
 var errs = {
 	bad_char: "Bad character '$1'",
+	bad_grace: "Bad character in grace note sequence",
 	bad_val: "Bad value in $1",
 	bar_grace: "Cannot have a bar in grace notes",
 	ignored: "$1: inside tune - ignored",
