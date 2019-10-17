@@ -80,7 +80,7 @@ function AbcMIDI() {
 		    var m = abc2svg.b40m(note.b40) + transp
 			if (temper		// if not equal temperament
 			 && (!note.acc
-			  || note.a | 0 == note.a)) // and not micro-tone
+			  || note.acc | 0 == note.acc)) // and not micro-tone
 				m += temper[m % 12]
 			note.midi = m
 		}
