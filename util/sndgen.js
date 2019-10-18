@@ -212,3 +212,7 @@ function ToAudio() {
    } // add()
  } // return
 } // ToAudio()
+
+// nodejs
+if (typeof module == 'object' && typeof exports == 'object')
+	exports.ToAudio = ToAudio

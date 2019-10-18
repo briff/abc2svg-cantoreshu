@@ -148,3 +148,7 @@ function AbcPlay(i_conf) {
 
 	return abcplay
 } // AbcPlay
+
+// nodejs
+if (typeof module == 'object' && typeof exports == 'object')
+	exports.AbcPlay = AbcPlay
