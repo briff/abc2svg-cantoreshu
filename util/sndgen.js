@@ -107,9 +107,10 @@ function ToAudio() {
 			abc_time = s.time
 		}
 		s.ptim = p_time
+		v = s.v
 
-		if (instr[s.v] == undefined)
-			instr[s.v] = voice_tb[s.v].instr || 0
+		if (instr[v] == undefined)
+			instr[v] = voice_tb[v].instr || 0
 
 		switch (s.type) {
 		case C.BAR:
@@ -174,7 +175,7 @@ function ToAudio() {
 				}
 				break
 			case "midiprog":
-				instr[s.v] = (instr[s.v] & ~0x7f) | s.instr
+				instr[v] = (instr[v] & ~0x7f) | s.instr
 				break
 			}
 			break
@@ -204,7 +205,7 @@ function ToAudio() {
 			}
 			d /= play_fac
 			s.pdur = d
-			s.instr = instr[s.v]
+			s.instr = instr[v]
 			break
 		}
 		s = s.ts_next
