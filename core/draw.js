@@ -1366,8 +1366,6 @@ function draw_basic_note(x, s, m, y_tb) {
 	}
 	if (note.color != undefined)
 		old_color = set_color(note.color)
-	else if (note.map && note.map[2])
-		old_color = set_color(note.map[2])
 	if (p) {
 		if (inv) {
 			g_open(x_note, y_note, 0, 1, -1);

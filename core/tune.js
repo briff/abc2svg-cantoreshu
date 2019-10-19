@@ -668,30 +668,37 @@ function get_map(text) {
 	if (!text)
 		return
 
-	var	i, note, notes, map, tmp, ns,
-		a = info_split(text)
+    var	i, note, notes, map, tmp, ns, ty,
+	a = info_split(text)
 
 	if (a.length < 3) {
 		syntax(1, not_enough_p)
 		return
 	}
 	ns = a[1]
-	if (ns.indexOf("octave,") == 0
-	 || ns.indexOf("key,") == 0) {		// remove the octave part
-		ns = ns.replace(/[,']+$/m, '').toLowerCase(); //'
-		if (ns[0] == 'k')		// remove the accidental part
-			ns = ns.replace(/[_=^]+/, '')
-	} else if (ns[0] == '*' || ns.indexOf("all") == 0) {
+	if (ns[0] == '*' || ns.indexOf("all") == 0) {
 		ns = 'all'
-	} else {				// exact pitch, rebuild the note
-		tmp = new scanBuf;
-		tmp.buffer = a[1];
-		note = parse_acc_pit(tmp)
-		if (!note) {
-			syntax(1, "Bad note in %%map")
-			return
+	} else {
+		if (ns.indexOf("octave,") == 0	// remove the octave part
+		 || ns.indexOf("key,") == 0) {
+			ty = ns[0]
+			ns = ns.split(',')[1]
+			ns = ns.replace(/[,']*/, '').toUpperCase(); //'
+		} else {
+			ty = ''
 		}
-		ns = note2abc(note)
+		if (ty == 'k') {
+			ns = 'k' + ntb.indexOf(ns)
+		} else {
+			tmp = new scanBuf;
+			tmp.buffer = ns
+			note = parse_acc_pit(tmp)
+			if (!note) {
+				syntax(1, "Bad note in %%map")
+				return
+			}
+			ns = ty + abc2svg.pab40(note.pit, note.acc).toString()
+		}
 	}
 
 	notes = maps[a[0]]
@@ -701,7 +708,7 @@ function get_map(text) {
 	if (!map)
 		notes[ns] = map = []
 
-	/* try the optional 'print', 'play' and 'heads' parameters */
+	// try the optional 'print' and 'heads' parameters
 	if (!a[2])
 		return
 	i = 2
@@ -715,7 +722,7 @@ function get_map(text) {
 			return
 		i++
 		if (a[3].indexOf('=') < 0) {
-			map[0] = a[3].split(',');
+			map[0] = a[3].split(',')	// heads
 			i++
 		}
 	}
@@ -730,13 +737,18 @@ function get_map(text) {
 			map[0] = a[i].split(',')
 			break
 		case "print=":
+		case "play=":
 			if (!a[++i]) {
 				syntax(1, not_enough_p)
 				break
 			}
 			tmp = new scanBuf;
 			tmp.buffer = a[i];
-			map[1] = parse_acc_pit(tmp)
+			note = parse_acc_pit(tmp)
+			if (a[i - 1][1] == 'r')
+				map[1] = note
+			else
+				map[3] = abc2svg.pab40(note.pit, note.acc)
 			break
 		case "color=":
 			if (!a[++i]) {
@@ -744,15 +756,6 @@ function get_map(text) {
 				break
 			}
 			map[2] = a[i]
-			break
-		case "play=":
-			if (!a[++i]) {
-				syntax(1, not_enough_p)
-				break
-			}
-			tmp = new scanBuf
-			tmp.buffer = a[i]
-			map[3] = parse_acc_pit(tmp)
 			break
 		}
 	}

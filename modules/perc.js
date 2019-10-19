@@ -117,34 +117,67 @@ var prn = {
 	"v":     58
 }
 
-    // convert a drum instrument to a note
-    function tonote(p) {
+    // convert a ABC note to b40
+    function abc_b40(p) {
+    var	pit,
+	acc = 0,
+	i = 0
+
+	switch (p[0]) {
+	case '^':
+		if (p[++i] == '^') {
+			acc = 2
+			i++
+		} else {
+			acc = 1
+		}
+		break
+	case '=':
+		i++
+		break
+	case '_':
+		if (p[++i] == '_') {
+			acc = -2
+			i++
+		} else {
+			acc = -1
+		}
+		break
+	}
+	pit = 'CDEFGABcdefgab'.indexOf(p[i++]) + 16
+	if (pit < 16)
+		return
+	while (p[i] == "'") {
+		pit += 7
+		i++
+	}
+	while (p[i] == ",") {
+		pit -= 7
+		i++
+	}
+	if (p[i])			// if some extra character
+		return
+	return abc2svg.pab40(pit, acc)
+    } // abc_b40()
+
+    // convert a MIDI pitch to b40
+    function mid_b40(pit) {
+    var	o = (pit / 12) | 0		// octave
+	pit = pit % 12;			// in octave
+	return o * 40 + abc2svg.isb40[pit] + 2
+    } // mid_b40()
+
+    // convert a drum instrument to b40
+    function tob40(p) {
     var	i, j, s,
 	pit = Number(p)
 
-	if (isNaN(pit)) {
-		s = p.match(/^([_^=]*)([A-Ga-g])([,']*)$/)	// '
-		if (s) {				// note name
-			i = "CDEFGABcdefgab".indexOf(s[2]) + 16
-			switch(s[3]) {
-			case "'":
-				i += 7 * s[3].length
-				break
-			case ',':
-				i -= 7 * s[3].length
-				break
-			}
-			note = {
-				pit: i
-			}
-			switch (s[1]) {
-			case '^': note.acc = 1; break
-			case '_': note.acc = -1; break
-			}
-			return note
-		}
+	if (isNaN(pit)) {		// not a MIDI pitch
+		s = abc_b40(p)		// try a ABC note
+		if (s)
+			return s
 
-		// drum instrument name
+		// try a drum instrument name
 		p = p.toLowerCase(p);
 		s = p[0];		// get the 1st letters after '-'
 		i = 0
@@ -180,54 +213,30 @@ var prn = {
 				}
 				break
 			}
+			if (!pit)
+				return
 		}
 	}
-	if (!pit)
-		return
+	return mid_b40(pit)
+    } // tob40()
 
-	p = ((pit / 12) | 0) * 7 - 19;	// octave
-	pit = pit % 12;			// in octave
-	p += pits[pit];
-	note = {
-		pit: p
-	}
-	note.acc = accs[pit]
-	return note
-    } // tonote()
-
-    // normalize a note for mapping
-    function norm(p) {
-    var	a = p.match(/^([_^]*)([A-Ga-g])([,']*)$/)	// '
-	if (!a)
-		return
-	if (p.match(/[A-Z]/)) {
-		p = p.toLowerCase();
-		if (p.indexOf("'") > 0)
-			p = p.replace("'", '')
-		else
-			p += ','
-	}
-	return p
-    } // norm()
-
+    // do_perc()
     var	vpr, vpl,
 	maps = this.get_maps(),
 	a = parm.split(/\s+/),
-	n = norm(a[1])				// note
+	n = abc_b40(a[1])			// note as b40
 
 	if (!n) {
 		this.syntax(1, this.errs.bad_val, "%%percmap")
 		return
 	}
 
-	vpr = tonote(n)
-	if (!vpr) {
-		this.syntax(1, this.errs.bad_val, "%%percmap")
-		return
+	vpr = {					// print
+		pit: abc2svg.b40p(n),
+		acc: 0
 	}
-	delete vpr.acc				// no accidental
 
-	vpl = tonote(a[2])
+	vpl = tob40(a[2])			// play
 	if (!vpl) {
 		this.syntax(1, this.errs.bad_val, "%%percmap")
 		return
@@ -235,7 +244,17 @@ var prn = {
 	a = a[3] ? [a[3]] : null		// head
 	if (!maps.MIDIdrum)
 		maps.MIDIdrum = {}
-	maps.MIDIdrum[n] = [a, vpr, null, vpl]	// [heads, print, color, play]
+	n = n.toString()
+	if (!maps.MIDIdrum[n]) {
+		maps.MIDIdrum[n] =
+			[a, vpr, null, vpl]	// [heads, print, color, play]
+	} else {
+		if (a)
+			maps.MIDIdrum[n][0] = a
+		if (!maps.MIDIdrum[n][1])
+			maps.MIDIdrum[n][1] = vpr
+		maps.MIDIdrum[n][3] = vpl
+	}
 
 	this.set_v_param("perc", "MIDIdrum")
     }, // do_perc()

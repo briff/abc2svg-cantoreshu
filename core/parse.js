@@ -20,12 +20,7 @@
 var	a_gch,		// array of parsed guitar chords
 	a_dcn,		// array of parsed decoration names
 	multicol,	// multi column object
-	maps = {}	// maps object - hashcode = map name
-			//	-> object - hashcode = note
-			//	[0] array of heads
-			//	[1] print (note)
-			//	[2] color
-			//	[3] play (note)
+	maps = {}	// maps object - see set_map()
 var	qplet_tb = new Int8Array([ 0, 1, 3, 2, 3, 0, 2, 0, 3, 0 ]),
 	ntb = "CDEFGABcdefgab"
 
@@ -97,6 +92,9 @@ function new_clef(clef_def) {
 		s.clef_type = "p";
 		s.clef_line = 3;
 		curvoice.key.k_sf = 0;		// no accidental
+		curvoice.ckey.k_sf = 0
+		curvoice.ckey.k_map = abc2svg.keys[7]
+		curvoice.ckey.k_b40 = 2
 		curvoice.ckey.k_drum = true	// no transpose
 		break
 	default:
@@ -1650,34 +1648,29 @@ function parse_acc_pit(line) {
 	return note
 }
 
-// convert a note pitch to ABC text
-function note2abc(note) {
-    var	i,
-	abc = 'abcdefg'[(note.pit + 77) % 7]
-
-//fixme: treat microtone
-	if (note.acc)
-		abc = ['__', '_', '', '^', '^^', '='][note.acc + 2] + abc
-	for (i = note.pit; i >= 30; i -= 7)	// down to 'c'
-		abc += "'"
-	for (i = note.pit; i < 23; i += 7)	// up to 'C'
-		abc += ","
-	return abc
-}
-
 /* set the mapping of a note */
+//
+// The global 'maps' object is indexed by the map name.
+// Its content is an object ('map') indexed from the map type:
+// - normal = b40 pitch
+// - octave = 'o' + b40 pitch in C..B interval
+// - key    = 'k' + scale index
+// - all    = 'all'
+// The 'map' is stored in the note. It is an array of
+//	[0] array of heads (glyph names)
+//	[1] print (note)
+//	[2] color
+//	[3] play (b40)
 function set_map(note) {
-    var	delta,
-	map = maps[curvoice.map],	// never null
-	nn = note2abc(note)
+    var	map = maps[curvoice.map],	// never null
+	n = note.b40,
+	nn = n.toString()
 
 	if (!map[nn]) {
-		nn = 'octave,' + nn.replace(/[',]/g, '')	// octave '
+		nn = 'o' + (n % 40).toString()		// octave
 		if (!map[nn]) {
-			delta = abc2svg.p_b40[(note.pit + 77) % 7] -
-					curvoice.ckey.k_b40
-			nn = 'key,' +			// 'key,'
-				'abcdefg'[abc2svg.b40_p[delta + 2]]
+			n += 2 - curvoice.ckey.k_b40	// key
+			nn = 'k' + (abc2svg.b40_p[n % 40]).toString()
 			if (!map[nn]) {
 				nn = 'all'		// 'all'
 				if (!map[nn])
@@ -1690,9 +1683,11 @@ function set_map(note) {
 		note.pit = note.map[1].pit
 		note.acc = note.map[1].acc
 	}
+	if (note.map[2])				// if color
+		note.color = note.map[2]
 	nn = note.map[3]
-	if (nn)					// if play map
-		note.b40 = abc2svg.pab40(nn.pit, nn.acc)
+	if (nn)						// if play map
+		note.b40 = nn
 }
 
 /* -- parse note or rest with pitch and length -- */

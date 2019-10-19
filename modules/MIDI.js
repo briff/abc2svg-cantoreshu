@@ -14,39 +14,59 @@ abc2svg.MIDI = {
 
     // parse %%MIDI commands
     do_midi: function(parm) {
-    var	pits = new Int8Array([0, 0, 1, 2, 2, 3, 3, 4, 5, 5, 6, 6]),
-	accs = new Int8Array([3, 1, 3, -1, 3, 3, 1, 3, -1, 3, -1, 3])
 
-    // convert a MIDI pitch to a note
-    function tonote(p) {
+    // convert a ABC note to b40 (string)
+    function abc_b40(p) {
+    var	pit,
+	acc = 0,
+	i = 0
+
+	switch (p[0]) {
+	case '^':
+		if (p[++i] == '^') {
+			acc = 2
+			i++
+		} else {
+			acc = 1
+		}
+		break
+	case '=':
+		i++
+		break
+	case '_':
+		if (p[++i] == '_') {
+			acc = -2
+			i++
+		} else {
+			acc = -1
+		}
+		break
+	}
+	pit = 'CDEFGABcdefgab'.indexOf(p[i++]) + 16
+	if (pit < 16)
+		return
+	while (p[i] == "'") {
+		pit += 7
+		i++
+	}
+	while (p[i] == ",") {
+		pit -= 7
+		i++
+	}
+	return abc2svg.pab40(pit, acc).toString()
+    } // abc_b40()
+
+    // convert a MIDI pitch to b40
+    function mid_b40(p) {
     var	pit = Number(p)
 	if (isNaN(pit))
 		return
-	p = ((pit / 12) | 0) * 7 - 19;	// octave
+	p = (pit / 12) | 0		// octave
 	pit = pit % 12;			// in octave
-	p += pits[pit]
-	note = {
-		pit: p
-	}
-	note.acc = accs[pit]
-	return note
-    } // tonote()
+	return p * 40 + abc2svg.isb40[pit] + 2
+    } // mid_b40()
 
-    // normalize a note for mapping
-    function norm(p) {
-    var	a = p.match(/^([_^=]*)([A-Ga-g])([,']*)$/)	// '
-	if (!a)
-		return
-	if (p.match(/[A-Z]/)) {
-		p = p.toLowerCase();
-		if (p.indexOf("'") > 0)
-			p = p.replace("'", '')
-		else
-			p += ','
-	}
-	return p
-    } // norm()
-
+    // do_midi()
     var	n, v, s, maps,
 	a = parm.split(/\s+/)
 
@@ -59,8 +79,8 @@ abc2svg.MIDI = {
 		break
 	case "drummap":
 //fixme: should have a 'MIDIdrum' per voice?
-		n = norm(a[2]);
-		v = tonote(a[3]);
+		n = abc_b40(a[2])
+		v = mid_b40(a[3])
 		if (!n || !v) {
 			this.syntax(1, this.errs.bad_val, "%%MIDI drummap")
 			break
@@ -68,7 +88,9 @@ abc2svg.MIDI = {
 		maps = this.get_maps()
 		if (!maps.MIDIdrum)
 			maps.MIDIdrum = {}
-		maps.MIDIdrum[n] = [null, null, null, v];
+		if (!maps.MIDIdrum[n])
+			maps.MIDIdrum[n] = []
+		maps.MIDIdrum[n][3] = v
 		this.set_v_param("mididrum", "MIDIdrum")
 		break
 	case "program":
