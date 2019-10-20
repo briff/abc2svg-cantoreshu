@@ -540,7 +540,7 @@ function set_graceoffs(s) {
 // Constraints:
 // - assume the chord symbols are only in the first staff
 // - treat only the first chord symbol of each symbol
-// - the chord symbol under the staff are ignored
+// - the chord symbols under the staff are ignored
 function set_w_chs(s) {
     var	i, ch, w0, s0, dw,
 	x = 0,
@@ -1252,14 +1252,16 @@ function set_allsymwidth() {
 		return
 	do {
 		s2 = s;			// start of tuplet
-		ntup = s.tp.length
-		do {			// search the end of the tuplet sequence
-			s = s.ts_next
+		ntup = 0
+		while (1) {		// search the end of the tuplet sequence
 			if (s.tp)
 				ntup += s.tp.length
 			if (s.tpe)
 				ntup -= s.tpe
-		} while (ntup != 0);
+			if (!ntup)
+				break
+			s = s.ts_next
+		}
 
 		set_sp_tup(s2, s)
 
