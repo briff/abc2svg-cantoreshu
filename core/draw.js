@@ -2138,7 +2138,7 @@ function draw_slurs(s, last) {
  * for the value of 'tp.f' */
 function draw_tuplet(s1, tp) {
     var	s2, s3, g, upstaff, nb_only, some_slur,
-	x1, x2, y1, y2, xm, ym, a, s0, yy, yx, dy, a, b, dir, r,
+	x1, x2, y1, y2, xm, ym, a, s0, yy, yx, dy, a, dir, r,
 	tp = s1.tp.shift()		// tuplet parameters
 
 	if (!s1.tp.length)
@@ -2176,10 +2176,16 @@ function draw_tuplet(s1, tp) {
 	if (tp.f[0] == 1)			/* if 'when' == never */
 		return
 
-	dir = tp.f[3] ||			// 'where'
-		(s1.stem > 0 ? C.SL_ABOVE : C.SL_BELOW)
+	dir = tp.f[3]				// 'where'
+	if (!dir) {				// if auto
+		s3 = s1
+		while (s3.type != C.NOTE)
+			s3 = s3.next
+		dir = s3.stem > 0 ? C.SL_ABOVE : C.SL_BELOW
+	}
 
-	if (s1 == s2) {				/* tuplet with 1 note (!) */
+	if (s1 == s2				// tuplet with 1 note (!)
+	 || tp.f[1] == 2) {			// what == nothing
 		nb_only = true
 	} else if (tp.f[1] == 1) {			/* 'what' == slur */
 		nb_only = true;
@@ -2187,10 +2193,8 @@ function draw_tuplet(s1, tp) {
 	} else {
 
 		/* search if a bracket is needed */
-		if (tp.f[0] == 2		/* if 'when' == always */
-		 || s1.type != C.NOTE || s2.type != C.NOTE) {
-			nb_only = false
-		} else {
+		if (tp.f[0] != 2		// if 'when' != always
+		 && s1.type == C.NOTE && s2.type == C.NOTE) {
 			nb_only = true
 			for (s3 = s1; ; s3 = s3.next) {
 				if (s3.type != C.NOTE
@@ -2241,38 +2245,28 @@ function draw_tuplet(s1, tp) {
 		if (tp.f[2] == 1)		/* if 'which' == none */
 			return
 		xm = (s2.x + s1.x) / 2
-		if (s1 == s2)			/* tuplet with 1 note */
-			a = 0
+		a = s2.x - s1.x			// width around the middle
+		if (dir == C.SL_ABOVE)
+			ym = y_get(upstaff, 1, xm - a / 2, a) + 2
 		else
-			a = (s2.ys - s1.ys) / (s2.x - s1.x);
-		b = s1.ys - a * s1.x;
-		yy = a * xm + b
-		if (dir == C.SL_ABOVE) {
-			ym = y_get(upstaff, 1, xm - 4, 8)
-			if (ym > yy)
-				b += ym - yy;
-			b += 2
-		} else {
-			ym = y_get(upstaff, 0, xm - 4, 8)
-			if (ym < yy)
-				b += ym - yy;
-			b -= 10
-		}
-		for (s3 = s1; ; s3 = s3.next) {
-			if (s3.x >= xm)
-				break
-		}
+			ym = y_get(upstaff, 0, xm - a / 2, a) - 10
+
 		if (s1.stem * s2.stem > 0) {
 			if (s1.stem > 0)
 				xm += 1.5
 			else
 				xm -= 1.5
 		}
-		ym = a * xm + b
+
 		if (tp.f[2] == 0)		/* if 'which' == number */
 			out_bnum(xm, ym, tp.p)
 		else
 			out_bnum(xm, ym, tp.p + ':' + tp.q)
+
+		for (s3 = s1; ; s3 = s3.next) {
+			if (s3.x >= xm)
+				break
+		}
 		if (dir == C.SL_ABOVE) {
 			ym += 10
 			if (s3.ymx < ym)
@@ -2286,8 +2280,7 @@ function draw_tuplet(s1, tp) {
 		return
 	}
 
-	if (tp.f[1] != 0)				/* if 'what' != square */
-		error(2, s1, "'what' value of %%tuplets not yet coded")
+	// here, what is square bracket
 
 /*fixme: two staves not treated*/
 /*fixme: to optimize*/
