@@ -421,8 +421,6 @@ return true
 //				sep:
 //				maxsep:
 			}
-			if (n)
-				p_v.second = par_sy.voices[v].second = true
 
 			// sort the voices
 			if (!par_sy.rv)
@@ -437,6 +435,14 @@ return true
 			for (n = 0; n < par_sy.rv.length; n++) {
 				v = par_sy.rv[n].v
 				par_sy.voices[v].range = n
+			}
+			v = p_v.v
+			while (--v >= 0) {
+				if (par_sy.voices[v].st == st) {
+					p_v.second =
+						par_sy.voices[v].second = true
+					break
+				}
 			}
 		}
 		if (tag.label) {
