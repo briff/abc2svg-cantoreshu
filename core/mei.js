@@ -503,7 +503,7 @@ return true
 	}, // lb()
 
 	mei: function(tag) {
-		if (tag.meiversion[0] != "4")
+		if (!tag.meiversion || tag.meiversion[0] != "4")
 			error(0, null, "Bad MEI version " + tag.meiversion)
 	},
 
@@ -612,6 +612,10 @@ return true
 					s.notes[0] = note = clone(s.notes[0])
 					s.notes[0].s = s
 				}
+			} else {
+// may be
+// <note cue="true" head.shape="slash" stem.dir="up"/>
+				return
 			}
 		}
 
@@ -883,11 +887,12 @@ return true
 		} else {			// space
 			s.invis = true
 		}
+
 		sym_link(s)
 
 		if (id)
 			do_delayed(id, s)
-	
+
 		switch (tag.tuplet) {
 		case "i1":
 			curr.tp.push(s)
@@ -1262,6 +1267,7 @@ return true
 	    var	last, next, f,
 		s = get_ref(tag),
 		s2 = get_ref(tag, s)
+
 		if (!s || !s2)
 			return
 
@@ -1614,6 +1620,8 @@ return true
 
 	// end of the tune
 	music: function(tag) {
+		sanitize()
+
 //fixme: copy of end_tune()
 		generate()
 		if (info.W)
@@ -1659,7 +1667,6 @@ return true
 
 		if (!grp)
 			return
-		curr.staffGrp = null
 		if (--grp.lvl < 0) {
 			curr.staffGrp = null
 			switch (tag.symbol) {
@@ -2028,7 +2035,9 @@ error(1, null, "Bad duration " + tag.dur + " tag:" + tag.name)
 
 		if (s == end) {
 			error(1, s, "References on a same element")
-			return
+			if (!s.next)
+				return
+			s = s.next
 		}
 		if (s.time <= end.time) {
 			error(0, s, "References going back in time")
@@ -2183,6 +2192,26 @@ error(1, null, "Bad duration " + tag.dur + " tag:" + tag.name)
 			return (v * curr.pt).toString()
 		return v
 	}
+
+	// check for bugs in the source
+	function sanitize() {
+	    var	i, v,
+		used_st = []
+
+		// check for used staves
+		for (v = 0; v < voice_tb.length; v++) {
+			i = voice_tb[v].st
+			if (i)
+				used_st[i] = true
+		}
+		for (i = par_sy.nstaff; i > 0; i--) {
+			if (used_st[i])
+				break
+		}
+		if (i != par_sy.nstaff)
+			error(1, null, "Unused staves "+(i+1)+".."+par_sy.nstaff)
+		par_sy.nstaff = i
+	} // sanitize()
 
 	// convert to music
 	function parse_mei(tag) {
