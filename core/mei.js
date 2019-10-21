@@ -104,7 +104,8 @@ Abc.prototype.mei2mus = function(mei) {
 		ids: {},
 		meastim: 0,
 		mu: C.BLEN / 4,
-		pt: .01			// default unit ! en cm
+		pt: .01,		// default unit ! en cm
+		tp: []			// tuplets
 	},
 	acc_ty = {
 		"ff": -2,
@@ -718,6 +719,22 @@ return true
 //		tag["head.visible"]
 		if (tag.grace)
 			s.grace = true
+		switch (tag.tuplet) {
+		case "i1":
+			curr.tp.push(s)
+			break
+//		case "m1":
+//			ignored
+		case "t1":
+			if (curr.tp.length)
+				tp_set(curr.tp.pop(), {
+						num: 3,
+						numbase: 2
+						})
+//fixme: else error
+			break
+		}
+
 //fixme: always <tie> ?
 //if (0) {
 //		switch (tag.tie) {
@@ -861,8 +878,25 @@ return true
 			s.invis = true
 		}
 		sym_link(s)
+
 		if (id)
 			do_delayed(id, s)
+	
+		switch (tag.tuplet) {
+		case "i1":
+			curr.tp.push(s)
+			break
+//		case "m1":
+//			ignored
+		case "t1":
+			if (curr.tp.length)
+				tp_set(curr.tp.pop(), {
+						num: 3,
+						numbase: 2
+						})
+//fixme: else error
+			break
+		}
 	}, // rest()
 
 	revisionDesc: function(tag) {
@@ -1214,24 +1248,27 @@ return true
 
 	// start of tuplet (one nested level only)
 	tuplet: function(tag) {
-		if (!curr.tp)
-			curr.tp = []
 		curr.tp.push(curvoice.last_sym || true)
 	}, //tuplet()
 
 	// start of tupletSpan
 	tupletSpan: function(tag) {
-	    var	last, next,
+	    var	last, next, f,
 		s = get_ref(tag),
 		s2 = get_ref(tag, s)
 		if (!s || !s2)
 			return
+
+		if (s.tp.length) {
+			tp_fl(s.tp[0].f, tag)
+			return
+		}
+
 		last = curvoice.last_sym
 		curvoice.last_sym = s2
 		next = s2.next
 		s2.next = null
-		curr.tp = s.prev
-		fne.tuplet(tag)
+		tp_set(s, tag)
 		s2.next = next
 		curvoice.last_sym = last
 	}, // tupletSpan()
@@ -1426,6 +1463,11 @@ return true
 	measure: function(tag) {
 	    var	v, s, s2, s3, p_v, tim, ty, dotted,
 		n = voice_tb.length
+
+		if (curr.tp.length) {
+			error(1, null, "No end of tuplet")
+			curr.tp = []
+		}
 
 		// change the bars at start of the measure (or start of tune)
 		if (tag.left) {
@@ -1753,75 +1795,11 @@ return true
 
 	// end of tuplet
 	tuplet: function(tag) {
-	   var	s1 = curr.tp.pop()		// first symbol of the tuplet
+	   var	s = curr.tp.pop() // symbol before the start of the tuplet
+				  // or 'true' if the tune starts with a tuplet
 
-		// handle the end of one tuplet
-		function tp_set(s) {
-		    var	fact, s2, s3, n,
-			nbas = tag.numbase || 2,	// numbas default = 2 ?
-			f = Object.create(cfmt.tuplets)
-
-			while (s.grace)
-				s = s.next
-
-			if (!s.tp)
-				s.tp = []
-			s.tp.push({
-				p: tag.num,
-				q: nbas,
-				f: f
-			})
-
-//			switch (tag["bracket.visible"]) {	// what [1]
-//			case "true": f[1] = 0; break
-//fixme: this option puts slurs on each tuplet!
-//			case "false": f[1] = 1; break
-//			}
-			switch (tag["num.visible"]) {		// which [2]
-			default:
-				switch (tag["num.format"]) {
-				case "count": f[2] = 0; break
-				case "ratio": f[2] = 2; break
-				}
-				break
-			case "false":
-				if (tag["bracket.visible"] == "false")
-					f[0] = 1
-				else
-					f[2] = 1
-				break
-			}
-			switch (tag["bracket.place"]) {		// where [3]
-			case "above": f[3] = 1; break
-			case "below": f[3] = 2; break
-			}
-
-			// adjust the duration of the symbols
-			if (tag.dur)
-				fact = durcnv(tag) / (curvoice.time - s1.time)
-			else
-				fact = nbas / tag.num
-
-			tp_adj(s, fact)
-
-			s2 = curvoice.last_sym
-			if (!s2.dur) {	// if some odd element at end of the tuplet
-				for (s3 = s2; !s3.dur; s3 = s3.prev)
-					;
-				s3.tpe = s2.tpe	// move the end of tuplet
-				delete s2.tpe
-			}
-
-			n = 0
-			for (s3 = s; s3; s3 = s3.next) {
-				if (s3.dur)
-					n++
-			}
-			s.tp[s.tp.length - 1].ro = n	// (needed for toabc)
-		} // tp_set()
-
-		if (s1 && (tag.dur || tag.num))
-			tp_set(s1 == true ? curvoice.sym : s1.next)
+		if (s && (tag.dur || tag.num))
+			tp_set(s == true ? curvoice.sym : s.next, tag)
 	}, // tuplet()
 
 	// end of work
@@ -2132,6 +2110,65 @@ error(1, null, "Bad duration " + tag.dur + " tag:" + tag.name)
 			set_font(f)
 		curr.text = ""
 	}
+
+	// set tuplet flags
+	function tp_fl(f, tag) {
+		if (tag["num.visible"] == "false") {
+			f[0] = 1			// when = never
+		} else {
+			if (tag["bracket.visible"] == "false")
+				f[1] = 2		// what = nothing
+			if (tag["num.format"] == "ratio")
+				f[2] = 2		// which = ratio
+		}
+		switch (tag["bracket.place"]) {
+		case "above": f[3] = 1; break		// where = above
+		case "below": f[3] = 2; break		// where = below
+		}
+	} // tp_fl()
+
+	// handle the end of one tuplet
+	function tp_set(s, tag) {
+	    var	fact, s2, s3, n,
+		nbas = tag.numbase || 2,	// numbas default = 2 ?
+		f = Object.create(cfmt.tuplets)
+
+		while (s.grace)
+			s = s.next
+
+		if (!s.tp)
+			s.tp = []
+		s.tp.push({
+			p: tag.num,
+			q: nbas,
+			f: f
+		})
+
+		tp_fl(f, tag)
+
+		// adjust the duration of the symbols
+		if (tag.dur)
+			fact = durcnv(tag) / (curvoice.time - s1.time)
+		else
+			fact = nbas / tag.num
+
+		tp_adj(s, fact)
+
+		s2 = curvoice.last_sym
+		if (!s2.dur) {	// if some odd element at end of the tuplet
+			for (s3 = s2; !s3.dur; s3 = s3.prev)
+				;
+			s3.tpe = s2.tpe	// move the end of tuplet
+			delete s2.tpe
+		}
+
+		n = 0
+		for (s3 = s; s3; s3 = s3.next) {
+			if (s3.dur)
+				n++
+		}
+		s.tp[s.tp.length - 1].ro = n	// (needed for toabc)
+	} // tp_set()
 
 //fixme: no unit is 10th of mm ?
 	function unitcnv(v) {
