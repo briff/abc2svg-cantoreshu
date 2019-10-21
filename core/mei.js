@@ -19,24 +19,21 @@
 
 // convert the xml source into a tree
 function xml2tree(xml) {
-
-// remove the XML comments
-	if (xml.indexOf("<!--") >= 0)
-		xml = xml.replace(/<!--[^]+?-->/g, '')
-
     var	i, j, item, n, no, an,
+	e = 0,
 	stack = [],
 	root = {
 		name: "root"
 	},
-	o = root,
-// a = array of "<..>" and free text
-	a = xml.split(/(<[^>]*?>)/)
+	o = root
 
-	for (i = 0; i < a.length; i++) {
-		item = a[i]
-		if (item[0] != '<') {
-			item = item.replace(/\s*/, '')
+	while (1) {
+		i = xml.indexOf('<', e)		// start of tag
+		if (i < 0)
+			break
+		if (i > e + 1) {		// if some content
+			item = xml.slice(e + 1, i)
+				.replace(/\s*/, '') // remove left spaces
 			if (item) {
 				if (!o.children)
 					o.children = []
@@ -45,16 +42,25 @@ function xml2tree(xml) {
 					content: item
 				})
 			}
-			continue
 		}
-		switch (item[1]) {
+		e = xml.indexOf('>', i)		// end
+		if (e < 0)
+//fixme: error
+			return root
+
+		switch (xml[i + 1]) {
 		case '?':
 			continue		// XML header
+		case '!':
+			e = xml.indexOf('-->', i) // XML comment
+			if (e < 0)
+				return root
+			continue
 		case '/':
-			n = item.slice(2, -1)
-			if (n != o.name) {
-				error(1, null, 'Found tag ' + item +
-					' instead of </'+o.name + '>')
+			item = xml.slice(i + 2, e)
+			if (item != o.name) {
+				error(1, null, 'Found tag </' + item +
+					'> instead of </'+o.name + '>')
 				continue
 			}
 			o = stack.pop()
@@ -62,14 +68,16 @@ function xml2tree(xml) {
 				error(1, null, 'No start tag "' + item + '"')
 			continue
 		}
-		n = item.match(/<(\w+)[\s]*([^]*)>/)
+		item = xml.slice(i + 1, e)
+		n = item.match(/(\w+)[\s]*([^]*)/)
 		no = {
-			name: n[1]
+			name: n[1],
+			ix: i
 		}
 		if (!o.children)
 			o.children = []
 		o.children.push(no)
-		if (item[item.length - 2] != '/') {	// if some content
+		if (n[2].slice(-1) != '/') {	// if some content
 			stack.push(o)
 			o = no
 		} else {
@@ -158,7 +166,7 @@ Abc.prototype.mei2mus = function(mei) {
 			ty = "|"
 		s = {
 			type: C.BAR,
-			meas: tag.n,
+			istart: tag.ix,
 			bar_type: ty,
 			dur: 0,
 			multi: 0
@@ -208,7 +216,7 @@ Abc.prototype.mei2mus = function(mei) {
 	    var	dur = durcnv(tag),
 		s = {
 			type: C.NOTE,
-			meas: curr.meas,
+			istart: tag.ix,
 			stem: 0,
 			multi: 0,
 			nhd: -1,
@@ -511,7 +519,7 @@ return true
 	mRest: function(tag) {
 	    var	s = {
 			type: C.REST,
-			meas: curr.meas,
+			istart: tag.ix,
 			stem: 0,
 			multi: 0,
 			nhd: 0,
@@ -557,7 +565,7 @@ return true
 	    var	dur = curvoice.wmeasure * tag.num,
 		s = {
 			type: C.MREST,
-			meas: curr.meas,
+			istart: tag.ix,
 			stem: 0,
 			multi: 0,
 			nhd: 0,
@@ -570,9 +578,8 @@ return true
 
 	// start of the tune
 	music: function(tag) {
-//		if (parse.state >= 1)
-//			return
-		tosvg(fn, "X:1")
+		info.X = "1"
+		parse.fname = "mei"
 		parse.state = 1		// inside tune
 	}, // music()
 
@@ -632,7 +639,7 @@ return true
 					notes: [note]
 				}
 			}
-			s.meas = curr.meas
+			s.istart = tag.ix
 
 			switch (tag["stem.dir"]) {
 			case "up": s.stem = 1; break
@@ -643,7 +650,7 @@ return true
 				if (gr && gr.type != C.GRACE) {
 					gr = {			// new grace note
 						type: C.GRACE,
-						meas: curr.meas,
+						istart: tag.ix,
 						dur: 0,
 						stem: 0,
 						multi: 0
@@ -830,7 +837,7 @@ return true
 		dur = durcnv(tag),
 		s = {
 			type: C.REST,
-			meas: curr.meas,
+			istart: tag.ix,
 			stem: 0,
 			multi: 0,
 			nhd: 0,
@@ -1442,7 +1449,7 @@ return true
 					curvoice = p_v
 					sym_link({
 						type: C.BAR,
-						meas: tag.n,
+						istart: tag.ix,
 						bar_type: ty || "|",
 						dur: 0,
 						multi: 0
@@ -1543,7 +1550,7 @@ return true
 			curvoice = p_v
 			s = {
 				type: C.BAR,
-				meas: curr.meas,
+				istart: tag.ix,
 				bar_type: ty,
 				dur: 0,
 				multi: 0
@@ -1559,7 +1566,12 @@ return true
 
 	// end of the tune
 	music: function(tag) {
-		tosvg(fn, "\n")		// generate
+//fixme: copy of end_tune()
+		generate()
+		if (info.W)
+			put_words(info.W)
+		put_history()
+		blk_flush()
 	}, // music()
 
 //	// end of page footer
@@ -1942,17 +1954,12 @@ error(1, null, "Bad duration " + tag.dur + " tag:" + tag.name)
 	// change the source reference in error messages
     var	err_old
 	function error_new(sev, s, msg, a1, a2, a3, a4) {
-	    var	meas
-		if (s) {
-			if (s.s)
-				s = s.s
-			msg = "V:" + s.p_v.id + " " + msg
-			meas = s.meas
-		} else if (curr.meas) {
-			meas = curr.meas
-		}
-		if (meas)
-			msg = "measure " + meas + " " + msg
+		if (!s)
+			s = {}
+		if (!s.fname)
+			s.fname = "internal"
+		if (!s.istart)
+			s.istart = parse.istart
 		err_old(sev, s, msg, a1, a2, a3, a4)
 	}
 	err_old = error
@@ -2137,6 +2144,7 @@ error(1, null, "Bad duration " + tag.dur + " tag:" + tag.name)
 	// convert to music
 	function parse_mei(tag) {
 		if (fns[tag.name]) {
+			parse.istart = tag.ix
 			if (fns[tag.name](tag))
 				return			// skip when error
 		}
@@ -2152,6 +2160,7 @@ error(1, null, "Bad duration " + tag.dur + " tag:" + tag.name)
 
 	// main code of mei2mus()
 
+	parse.file = mei
 	cfmt.graceslurs = false
 	glovar.ulen = C.BLEN / 4
 	param_set_font("dynamfont", "serifItalicBold 16")
