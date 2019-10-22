@@ -344,6 +344,7 @@ function build_grid(chords, bars, font, wmx) {
 		time: 0,
 		p_v: p_voice,
 		v: p_voice.v,
+		st: p_voice.st,
 		text: build_grid.call(this, chords, bars, font, wmx)
 	}
 
