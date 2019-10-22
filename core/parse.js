@@ -276,7 +276,7 @@ Abc.prototype.set_vp = function(a) {
 		item = a.shift()
 		if (!item)
 			break
-		if (item[item.length - 1] == '='
+		if (item.slice(-1) == '='
 		 && a.length == 0) {
 			syntax(1, errs.bad_val, item)
 			break
@@ -2199,7 +2199,7 @@ function tp_adj(s, fact) {
 } // tp_adj()
 
 // characters in the music line (ASCII only)
-var nil = ["0"],
+var nil = "0",
     char_tb = [
 	nil, nil, nil, nil,		/* 00 - .. */
 	nil, nil, nil, nil,
