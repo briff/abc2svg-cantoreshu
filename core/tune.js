@@ -1385,6 +1385,9 @@ Abc.prototype.do_begin_end = function(type,
 		action = get_textopt(opt);
 		if (!action)
 			action = cfmt.textoption
+		if (text.indexOf('\\') >= 0)	// convert the escape sequences
+			text = cnv_escape(text)
+
 		if (parse.state >= 2) {
 			if (parse.state == 2)
 				goto_tune()
