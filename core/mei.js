@@ -1119,12 +1119,13 @@ return true
 			}
 		}
 
-		if (!staff["clef.shape"]) {
-			error(1, null, "No clef in staff " + tag.n)
-			staff["clef.shape"] = "G"
-			staff["clef.line"] = "2"
-			staff.lines = "5"
-		}
+//fixme
+//		if (!staff["clef.shape"]) {
+//			error(1, null, "No clef in staff " + tag.n)
+//			staff["clef.shape"] = "G"
+//			staff["clef.line"] = "2"
+//			staff.lines = "5"
+//		}
 
 		if (tag.label) {
 			staff.label = tag
