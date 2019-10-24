@@ -338,10 +338,12 @@ function d_near(de) {
 		up = s.multi > 0
 	else
 		up = s.stem < 0
-	if (up)
+	if (up) {
 		y = s.ymx | 0
-	else
-		y = (s.ymn - dd.h) | 0
+	} else {
+		y = s.ymn
+		de.inv = true
+	}
 	if (y > -6 && y < 24) {
 		if (up)
 			y += 3;
@@ -350,7 +352,7 @@ function d_near(de) {
 	if (up)
 		s.ymx = y + dd.h
 	else
-		s.ymn = y;
+		s.ymn = y - dd.h
 	de.y = y
 //	de.x = s.x + s.notes[s.stem >= 0 ? 0 : s.nhd].shhd
 	if (s.type == C.NOTE)
