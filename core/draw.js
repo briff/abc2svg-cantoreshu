@@ -2480,9 +2480,8 @@ function draw_tuplet(s1, tp) {
 	out_tubrn(x1, y1, x2 - x1, y2 - y1, dir == C.SL_ABOVE,
 		tp.f[2] == 0 ? tp.p.toString() : tp.p + ':' +  tp.q);
 
-	yy = .5 * (y1 + y2)
 	if (dir == C.SL_ABOVE)
-		y_set(upstaff, true, xm - 3, 6, yy + 9)
+		y_set(upstaff, true, xm - 3, 6, yy + 2)
 	else
 		y_set(upstaff, false, xm - 3, 6, yy)
 }
@@ -2776,8 +2775,8 @@ function draw_all_ties(p_voice) {
  *   - beams
  *   - decorations near the notes
  *   - measure bar numbers
- *   - tuplets and slurs
  *   - decorations tied to the notes
+ *   - tuplets and slurs
  * - not scaled
  *   - chord symbols
  *   - staff decorations
@@ -2906,6 +2905,8 @@ function draw_sym_near() {
 		}
 	}
 
+	draw_deco_note()
+
 	for (v = 0; v < voice_tb.length; v++) {
 		p_voice = voice_tb[v];
 		s = p_voice.sym
@@ -2926,6 +2927,7 @@ function draw_sym_near() {
 				draw_slurs(s)
 		}
 	}
+	set_color()
 
 	/* set the top and bottom out of the staves */
 	for (st = 0; st <= nstaff; st++) {
@@ -2941,8 +2943,6 @@ function draw_sym_near() {
 		}
 	}
 
-	set_color();
-	draw_deco_note()
 	if (cfmt.measurenb >= 0)
 		draw_measnb();
 	draw_deco_staff();
