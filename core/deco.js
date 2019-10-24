@@ -37,7 +37,7 @@ var decos = {
 	upbow: "3 upb 10 5 5",
 	downbow: "3 dnb 9 5 5",
 	gmark: "3 grm 6 5 5",
-	wedge: "3 wedge 8 3 3",		// (staccatissimo or spiccato)
+	wedge: "0 wedge 8 3 3",		// (staccatissimo or spiccato)
 	turnx: "3 turnx 10 0 5",
 	breath: "3 brth 0 1 20",
 	longphrase: "3 lphr 0 1 1",
