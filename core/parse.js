@@ -1418,7 +1418,7 @@ function parse_staves(p) {
 		parenth = 0,
 		flags_st = 0,
 	e,
-	a = p.match(/[^[\]{}()*+\s]+|[^\s]/g)
+	a = p.match(/[^[\]|{}()*+\s]+|[^\s]/g)
 
 	if (!a) {
 		syntax(1, errs.bad_val, "%%score")
