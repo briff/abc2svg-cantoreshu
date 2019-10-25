@@ -757,8 +757,6 @@ Abc.prototype.set_width = function(s) {
 		s.wl = xx
 		return
 	case C.BAR:
-		if (s.norepbra)
-			break
 		bar_type = s.bar_type
 			switch (bar_type) {
 			case "|":
@@ -1192,8 +1190,8 @@ function set_allsymwidth() {
 	ntup = 0
 
 	/* loop on all symbols */
+	maxx = xa
 	while (1) {
-		maxx = xa
 		do {
 			if (s.a_gch && !s_chs)
 				s_chs = s;
