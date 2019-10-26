@@ -1982,7 +1982,7 @@ if (two_staves) error(2, k1, "*** multi-staves slurs not treated yet");
 
 /* -- draw the slurs between 2 symbols --*/
 function draw_slurs(s, last) {
-    var	gr1, i, m, note
+    var	gr1, i, m, note, sls, nsls
 
 	// draw a slur knowing the start and stop elements
 	function draw_sls(s,		// start symbol
@@ -2111,19 +2111,29 @@ function draw_slurs(s, last) {
 			continue
 		}
 		if (s.sls) {			// slurs from the chord
-			for (i = 0; i < s.sls.length; i++) {
-				if (draw_sls(s, s.sls[i]))
-					s.sls.splice(i--, 1)
+			sls = s.sls
+			s.sls = null
+			nsls = []
+			for (i = 0; i < sls.length; i++) {
+				if (!draw_sls(s, sls[i]))
+					nsls.push(sls[i])
 			}
+			if (nsls.length)
+				s.sls = nsls
 		}
 		if (s.sl1) {			// slurs from the note heads
 			for (m = 0; m <= s.nhd; m++) {
 				note = s.notes[m]
 				if (note.sls) {
-					for (i = 0; i < note.sls.length; i++) {
-						if (draw_sls(s, note.sls[i], note))
-							note.sls.splice(i--, 1)
+					sls = note.sls
+					note.sls = null
+					nsls = []
+					for (i = 0; i < sls.length; i++) {
+						if (!draw_sls(s, sls[i], note))
+							nsls.push(sls[i])
 					}
+					if (nsls.length)
+						note.sls = nsls
 				}
 			}
 		}
