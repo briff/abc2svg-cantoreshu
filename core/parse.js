@@ -482,7 +482,7 @@ function memo_kv_parm(vid,	// voice ID (V:) / '*' (K:/V:*)
 // K: key signature
 // return the key and the voice/clef parameters
 function new_key(param) {
-    var	i, clef, key_end, c, tmp,
+    var	i, clef, key_end, c, tmp, exp,
 	sf = "FCGDAEB".indexOf(param[0]) - 1,
 	mode = 0,
 	s = {
@@ -634,7 +634,7 @@ function new_key(param) {
 			param = param.replace(/\w+\s*/, '')
 			if (!param)
 				syntax(1, "No accidental after 'exp'");
-			s.k_exp = true
+			exp = true
 		}
 		c = param[0]
 		if (c == '^' || c == '_' || c == '=') {
@@ -650,10 +650,10 @@ function new_key(param) {
 				while (c == ' ')
 					c = param[++tmp.index]
 			} while (c == '^' || c == '_' || c == '=');
-			if (!s.k_exp)
+			if (!exp)
 				set_k_acc(s, sf)
 			param = param.slice(tmp.index)
-		} else if (s.k_exp && param.indexOf("none") == 0) {
+		} else if (exp && param.indexOf("none") == 0) {
 			sf = 0
 			param = param.replace(/\w+\s*/, '')
 		}
