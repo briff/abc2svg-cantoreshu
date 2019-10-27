@@ -654,6 +654,7 @@ function new_key(param) {
 				set_k_acc(s, sf)
 			param = param.slice(tmp.index)
 		} else if (s.k_exp && param.indexOf("none") == 0) {
+			sf = 0
 			param = param.replace(/\w+\s*/, '')
 		}
 	}
