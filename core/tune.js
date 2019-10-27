@@ -1910,6 +1910,7 @@ function get_key(parm) {
 		if (s_key.k_sf == undefined && !s_key.k_a_acc) { // empty K:
 			s_key.k_sf = 0;
 			s_key.k_none = true
+			s_key.k_map = abc2svg.keys[7]
 		}
 		for (v = 0; v < voice_tb.length; v++) {
 			p_voice = voice_tb[v];
