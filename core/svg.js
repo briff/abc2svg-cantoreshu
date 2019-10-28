@@ -25,7 +25,8 @@ var	output = "",		// output buffer
 \n.bthW{stroke:currentColor;fill:none;stroke-width:3}\
 \n.slW{stroke:currentColor;fill:none;stroke-width:.7}\
 \n.slthW{stroke:currentColor;fill:none;stroke-width:1.5}\
-\n.sW{stroke:currentColor;fill:none;stroke-width:.7}',
+\n.sW{stroke:currentColor;fill:none;stroke-width:.7}\
+\n.tempstr{font:140% music}',
 	font_style = '',
 	posx = cfmt.leftmargin / cfmt.scale,	// default x offset of the images
 	posy = 0,		// y offset in the block
@@ -529,23 +530,23 @@ function xygl(x, y, gl) {
 // (avoid ps<->js loop)
 //	if (psxygl(x, y, gl))
 //		return
-	var 	tgl = tgls[gl]
-	if (tgl && !glyphs[gl]) {
-		x += tgl.x * stv_g.scale;
-		y -= tgl.y
-		if (tgl.sc)
-			out_XYAB('<text transform="translate(X,Y) scale(A)">B</text>\n',
-				x, y, tgl.sc, tgl.c);
-		else
-			out_XYAB('<text x="X" y="Y">A</text>\n', x, y, tgl.c)
-		return
+	if (glyphs[gl]) {
+		def_use(gl)
+		out_XYAB('<use x="X" y="Y" xlink:href="#A"/>\n', x, y, gl)
+	} else {
+	    var	tgl = tgls[gl]
+		if (tgl) {
+			x += tgl.x * stv_g.scale;
+			y -= tgl.y
+			if (tgl.sc)
+				out_XYAB('<text transform="translate(X,Y) scale(A)">B</text>\n',
+					x, y, tgl.sc, tgl.c);
+			else
+				out_XYAB('<text x="X" y="Y">A</text>\n', x, y, tgl.c)
+		} else {
+			error(1, null, 'no definition of $1', gl)
+		}
 	}
-	if (!glyphs[gl]) {
-		error(1, null, 'no definition of $1', gl)
-		return
-	}
-	def_use(gl);
-	out_XYAB('<use x="X" y="Y" xlink:href="#A"/>\n', x, y, gl)
 }
 // - specific functions -
 // gua gda (acciaccatura)
@@ -978,6 +979,118 @@ function out_deco_long(x, y, de) {
 	else
 		error(1, null, "No function for decoration '$1'", name)
 }
+
+// return a tempo note
+function tempo_note(s, dur) {
+    var	p,
+	elts = identify_note(s, dur),
+	head = elts[0],
+	dots = elts[1],
+	nflags = elts[2]
+
+	switch (head) {
+	case C.OVAL:
+		p = "\ueca2"
+		break
+	case C.EMPTY:
+		p = "\ueca3"
+		break
+	default:
+		switch (nflags) {
+		case 2:
+			p = "\ueca9"
+			break
+		case 1:
+			p = "\ueca7"
+			break
+		default:
+			p = "\ueca5"
+			break
+		}
+		break
+	}
+	if (dots)
+		p += '<tspan dx=".1em">\uecb7</tspan>'
+	return p
+} // tempo_note()
+
+// build the tempo string
+function tempo_build(s) {
+    var	i, bx, p, wh,
+	w = 0,
+	str = []
+
+	if (s.tempo_str)	// already done
+		return
+	set_font("tempo")
+	if (s.tempo_str1) {
+		str.push(s.tempo_str1)
+		w += strwh(s.tempo_str1)[0]
+	}
+	if (s.tempo_notes) {
+		for (i = 0; i < s.tempo_notes.length; i++) {
+			p = tempo_note(s, s.tempo_notes[i])
+			str.push('<tspan\n\tclass="tempstr">' +
+				p + '</tspan>')
+			w += p.length * gene.curfont.swfac
+		}
+		str.push('=')
+		w += cwidf('=')
+		if (s.tempo_ca) {
+			str.push(s.tempo_ca)
+			w += strwh(s.tempo_ca)[0]
+		}
+		if (s.tempo) {			// with a number of beats per minute
+			str.push(s.tempo)
+			w += strwh(s.tempo.toString())[0]
+		} else {			// with a beat as a note
+			p = tempo_note(s, s.new_beat)
+			str.push('<tspan\n\tclass="tempstr">' +
+				p + '</tspan>')
+			w += p.length * gene.curfont.swfac
+		}
+	}
+	if (s.tempo_str2) {
+		str.push(s.tempo_str2)
+		w += strwh(s.tempo_str2)[0]
+	}
+
+	// build the string
+	s.tempo_str = str.join(' ')
+	w += cwidf(' ') * (str.length - 1)
+	s.tempo_wh = [w, 13.0]		// (the height is not used)
+} // tempo_build()
+
+// output a tempo
+function writempo(s, x, y) {
+    var	bx
+
+	set_font("tempo")
+	if (gene.curfont.box) {
+		gene.curfont.box = false
+		bx = x
+	}
+
+//fixme: xy_str() cannot be used because <tspan> in s.tempo_str
+//fixme: then there cannot be font changes with "$n" in the Q: texts
+	output += '<text class="' + font_class(gene.curfont) +
+		'" x="'
+	out_sxsy(x, '" y="', y + gene.curfont.size * .2)
+	output += '">' + s.tempo_str + '</text>\n'
+
+	if (bx) {
+		gene.curfont.box = true
+		bh = gene.curfont.size + 4;
+		output += '<rect class="stroke" x="'
+		out_sxsy(bx - 2, '" y="', y + bh - 1)
+		output += '" width="' + (s.tempo_wh[0] + 2).toFixed(1) +
+			'" height="' + bh.toFixed(1) +
+			'"/>\n'
+	}
+
+	// don't display anymore
+	s.del = true
+} // writempo()
 
 // update the vertical offset
 function vskip(h) {

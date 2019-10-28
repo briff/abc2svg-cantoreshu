@@ -772,7 +772,8 @@ function write_headform(lwidth) {
 				self.set_width(glovar.tempo)
 				if (!glovar.tempo.del) {
 					if (align != 'l') {
-						var w = tempo_width(glovar.tempo)
+						tempo_build(glovar.tempo)
+						w = glovar.tempo.tempo_wh[0]
 
 						if (align == 'c')
 							w *= .5;

@@ -1725,128 +1725,6 @@ function draw_measnb() {
 		param_set_font("measurefont", "* " + font_size.toString());
 }
 
-/* -- draw the note of the tempo -- */
-function draw_notempo(s, x, y, dur, sc) {
-	var	dx, p, dotx,
-		elts = identify_note(s, dur),
-		head = elts[0],
-		dots = elts[1],
-		nflags = elts[2]
-
-//useless
-//	// protection against end of container
-//	if (stv_g.started) {
-//		output += "</g>\n";
-//		stv_g.started = false
-//	}
-
-	out_XYAB('<g transform="translate(X,Y) scale(F)">\n',
-		x + 4, y + 4, sc)
-	switch (head) {
-	case C.OVAL:
-		p = "HD"
-		break
-	case C.EMPTY:
-		p = "Hd"
-		break
-	default:
-		p = "hd"
-		break
-	}
-	xygl(-posx, posy, p);
-	dx = 4
-	if (dots) {
-		dotx = 9
-		if (nflags > 0)
-			dotx += 4
-		switch (head) {
-		case C.SQUARE:
-			dotx += 3
-			break
-		case C.OVALBARS:
-		case C.OVAL:
-			dotx += 2
-			break
-		case C.EMPTY:
-			dotx += 1
-			break
-		}
-		dx = dotx * dots;
-		dotx -= posx
-		while (--dots >= 0) {
-			xygl(dotx, posy, "dot");
-			dotx += 3.5
-		}
-	}
-	if (dur < C.BLEN) {
-		if (nflags <= 0) {
-			out_stem(-posx, posy, 21)		// stem height
-		} else {
-			out_stem(-posx, posy, 21, false, nflags)
-			if (dx < 6)
-				dx = 6
-		}
-	}
-	output += '</g>\n'
-	return (dx + 15) * sc
-}
-
-/* -- estimate the tempo width -- */
-function tempo_width(s) {
-	var	w = 0;
-
-	if (s.tempo_wh1)
-		w = s.tempo_wh1[0]
-	if (s.tempo_wh0)
-		w += s.tempo_wh0[0]
-	if (s.tempo_wh2)
-		w += s.tempo_wh2[0]
-	return w
-}
-
-/* - output a tempo --*/
-function write_tempo(s, x, y) {
-	var	j, dx, bx, bh,
-		sc = .7 * gene.curfont.size / 12.0; //fixme: 12.0 = initial tempofont
-
-	set_font("tempo")
-	if (gene.curfont.box) {
-		gene.curfont.box = false
-		bx = x
-	}
-	if (s.tempo_str1) {
-		xy_str(x, y, s.tempo_str1, null, null, s.tempo_wh1);
-		x += s.tempo_wh1[0] + 3
-	}
-	if (s.tempo_notes) {
-		for (j = 0; j < s.tempo_notes.length; j++)
-			x += draw_notempo(s, x, y, s.tempo_notes[j], sc);
-		xy_str(x, y, s.tempo_str0, null, null, s.tempo_wh0);
-		x += s.tempo_wh0[0]
-		if (s.tempo)
-			x += 5
-		else
-			x += draw_notempo(s, x, y, s.new_beat, sc)
-	}
-	if (s.tempo_str2)
-		xy_str(x, y, s.tempo_str2, null, null, s.tempo_wh2)
-
-	if (bx) {
-		gene.curfont.box = true
-		if (s.tempo_str2)
-			x += s.tempo_wh2[0] + 3;
-		bh = gene.curfont.size + 4;
-		output += '<rect class="stroke" x="';
-		out_sxsy(bx - 2, '" y="', y + bh - 1);
-		output += '" width="' + (x - bx + 2).toFixed(1) +
-			'" height="' + bh.toFixed(1) +
-			'"/>\n'
-	}
-
-	// don't display anymore
-	s.del = true
-}
-
 /* -- draw the parts and the tempo information -- */
 /* (the staves are being defined) */
 function draw_partempo(st, top) {
@@ -1865,7 +1743,7 @@ function draw_partempo(st, top) {
 			continue
 		if (!some_tempo)
 			some_tempo = s;
-		w = tempo_width(s);
+		w = s.tempo_wh[0]
 		if (s.time == 0 && s.x > 40)	// at start of tune and no %%soloffs,
 			s.x = 40;	// shift the tempo over the key signature
 		y = y_get(st, true, s.x - 16, w)
@@ -1899,7 +1777,7 @@ function draw_partempo(st, top) {
 				s.ymx = s.ymn + 14;
 				anno_start(s)
 			}
-			write_tempo(s, s.x - 16, (dosh & 1) ? h : y);
+			writempo(s, s.x - 16, (dosh & 1) ? h : y);
 			anno_stop(s);
 			dosh >>= 1
 		}
