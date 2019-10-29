@@ -1711,6 +1711,8 @@ function get_width(s, last) {
 			break
 		s = s.ts_next
 	} while (s)
+	if (last)
+		wmx += last.wr		// big key signatures may be wide enough
 	return [w, wmx]
 }
 
@@ -1719,8 +1721,15 @@ function set_lines(	s,		/* first symbol */
 			last,		/* last symbol / null */
 			lwidth,		/* w - (clef & key sig) */
 			indent) {	/* for start of tune */
-    var	first, s2, s3, x, xmin, xmid, xmax, wwidth, shrink, space,
-	nlines, cut_here,
+    var	first, s2, s3, x, xmin, xmid, xmax, wwidth, shrink, space, ws,
+	nlines, cut_here
+
+	// take care of big key signatures at end of line
+	if (last && last.type == C.BAR
+	 && last.next && last.next.time == last.next.time
+	 && last.next.type == C.KEY)
+		last = last.next
+
 	ws = get_width(s, last)		// 2 widths: nice and shrinked
 
 	// check if the symbols can enter in one line
@@ -1932,7 +1941,7 @@ function cut_tune(lwidth, indent) {
 //			continue
 //		}
 		if (!s.ts_next)
-			s = s.ts_next
+			s = null
 		else if (!s.eoln)
 			continue
 		else
