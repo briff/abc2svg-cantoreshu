@@ -1214,18 +1214,22 @@ return true
 			if (s2.s) {			// note - note
 				s1.s.tie_s = s2.s
 				s1.tie_n = s2
+				s2.s.ti2 = s1.s
 			} else {			// note - single note
 				s1.s.tie_s = s2
 				s1.tie_n = s2.notes[0]
+				s2.ti2 = s1.s
 			}
 		} else {
 			s1.notes[0].tie_ty = ty
 			if (s2.s) {			// single note - note
 				s1.tie_s = s2.s
 				s1.notes[0].tie_n = s2
+				s2.s.ti2 = s1
 			} else {			// single note - single note
 				s1.tie_s = s2
 				s1.notes[0].tie_n = s2.notes[0]
+				s2.ti2 = s1
 			}
 		}
 	}, // tie()
