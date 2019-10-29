@@ -26,7 +26,7 @@ var	output = "",		// output buffer
 \n.slW{stroke:currentColor;fill:none;stroke-width:.7}\
 \n.slthW{stroke:currentColor;fill:none;stroke-width:1.5}\
 \n.sW{stroke:currentColor;fill:none;stroke-width:.7}\
-\n.tempstr{font:140% music}',
+\n.tempstr{font:130% music}',
 	font_style = '',
 	posx = cfmt.leftmargin / cfmt.scale,	// default x offset of the images
 	posy = 0,		// y offset in the block
@@ -983,12 +983,9 @@ function out_deco_long(x, y, de) {
 // return a tempo note
 function tempo_note(s, dur) {
     var	p,
-	elts = identify_note(s, dur),
-	head = elts[0],
-	dots = elts[1],
-	nflags = elts[2]
+	elts = identify_note(s, dur)
 
-	switch (head) {
+	switch (elts[0]) {		// head
 	case C.OVAL:
 		p = "\ueca2"
 		break
@@ -996,7 +993,7 @@ function tempo_note(s, dur) {
 		p = "\ueca3"
 		break
 	default:
-		switch (nflags) {
+		switch (elts[2]) {	// flags
 		case 2:
 			p = "\ueca9"
 			break
@@ -1009,14 +1006,15 @@ function tempo_note(s, dur) {
 		}
 		break
 	}
-	if (dots)
+	if (elts[1])
 		p += '<tspan dx=".1em">\uecb7</tspan>'
 	return p
 } // tempo_note()
 
 // build the tempo string
 function tempo_build(s) {
-    var	i, bx, p, wh,
+    var	i, j, bx, p, wh,
+	dy = "",		// y offsets of the tempo characters
 	w = 0,
 	str = []
 
@@ -1028,26 +1026,44 @@ function tempo_build(s) {
 		w += strwh(s.tempo_str1)[0]
 	}
 	if (s.tempo_notes) {
+		if (s.tempo_str1) {
+			j = str[0].length
+			while (--j >= 0)
+				dy += "0,"
+		}
+		dy += "-.2em,"			// notes a bit higher
 		for (i = 0; i < s.tempo_notes.length; i++) {
 			p = tempo_note(s, s.tempo_notes[i])
 			str.push('<tspan\n\tclass="tempstr">' +
 				p + '</tspan>')
-			w += p.length * gene.curfont.swfac
+			j = p.length > 1 ? 2 : 1	// (note and optional dot)
+			w += j * gene.curfont.swfac
+			while (--j >= 0)
+				dy += "0,"
 		}
+		dy += ".2em,0,0,"		// normal y
 		str.push('=')
 		w += cwidf('=')
 		if (s.tempo_ca) {
 			str.push(s.tempo_ca)
 			w += strwh(s.tempo_ca)[0]
+			j = s.tempo_ca.length + 1
+			while (--j >= 0)
+				dy += "0,"
 		}
 		if (s.tempo) {			// with a number of beats per minute
 			str.push(s.tempo)
 			w += strwh(s.tempo.toString())[0]
 		} else {			// with a beat as a note
+			dy += "-.2em,"
 			p = tempo_note(s, s.new_beat)
 			str.push('<tspan\n\tclass="tempstr">' +
 				p + '</tspan>')
-			w += p.length * gene.curfont.swfac
+			j = p.length > 1 ? 2 : 1
+			w += j * gene.curfont.swfac
+			while (--j >= 0)
+				dy += "0,"
+			dy += ".2em"
 		}
 	}
 	if (s.tempo_str2) {
@@ -1059,6 +1075,8 @@ function tempo_build(s) {
 	s.tempo_str = str.join(' ')
 	w += cwidf(' ') * (str.length - 1)
 	s.tempo_wh = [w, 13.0]		// (the height is not used)
+	if (dy)
+		s.tempo_dy = dy
 } // tempo_build()
 
 // output a tempo
@@ -1076,6 +1094,8 @@ function writempo(s, x, y) {
 	output += '<text class="' + font_class(gene.curfont) +
 		'" x="'
 	out_sxsy(x, '" y="', y + gene.curfont.size * .2)
+	if (s.tempo_dy)
+		output += '" dy="' + s.tempo_dy
 	output += '">' + s.tempo_str + '</text>\n'
 
 	if (bx) {
