@@ -610,7 +610,7 @@ return true
 				} else {
 					s.notes = clone(s.notes)
 					s.notes[0] = note = clone(s.notes[0])
-					s.notes[0].s = s
+					note = s
 				}
 			} else {
 // may be
@@ -928,7 +928,7 @@ return true
 	// may contain a staffGrp (no staffGrp in <section>?)
 	// may appear in section/(ending?) or between section/ending (in score/part)
 	scoreDef: function(tag) {
-	    var	w, h, v
+	    var	w, h, v, tmp
 
 		curr.scoreDef = tag
 
@@ -941,9 +941,10 @@ return true
 //				}
 //			}
 			if (tag["key.sig"]) {
+				tmp = keycnv(tag)
 				for (v = 0; v < voice_tb.length; v++) {
 					curvoice = voice_tb[v]
-					get_key(keycnv(tag))
+					get_key(tmp)
 				}
 			}
 //			if (tag["meter.count"]) {
@@ -1392,6 +1393,7 @@ return true
 		curr.text = undefined
 	}, // div()
 
+	// end of dynam
 	dynam: function(tag) {
 	    var	t,
 		s = get_ref(tag)
@@ -1759,7 +1761,7 @@ return true
 	    var	s,
 		s2 = {
 			type: C.TEMPO,
-			dur: 0,
+			dur: 0
 		}
 		if (t)
 			s2.tempo_str1 = t
@@ -1835,14 +1837,47 @@ return true
 	function add_dcn(s, dcn, tag) {
 	    var	dd = dd_tb[dcn]
 
+		// build a dynamic decoration
+		function build_dyn(t) {
+		    var	i,
+			str = "",
+			dd = {
+				name: t,
+				func: 6,
+				glyph: t,
+				h: 18,
+				wl: t.length * .3,
+				wr: t.length * .7
+			}
+			for (i = 0; i < t.length; i++) {
+				switch (t[i]) {
+				case 'f': str += "\ue522"; break
+				case 'p': str += "\ue520"; break
+				case 'r': str += "\ue523"; break
+				case 's': str += "\ue524"; break
+				}
+			}
+			tgls[t] = {
+				x: -4,
+				y: -6,
+				c: str
+			}
+			return dd
+		} // build_dyn()
+
 		if (!dd) {
-			dd = deco_def(dcn)
-			if (!dd) {
+			if (decos[dcn]) {		// if known decoration
+				dd = deco_def(dcn)
+			} else {
 				if (!tag)
+//fixme: error
 					return
-				curr.text = dcn
-				fne.dir(tag)	// annotation
-				return
+				if (tag.name != "dynam"
+				 || /[^fprs]/.test(dcn)) {
+					fne.dir(tag)	// display as annotation
+					return
+				}
+				dd_tb[dcn] = dd = build_dyn(dcn)
 			}
 		}
 		if (!s.a_dd)
@@ -1949,7 +1984,7 @@ error(1, null, "Bad duration " + tag.dur + " tag:" + tag.name)
 		if (!s)
 			s = {}
 		if (!s.fname)
-			s.fname = "internal"
+			s.fname = "(no ref)"
 		if (!s.istart)
 			s.istart = parse.istart
 		err_old(sev, s, msg, a1, a2, a3, a4)
@@ -2027,7 +2062,7 @@ error(1, null, "Bad duration " + tag.dur + " tag:" + tag.name)
 
 		if (!s) {
 			error(1, null, "No symbol at beat " + ref +
-				" in staff "+tag.staff + " tag:" + tag.name)
+				" in staff " + tag.staff + " tag:" + tag.name)
 			return
 		}
 
