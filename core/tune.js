@@ -1530,7 +1530,7 @@ function get_staves(cmd, parm) {
 	if (!a_vf)
 		return
 
-	if (voice_tb.length != 0) {
+	if (voice_tb.length) {
 		voice_adj(true);
 		dupl_voice()
 	}
@@ -1919,7 +1919,7 @@ function get_key(parm) {
 			p_voice.ckey = clone(s_key)
 		}
 		parse.ckey = s_key
-		if (a.length != 0)
+		if (a.length)
 			memo_kv_parm('*', a)
 		if (!glovar.ulen)
 			glovar.ulen = C.BLEN / 8;
@@ -1929,7 +1929,7 @@ function get_key(parm) {
 		goto_tune(true)
 		break
 	}
-	if (a.length != 0)
+	if (a.length)
 		set_kv_parm(a);
 
 	if (!curvoice.ckey.k_bagpipe && !curvoice.ckey.k_drum
@@ -1973,20 +1973,8 @@ function get_key(parm) {
 		if (s_key.k_none)
 			curvoice.key.k_sf = 0
 		return
-	}
-
-	/* the key signature must appear before a time signature */
-	s = curvoice.last_sym
-	if (s && s.type == C.METER) {
-		curvoice.last_sym = s.prev
-		if (!curvoice.last_sym)
-			curvoice.sym = null;
-		sym_link(s_key);
-		s_key.next = s;
-		s.prev = s_key;
-		curvoice.last_sym = s
 	} else {
-		sym_link(s_key)
+		sym_link(s_key)			// (don't move the key)
 	}
 }
 
@@ -2119,7 +2107,7 @@ function get_voice(parm) {
 	}
 
 	if (parse.state < 2) {
-		if (a.length != 0)
+		if (a.length)
 			memo_kv_parm(vid, a)
 		if (vid != '*' && parse.state == 1)
 			curvoice = new_voice(vid)
@@ -2195,7 +2183,7 @@ function goto_tune(is_K) {
 	parse.state = 3;			// in tune body
 
 	// if no voice yet, create the default voice
-	if (voice_tb.length == 0) {
+	if (!voice_tb.length) {
 		get_voice("1");
 		curvoice.clef.istart = curvoice.key.istart;
 		curvoice.clef.iend = curvoice.key.iend;
