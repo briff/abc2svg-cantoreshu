@@ -440,7 +440,7 @@ return true
 			while (--v >= 0) {
 				if (par_sy.voices[v].st == st) {
 					p_v.second =
-						par_sy.voices[v].second = true
+						par_sy.voices[p_v.v].second = true
 					break
 				}
 			}
