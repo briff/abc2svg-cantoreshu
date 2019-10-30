@@ -192,11 +192,13 @@ function m_gl(s) {
 	return s.replace(/[Cco]\||[co]\.|./g,
 		function(e) {
 		    var	m = tgls["mtr" + e]
-			if (!m.x && !m.y)
+//fixme: !! no m.x nor m.y yet !!
+//			if (!m.x && !m.y)
 				return m.c
-			return '<tspan dx="'+ m.x.toFixed(1) +
-				'" dy="' + m.y.toFixed(1) + '">' +
-				m.c + '</tspan>'
+//			return '<tspan dx="'+ m.x.toFixed(1) +
+//				'" dy="' + m.y.toFixed(1) +
+//				'">' +
+//				m.c + '</tspan>'
 		})
 }
 
@@ -1013,8 +1015,7 @@ function tempo_note(s, dur) {
 
 // build the tempo string
 function tempo_build(s) {
-    var	i, j, bx, p, wh,
-	dy = "",		// y offsets of the tempo characters
+    var	i, j, bx, p, wh, dy,
 	w = 0,
 	str = []
 
@@ -1026,48 +1027,40 @@ function tempo_build(s) {
 		w += strwh(s.tempo_str1)[0]
 	}
 	if (s.tempo_notes) {
-		if (s.tempo_str1) {
-			j = str[0].length
-			while (--j >= 0)
-				dy += "0,"
-		}
-		dy += "-.2em,"			// notes a bit higher
+		dy = ' dy="-.05em"'			// notes a bit higher
 		for (i = 0; i < s.tempo_notes.length; i++) {
 			p = tempo_note(s, s.tempo_notes[i])
-			str.push('<tspan\n\tclass="tempstr">' +
+			str.push('<tspan\n\tclass="tempstr"' + dy + '>' +
 				p + '</tspan>')
 			j = p.length > 1 ? 2 : 1	// (note and optional dot)
 			w += j * gene.curfont.swfac
-			while (--j >= 0)
-				dy += "0,"
+			dy = ''
 		}
-		dy += ".2em,0,0,"		// normal y
-		str.push('=')
+		str.push('<tspan dy=".065em">=</tspan>')
 		w += cwidf('=')
 		if (s.tempo_ca) {
 			str.push(s.tempo_ca)
 			w += strwh(s.tempo_ca)[0]
 			j = s.tempo_ca.length + 1
-			while (--j >= 0)
-				dy += "0,"
 		}
 		if (s.tempo) {			// with a number of beats per minute
 			str.push(s.tempo)
 			w += strwh(s.tempo.toString())[0]
 		} else {			// with a beat as a note
-			dy += "-.2em,"
 			p = tempo_note(s, s.new_beat)
-			str.push('<tspan\n\tclass="tempstr">' +
+			str.push('<tspan\n\tclass="tempstr" dy="-.05em">' +
 				p + '</tspan>')
 			j = p.length > 1 ? 2 : 1
 			w += j * gene.curfont.swfac
-			while (--j >= 0)
-				dy += "0,"
-			dy += ".2em"
+			dy = 'y'
 		}
 	}
 	if (s.tempo_str2) {
-		str.push(s.tempo_str2)
+		if (dy)
+			str.push('<tspan\n\tdy=".065em">' +
+					s.tempo_str2 + '</tspan>')
+		else
+			str.push(s.tempo_str2)
 		w += strwh(s.tempo_str2)[0]
 	}
 
@@ -1090,12 +1083,10 @@ function writempo(s, x, y) {
 	}
 
 //fixme: xy_str() cannot be used because <tspan> in s.tempo_str
-//fixme: then there cannot be font changes with "$n" in the Q: texts
+//fixme: then there cannot be font changes by "$n" in the Q: texts
 	output += '<text class="' + font_class(gene.curfont) +
 		'" x="'
 	out_sxsy(x, '" y="', y + gene.curfont.size * .2)
-	if (s.tempo_dy)
-		output += '" dy="' + s.tempo_dy
 	output += '">' + s.tempo_str + '</text>\n'
 
 	if (bx) {
