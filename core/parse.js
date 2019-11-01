@@ -371,7 +371,7 @@ Abc.prototype.set_vp = function(a) {
 			item = a.shift()
 			if (cfmt.sound)
 				break
-			curvoice.transp = get_interval(item, 'c')
+			curvoice.transp = get_transp(item)
 			break
 		case "shift=":
 			curvoice.shift = curvoice.sndsh = get_interval(a.shift())
@@ -1051,9 +1051,9 @@ function do_info(info_type, text) {
 		get_voice(text)
 		break
 
-	// key signature at end of tune header on in tune body
+	// key signature at end of tune header or in tune body
 	case 'K':
-		if (parse.state == 0)
+		if (!parse.state)	// ignore if in file header
 			break
 		get_key(text)
 		break

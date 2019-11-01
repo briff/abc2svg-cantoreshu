@@ -952,6 +952,9 @@ function pit_adj() {
 } // pit_adj()
 
 // get a transposition value as a base-40 interval
+// The value may be
+// - [+|-]<number of semitones>[s|f]
+// - <note1>[<note2>]  % <note2> default is 'c'
 function get_transp(param) {
 	if (param[0] == '0')
 		return 0
@@ -962,12 +965,13 @@ function get_transp(param) {
 			syntax(1, "Bad transpose value")
 			return
 		}
-		return ((val / 12) | 0) * 40 +
+		val += 36
+		return (((val / 12) | 0) - 3) * 40 +
 			(param.slice(-1) == 'b' ?
 					abc2svg.ifb40 :
-					abc2svg.isb40)[(val + 36) % 12]
+					abc2svg.isb40)[val % 12]
 	}
-	return get_interval(param)
+	return get_interval(param, true)
 } // get_transp()
 
 /* -- process a pseudo-comment (%% or I:) -- */
@@ -1280,7 +1284,7 @@ Abc.prototype.do_pscom = function(text) {
 			}
 			break
 		}
-		do_info('V', curvoice.id + ' shift=' + param)
+		do_info('V', curvoice.id + ' score=' + param)
 		return
 	case "tune":
 //fixme: to do
