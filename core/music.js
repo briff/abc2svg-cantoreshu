@@ -3441,8 +3441,8 @@ function set_indent(first) {
 /* -- decide on beams and on stem directions -- */
 /* this routine is called only once per tune */
 function set_beams(sym) {
-	var	s, t, g, beam, s_opp, dy, avg, n, m, mid_p, pu, pd,
-		laststem = -1
+    var	s, t, g, beam, s_opp, n, m, mid_p, pu, pd,
+	laststem = -1
 
 	for (s = sym; s; s = s.next) {
 		if (s.type != C.NOTE) {
@@ -3472,31 +3472,64 @@ function set_beams(sym) {
 				s.stem = laststem
 			} else if (s.beam_st && !s.beam_end) {	// beam start
 				beam = true;
-				pu = s.notes[s.nhd].pit;
-				pd = s.notes[0].pit
-				for (g = s.next; g; g = g.next) {
-					if (g.type != C.NOTE)
+
+				// count the number of notes above the mid-line
+				n = pu = 0
+				for (g = s; g; g = g.next) {
+					if (g.type != C.NOTE) {
+//						if (g.beam_end)
+//							break
 						continue
-					if (g.stem || g.multi) {
+					}
+					if (g.stem || g.multi) { // if forced direction
 						s.stem = g.stem || g.multi
 						break
 					}
-					if (g.notes[g.nhd].pit > pu)
-						pu = g.notes[g.nhd].pit
-					if (g.notes[0].pit < pd)
-						pd = g.notes[0].pit
+					n += g.nhd + 1
+					for (m = 0; m <= g.nhd; m++) {
+						if (g.notes[m].pit >= mid_p)
+							pu++
+					}
 					if (g.beam_end)
 						break
 				}
-				if (g.beam_end) {
-					if ((pu + pd) / 2 < mid_p) {
-						s.stem = 1
-					} else if ((pu + pd) / 2 > mid_p) {
+
+				if (!s.stem) {
+					pu *= 2
+					if (pu > n) {
 						s.stem = -1
+					} else if (pu < n) {
+						s.stem = 1
+
+					// same number of note above and below the mid-line
+					// get the highest and lowest pitches
 					} else {
+						pu = s.notes[s.nhd].pit;
+						pd = s.notes[0].pit
+						for (g = s.next; g; g = g.next) {
+							if (g.type != C.NOTE) {
+//								if (g.beam_end)
+//									break
+								continue
+							}
+							if (g.notes[g.nhd].pit > pu)
+								pu = g.notes[g.nhd].pit
+							if (g.notes[0].pit < pd)
+								pd = g.notes[0].pit
+							if (g.beam_end)
+								break
+						}
+						if (g.beam_end) {
+							if (pu + pd < mid_p * 2) {
+								s.stem = 1
+							} else if (pu + pd > mid_p * 2) {
+								s.stem = -1
+							} else {
 //--fixme: equal: check all notes of the beam
-						if (cfmt.bstemdown)
-							s.stem = -1
+								if (cfmt.bstemdown)
+									s.stem = -1
+							}
+						}
 					}
 				}
 				if (!s.stem)
@@ -3504,12 +3537,12 @@ function set_beams(sym) {
 			} else {				// no beam
 				n = (s.notes[s.nhd].pit + s.notes[0].pit) / 2
 				if (n == mid_p) {
-					n = 0
-					for (m = 0; m <= s.nhd; m++)
-						n += s.notes[m].pit;
-					n /= (s.nhd + 1)
+					for (m = 0; m <= s.nhd; m++) {
+						if (s.notes[m].pit >= mid_p)
+							break
+					}
+					n = m * 2 < s.nhd ? mid_p - 1 : mid_p + 1
 				}
-//				s.stem = n < mid_p ? 1 : -1
 				if (n < mid_p)
 					s.stem = 1
 				else if (n > mid_p)
