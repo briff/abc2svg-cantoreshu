@@ -3172,6 +3172,8 @@ function init_music_line() {
 	}
 
 	// update the spacing before the first old time sequence
+	if (!s)
+		return
 	shr = 0
 	do {
 		self.set_width(s)
