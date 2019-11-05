@@ -32,6 +32,7 @@ var	font_tb = [],
 var cfmt = {
 	annotationfont: {name: "sans-serif", size: 12 },
 	aligncomposer: 1,
+	beamslope: .4,			// max slope of a beam
 //	botmargin: .7 * IN,		// != 1.8 * CM,
 	breaklimit: .7,
 	breakoneoln: true,
@@ -416,6 +417,7 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "titleformat":
 		cfmt[cmd] = param
 		break
+	case "beamslope":
 	case "breaklimit":			// float values
 	case "lineskipfac":
 	case "maxshrink":

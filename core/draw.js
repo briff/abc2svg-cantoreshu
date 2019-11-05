@@ -29,7 +29,6 @@ var	STEM_MIN	= 16,	/* min stem height under beams */
 	BEAM_DEPTH	= 3.2,	/* width of a beam stroke */
 	BEAM_OFFSET	= .25,	/* pos of flat beam relative to staff line */
 	BEAM_SHIFT	= 5,	/* shift of second and third beams */
-	BEAM_SLOPE	= .4,	/* max slope of a beam */
 	BEAM_STUB	= 8,	/* length of stub for flag under beam */ 
 	SLUR_SLOPE	= .5,	/* max slope of a slur */
 	GSTEM		= 15,	/* grace note stem length */
@@ -226,12 +225,9 @@ Abc.prototype.calculate_beam = function(bm, s1) {
 	if (a == undefined)
 		a = (s2.ys + staff_tb[s2.st].y - y) / (s2.xs - s1.xs)
 
-	if (a != 0) {
-		if (a > 0)
-			a = BEAM_SLOPE * a / (BEAM_SLOPE + a) // max steepness for beam
-		else
-			a = BEAM_SLOPE * a / (BEAM_SLOPE - a);
-	}
+	if (a != 0)
+		a = cfmt.beamslope * a /
+			(cfmt.beamslope + Math.abs(a)) // max steepness for beam
 
 	// pivot around the middle of the beam
 	b = (y + s2.ys + staff_tb[s2.st].y) / 2 - a * (s2.xs + s1.xs) / 2
