@@ -2035,7 +2035,7 @@ function set_yval(s) {
 
 // set the ottava decorations and the associated pitch shift
 function set_ottava() {
-    var	s, st, delta, note, g,
+    var	s, st, delta, note, g, o,
 	m = nstaff + 1,
 	staff_d = new Int16Array(new Array(m * 2)),	// (-ottava)
 	staff_noo = new Int8Array(new Array(m))		// number of ottava values
@@ -2056,10 +2056,11 @@ function set_ottava() {
 		st = s.st
 		if (s.ottava != undefined)
 		    while (s.ottava.length) {
-			if (s.ottava[0]) {
+			o = s.ottava.shift()
+			if (o) {
 				if (staff_noo[st]++ == 0) {	// if first ottava
-					ottava_add(s, s.ottava[0], true);
-					staff_d[st] = -s.ottava[0] * 7
+					ottava_add(s, o, true)
+					staff_d[st] = -o * 7
 				}
 			} else {
 				if (--staff_noo[st] == 0) {	// if last ottava
@@ -2067,7 +2068,6 @@ function set_ottava() {
 					staff_d[st] = 0
 				}
 			}
-			s.ottava.shift()
 		}
 		switch (s.type) {
 		case C.REST:
@@ -2715,9 +2715,12 @@ if (st > nst) {
 				 || s.ts_next.st != s.st
 				 || s.time != s.ts_next.time
 				 || s.dur != s.ts_next.dur
+				 || (s.a_dd && s.ts_next.a_dd)
 				 || (s.a_gch && s.ts_next.a_gch)
 				 || s.invis)
 					break
+				if (s.ts_next.a_dd)
+					s.a_dd = s.ts_next.a_dd
 				if (s.ts_next.a_gch)
 					s.a_gch = s.ts_next.a_gch
 				unlksym(s.ts_next)
