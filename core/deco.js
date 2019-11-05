@@ -37,7 +37,7 @@ var decos = {
 	upbow: "3 upb 10 5 5",
 	downbow: "3 dnb 9 5 5",
 	gmark: "3 grm 6 5 5",
-	wedge: "0 wedge 8 3 3",		// (staccatissimo or spiccato)
+	wedge: "0 wedge 7 3 3",		// (staccatissimo or spiccato)
 	turnx: "3 turnx 10 0 5",
 	breath: "3 brth 0 1 20",
 	longphrase: "3 lphr 0 1 1",
@@ -340,10 +340,11 @@ function d_near(de) {
 		up = s.stem < 0
 	if (up) {
 		y = s.ymx | 0
-	} else {
+	} else if (dd.name[0] == 'w') {
+		de.inv = true
 		y = s.ymn
-		if (dd.name[0] == 'w')
-			de.inv = true
+	} else {
+		y = s.ymn - dd.h
 	}
 	if (y > -6 && y < 24) {
 		if (up)
@@ -352,10 +353,11 @@ function d_near(de) {
 	}
 	if (up)
 		s.ymx = y + dd.h
-	else
+	else if (dd.name[0] == 'w')
 		s.ymn = y - dd.h
+	else
+		s.ymn = y
 	de.y = y
-//	de.x = s.x + s.notes[s.stem >= 0 ? 0 : s.nhd].shhd
 	if (s.type == C.NOTE)
 		de.x += s.notes[s.stem >= 0 ? 0 : s.nhd].shhd
 	if (dd.name[0] == 'd'			/* if dot decoration */
