@@ -212,8 +212,8 @@ Abc.prototype.calculate_beam = function(bm, s1) {
 			break
 	}
 
-	// have flat beams when asked
-	if (cfmt.flatbeams)
+	// have flat beams on grace notes when asked
+	if (s.grace && cfmt.flatbeams)
 		a = 0
 
 	// if a note inside the beam is the closest to the beam, the beam is flat
