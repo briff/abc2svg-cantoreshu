@@ -342,7 +342,8 @@ function d_near(de) {
 		y = s.ymx | 0
 	} else {
 		y = s.ymn
-		de.inv = true
+		if (dd.name[0] == 'w')
+			de.inv = true
 	}
 	if (y > -6 && y < 24) {
 		if (up)
@@ -1209,7 +1210,7 @@ function draw_deco_near() {
 		}
 	} // create_dh()
 
-	// create all decoration of a note (chord and heads)
+	// create all decorations of a note (chord and heads)
 	function create_all(s) {
 		var m
 
