@@ -142,6 +142,9 @@ abc2svg.b40m = function(b) {
 	return ((b / 40) | 0) * 12 + abc2svg.b40_m[b % 40]
 } // b40m()
 
+// compare pitches
+// This function is used to sort the note pitches
+abc2svg.pitcmp = function(n1, n2) { return n1.pit - n2.pit }
 
 // start of the Abc object
 abc2svg.Abc = function(user) {

@@ -71,7 +71,6 @@ Abc.prototype.set_font = set_font;
 Abc.prototype.set_scale = set_scale;
 Abc.prototype.set_tsfirst = function(s) { tsfirst = s };
 Abc.prototype.set_v_param = set_v_param;
-Abc.prototype.sort_pitch = sort_pitch;
 Abc.prototype.strwh = strwh;
 Abc.prototype.stv_g = function() { return stv_g };
 Abc.prototype.svg_flush = svg_flush;

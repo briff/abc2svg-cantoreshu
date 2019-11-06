@@ -59,7 +59,7 @@ abc2svg.combine = {
 		s2.notes[m].s = s
 	Array.prototype.push.apply(s.notes, s2.notes);
 	s.nhd = nhd = s.notes.length - 1;
-	this.sort_pitch(s)		// sort the notes by pitch
+	s.notes.sort(abc2svg.pitcmp)	// sort the notes by pitch
 
 	if (s.combine >= 3) {		// remove unison heads
 		for (m = nhd; m > 0; m--) {

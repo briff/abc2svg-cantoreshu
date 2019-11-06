@@ -182,8 +182,8 @@ function set_head_shift(s) {
 
 // set the accidental shifts for a set of chords
 function acc_shift(notes, dx_head) {
-	var	i, i1, dx, dx1, ps, p1, acc,
-		n = notes.length
+    var	i, i1, i2, dx, dx1, dx2, ps, p1, acc,
+	n = notes.length
 
 	// set the shifts from the head shifts
 	for (i = n - 1; --i >= 0; ) {	// (no shift on top)
@@ -205,19 +205,60 @@ function acc_shift(notes, dx_head) {
 		}
 	}
 
-	// set the shifts from accidental shifts
-	for (i = n; --i >= 0; ) {		// from top to bottom
+	// set the shifts of the highest and lowest notes
+	for (i1 = n; --i1 >= 0; ) {
+		if (notes[i1].acc) {
+			p1 = notes[i1].pit	// top note with accidental
+			dx1 = notes[i1].shac
+			if (!dx1) {
+				dx1 = notes[i1].shhd
+				if (dx1 < 0)
+					dx1 = dx_head - dx1
+				else
+					dx1 = dx_head
+			}
+			break
+		}
+	}
+	if (i1 < 0)				// no accidental
+		return
+	for (i2 = 0; i2 < i1; i2++) {
+		if (notes[i2].acc) {
+			ps = notes[i2].pit	// bottom note with accidental
+			dx2 = notes[i2].shac
+			if (!dx2) {
+				dx2 = notes[i2].shhd
+				if (dx2 < 0)
+					dx2 = dx_head - dx2
+				else
+					dx2 = dx_head
+			}
+			break
+		}
+	}
+	if (i1 == i2) {			// only one accidental
+		notes[i1].shac = dx1
+		return
+	}
+
+	if (p1 > ps + 4) {		// if interval greater than a sixth
+		if (dx1 > dx2)
+			dx2 = dx1	// align the accidentals
+		notes[i1].shac = notes[i2].shac = dx2
+	} else {
+		notes[i1].shac = dx1
+		notes[i2].shac = dx2 = dx1 + 7
+	}
+	dx2 += 7
+
+	// shift the remaining accidentals
+	for (i = i1; --i > i2; ) {		// from top to bottom
 		acc = notes[i].acc
 		if (!acc)
 			continue
 		dx = notes[i].shac
-		if (!dx) {
-			dx = notes[i].shhd
-			if (dx < 0)
-				dx = dx_head - dx
-			else
-				dx = dx_head
-		}
+		if (dx < dx2)
+			dx = dx2
 		ps = notes[i].pit
 		for (i1 = n; --i1 > i; ) {
 			if (!notes[i1].acc)
@@ -239,17 +280,10 @@ function acc_shift(notes, dx_head) {
 	}
 }
 
-/* sort the notes of the chord by pitch (lowest first) */
-function sort_pitch(s) {
-	s.notes.sort(function(n1, n2) {
-			return n1.pit - n2.pit
-		})
-}
-
 /* set the horizontal shift of accidentals */
 /* this routine is called only once per tune */
 function set_acc_shft() {
-	var s, s2, st, i, acc, st, t, dx_head;
+    var	s, s2, st, i, acc, st, t, dx_head, notes
 
 	// search the notes with accidentals at the same time
 	s = tsfirst
@@ -282,17 +316,13 @@ function set_acc_shft() {
 		}
 
 		dx_head = dx_tb[s.head]
-//		if (s.dur >= C.BLEN * 2 && s.head == C.OVAL)
-//		if (s.dur >= C.BLEN * 2)
-//			dx_head = 15.8;
 
 		// build a pseudo chord and shift the accidentals
-		st = {
-			notes: []
-		}
+		notes = []
 		for ( ; s != s2; s = s.ts_next)
-			Array.prototype.push.apply(st.notes, s.notes);
-		acc_shift(st.notes, dx_head)
+			Array.prototype.push.apply(notes, s.notes)
+		notes.sort(abc2svg.pitcmp)
+		acc_shift(notes, dx_head)
 	}
 }
 
@@ -3218,7 +3248,7 @@ function set_words(p_voice) {
 			break
 		case C.GRACE:
 			for (s2 = s.extra; s2; s2 = s2.next)
-				sort_pitch(s2)
+				s2.notes.sort(abc2svg.pitcmp)
 			break
 		case C.NOTE:
 		case C.REST:
@@ -3286,7 +3316,7 @@ function set_words(p_voice) {
 		}
 		if (s.type == C.NOTE) {
 			if (s.nhd != 0)
-				sort_pitch(s);
+				s.notes.sort(abc2svg.pitcmp)
 			pitch = s.notes[0].pit
 //			if (s.prev
 //			 && s.prev.type != C.NOTE) {
