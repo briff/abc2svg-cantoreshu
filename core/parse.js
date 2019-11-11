@@ -1274,6 +1274,8 @@ function new_bar() {
 				curvoice.tie_s_rep = curvoice.tie_s
 			if (curvoice.acc_tie)
 				curvoice.acc_tie_rep = curvoice.acc_tie.slice()
+			else if (curvoice.acc_tie_rep)
+				curvoice.acc_tie_rep = null
 		} else {
 			if (curvoice.tie_s_rep) {
 				curvoice.tie_s = clone(curvoice.tie_s_rep)
@@ -1287,12 +1289,11 @@ function new_bar() {
 			}
 			if (curvoice.acc_tie_rep)
 				curvoice.acc_tie = curvoice.acc_tie_rep.slice()
+			else if (curvoice.acc_tie)
+				curvoice.acc_tie = null
 		}
 	}
-	if (curvoice.acc_tie)
-		curvoice.acc = curvoice.acc_tie	// reset the tied accidentals
-	else
-		curvoice.acc = []		// no accidental anymore
+	curvoice.acc = []			// no accidental anymore
 
 	if (curvoice.ulen < 0)			// L:auto
 		adjust_dur(s);
@@ -1787,11 +1788,11 @@ function slur_add(enote, e_is_note) {
 
 // (possible hook)
 Abc.prototype.new_note = function(grace, sls) {
-    var	note, s, in_chord, c, dcn, type, tie_s, not2,
-		i, n, s2, nd, res, num, dur,
-		sl1 = [],
-		line = parse.line,
-		a_dcn_sav = a_dcn;	// save parsed decoration names
+    var	note, s, in_chord, c, dcn, type, tie_s,
+	i, n, s2, nd, res, num, dur, apit,
+	sl1 = [],
+	line = parse.line,
+	a_dcn_sav = a_dcn		// save parsed decoration names
 
 	if (!grace
 	 && curvoice.tie_s) {		// if tie from previous note / grace note
@@ -1942,16 +1943,19 @@ Abc.prototype.new_note = function(grace, sls) {
 			// transpose
 			if (curvoice.octave)
 				note.pit += curvoice.octave * 7
+			apit = note.pit + 19		// pitch from C-1
 
 			// get the explicit or implicit accidental
 			// and keep the absolute pitch in base-40
 			i = note.acc
 			if (i) {
-				curvoice.acc[note.pit + 19] = i
+				curvoice.acc[apit] = i
 			} else {
-				i = curvoice.acc[note.pit + 19]
+				i = curvoice.acc[apit]
+				if (!i && curvoice.acc_tie)
+					i = curvoice.acc_tie[apit]
 				if (!i)
-				    i = curvoice.ckey.k_map[(note.pit + 19) % 7] || 0
+				    i = curvoice.ckey.k_map[apit % 7] || 0
 			}
 			note.b40 = abc2svg.pab40(note.pit, i)
 
@@ -1972,8 +1976,8 @@ Abc.prototype.new_note = function(grace, sls) {
 						note.s = s
 						tie_s.tie_s = s
 						if (curvoice.acc_tie
-						 && curvoice.acc_tie[note.pit + 19])
-							curvoice.acc_tie[note.pit + 19] = 0
+						 && curvoice.acc_tie[apit])
+							curvoice.acc_tie[apit] = 0
 						break
 					}
 				    }
@@ -1988,8 +1992,8 @@ Abc.prototype.new_note = function(grace, sls) {
 						s2.notes[0].s = s2
 						tie_s.tie_s = s
 						if (curvoice.acc_tie
-						 && curvoice.acc_tie[note.pit + 19])
-							curvoice.acc_tie[note.pit + 19] = 0
+						 && curvoice.acc_tie[apit])
+							curvoice.acc_tie[apit] = 0
 						break
 					}
 				    }
@@ -2032,11 +2036,11 @@ Abc.prototype.new_note = function(grace, sls) {
 					note.tie_ty = parse_vpos()
 					note.s = s
 					curvoice.tie_s = s
-					if (curvoice.acc[note.pit + 19]) {
+					if (curvoice.acc[apit]) {
 						if (!curvoice.acc_tie)
 							curvoice.acc_tie = []
-						curvoice.acc_tie[note.pit + 19] =
-							curvoice.acc[note.pit + 19]
+						curvoice.acc_tie[apit] =
+							curvoice.acc[apit]
 					}
 					c = line.char()
 					continue
