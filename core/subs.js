@@ -779,7 +779,7 @@ function write_headform(lwidth) {
 							w *= .5;
 						x -= w
 					}
-					write_tempo(glovar.tempo, x, -y)
+					writempo(glovar.tempo, x, -y)
 				}
 			} else if (str) {
 				xy_str(x, -y, str, align)
