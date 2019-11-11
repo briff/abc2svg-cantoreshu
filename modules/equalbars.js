@@ -65,6 +65,7 @@ abc2svg.equalbars = {
 		bars.push([s, s.time - t])
 	else
 		bars[bars.length - 1][0] = s	// replace the last bar
+	width = s.x
 	t = s.time
 	if (s.dur)
 		t += s.dur;
