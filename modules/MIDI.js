@@ -10,6 +10,14 @@
 //	%%MIDI control k v
 //	%%MIDI drummap ABC_note MIDI_pitch
 
+// Using %%MIDI drummap creates a voicemap named "MIDIdrum".
+// This name must be used if some print map is required:
+//	%%MIDI drummap g 42
+//	%%map MIDIdrum g heads=x
+// A same effect may be done by
+//	%%percmap g 42 x
+// but this is not abcMIDI compatible!
+
 abc2svg.MIDI = {
 
     // parse %%MIDI commands

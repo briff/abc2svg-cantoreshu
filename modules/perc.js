@@ -10,6 +10,8 @@
 // a ABC note or a possibly abbreviated percussion name.
 // See https://wim.vree.org/js2/tabDrumDoc.html for more information.
 
+// Using this command creates a voicemap named "MIDIdrum".
+
 abc2svg.perc = {
 
     // parse %%percmap
