@@ -2339,15 +2339,8 @@ function parse_music_line() {
 				}
 			}
 
-			idx = c.charCodeAt(0);
-			if (idx >= 128) {
-				syntax(1, errs.not_ascii);
-				line.index++
-				break
-			}
-
 			// check if start of a macro
-			if (!in_mac && maci[idx]) {
+			if (!in_mac && maci[c]) {
 				n = 0
 				for (k in mac) {
 					if (!mac.hasOwnProperty(k)
@@ -2369,6 +2362,13 @@ function parse_music_line() {
 				}
 				if (n)
 					continue
+			}
+
+			idx = c.charCodeAt(0)
+			if (idx >= 128) {
+				syntax(1, errs.not_ascii)
+				line.index++
+				break
 			}
 
 			type = char_tb[idx]

@@ -17,7 +17,9 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with abc2svg-core.  If not, see <http://www.gnu.org/licenses/>.
 
-var sav = {}		// save global (between tunes) definitions
+    var	sav = {},	// save global (between tunes) definitions
+	mac = {},	// macros (m:)
+	maci = {}	// first letters of macros
 
 // translation table from the ABC draft version 2.2
 var abc_utf = {
@@ -619,7 +621,7 @@ function tosvg(in_fname,		// file name
 			sav.glovar = clone(glovar);
 			sav.maps = clone(maps, 1);
 			sav.mac = clone(mac);
-			sav.maci = new Int8Array(maci);
+			sav.maci = clone(maci);
 			info.X = text;
 			parse.state = 1			// tune header
 			if (parse.tune_opts)
@@ -674,7 +676,7 @@ function tosvg(in_fname,		// file name
 				continue
 			}
 			mac[a[1]] = a[2];
-			maci[a[1].charCodeAt(0)] = 1	// first letter
+			maci[a[1][0]] = true	// first letter
 			break
 
 		// info fields in tune body only
