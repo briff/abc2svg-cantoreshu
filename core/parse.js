@@ -180,18 +180,16 @@ function set_linebreak(param) {
 // set a new user character (U: or %%user)
 function set_user(parm) {
     var	k, c, v,
-	a = parm.match(/(.*?)[= ]*([!"].*[!"])/)
+//	a = parm.match(/(.*?)[= ]*([[!"].*[\]!"])/)
+//	a = parm.match(/(.)[= ]*(.*)/)
+	a = parm.match(/(.)[= ](\[I:.+\]|".+"|!.+!)$/)
 
 	if (!a) {
-		syntax(1, 'Lack of starting ! or " in U: / %%user')
+		syntax(1, 'Lack of starting [, ! or " in U: / %%user')
 		return
 	}
 	c = a[1];
 	v = a[2]
-	if (v.slice(-1) != v[0]) {
-		syntax(1, "Lack of ending $1 in U:/%%user", v[0])
-		return
-	}
 	if (c[0] == '\\') {
 		if (c[1] == 't')
 			c = '\t'
@@ -212,6 +210,7 @@ function set_user(parm) {
 		break
 	case '"':
 	case '!':
+	case '[':
 		if (char_tb[k].length > 1)
 			break
 		// fall thru
@@ -2549,6 +2548,10 @@ function parse_music_line() {
 				}
 				continue
 			case '[':
+				if (type.length > 1) {	// U: [I:xxx]
+					self.do_pscom(type.slice(3, -1))
+					break
+				}
 			    var c_next = line.buffer[line.index + 1]
 
 				if ('|[]: "'.indexOf(c_next) >= 0

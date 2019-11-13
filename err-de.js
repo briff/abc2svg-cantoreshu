@@ -79,8 +79,8 @@ user.textrans = {
     "Invalid decoration '$1'": "fehlerhafte Dekoration '$1'",
     "Invalid note duration $1": "Fehlerhafte Notendekoration '$1'",
     "Lack of ']'": "']' fehlt",
-    "Lack of ending $1 in U:/%%user": "Ende von $1 fehlt in  U:/%%user",
-    "Lack of starting ! or \" in U: / %%user": "! or \" fehlt in U: / %%user",
+	"Lack of starting [, ! or \" in U: / %%user":
+				"[, ! or \" fehlt in U: / %%user",
     "Line split problem - adjust maxshrink and/or breaklimit": "Probleme beim Aufteilen der Zeile - justiere maxshrink und/oder breaklimit",
     "Line too much shrunk $1 $2 $3": "Zeile zu stark geschrumpft $1 $2 $3",
     "Line underfull ($1pt of $2pt)": "Zeile nicht voll genug ($1pt of $2pt)",
