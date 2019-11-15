@@ -30,12 +30,16 @@ abc2svg.page = {
     //function called at end of generation
     abc_end: function(of) {
     var page = this.page
-	if (page.h) {
+	if (page) {
+	    if (page.h) {
 		abc2svg.page.img_out(page,
 			page.head + page.style + page.hf + page.out + '</svg>');
 		abc2svg.page.img_out(page, '</div>');
 		page.h = 0;
 		page.out = ''
+	    }
+	    if (user.img_out == page.img_out_sav)
+		user.img_out = page.user_out
 	}
 	of()
     }, // abc_end()
