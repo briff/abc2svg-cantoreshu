@@ -2279,7 +2279,7 @@ function parse_music_line() {
 
 	// expand a transposing macro
 	function expand(m, b) {
-	    var	c, d,
+	    var	c, d, i,
 		r = "",				// result
 		n = m.length
 
