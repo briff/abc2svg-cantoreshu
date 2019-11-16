@@ -69,7 +69,7 @@ function AbcMIDI() {
 			vloop(p_v.sym,
 				p_v.key.k_sndtran || 0,
 				s.clef_octave && !s.clef_oct_transp ?
-					(s.clef_octave / 7 * 12) : 0)
+					(s.clef_octave / 7 * 40) : 0)
 		}
 
 	    function vloop(s, sndtran, ctrans) {
@@ -77,7 +77,7 @@ function AbcMIDI() {
 			transp = sndtran + ctrans
 
 		function midi_set(note) {
-		    var m = abc2svg.b40m(note.b40) + transp
+		    var m = abc2svg.b40m(note.b40 + transp)
 			if (temper		// if not equal temperament
 			 && (!note.acc
 			  || note.acc | 0 == note.acc)) // and not micro-tone
@@ -89,7 +89,7 @@ function AbcMIDI() {
 			switch (s.type) {
 			case C.CLEF:
 				ctrans = (s.clef_octave && !s.clef_oct_transp) ?
-						(s.clef_octave / 7 * 12) : 0
+						(s.clef_octave / 7 * 40) : 0
 				transp = ctrans + sndtran
 				break
 			case C.KEY:
