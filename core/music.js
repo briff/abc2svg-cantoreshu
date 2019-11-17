@@ -2981,35 +2981,29 @@ function set_rest_offset() {
 }
 
 /* -- create a starting symbol -- */
-function new_sym(type, p_voice,
-			last_s) {	/* symbol at same time */
-	var s = {
-		type: type,
-		fname: last_s.fname,
-//		istart: last_s.istart,
-//		iend: last_s.iend,
-		v: p_voice.v,
-		p_v: p_voice,
-		st: p_voice.st,
-		time: last_s.time
-	}
-	if (p_voice.last_sym) {
-		s.next = p_voice.last_sym.next
+// last_s = symbol at same time
+function new_sym(s, p_v, last_s) {
+	s.p_v = p_v
+	s.v = p_v.v
+	s.st = p_v.st
+	s.time = last_s.time
+
+	if (p_v.last_sym) {
+		s.next = p_v.last_sym.next
 		if (s.next)
 			s.next.prev = s;
-		p_voice.last_sym.next = s;
-		s.prev = p_voice.last_sym
+		p_v.last_sym.next = s;
+		s.prev = p_v.last_sym
 	}
-	p_voice.last_sym = s;
+	p_v.last_sym = s;
 
 	lktsym(s, last_s)
-	if (s.ts_prev.type != type)
+	if (s.ts_prev.type != s.type)
 		s.seqst = true
-	if (last_s.type == type && s.v != last_s.v) {
+	if (last_s.type == s.type && s.v != last_s.v) {
 		delete last_s.seqst;
 		last_s.shrink = 0
 	}
-	return s
 }
 
 /* -- init the symbols at start of a music line -- */
@@ -3106,18 +3100,9 @@ function init_music_line() {
 		}
 		s2 = p_voice.key
 		if (s2.k_sf || s2.k_a_acc) {
-			s = new_sym(C.KEY, p_voice, last_s);
-			s.k_sf = s2.k_sf;
-			s.k_mode = s2.k_mode;
-			s.k_old_sf = s2.k_sf;	// no key cancel
-			s.k_a_acc = s2.k_a_acc;
-			s.istart = s2.istart;
-			s.iend = s2.iend
-			if (s2.k_bagpipe) {
-				s.k_bagpipe = s2.k_bagpipe
-				if (s.k_bagpipe == 'p')
-					s.k_old_sf = 3	/* "A" -> "D" => G natural */
-			}
+			s = clone(s2)
+			new_sym(s, p_voice, last_s)
+			s.k_old_sf = s2.k_sf	// no key cancel
 		}
 	}
 
@@ -3136,11 +3121,8 @@ function init_music_line() {
 				last_s = last_s.ts_next
 				continue
 			}
-			s = new_sym(C.METER, p_voice, last_s);
-			s.istart = s2.istart;
-			s.iend = s2.iend;
-			s.wmeasure = s2.wmeasure;
-			s.a_meter = s2.a_meter
+			s = clone(s2)
+			new_sym(s, p_voice, last_s)
 		}
 		insert_meter &= ~1		// no meter any more
 	}
@@ -3149,12 +3131,16 @@ function init_music_line() {
 	for (v = 0; v < nv; v++) {
 		p_voice = voice_tb[v]
 		if (p_voice.sls.length) {
-			s = new_sym(C.BAR, p_voice, last_s);
-			s.bar_type = "|";
-			s.dur = 0;
-			s.multi = 0;
-			s.invis = true;
-			s.sls = p_voice.sls;
+			s = {
+				type: C.BAR,
+				fname: last_s.fname,
+				bar_type: "|",
+				dur: 0,
+				multi: 0,
+				invis: true,
+				sls: p_voice.sls
+			}
+			new_sym(s, p_voice, last_s)
 			p_voice.sls = []
 		}
 	}
@@ -3178,20 +3164,7 @@ function init_music_line() {
 		 || !cur_sy.st_print[cur_sy.voices[v].st])
 			continue
 
-		s2.next = p_voice.last_sym.next
-		if (s2.next)
-			s2.next.prev = s2;
-		p_voice.last_sym.next = s2;
-		s2.prev = p_voice.last_sym;
-		p_voice.last_sym = s2;
-		lktsym(s2, last_s);
-		s2.time = tsfirst.time
-		if (s2.ts_prev.type != s2.type)
-			s2.seqst = true;
-		if (last_s && last_s.type == s2.type && s2.v != last_s.v) {
-			delete last_s.seqst;
-//			last_s.shrink = 0
-		}
+		new_sym(s2, p_voice, last_s)
 	}
 
 	// compute the spacing of the added symbols
