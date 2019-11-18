@@ -2275,28 +2275,33 @@ function parse_music_line() {
 		}
 		line.index = j
 		return b
-	}
+	} // check_mac()
+
+	// convert a note as a number into a note as a ABC string
+	function n2n(n) {
+	    var	c = ntb[n]
+
+		while (n < 0) {
+			n += 7;
+			c += ','
+		}
+		while (n > 14) {
+			n -= 7;
+			c += "'"
+		}
+		return c
+	} // n2n()
 
 	// expand a transposing macro
 	function expand(m, b) {
-	    var	c, d, i,
+	    var	c, i,
 		r = "",				// result
 		n = m.length
 
 		for (i = 0; i < n; i++) {
 			c = m[i]
 			if (c >= 'h' && c <= 'z') {
-				d = b + c.charCodeAt(0) - 'n'.charCodeAt(0)
-				c = ""
-				while (d < 0) {
-					d += 7;
-					c += ','
-				}
-				while (d > 14) {
-					d -= 7;
-					c += "'"
-				}
-				r += ntb[d] + c
+				r += n2n(b + c.charCodeAt(0) - 'n'.charCodeAt(0))
 			} else {
 				r += c
 			}
@@ -2305,18 +2310,63 @@ function parse_music_line() {
 	} // expand()
 
 	// parse a macro
-	function parse_mac(m, b) {
-	    var	seq,
+	function parse_mac(k, m, b) {
+	    var	te, ti, curv, s,
 		line_sav = line,
 		istart_sav = parse.istart;
 
 		parse.line = line = new scanBuf;
 		parse.istart += line_sav.index;
-		line.buffer = b ? expand(m, b) : m;
-		parse_seq(true);
-		parse.line = line = line_sav;
+
+		// if the macro is not displayed
+		if (cfmt.writefields.indexOf('m') < 0) {
+
+			// build the display sequence from the original sequence
+			line.buffer = k.replace('n', n2n(b))
+			s = curvoice.last_sym
+			ti = curvoice.time		// start time
+			parse_seq(true)
+			if (!s)
+				s = curvoice.sym
+			for ( ; s; s = s.next)
+				s.noplay = true
+			te = curvoice.time		// end time
+			curv = curvoice
+
+			// and put the macro sequence in a play specific voice
+			curvoice = new_voice(curv.id + '-p')
+			curvoice.time = ti
+			if (curvoice.new) {
+				delete curvoice.new
+				curvoice.st = curv.st
+				curvoice.cst = curv.cst
+				curvoice.second = true
+				par_sy.voices[curvoice.v] = {
+					st: curv.st,
+					second: true,
+					range: curvoice.v
+				}
+			}
+			s = curvoice.last_sym
+			parse.line = line = new scanBuf
+			parse.istart += line_sav.index
+			line.buffer = b ? expand(m, b) : m
+			parse_seq(true)
+			if (curvoice.time != te)
+				syntax(1, "Bad length of the macro sequence")
+			if (!s)
+				s = curvoice.sym
+			for ( ; s; s = s.next)
+				s.invis = true
+			curvoice = curv
+		} else {
+			line.buffer = b ? expand(m, b) : m;
+			parse_seq(true)
+		}
+
+		parse.line = line = line_sav
 		parse.istart = istart_sav
-	}
+	} // parse_mac()
 
 	// parse a music sequence
 	function parse_seq(in_mac) {
@@ -2355,7 +2405,7 @@ function parse_music_line() {
 						if (!n)
 							continue
 					}
-					parse_mac(mac[k], n);
+					parse_mac(k, mac[k], n)
 					n = 1
 					break
 				}

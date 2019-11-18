@@ -667,9 +667,6 @@ function tosvg(in_fname,		// file name
 				syntax(1, errs.ignored, line0)
 				continue
 			}
-			if ((!cfmt.sound || cfmt.sound != "play")
-			 && cfmt.writefields.indexOf(line0) < 0)
-				break
 			a = text.match(/(.*?)[= ]+(.*)/)
 			if (!a || !a[2]) {
 				syntax(1, errs.bad_val, "m:")

@@ -348,15 +348,22 @@ function Audio5(i_conf) {
 
 	// generate 2 seconds of music
 	function play_next() {
-	    var	d, i, st, m, note, g, s2,
-		s = s_cur,
-		t = stime + s.ptim / conf.speed, // start time
-		maxt = t + 2			// max time = now + 2 seconds
+	    var	d, i, st, m, note, g, s2, t, maxt,
+		s = s_cur
 
 		if (!s_end) {			// stop
 			onend(repv)
 			return
 		}
+
+		while (s.noplay) {
+			s = s.ts_next
+			if (!s || s == s_end) {
+				onend(repv)
+				return
+			}
+		}
+		t = stime + s.ptim / conf.speed		// start time
 
 		// if speed change, shift the start time
 		if (conf.new_speed) {
@@ -368,6 +375,7 @@ function Audio5(i_conf) {
 			t = stime + s.ptim / conf.speed
 		}
 
+		maxt = t + 2			// max time = now + 2 seconds
 		timouts = []
 		while (1) {
 			switch (s.type) {
@@ -440,14 +448,18 @@ function Audio5(i_conf) {
 				setTimeout(onnote, st + d * 1000, i, false)
 				break
 			}
-			if (s == s_end || !s.ts_next) {
-				setTimeout(onend,
-					(t - ac.currentTime + d) * 1000,
-					repv)
-				s_cur = s
-				return
+			while (1) {
+				if (s == s_end || !s.ts_next) {
+					setTimeout(onend,
+						(t - ac.currentTime + d) * 1000,
+						repv)
+					s_cur = s
+					return
+				}
+				s = s.ts_next
+				if (!s.noplay)
+					break
 			}
-			s = s.ts_next
 			t = stime + s.ptim / conf.speed	// next time
 			if (t > maxt)
 				break
@@ -525,6 +537,8 @@ function Audio5(i_conf) {
 		}
 
 		s_end = i_end
+		while (i_start.noplay)
+			i_start = i_start.ts_next
 		s_cur = i_start
 		repv = i_lvl || 0
 		w_instr++

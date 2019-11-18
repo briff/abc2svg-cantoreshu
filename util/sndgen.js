@@ -93,6 +93,10 @@ function ToAudio() {
 	rst = s
 	rst_fac = play_fac
 	while (s) {
+		if (s.noplay) {			// in display macro sequence
+			s = s.ts_next
+			continue
+		}
 		if (s.tempo) {				// tempo change
 			d = 0
 			n = s.tempo_notes.length
