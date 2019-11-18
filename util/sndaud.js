@@ -411,7 +411,7 @@ function Audio5(i_conf) {
 						note = g.notes[m]
 						note_run(g,
 							note.midi,
-							t,
+							t + g.ptim - s.ptim,
 //fixme: there may be a tie...
 							d)
 					}
