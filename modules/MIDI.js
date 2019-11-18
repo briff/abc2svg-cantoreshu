@@ -113,6 +113,7 @@ abc2svg.MIDI = {
 		}
 		if (this.parse.state == 3) {
 			s = this.new_block("midiprog");
+			s.play = true
 			s.instr = v
 		} else {
 			this.set_v_param("instr", v)
@@ -131,6 +132,7 @@ abc2svg.MIDI = {
 		}
 		if (this.parse.state == 3) {
 			s = this.new_block("midictl");
+			s.play = true
 			s.ctrl = n;
 			s.val = v
 		} else {

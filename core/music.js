@@ -4469,8 +4469,6 @@ function block_gen(s) {
 		vskip(s.sk);
 //		blk_out()
 		break
-	default:
-		return true			// keep (for play)
 	}
 }
 
@@ -4609,7 +4607,8 @@ function set_piece() {
 
 		// the block symbols will be treated after music line generation
 		case C.BLOCK:
-			blocks.push(s);
+			if (!s.play)
+				blocks.push(s)
 			continue
 		}
 		st = s.st
@@ -4756,7 +4755,8 @@ Abc.prototype.set_sym_glue = function(width) {
 
 	// last line?
 	ll = !tsnext ||			// yes
-		tsnext.type == C.BLOCK	// no, but followed by %%command
+		(tsnext.type == C.BLOCK	// no, but followed by %%command
+		 && !tsnext.play)
 		|| blocks.length	//	(abcm2ps compatibility)
 
 	// strong shrink
@@ -4881,8 +4881,9 @@ function gen_init() {
 			cur_sy = s.sy
 			break
 		case C.BLOCK:
-			if (block_gen(s))
+			if (s.play)
 				continue	// keep for play
+			block_gen(s)
 			break
 		}
 		unlksym(s)

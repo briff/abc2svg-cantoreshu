@@ -1976,7 +1976,6 @@ function get_key(parm) {
 		curvoice.key = clone(s_key)
 		if (s_key.k_none)
 			curvoice.key.k_sf = 0
-		return
 	} else {
 		sym_link(s_key)			// (don't move the key)
 	}
