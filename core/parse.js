@@ -2328,7 +2328,7 @@ function parse_music_line() {
 			parse_seq(true)
 			if (!s)
 				s = curvoice.sym
-			for ( ; s; s = s.next)
+			for (s = s.next ; s; s = s.next)
 				s.noplay = true
 			te = curvoice.time		// end time
 			curv = curvoice
