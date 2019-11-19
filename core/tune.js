@@ -1725,11 +1725,6 @@ function get_staves(cmd, parm) {
 	curvoice = parse.state >= 2 ? voice_tb[par_sy.top_voice] : null
 }
 
-/* -- get a voice overlay -- */
-function get_vover(type) {
-	var	p_voice2, p_voice3, range, s, time, v, v2, v3,
-		line = parse.line
-
 	// get a voice or create a clone of the current voice
 	function clone_voice(id) {
 		var v, p_voice
@@ -1759,6 +1754,11 @@ function get_vover(type) {
 		voice_tb.push(p_voice)
 		return p_voice
 	} // clone_voice()
+
+/* -- get a voice overlay -- */
+function get_vover(type) {
+    var	p_voice2, p_voice3, range, s, time, v, v2, v3,
+	line = parse.line
 
 	/* treat the end of overlay */
 	if (curvoice.ignore)

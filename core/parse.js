@@ -2334,12 +2334,8 @@ function parse_music_line() {
 			curv = curvoice
 
 			// and put the macro sequence in a play specific voice
-			curvoice = new_voice(curv.id + '-p')
-			curvoice.time = ti
-			if (curvoice.new) {
-				delete curvoice.new
-				curvoice.st = curv.st
-				curvoice.cst = curv.cst
+			curvoice = clone_voice(curv.id + '-p')
+			if (!par_sy.voices[curvoice.v]) {
 				curvoice.second = true
 				par_sy.voices[curvoice.v] = {
 					st: curv.st,
@@ -2347,6 +2343,7 @@ function parse_music_line() {
 					range: curvoice.v
 				}
 			}
+			curvoice.time = ti
 			s = curvoice.last_sym
 			parse.line = line = new scanBuf
 			parse.istart += line_sav.index
