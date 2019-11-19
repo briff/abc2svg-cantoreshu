@@ -1744,6 +1744,8 @@ function get_vover(type) {
 		p_voice.id = id;
 		p_voice.sym = p_voice.last_sym = null;
 
+		p_voice.key = clone(curvoice.key)
+
 		delete p_voice.nm
 		delete p_voice.snm
 		delete p_voice.new_name
