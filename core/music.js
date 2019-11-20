@@ -1455,9 +1455,11 @@ function set_repeat(s) {	// first note
 		for (s2 = s.ts_next; ; s2 = s2.ts_next) {
 			if (s2.st != st)
 				continue
-			if (s2.v == v
-			 && s2.type == C.BAR)
-				break
+			if (s2.type == C.BAR) {
+				if (s2.v == v)
+					break
+				continue
+			}
 			s2.invis = s2.play = true
 			if (s2.seqst && s2.ts_next.seqst)
 				s2.seqst = false
@@ -1470,9 +1472,11 @@ function set_repeat(s) {	// first note
 		for (s2 = s3.ts_next; ; s2 = s2.ts_next) {
 			if (s2.st != st)
 				continue
-			if (s2.v == v
-			 && s2.type == C.BAR)
-				break
+			if (s2.type == C.BAR) {
+				if (s2.v == v)
+					break
+				continue
+			}
 			s2.invis = s2.play = true
 			if (s2.seqst && s2.ts_next.seqst)
 				s2.seqst = false
@@ -1490,9 +1494,11 @@ function set_repeat(s) {	// first note
 		for (s2 = s3.ts_next; ; s2 = s2.ts_next) {
 			if (s2.st != st)
 				continue
-			if (s2.v == v
-			 && s2.type == C.BAR)
-				break
+			if (s2.type == C.BAR) {
+				if (s2.v == v)
+					break
+				continue
+			}
 			s2.invis = s2.play = true
 			if (s2.seqst && s2.ts_next.seqst)
 				s2.seqst = false
