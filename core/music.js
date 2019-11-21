@@ -1773,7 +1773,7 @@ function set_lines(	s,		/* first symbol */
 	nlines, cut_here
 
 	// take care of big key signatures at end of line
-	if (last && last.type == C.BAR
+	if (cfmt.keywarn && last && last.type == C.BAR
 	 && last.next && last.next.time == last.next.time
 	 && last.next.type == C.KEY)
 		last = last.next
