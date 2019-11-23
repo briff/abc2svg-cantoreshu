@@ -226,6 +226,9 @@ There are:
   Example:   
   `        abc2svg toodt.js my_file.abc -o my_file.odt`
 
+- `toparam.js`
+  This script just outputs the abc2svg parameters.
+
 #### PDF generation
 
 `abctopdf` is a shell script which converts ABC to PDF using one of the
