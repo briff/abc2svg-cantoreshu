@@ -486,6 +486,7 @@ function endplay(repv) {
 function play_tune(what) {
     var	i, si, ei, elt,
 	C = abc2svg.C,
+	tunes = abc.tunes,
 	s = elt_ref.source.value
 
 	if (play.playing) {
@@ -611,11 +612,11 @@ function play_tune(what) {
 	ctxMenu.style.display = "none";	// remove the play menu
 
 	play.playing = true;
-	if (abc2svg.tunes.length) {	// if new display
+	if (tunes.length) {		// if new display
 
 		// generate the play data of all tunes
 		while (1) {
-			elt = abc2svg.tunes.shift()
+			elt = tunes.shift()
 			if (!elt)
 				break
 			play.abcplay.add(elt[0], elt[1])
@@ -625,17 +626,6 @@ function play_tune(what) {
 		play.stop = 0
 		play.loop = false
 	}
-
-	// play all
-//--fixme: for play all, keep the tune array (abc2svg.tunes)
-//-- and play next tune after play end
-//	if (what < 0) {
-//		play.loop = false
-//		play.si = ...
-//		play.ei = ...
-//		play_start(play.si, play.ei)
-//		return
-//	}
 
 	// if loop again
 	if (what == 2 && play.loop) {
@@ -819,18 +809,6 @@ function edit_init() {
 			ctxMenu.style.top = (y - 10) + "px"
 			return false
 		} // oncontextmenu
-
-		// function called when a new tune is generated
-		// memorize the symbols by time and voice
-		abc2svg.out_mus = function(of) {
-			abc2svg.tunes.push([this.get_tsfirst(),
-						this.get_voice_tb()])
-			of()
-		}
-
-		abc2svg.modules.hooks.push(function(abc) {
-			abc.output_music = abc2svg.out_mus.bind(abc, abc.output_music)
-		})
 	}
 	set_pref()	// set the preferences from local storage
 }

@@ -214,6 +214,7 @@ var errs = {
 		ottava: [],
 		line: new scanBuf
 	},
+	tunes = [],		// first time symbol and voice array per tune for playing
 	psvg			// PostScript
 
 // utilities
