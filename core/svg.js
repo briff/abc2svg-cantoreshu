@@ -1122,7 +1122,7 @@ function svg_flush() {
 		head += cfmt.fgcolor + '" fill="' + cfmt.fgcolor + '"'
 	else
 		head += 'black"';
-	head += ' class="music" stroke-width=".7"'
+	head += ' stroke-width=".7"'
 
 	if (cfmt.bgcolor)
 		head += ' style="background-color: ' + cfmt.bgcolor + '"';
@@ -1143,12 +1143,12 @@ function svg_flush() {
 		head += '<style type="text/css">' + style + font_style
 		if (musicfont) {
 			if (musicfont.indexOf('(') > 0) {
-				head += '\n.music{font:24px music}\n\
+				head += '\nsvg{font:24px music}\n\
 @font-face {\n\
   font-family:"music";\n\
   src:' + musicfont + '}';
 			} else {
-				head += '\n.music{font:24px '+ musicfont +'}'
+				head += '\nsvg{font:24px '+ musicfont +'}'
 			}
 		}
 		head += '\n</style>\n'
