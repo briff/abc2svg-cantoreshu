@@ -188,7 +188,6 @@ function render() {
     var	i, j,
 	content = elt_ref.source.value;
 
-	abc2svg.tunes = []		// list of tsfirst and voice_tb by tune
 	if (!content)
 		return			// empty source
 
@@ -572,13 +571,6 @@ function play_tune(what) {
 	function gsot(si) {	// go to the first playable symbol of a tune
 		return gnrn(syms[si].p_v.sym)
 	}
-	function geot(si) {	// go to the last playable symbol of a tune
-	    var	sym = syms[si]
-
-		while (sym.ts_next)	// go to the end of the tune
-			sym = sym.ts_next
-		return gprn(sym)
-	}
 	function get_se(si) {			// get the starting symbol
 	    var	sym = syms[si]
 
@@ -597,7 +589,7 @@ function play_tune(what) {
 
 	// start playing
 	function play_start(si, ei) {
-		if (!si || !ei)
+		if (!si)
 			return
 		selx_sav[0] = selx[0];		// remove the colors
 		selx_sav[1] = selx[1];
@@ -644,7 +636,7 @@ function play_tune(what) {
 		ei = get_ee(selx[1])
 	} else if (what != 0 && selx[0]) {	// if selection without end
 		si = get_se(selx[0]);
-		ei = geot(selx[0])
+		ei = null
 	} else if (what != 0 && selx[1]) {	// if selection without start
 		si = gsot(selx[1])
 		ei = get_ee(selx[1])
@@ -657,7 +649,7 @@ function play_tune(what) {
 		}
 		i = Number(si[0].getAttribute('class').slice(6, -1))
 		si = gsot(i)
-		ei = geot(i)
+		ei = null
 	}
 
 	if (what != 3) {		// if not continue
