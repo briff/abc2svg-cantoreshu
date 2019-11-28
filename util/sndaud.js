@@ -78,7 +78,8 @@ function Audio5(i_conf) {
 
 	// -- play the memorized events --
 	s_cur,			// current music symbol
-	s_end,			// last music symbol
+	s_end,			// last music symbol / null
+	stop,			// stop playing
 	repn,			// don't repeat when true
 	repv,			// repeat level (variant number)
 	stime,			// start playing time
@@ -351,7 +352,7 @@ function Audio5(i_conf) {
 	    var	d, i, st, m, note, g, s2, t, maxt,
 		s = s_cur
 
-		if (!s_end) {			// stop
+		if (stop) {			// stop
 			onend(repv)
 			return
 		}
@@ -402,10 +403,7 @@ function Audio5(i_conf) {
 						t = stime + s.ptim / conf.speed
 						repn = false
 					} else {		// end of tune
-						stime += (s.ptim - s_end.ptim) /
-								conf.speed
 						s = s_end
-						t = stime + s.ptim / conf.speed
 						break
 					}
 				}
@@ -473,7 +471,7 @@ function Audio5(i_conf) {
 
 	// wait for all resources, then start playing
 	function play_start() {
-		if (!s_end) {		// play stop
+		if (stop) {			// stop playing
 			onend(repv)
 			return
 		}
@@ -537,6 +535,7 @@ function Audio5(i_conf) {
 		}
 
 		s_end = i_end
+		stop = false
 		while (i_start.noplay)
 			i_start = i_start.ts_next
 		s_cur = i_start
@@ -549,7 +548,7 @@ function Audio5(i_conf) {
 
 	// stop playing
 	stop: function() {
-		s_end = null
+		stop = true
 		timouts.forEach(function(id) {
 					clearTimeout(id)
 				})

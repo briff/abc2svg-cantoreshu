@@ -57,7 +57,8 @@ function Midi5(i_conf) {
 	v_i = [],		// voice (channel) to instrument
 
 	s_cur,			// current music symbol
-	s_end,			// last music symbol
+	s_end,			// last music symbol / null
+	stop,			// stop playing
 	repn,			// don't repeat when true
 	repv = 0,		// repeat variant number
 	stime,			// start playing time in ms
@@ -170,7 +171,7 @@ function Midi5(i_conf) {
 		t = stime + s.ptim / conf.speed * 1000,	// start time
 		maxt = t + 2000			// max time = now + 2 seconds
 
-		if (!s_end) {			// stop
+		if (stop) {
 			onend(repv)
 			return
 		}
@@ -211,10 +212,7 @@ function Midi5(i_conf) {
 						t = stime + s.ptim / conf.speed * 1000
 						repn = false
 					} else {		// end of tune
-						stime += (s.ptim - s_end.ptim) /
-								conf.speed
 						s = s_end
-						t = stime + s.ptim / conf.speed
 						break
 					}
 				}
@@ -387,7 +385,7 @@ if (0) {
 
 		// stop playing
 		stop: function() {
-			s_end = null
+			stop = true
 			timouts.forEach(function(id) {
 						clearTimeout(id)
 					})
