@@ -276,7 +276,7 @@ Abc.prototype.set_vp = function(a) {
 		if (!item)
 			break
 		if (item.slice(-1) == '='
-		 && a.length == 0) {
+		 && !a.length) {
 			syntax(1, errs.bad_val, item)
 			break
 		}
@@ -461,14 +461,14 @@ function set_kv_parm(a) {	// array of items
 				a = info.V[curvoice.id].concat(a)
 		}
 	}
-	if (a.length != 0)
+	if (a.length)
 		self.set_vp(a)
 } // set_kv_parm()
 
 // memorize the K:/V: parameters
 function memo_kv_parm(vid,	// voice ID (V:) / '*' (K:/V:*)
 			a) {	// array of items
-	if (a.length == 0)
+	if (!a.length)
 		return
 	if (!info.V)
 		info.V = {}
@@ -1268,6 +1268,8 @@ function new_bar() {
 
 	// handle the accidentals (ties and repeat)
 	if (s.text) {
+		if (bar_type.slice(-1) == '[')
+			bar_type = bar_type.slice(0, -1)
 		if (s.text[0] == '1') {
 			if (curvoice.tie_s)
 				curvoice.tie_s_rep = curvoice.tie_s
@@ -1536,7 +1538,7 @@ function parse_staves(p) {
 		syntax(1, "'}', ')' or ']' missing in %%score");
 		err = true
 	}
-	if (err || a_vf.length == 0)
+	if (err || !a_vf.length)
 		return //null
 	return a_vf
 }
