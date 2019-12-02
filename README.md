@@ -112,7 +112,6 @@ for rendering the tunes one by one.
   - load the include file by the same browse button  
 
   Then, you may edit and save both files.  
-  Rendering/playing is always done from the first ABC file.  
   There may be only one included file.
 
 - The editor comes with different ways to enter the music from the keyboard.  
@@ -226,7 +225,7 @@ There are:
   Example:   
   `        abc2svg toodt.js my_file.abc -o my_file.odt`
 
-- `toparam.js`
+- `toparam.js`   
   This script just outputs the abc2svg parameters.
 
 #### PDF generation
