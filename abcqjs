@@ -66,6 +66,10 @@ abc2svg.readFile = function(fname) {
 	return bt + b
 } // readfile()
 
+abc2svg.get_mtime = function(fn) {
+	return new Date(os.stat(fn)[0].mtime)
+}
+
 abc2svg.loadjs = function(fn, relay, onerror) {
 	try {
 		std.loadScript(path + fn)

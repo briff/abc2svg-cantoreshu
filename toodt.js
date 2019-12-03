@@ -117,14 +117,15 @@ function gen_hf(type, stype, str) {
 		c = str[++i]
 		switch (c) {
 		case 'd':
-			t = abc.get_fname();
-			res += fs.statSync(t).ctime.toLocaleString()
+			if (!abc2svg.get_mtime)
+				break // cannot know the modification date of the file
+			res += abc2svg.get_mtime(abc.parse.fname).toLocaleString()
 			break
 		case 'D':
 			res += (new Date()).toLocaleString()
 			break
 		case 'F':
-			res += abc.get_fname()
+			res += abc.parse.fname
 			break
 		case 'I':
 			c = str[++i]

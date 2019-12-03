@@ -78,13 +78,16 @@ function header_footer(str) {
 		}
 		c = str[++i]
 		switch (c) {
-		case 'd':	// cannot know the modification date of the file
+		case 'd':
+			if (!abc2svg.get_mtime)
+				break // cannot know the modification date of the file
+			r[j] += abc2svg.get_mtime(abc.parse.fname)
 			break
 		case 'D':
 			r[j] += get_date()
 			break
 		case 'F':
-			r[j] += abc.get_fname()
+			r[j] += abc.parse.fname
 			break
 		case 'I':
 			c = str[++i]
