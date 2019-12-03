@@ -58,7 +58,8 @@ abc2svg.page = {
     // start a new page
     svg_out: function(abc, page) {
     var	h, o_font,
-	cfmt = abc.cfmt()
+	cfmt = abc.cfmt(),
+	parse = abc.parse
 
 	function header_footer(o_font, str) {
 	    var	c, i, k, t, n_font,
@@ -112,13 +113,17 @@ abc2svg.page = {
 			}
 			c = str[++i]
 			switch (c) {
-			case 'd':	// cannot know the modification date of the file
+			case 'd':
+				if (!abc2svg.get_mtime)
+					break // cannot know the change time of the file
+				r[j] += strftime(cfmt.dateformat,
+						abc2svg.get_mtime(parse.fname))
 				break
 			case 'D':
-				r[j] += new Date().toUTCString()
+				r[j] += strftime(cfmt.dateformat)
 				break
 			case 'F':
-				r[j] += abc.get_fname()
+				r[j] += parse.fname
 				break
 			case 'I':
 				c = str[++i]
@@ -429,6 +434,8 @@ abc2svg.page = {
 			}
 			if (cfmt.oneperpage)
 				page.oneperpage = this.get_bool(cfmt.oneperpage)
+			if (!cfmt.dateformat)
+				cfmt.dateformat = "%b %e, %Y %H:%M"
 
 			// set the hooks
 			user.img_out = abc2svg.page.img_in.bind(this);
