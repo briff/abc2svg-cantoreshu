@@ -31,6 +31,7 @@ window.onerror = function(msg, url, line) {
 
 var	abc_images,			// image buffer
 	abc_fname = ["noname.abc", ""],	// file names
+	abc_mtime = [],			// associated last modification time
 	abc,				// Abc object
 	syms,				// music symbol at source index
 	ctxMenu,			// context menu for play
@@ -214,6 +215,16 @@ function render2() {
 	// load the required modules
 	if (!abc2svg.modules.load(content + elt_ref.src1.value, render2))
 		return
+
+	// if page formatting, define a function to get the modification date
+	if (abc2svg.modules.pageheight.loaded) {
+		abc2svg.get_mtime = function(fn) {
+		    var	files = document.getElementById("abcfile").files
+			if (files && files[0].lastModified)
+				return new Date(files[0].lastModified)
+			return new Date()
+		}
+	}
 
 	abc = new abc2svg.Abc(user);
 	abc_images = '';
