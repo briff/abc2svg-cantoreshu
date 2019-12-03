@@ -26,7 +26,7 @@ var	output = "",		// output buffer
 \n.slW{stroke:currentColor;fill:none;stroke-width:.7}\
 \n.slthW{stroke:currentColor;fill:none;stroke-width:1.5}\
 \n.sW{stroke:currentColor;fill:none;stroke-width:.7}\
-\n.tempstr{font:130% music}',
+\n.mtx{font:130% music}',
 	font_style = '',
 	posx = cfmt.leftmargin / cfmt.scale,	// default x offset of the images
 	posy = 0,		// y offset in the block
@@ -1030,7 +1030,7 @@ function tempo_build(s) {
 		dy = ' dy="-.05em"'			// notes a bit higher
 		for (i = 0; i < s.tempo_notes.length; i++) {
 			p = tempo_note(s, s.tempo_notes[i])
-			str.push('<tspan\n\tclass="tempstr"' + dy + '>' +
+			str.push('<tspan\n\tclass="mtx"' + dy + '>' +
 				p + '</tspan>')
 			j = p.length > 1 ? 2 : 1	// (note and optional dot)
 			w += j * gene.curfont.swfac
@@ -1048,7 +1048,7 @@ function tempo_build(s) {
 			w += strwh(s.tempo.toString())[0]
 		} else {			// with a beat as a note
 			p = tempo_note(s, s.new_beat)
-			str.push('<tspan\n\tclass="tempstr" dy="-.05em">' +
+			str.push('<tspan\n\tclass="mtx" dy="-.05em">' +
 				p + '</tspan>')
 			j = p.length > 1 ? 2 : 1
 			w += j * gene.curfont.swfac
