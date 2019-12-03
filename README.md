@@ -75,9 +75,17 @@ These files are:
   See [this page](http://moinejf.free.fr/abcm2ps-doc/au_clair.xhtml)
   for an example.
 
+- `abcweb2-1.js`   
+  This script works the same as `abcemb2-1.js` but it must use `snd-1.js`
+  for playing.
+  
+- `snd-1.js`   
+  This script contains a other way for playing. It is used in the editor
+  and it may be used with `abcweb2-1.js`.
+
 - `follow-1.js`   
-  This script may be used after `play-1.js` for highlighting the notes
-  while playing.   
+  This script may be used after `play-1.js` or `snd-1.js` for highlighting
+  the notes while playing.   
   See [this page](http://moinejf.free.fr/abcm2ps-doc/tabac.xhtml)
   for an example.
 
