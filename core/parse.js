@@ -180,9 +180,7 @@ function set_linebreak(param) {
 // set a new user character (U: or %%user)
 function set_user(parm) {
     var	k, c, v,
-//	a = parm.match(/(.*?)[= ]*([[!"].*[\]!"])/)
-//	a = parm.match(/(.)[= ]*(.*)/)
-	a = parm.match(/(.)[= ](\[I:.+\]|".+"|!.+!)$/)
+	a = parm.match(/(.)[= ]*(\[I:.+\]|".+"|!.+!)$/)
 
 	if (!a) {
 		syntax(1, 'Lack of starting [, ! or " in U: / %%user')
