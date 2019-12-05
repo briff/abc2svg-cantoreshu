@@ -1290,8 +1290,6 @@ function new_bar() {
 			}
 			if (curvoice.acc_tie_rep)
 				curvoice.acc_tie = curvoice.acc_tie_rep.slice()
-			else if (curvoice.acc_tie)
-				curvoice.acc_tie = null
 		}
 	}
 	curvoice.acc = []			// no accidental anymore
@@ -1789,7 +1787,7 @@ function slur_add(enote, e_is_note) {
 
 // (possible hook)
 Abc.prototype.new_note = function(grace, sls) {
-    var	note, s, in_chord, c, dcn, type, tie_s,
+    var	note, s, in_chord, c, dcn, type, tie_s, acc_tie,
 	i, n, s2, nd, res, num, dur, apit,
 	sl1 = [],
 	line = parse.line,
@@ -1800,6 +1798,43 @@ Abc.prototype.new_note = function(grace, sls) {
 		tie_s = curvoice.tie_s
 		curvoice.tie_s = null
 	}
+
+	// handle the ties
+	function do_ties(s, tie_s) {
+	    var	m, note
+
+		for (m = 0; m <= s.nhd; m++) {
+			note = s.notes[m]
+			if (tie_s.type != C.GRACE) {
+				for (i = 0; i <= tie_s.nhd; i++) {
+					if (!tie_s.notes[i].tie_ty)
+						continue
+					// (tie_s.notes[i].tie_n may exist
+					//  on repeat restart)
+					if (tie_s.notes[i].b40 == note.b40) {
+						tie_s.notes[i].tie_n = note
+						note.s = s
+						tie_s.tie_s = s
+						break
+					}
+				}
+			} else {
+				for (s2 = tie_s.extra; s2; s2 = s2.next) {
+					if (!s2.notes[0].tie_ty)
+						continue
+					if (s2.notes[0].b40 == note.b40) {
+						s2.tie_s = s
+						s2.notes[0].tie_n = note
+						note.s = s
+						s2.notes[0].s = s2
+						tie_s.tie_s = s
+						break
+					}
+				}
+			}
+			s.ti2 = tie_s	// pointer to the tie start
+		}
+	} // do_ties()
 
 	a_dcn = null;
 	parse.stemless = false;
@@ -1885,6 +1920,10 @@ Abc.prototype.new_note = function(grace, sls) {
 		c = line.next_char()
 		// fall thru
 	default:			// accidental, chord, note
+		if (curvoice.acc_tie) {
+			acc_tie = curvoice.acc_tie
+			curvoice.acc_tie = null
+		}
 		if (curvoice.uscale)
 			s.uscale = curvoice.uscale;
 		s.notes = []
@@ -1953,8 +1992,8 @@ Abc.prototype.new_note = function(grace, sls) {
 				curvoice.acc[apit] = i
 			} else {
 				i = curvoice.acc[apit]
-				if (!i && curvoice.acc_tie)
-					i = curvoice.acc_tie[apit]
+				if (!i && acc_tie)
+					i = acc_tie[apit]
 				if (!i)
 				    i = curvoice.ckey.k_map[apit % 7] || 0
 			}
@@ -1963,44 +2002,6 @@ Abc.prototype.new_note = function(grace, sls) {
 			if (curvoice.map
 			 && maps[curvoice.map])
 				set_map(note)
-
-			// ending ties
-			if (tie_s) {		// if some ties are ending here
-				if (tie_s.type != C.GRACE) {
-				    for (i = 0; i <= tie_s.nhd; i++) {
-					if (!tie_s.notes[i].tie_ty)
-						continue
-					// (tie_s.notes[i].tie_n may exist
-					//  on repeat restart)
-					if (tie_s.notes[i].b40 == note.b40) {
-						tie_s.notes[i].tie_n = note
-						note.s = s
-						tie_s.tie_s = s
-						if (curvoice.acc_tie
-						 && curvoice.acc_tie[apit])
-							curvoice.acc_tie[apit] = 0
-						break
-					}
-				    }
-				} else {
-				    for (s2 = tie_s.extra; s2; s2 = s2.next) {
-					if (!s2.notes[0].tie_ty)
-						continue
-					if (s2.notes[0].b40 == note.b40) {
-						s2.tie_s = s
-						s2.notes[0].tie_n = note
-						note.s = s
-						s2.notes[0].s = s2
-						tie_s.tie_s = s
-						if (curvoice.acc_tie
-						 && curvoice.acc_tie[apit])
-							curvoice.acc_tie[apit] = 0
-						break
-					}
-				    }
-				}
-				s.ti2 = tie_s
-			}
 
 			// starting slurs
 			if (sl1.length) {
@@ -2037,11 +2038,14 @@ Abc.prototype.new_note = function(grace, sls) {
 					note.tie_ty = parse_vpos()
 					note.s = s
 					curvoice.tie_s = s
-					if (curvoice.acc[apit]) {
+					if (curvoice.acc[apit]
+					 || (acc_tie
+					  && acc_tie[apit])) {
 						if (!curvoice.acc_tie)
 							curvoice.acc_tie = []
 						curvoice.acc_tie[apit] =
-							curvoice.acc[apit]
+							curvoice.acc[apit] ||
+								acc_tie[apit]
 					}
 					c = line.char()
 					continue
@@ -2152,6 +2156,53 @@ Abc.prototype.new_note = function(grace, sls) {
 		}
 
 		curvoice.last_note = s
+
+		// get the possible ties and end of slurs
+		c = line.char()
+		while (1) {
+			switch (c) {
+			case '-':
+			    var	ty = parse_vpos()
+				for (i = 0; i <= s.nhd; i++) {
+					s.notes[i].tie_ty = ty
+					s.notes[i].s = s
+				}
+				if (grace)
+					grace.tie_s = curvoice.tie_s = grace
+				else
+					curvoice.tie_s = s
+				for (i = 0; i <= s.nhd; i++) {
+					note = s.notes[i]
+					apit = note.pit + 19	// pitch from C-1
+					if (curvoice.acc[apit]
+					 || (acc_tie
+					  && acc_tie[apit])) {
+						if (!curvoice.acc_tie)
+							curvoice.acc_tie = []
+						curvoice.acc_tie[apit] =
+							curvoice.acc[apit] ||
+								acc_tie[apit]
+					}
+				}
+				c = line.char()
+				continue
+			case ')':
+				s.notes[0].s = s
+				slur_add(s.notes[0])
+				c = line.next_char()
+				continue
+			case '.':
+				if (line.buffer[line.index + 1] != '-')
+					break
+				c = line.next_char()
+				continue
+			}
+			break
+		}
+
+		// handle the ties ending on this chord/note
+		if (tie_s)		// if tie from previous note / grace note
+			do_ties(s, tie_s)
 	}
 
 	sym_link(s)
@@ -2507,30 +2558,13 @@ function parse_music_line() {
 				if (curvoice.ignore)
 					break
 				s = curvoice.last_sym
-				if (s) {
-					switch (s.type) {
-					case C.SPACE:
-						if (!s.notes) {
-							s.notes = []
-							s.notes[0] = {}
-						}
-					case C.NOTE:
-					case C.REST:
-						break
-					case C.GRACE:
-
-						// stop the slur on the last grace note
-						for (s = s.extra; s.next; s = s.next)
-							;
-						break
-					default:
-						s = null
-						break
-					}
-				}
-				if (!s) {
+				if (!s || s.type != C.SPACE) {
 					syntax(1, errs.bad_char, c)
 					break
+				}
+				if (!s.notes) {
+					s.notes = []
+					s.notes[0] = {}
 				}
 				s.notes[0].s = s
 				slur_add(s.notes[0])
@@ -2571,31 +2605,6 @@ function parse_music_line() {
 				}
 				parse_gchord(type)
 				break
-			case '-':
-				s = curvoice.last_note
-				if (!s || s.type != C.NOTE) {
-					syntax(1, "No note before '-'")
-					break
-				}
-			    var	ty = parse_vpos()
-				for (i = 0; i <= s.nhd; i++) {
-					s.notes[i].tie_ty = ty
-					s.notes[i].s = s
-				}
-				if (grace)
-					grace.tie_s = curvoice.tie_s = grace
-				else
-					curvoice.tie_s = s
-				for (i = 0; i <= s.nhd; i++) {
-					note = s.notes[i]
-					if (curvoice.acc[note.pit + 19]) {
-						if (!curvoice.acc_tie)
-							curvoice.acc_tie = []
-						curvoice.acc_tie[note.pit + 19] =
-							curvoice.acc[note.pit + 19]
-					}
-				}
-				continue
 			case '[':
 				if (type.length > 1) {	// U: [I:xxx]
 					self.do_pscom(type.slice(3, -1))
