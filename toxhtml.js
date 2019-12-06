@@ -232,9 +232,16 @@ svg {display:block}\n\
 body {width:' + cfmt.pagewidth.toFixed(0) +'px}\n\
 p {' + set_pstyle() + 'margin-top:0}\n\
 p span {line-height:' + ((cfmt.lineskipfac * 100) | 0).toString() + '%}\n' +
-			((header || footer) ? media_f : media_s) + '\n\
-@page{margin:' + topmargin + ' 0 ' + botmargin + ' 0}\n\
-</style>\n\
+			((header || footer) ? media_f : media_s))
+// works with chrome and --headless
+		if (abc.page)
+			abc2svg.print('@page{size:' +
+				(cfmt.pagewidth / 96).toFixed(2) + 'in ' +
+				(cfmt.pageheight / 96).toFixed(2) + 'in;margin:0}')
+		else
+			abc2svg.print('@page{margin:0' + topmargin + ' 0 ' +
+							 botmargin + ' 0}')
+		abc2svg.print('</style>\n\
 <title>abc2svg document</title>\n\
 </head>\n\
 <body>')
