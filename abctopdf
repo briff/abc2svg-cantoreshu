@@ -86,8 +86,7 @@ for c in chromium vivaldi opera brave epic chrome end; do
 done
 
 # check the required programs
-if command -v  >/dev/null 2>&1; then
-elif ! command -v rsvg-convert >/dev/null 2>&1; then
+if ! command -v rsvg-convert >/dev/null 2>&1; then
 	echo "$0: program 'rsvg-convert' not found - abort"
 	exit 1
 fi
