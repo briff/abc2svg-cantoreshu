@@ -75,7 +75,7 @@ for a do
 done
 
 # check if some chromium-based browser is available
-for c in chromium vivaldi opera brave epic chrome end; do
+for c in chromium-browser vivaldi opera brave-browser epic google-chrome end; do
 	if command -v $c >/dev/null 2>&1; then
 		echo "and $c"
 		command $abcscr "$@" > /tmp/o.xhtml
