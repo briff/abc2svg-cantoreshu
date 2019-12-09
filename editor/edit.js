@@ -44,8 +44,12 @@ var	abc_images,			// image buffer
 	jsdir = document.currentScript ?
 		document.currentScript.src.match(/.*\//) :
 		(function() {
-			var scrs = document.getElementsByTagName('script');
-			return scrs[scrs.length - 1].src.match(/.*\//) || ''
+		     var s_a = document.getElementsByTagName('script')
+			for (var k = 0; k < s_a.length; k++) {
+				if (s_a[k].src.indexOf('edit-') >= 0)
+					return s_a[k].src.match(/.*\//) || ''
+			}
+			return ""	// ??
 		})()
 
 // -- Abc create argument

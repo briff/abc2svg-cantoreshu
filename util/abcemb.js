@@ -44,13 +44,15 @@ var	errtxt = '',
 	a_pe = [],			// index: #sequence, value: playing events
 	glop,				// global sequence for play
 	old_gm,
-	jsdir = (function() {
-		var scrs = document.getElementsByTagName('script')
-		for (var i = 0; i < scrs.length; i++) {
-			var a = scrs[i].src.match(/(.*?\/)abcemb-.\.js/)
-			if (a)
-				return a[1]
-		}
+	jsdir = document.currentScript ?
+		    document.currentScript.src.match(/.*\//) :
+		    (function() {
+		     var s_a = document.getElementsByTagName('script')
+			for (var k = 0; k < s_a.length; k++) {
+				if (s_a[k].src.indexOf('abcemb-') >= 0)
+					return s_a[k].src.match(/.*\//) || ''
+			}
+			return ""	// ??
 	})(),
 
 // -- abc2svg init argument

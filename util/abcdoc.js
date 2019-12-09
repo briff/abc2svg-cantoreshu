@@ -37,13 +37,16 @@ function abcdoc() {
     var	errtxt = '',
 	new_page = '',
 	page,				// document source
-	jsdir = (function() {
-		var scrs = document.getElementsByTagName('script')
-		for (var i = 0; i < scrs.length; i++) {
-			var a = scrs[i].src.match(/(.*?\/)abc2svg-.\.js/)
-			if (a)
-				return a[1]
-		}
+	jsdir = document.currentScript ?
+		    document.currentScript.src.match(/.*\//) :
+		    (function() {
+		     var s_a = document.getElementsByTagName('script')
+			for (var k = 0; k < s_a.length; k++) {
+				if (s_a[k].src.indexOf('abcdoc-') >= 0)
+					return s_a[k].src.match(/.*\//) || ''
+			}
+			return ""	// ??
+
 	})(),
     user = {	// -- abc2svg init argument
 	errmsg: function(msg, l, c) {	// get the errors

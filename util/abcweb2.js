@@ -53,7 +53,11 @@ function dom_loaded() {
 		    document.currentScript.src.match(/.*\//) :
 		    (function() {
 		     var s_a = document.getElementsByTagName('script')
-			return s_a[s_a.length - 1].src.match(/.*\//) || ''
+			for (var k = 0; k < s_a.length; k++) {
+				if (s_a[k].src.indexOf('abcweb2-') >= 0)
+					return s_a[k].src.match(/.*\//) || ''
+			}
+			return ""	// ??
 		})(),
 
 	// abc2svg init argument
