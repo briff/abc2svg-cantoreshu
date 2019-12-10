@@ -81,7 +81,7 @@ for c in chromium-browser vivaldi opera brave-browser epic google-chrome end; do
 		command $abcscr "$@" > /tmp/o.xhtml
 		$c --headless --disable-gpu --print-to-pdf=$out /tmp/o.xhtml
 		rm /tmp/o.xhtml
-		return
+		exit 0
 	fi
 done
 
