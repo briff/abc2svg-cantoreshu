@@ -1096,7 +1096,7 @@ function draw_gracenotes(s) {
 		if (g == bm.s2)
 			bm.s2 = null			/* (draw flags again) */
 		anno_stop(g)
-		if (g.sls)
+		if (g.sls || g.sl2)
 			slur = true
 		if (!g.next)
 			break			/* (keep the last note) */

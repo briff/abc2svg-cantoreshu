@@ -1754,6 +1754,10 @@ function slur_add(enote, e_is_note) {
 			// set a flag if the slur starts on a grace note
 			if (sl.grace)
 				sl.grace.sl1 = true
+
+			// set a flag if the slur ends on a grace note
+			if (enote.s.grace)
+				enote.s.sl2 = true
 			return
 		}
 	}
