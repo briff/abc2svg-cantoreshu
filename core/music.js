@@ -1016,7 +1016,8 @@ function time2space(s, len) {
 		} else {
 			if (i >= 9)
 				i = 8
-			space += (space_tb[i + 1] - space_tb[i]) * l / len
+			space += (space_tb[i + 1] - space_tb[i]) *
+					l / ((C.BLEN / 16 / 8) << i)
 		}
 	}
 	return space
