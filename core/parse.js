@@ -2560,13 +2560,30 @@ function parse_music_line() {
 				if (curvoice.ignore)
 					break
 				s = curvoice.last_sym
-				if (!s || s.type != C.SPACE) {
+				if (s) {
+					switch (s.type) {
+					case C.SPACE:
+						if (!s.notes) {
+							s.notes = []
+							s.notes[0] = {}
+						}
+					case C.NOTE:
+					case C.REST:
+						break
+					case C.GRACE:
+
+						// stop the slur on the last grace note
+						for (s = s.extra; s.next; s = s.next)
+							;
+						break
+					default:
+						s = null
+						break
+					}
+				}
+				if (!s) {
 					syntax(1, errs.bad_char, c)
 					break
-				}
-				if (!s.notes) {
-					s.notes = []
-					s.notes[0] = {}
 				}
 				s.notes[0].s = s
 				slur_add(s.notes[0])
