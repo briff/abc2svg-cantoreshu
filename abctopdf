@@ -1,12 +1,12 @@
 #!/bin/sh
 #
-# abctopdf - converts ABC to PDF using abc2svg and rsvg-convert
+# abctopdf - converts ABC to PDF using abc2svg
 #
-# Copyright (C) 2019 Jean-François Moine - License GPL3
+# Copyright (C) 2019 Jean-François Moine - License GPL3+
 
 if [ $# -eq 0 ]; then
 	cat << EOF
-ABC to PDF translator using abc2svg and rsvg-convert
+ABC to PDF translator using abc2svg
 Usage:
   abctopdf [g_options] ABC_file [f_options] [ABC_file [f_options]]* [-o output_file]
 Arguments:
@@ -75,7 +75,8 @@ for a do
 done
 
 # check if some chromium-based browser is available
-for c in chromium-browser vivaldi opera brave-browser epic google-chrome end; do
+# test rsvg-convert
+for c in chromium-browser vivaldi opera brave-browser epic google-chrome; do
 	if command -v $c >/dev/null 2>&1; then
 		echo "and $c"
 		command $abcscr "$@" > /tmp/o.xhtml
@@ -92,10 +93,11 @@ if ! command -v rsvg-convert >/dev/null 2>&1; then
 fi
 echo "and rsvg-convert"
 
-# build a ABC file (JS script) to change the font and page definitions
+# build a ABC file (with JS script) to change the font and page definitions
 # this solves the following problems:
 # - the maintainer of librsvg does not want to handle the CSS shorthand 'font:'
 # - rsvg-convert always gets the SVG images at 72ppi, ignoring the -p/-d values
+# - the sets of SVG images per page must be converted to a set of one SVG per page
 cat > /tmp/fix.abc << EOF
 %%pageheight 29.7cm
 %%fullsvg 1
@@ -122,31 +124,78 @@ function font_bug(str) {
 		}
 		return r + p[p.length - 1]
 	})
-		.replace(/<svg(.|\n)*?>/, function(p) {
-		    var	a = p.match(/width="(.*?)px" height="(.*?)px"/),
-			w = a[1],
-			h = a[2]
-			return p.replace(a[0],
-				'width="' + (w * .75).toFixed(0) +
-				'px" height="' + (h * .75).toFixed(0) +
-				'px" viewBox="0 0 ' + w + ' ' + h + '"')
-		})
 }
 // install
-	if (abc2svg.page) {		// if page format (normal case)
-		fix_out = abc2svg.page.img_out
-		abc2svg.page.img_out = function(page, p) {
-			fix_out(page, font_bug(p))
-		}
-	} else {
-		fix_out = user.img_out	// page module not loaded
-		user.img_out = function(p) {
-			fix_out(font_bug(p))
-		}
+// - front-end
+	fix_out = abc2svg.page.img_out
+	abc2svg.page.img_out = function(page, p) {
+		fix_out(page, font_bug(p))
 	}
+// - back-end
+    var	page_h, page_out,
+	page_sty = ""
+
+	// get the style from the image and remove it from the block
+	function get_style(p) {
+	    var	i,
+		sty = p.match(/<style.*?>((.|\n)*?)<\/style>/)
+
+		if (!sty)
+			return p
+		sty = sty[1].split('\n')
+		if (!page_sty)
+			page_sty = '<style type="text/css">\n</style>\n'
+		for (i = 0; i < sty.length; i++) {
+			if (page_sty.indexOf(sty[i]) < 0)
+				page_sty = page_sty.replace('</style>\n',
+						sty[i] + '\n</style>\n')
+		}
+		return p.replace(/<style(.|\n)*?\/style>\n/, '')
+	} // get_style()
+
+	// low level output
+	abc.page.user_out = function(p) {
+	    var	h, w,
+		cfmt = abc.cfmt()
+
+		switch (p.slice(0, 4)) {
+		case "<div":			// new page
+			page_h = 0
+			page_out = ""
+			break
+		case "<svg":			// SVG image
+			p = get_style(p)
+			page_out += p
+			    .replace(/<svg(.|\n)*?>/,
+				'<g transform="translate(0, ' +
+					page_h.toFixed(1) + ')">')
+			    .replace('</svg>', '</g>\n')
+			page_h += Number(p.match(/height="(\d+)px"/)[1])
+			break
+		case "</di":			// end of page
+			w = cfmt.pagewidth
+			h = cfmt.pageheight
+			abc2svg.print('\
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"\n\
+ xmlns:xlink="http://www.w3.org/1999/xlink"\n\
+ color="black" class="music" stroke-width=".7"\n\
+ width="' +
+				(w * .75).toFixed(0) + 'px" height="' +
+				(h * .75).toFixed(0) + 'px" viewBox="0 0 ' +
+					w.toFixed(0) + ' ' +
+					h.toFixed(0) + '"' +
+				(cfmt.bgcolor ?
+					(' style="background-color: ' +
+						cfmt.bgcolor + '"') : '') +
+				'>\n' +
+				page_sty +
+				page_out + "</svg>")
+			break
+		}
+	} // user_out()
 // for tests
 abc2svg.abort = function(e) {
-printErr('abort: '+e.message+'\n'+e.stack)
+abc2svg.printErr('abort: '+e.message+'\n'+e.stack)
 abc2svg.quit()
 }
 %%endjs
