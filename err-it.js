@@ -60,6 +60,7 @@ user.textrans = {
 	"Bad page width": "Larghezza di pagina errata",
 	"Bad program in %%MIDI": "Numero di programma non valido in %%MIDI",
 	"Bad scale value in %%font": "Valore di scala non valido in %%font",
+	"Bad tempo value": "Bad tempo value",
 	"Bad tie": "Legatura non valida",
 	"Bad transpose value": "Valore non valido per la trasposizione",
 	"Bad user character '$1'": "Carattere illegale '$1' in U:/%%user",

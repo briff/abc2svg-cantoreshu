@@ -856,11 +856,27 @@ function new_meter(p) {
 
 /* Q: tempo */
 function new_tempo(text) {
-	var	i = 0, j, c, nd, tmp,
-		s = {
-			type: C.TEMPO,
-			dur: 0
+    var	i, c, d, nd,
+	s = {
+		type: C.TEMPO,
+		dur: 0
+	}
+
+	// get a note duration
+	function get_nd(p) {
+	    var	n, d,
+		nd = p.match(/(\d+)\/(\d+)/)
+
+		if (nd) {
+			d = Number(nd[2])
+			if (d && !isNaN(d) && !(d & (d - 1))) {
+				n = Number(nd[1])
+				if (!isNaN(n))
+					return C.BLEN * n / d
+			}
 		}
+		syntax(1, "Invalid note duration $1", c)
+	} // get_nd()
 
 	set_ref(s)
 
@@ -869,71 +885,57 @@ function new_tempo(text) {
 
 	/* string before */
 	if (text[0] == '"') {
-		i = text.indexOf('"', 1)
-		if (i < 0) {
+		c = text.match(/"([^"]*)"/)		// "
+		if (!c) {
 			syntax(1, "Unterminated string in Q:")
 			return
 		}
-		s.tempo_str1 = text.slice(1, i);
-		i++
-		while (text[i] == ' ')
-			i++
+		s.tempo_str1 = c[1]
+		text = text.slice(c[0].length).replace(/^\s+/,'')
+	}
+
+	// string after
+	if (text.slice(-1) == '"') {
+		i = text.indexOf('"')
+		s.tempo_str2 = text.slice(i + 1, -1)
+		text = text.slice(0, i).replace(/\s+$/,'')
 	}
 
 	/* beat */
-	tmp = new scanBuf;
-	tmp.buffer = text;
-	tmp.index = i
-	while (1) {
-//		c = tmp.char()
-		c = text[tmp.index]
-		if (c == undefined || c <= '0' || c > '9')
-			break
-		nd = parse_dur(tmp)
-		if (!s.tempo_notes)
-			s.tempo_notes = []
-		s.tempo_notes.push(C.BLEN * nd[0] / nd[1])
+	i = text.indexOf('=')
+	if (i > 0) {
+		d = text.slice(0, i).split(/\s+/)
+		text = text.slice(i + 1).replace(/^\s+/,'')
 		while (1) {
-//			c = tmp.char()
-			c = text[tmp.index]
-			if (c != ' ')
+			c = d.shift()
+			if (!c)
 				break
-			tmp.index++
+			nd = get_nd(c)
+			if (!nd)
+				return
+			if (!s.tempo_notes)
+				s.tempo_notes = []
+			s.tempo_notes.push(nd)
 		}
-	}
 
-	/* tempo value */
-	if (c == '=') {
-		c = text[++tmp.index]
-		while (c == ' ')
-			c = text[++tmp.index];
-		i = tmp.index
-		if (c == 'c' && text[i + 1] == 'a'
-		 && text[i + 2] == '.' && text[i + 3] == ' ') {
-			s.tempo_ca = 'ca. ';
-			tmp.index += 4;
-//			c = text[tmp.index]
+		// tempo value
+		if (text.slice(0, 4) == "ca. ") {
+			s.tempo_ca = 'ca. '
+			text = text.slice(4)
 		}
-		if (text[tmp.index + 1] != '/') {
-			s.tempo = tmp.get_int()
+		i = text.indexOf('/')
+		if (i > 0) {
+			nd = get_nd(text)
+			if (!nd)
+				return
+			s.new_beat = nd
 		} else {
-			nd = parse_dur(tmp);
-			s.new_beat = C.BLEN * nd[0] / nd[1]
+			s.tempo = Number(text)
+			if (!s.tempo || isNaN(s.tempo)) {
+				syntax(1, "Bad tempo value")
+				return
+			}
 		}
-		c = text[tmp.index]
-		while (c == ' ')
-			c = text[++tmp.index]
-	}
-
-	/* string after */
-	if (c == '"') {
-		tmp.index++;
-		i = text.indexOf('"', tmp.index + 1)
-		if (i < 0) {
-			syntax(1, "Unterminated string in Q:")
-			return
-		}
-		s.tempo_str2 = text.slice(tmp.index, i)
 	}
 
 	if (parse.state != 3) {
