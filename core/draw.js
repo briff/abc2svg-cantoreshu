@@ -2494,7 +2494,7 @@ function draw_tuplet(s1, tp) {
 
 /* -- draw the ties between two notes/chords -- */
 function draw_note_ties(not1, job) {
-    var	m, x1, x2, s, y, h,
+    var	m, x1, x2, s, y, h, time,
 	not2 = not1.tie_n,
 	p = job == 2 ? not1.pit : not2.pit,
 	dir = (not1.tie_ty & 0x07) == C.SL_ABOVE ? 1 : -1,
