@@ -2575,6 +2575,11 @@ function draw_note_ties(not1, job) {
 		x2 -= 1.5
 	}
 
+	if (s1.dots && !(not1.pit & 1)
+	 && ((dir > 0 && !s1.dot_low)
+	  || (dir < 0 && s1.dot_low)))
+		x1 += 5
+
 	y = staff_tb[st].y + 3 * (p - 18)
 
 	h = (.03 * (x2 - x1) + 16) * dir
