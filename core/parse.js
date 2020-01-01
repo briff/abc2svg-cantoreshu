@@ -2411,7 +2411,7 @@ function parse_music_line() {
 			if (!s)
 				s = curvoice.sym
 			for ( ; s; s = s.next)
-				s.invis = true
+				s.invis = s.play = true
 			curvoice = curv
 		} else {
 			line.buffer = b ? expand(m, b) : m;

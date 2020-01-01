@@ -941,6 +941,8 @@ Abc.prototype.set_width = function(s) {
 		s.wr = 66
 		return
 	case C.GRACE:
+		if (s.invis)
+			break
 		s.wl = set_graceoffs(s);
 		s.wr = 0
 		if (s.a_ly)
@@ -1028,6 +1030,8 @@ function set_space(s) {
     var	space, prev_time, len,
 	s2 = s.ts_prev
 
+	if (s.play)
+		return 0
 	while (s2.play)				// if play symbol
 		s2 = s2.ts_prev
 	prev_time = s2.time
