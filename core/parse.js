@@ -136,7 +136,7 @@ function get_interval(param, score) {
 				syntax(1, "Bad transpose value")
 				return
 			}
-			pit[i] = 23			// 'c' (C5)
+			pit[i] = 242			// 'c' (C5)
 		} else {
 			pit[i] = abc2svg.pab40(note.pit, note.acc)
 		}
