@@ -326,8 +326,11 @@ abc2svg.page = {
 	case "<div":				// new block (tune / paragraph)
 		if (p.indexOf('newpage') > 0
 		 || (page.oneperpage && this.info().X)
-		 || !page.h)			// empty page
+		 || !page.h) {			// empty page
+			if (page.in_page)
+				abc2svg.page.close_page(page)
 			abc2svg.page.open_page(page, 0)
+		}
 		page.blk = []			// in block
 		page.hb = page.h		// keep the offset of the start of tune
 		break
