@@ -244,7 +244,8 @@ abc2svg.page = {
 			'<div>')
 	page.in_page = true
 
-	page.hmax = cfmt.pageheight - page.topmargin - page.botmargin - ht
+	ht += page.topmargin
+	page.hmax = cfmt.pageheight - page.botmargin - ht
 
 	// define the header/footer
 	page.hf = ''
@@ -255,7 +256,7 @@ abc2svg.page = {
 			'<svg xmlns="http://www.w3.org/2000/svg" version="1.1"\n\
 	xmlns:xlink="http://www.w3.org/1999/xlink"\n\
 	width="' + cfmt.pagewidth.toFixed(0) +
-			'px" height="' + (page.topmargin + ht + h).toFixed(0) +
+			'px" height="' + (ht + h).toFixed(0) +
 			'px">\n' +
 			'<g transform="translate(0,' +
 				page.topmargin.toFixed(1) + ')">' +
