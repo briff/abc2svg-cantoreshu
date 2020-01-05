@@ -41,7 +41,7 @@ svg {display:block}
 	.droplinks li { padding: 0 5px 0 5px; margin: 2px }
 	#dright {
 		width: 80%;
-		max-width: 800px;
+		max-width: 840px;
 		position: absolute; top: 0; bottom:0; right:0;
 		background-color: white;
 		overflow: auto
