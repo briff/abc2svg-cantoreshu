@@ -1,6 +1,6 @@
 // page.js - module to generate one SVG image per page
 //
-// Copyright (C) 2018-2019 Jean-Francois Moine - GPL3+
+// Copyright (C) 2018-2020 Jean-Francois Moine - GPL3+
 //
 // This module is loaded when "%%pageheight" appears in a ABC source.
 //
@@ -337,11 +337,12 @@ abc2svg.page = {
 	case "<svg":				// SVG image
 		h = Number(p.match(/height="(\d+)px"/)[1])
 		if (h + page.h >= page.hmax) {	// if page overflow
+			ht = page.blk ? 0 :
+				this.cfmt().topspace // tune continuation
+
 			if (page.blk)		// if inside a block
 				blkcpy(page)	// output the beginning of the tune
 
-			ht = page.blk ? 0 :
-				this.cfmt().topspace // tune continuation
 //			if (page.in_page)
 				abc2svg.page.close_page(page)
 			abc2svg.page.open_page(page, ht)
