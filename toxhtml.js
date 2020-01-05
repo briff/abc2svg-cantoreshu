@@ -1,6 +1,6 @@
 // abc2svg - toxhtml.js - SVG generation
 //
-// Copyright (C) 2014-2019 Jean-Francois Moine
+// Copyright (C) 2014-2020 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -242,7 +242,7 @@ p span {line-height:' + ((cfmt.lineskipfac * 100) | 0).toString() + '%}\n' +
 			abc2svg.print('@page{margin:0' + topmargin + ' 0 ' +
 							 botmargin + ' 0}')
 		abc2svg.print('</style>\n\
-<title>abc2svg document</title>\n\
+<title> ' + abc.parse.fname.replace(/.*\//, '') + '</title>\n\
 </head>\n\
 <body>')
 		if (header)
