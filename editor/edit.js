@@ -232,7 +232,6 @@ function render2() {
 
 	abc = new abc2svg.Abc(user);
 	abc_images = '';
-	abc.tosvg('edit', '%%bgcolor white');
 
 //	document.body.style.cursor = "wait";
 	syms = []
