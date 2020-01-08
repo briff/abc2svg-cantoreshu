@@ -313,7 +313,6 @@ abc2svg.page = {
 			page.blk = null
 			return
 		}
-		page.h = page.hb
 		while (page.blk.length) {
 			b = page.blk.shift()
 			abc2svg.page.img_out(page, b.p)
@@ -341,12 +340,15 @@ abc2svg.page = {
 			ht = page.blk ? 0 :
 				this.cfmt().topspace // tune continuation
 
-			if (page.blk)		// if inside a block
-				blkcpy(page)	// output the beginning of the tune
+			if (page.blk && !page.hb) // overflow on the first page
+				blkcpy(page)
 
 //			if (page.in_page)
 				abc2svg.page.close_page(page)
 			abc2svg.page.open_page(page, ht)
+
+			if (page.blk)		// if inside a block
+				blkcpy(page)	// output the beginning of the tune
 		}
 
 		// if no overflow yet, keep the block
