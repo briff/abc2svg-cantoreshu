@@ -116,7 +116,7 @@ user.textrans = {
 	"No note before '-'": "Pas de note devant '-'",
 	"No note before '<'": "Pas de note devant '<'",
 	"No note in voice overlay": "Pas de note dans voix superposée",
-	"Non standard note duration $1": "Durée de note $1 non standard"
+	"Non standard note duration $1": "Durée de note $1 non standard",
 	"No read_file support": "La fonction read_file n'existe pas",
 	"No start of !$1!": "Pas de début pour !$1!",
 	"Not an ASCII character": "Ce n'est pas un caractère ASCII",
