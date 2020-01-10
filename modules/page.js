@@ -302,28 +302,19 @@ abc2svg.page = {
 
     // handle the output flow of the abc2svg generator
     img_in: function(p) {
-    var h, ht,
+    var h, ht, nh,
 	page = this.page
 
 	// copy a block
 	function blkcpy(page) {
-	    var b
-
-		if (!page.blk.length) {
-			page.blk = null
-			return
-		}
-		while (page.blk.length) {
-			b = page.blk.shift()
-			abc2svg.page.img_out(page, b.p)
-			page.h += b.h
-		}
+		while (page.blk.length)
+			abc2svg.page.img_out(page, page.blk.shift())
 		page.blk = null			// direct output
 	} // blkcpy()
 
 	// img_in()
 	switch (p.slice(0, 4)) {
-	case "<div":				// new block (tune / paragraph)
+	case "<div":				// block of new tune
 		if (p.indexOf('newpage') > 0
 		 || (page.oneperpage && this.info().X)
 		 || !page.h) {			// empty page
@@ -340,20 +331,27 @@ abc2svg.page = {
 			ht = page.blk ? 0 :
 				this.cfmt().topspace // tune continuation
 
-			if (page.blk && !page.hb) // overflow on the first page
-				blkcpy(page)
-
-//			if (page.in_page)
-				abc2svg.page.close_page(page)
+			if (page.blk) {
+				if (!page.hb) {	// overflow on the first page
+					blkcpy(page)
+					nh = 0
+				} else {
+					nh = page.h - page.hb
+					page.h = page.hb
+				}
+			}
+			abc2svg.page.close_page(page)
 			abc2svg.page.open_page(page, ht)
 
-			if (page.blk)		// if inside a block
+			if (page.blk) {		// if inside a block
 				blkcpy(page)	// output the beginning of the tune
+				page.h = nh
+			}
 		}
 
 		// if no overflow yet, keep the block
 		if (page.blk)
-			page.blk.push({p: p, h: h})
+			page.blk.push(p)
 		else
 			abc2svg.page.img_out(page, p)
 		page.h += h
