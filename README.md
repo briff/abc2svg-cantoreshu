@@ -47,7 +47,7 @@ These files are:
   When a tune is displayed, a menu offers the edition of the ABC source and
   the automatic scroll of the music (this is done according to the tempo -
   repeats and parts are not handled).   
-  See [this tune](http://moinejf.free.fr/abc/boyvin-2-2.html)
+  See [this file](http://moinejf.free.fr/abc/boyvin-2-2.html)
   for an example.   
 
 - `abcemb2-1.js`   
@@ -80,7 +80,7 @@ These files are:
   for playing.
   
 - `snd-1.js`   
-  This script contains a other way for playing. It is used in the editor
+  This script contains an other way for playing. It is used in the editor
   and it may be used with `abcweb2-1.js`.
 
 - `follow-1.js`   
