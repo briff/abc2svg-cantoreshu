@@ -1202,7 +1202,6 @@ function blk_out() {
 		}
 	}
 }
-Abc.prototype.blk_out = blk_out
 
 // output the end of a block (or tune)
 function blk_flush() {
