@@ -1,7 +1,7 @@
 //#javascript
 // abcemb2-1.js file to include in html pages with abc2svg-1.js
 //
-// Copyright (C) 2018-2019 Jean-Francois Moine
+// Copyright (C) 2018-2020 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -30,6 +30,7 @@ window.onerror = function(msg, url, line) {
 	return false
 }
 
+    var	user
 if (typeof abc2svg == "undefined")
     var	abc2svg = {}
 
@@ -58,7 +59,7 @@ function dom_loaded() {
 					return s_a[k].src.match(/.*\//) || ''
 			}
 			return ""	// ??
-		})(),
+		})()
 
 	// abc2svg init argument
 	user = {
