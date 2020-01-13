@@ -1805,17 +1805,18 @@ Abc.prototype.new_note = function(grace, sls) {
 
 	// handle the ties
 	function do_ties(s, tie_s) {
-	    var	m, note
+	    var	m, note, n
 
 		for (m = 0; m <= s.nhd; m++) {
 			note = s.notes[m]
+			n = abc2svg.b40m(note.b40)
 			if (tie_s.type != C.GRACE) {
 				for (i = 0; i <= tie_s.nhd; i++) {
 					if (!tie_s.notes[i].tie_ty)
 						continue
 					// (tie_s.notes[i].tie_n may exist
 					//  on repeat restart)
-					if (tie_s.notes[i].b40 == note.b40) {
+					if (abc2svg.b40m(tie_s.notes[i].b40) == n) {
 						tie_s.notes[i].tie_n = note
 						note.s = s
 						tie_s.tie_s = s
@@ -1826,7 +1827,7 @@ Abc.prototype.new_note = function(grace, sls) {
 				for (s2 = tie_s.extra; s2; s2 = s2.next) {
 					if (!s2.notes[0].tie_ty)
 						continue
-					if (s2.notes[0].b40 == note.b40) {
+					if (abc2svg.b40m(s2.notes[0].b40) == n) {
 						s2.tie_s = s
 						s2.notes[0].tie_n = note
 						note.s = s
