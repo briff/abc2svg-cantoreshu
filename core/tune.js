@@ -1750,6 +1750,7 @@ function get_staves(cmd, parm) {
 		delete p_voice.sym_restart
 		delete p_voice.sym_cont
 		delete p_voice.have_ly
+		delete p_voice.tie_s
 
 		voice_tb.push(p_voice)
 		return p_voice
