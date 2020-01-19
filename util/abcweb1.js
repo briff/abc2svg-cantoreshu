@@ -213,7 +213,7 @@ function dom_loaded() {
 	} // st_scroll()
 
 	// function called on click in the music:
-	//	start / stop playing and scrolling
+	//	start / stop playing
 	abc2svg.playseq = function(evt) {
 	    var	e, i,
 		tunes = abc.tunes,	// list of the tunes created by the core
@@ -243,10 +243,8 @@ function dom_loaded() {
 
 		// stop
 		if (playing) {
-			if (scroll_to) {		// if scrolling active
-				clearTimeout(scroll_to)	// stop it
-				scroll_to = null
-			}
+//			if (scroll_to)		// if scrolling active
+//				abc2svg.st_scroll()
 			abcplay.stop()
 			return
 		}
@@ -264,8 +262,8 @@ function dom_loaded() {
 		}
 
 		playing = true
-		if (document.documentElement.scrollHeight > window.innerHeight)
-			scroll_to = setTimeout(do_scroll, 500, 0)	// scroll start
+//		if (document.documentElement.scrollHeight > window.innerHeight)
+//			scroll_to = setTimeout(do_scroll, 500, 0)	// scroll start
 
 		abcplay.play(tune_lst[i][0], null)
 	} // playseq()
