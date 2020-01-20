@@ -1,6 +1,6 @@
 // abc2svg - music.js - music generation
 //
-// Copyright (C) 2014-2019 Jean-Francois Moine
+// Copyright (C) 2014-2020 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -1026,16 +1026,10 @@ function time2space(s, len) {
 }
 
 // set the natural space
-function set_space(s) {
-    var	space, prev_time, len,
-	s2 = s.ts_prev
+function set_space(s, ptime) {
+    var	space, len, s2, stemdir
 
-	if (s.play)
-		return 0
-	while (s2.play)				// if play symbol
-		s2 = s2.ts_prev
-	prev_time = s2.time
-	len = s.time - prev_time		// time skip
+	len = s.time - ptime		// time skip
 
 	if (!len) {
 		switch (s.type) {
@@ -1098,10 +1092,10 @@ function set_space(s) {
 /*fixme:to be done later, after x computed in sym_glue*/
 	if (s.type == C.NOTE && s.nflags >= -1
 	 && s.stem > 0) {
-		var stemdir = true
+		stemdir = true
 
 		for (s2 = s.ts_prev;
-		     s2 && s2.time == prev_time;
+		     s2 && s2.time == ptime;
 		     s2 = s2.ts_prev) {
 			if (s2.type == C.NOTE
 			 && (s2.nflags < -1 || s2.stem > 0)) {
@@ -1210,7 +1204,7 @@ function add_end_bar(s) {
 /* -- set the width and space of all symbols -- */
 // this function is called once for the whole tune
 function set_allsymwidth() {
-    var	maxx, new_val, s_tupc, s_tupn, st, s_chs,
+    var	maxx, new_val, s_tupc, s_tupn, st, s_chs, tim,
 	s = tsfirst,
 	s2 = s,
 	xa = 0,
@@ -1220,6 +1214,7 @@ function set_allsymwidth() {
 
 	/* loop on all symbols */
 	maxx = xa
+	tim = s.time
 	while (1) {
 		do {
 			if (s.a_gch && !s_chs)
@@ -1239,12 +1234,15 @@ function set_allsymwidth() {
 		// set the spaces of the time sequence
 		s2.shrink = maxx - xa
 		if (!ntup)			// if not inside a tuplet sequence
-			s2.space = s2.ts_prev ? set_space(s2) : 0
+			s2.space = s2.ts_prev ?
+				set_space(s2, tim) :
+				0
 
 		if (!s2.shrink && !s2.space && s2.type == C.CLEF) {
 			delete s2.seqst;		/* no space */
-			s2.time = s2.ts_prev.time
+			s2.time = tim
 		}
+		tim = s2.time
 		if (!s)
 			break
 
@@ -4475,7 +4473,6 @@ function block_gen(s) {
 		break
 	case "vskip":
 		vskip(s.sk);
-//		blk_out()
 		break
 	}
 }
@@ -4717,7 +4714,7 @@ function set_piece() {
 	// if the last symbol is not a bar, add an invisible bar
 	if (last.type != C.BAR) {
 		s = add_end_bar(last);
-		s.space = set_space(s)
+		s.space = set_space(s, last.time)
 		if (s.space < s.shrink
 		 && last.type != C.KEY)
 			s.space = s.shrink
