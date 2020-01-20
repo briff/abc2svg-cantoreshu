@@ -1,5 +1,5 @@
 //#javascript
-// abcemb2-1.js file to include in html pages with abc2svg-1.js
+// abcweb2-1.js file to include in html pages with abc2svg-1.js
 //
 // Copyright (C) 2018-2020 Jean-Francois Moine
 //
@@ -38,6 +38,7 @@ if (typeof abc2svg == "undefined")
 function dom_loaded() {
     var	abc, i, elt,
 	errtxt = '',
+	app = "abcweb2",
 	elts,				// ABC HTML elements
 	abcsrc = "",			// ABC source
 	indx = [],			// indexes of the tunes in abcsrc
@@ -91,8 +92,8 @@ function dom_loaded() {
 
 	// function called on click in the screen
 	abc2svg.playseq = function(evt) {
-	    var	outputs, e, i,
-		tunes = abc.tunes,
+	    var	e, i,
+		tunes = abc.tunes,	// list of the tunes created by the core
 		svg = evt.target
 
 		// search if click in a SVG image
@@ -155,7 +156,7 @@ function dom_loaded() {
 		sel = window.location.hash.slice(1)
 		if (sel) {
 			select = '%%select ' + decodeURIComponent(sel)
-			abc.tosvg("abcemb2", select)
+			abc.tosvg(app, select)
 		}
 
 		// generate and replace
@@ -163,7 +164,7 @@ function dom_loaded() {
 			new_page = ""
 
 			try {
-				abc.tosvg('abcemb2', abcsrc, indx[i], indx[i + 1])
+				abc.tosvg(app, abcsrc, indx[i], indx[i + 1])
 			} catch (e) {
 				alert("abc2svg javascript error: " + e.message +
 					"\nStack:\n" + e.stack)
