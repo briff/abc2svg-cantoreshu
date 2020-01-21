@@ -160,6 +160,10 @@ function ToAudio() {
 				rsk = s
 				s.rep_s = [null, s]	// repeat skip
 			}
+			while (s.ts_next && !s.ts_next.seqst) {
+				s = s.ts_next
+				s.ptim = p_time
+			}
 			break
 		case C.BLOCK:
 			switch (s.subtype) {

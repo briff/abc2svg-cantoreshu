@@ -407,7 +407,7 @@ function Audio5(i_conf) {
 						break
 					}
 				}
-				while (s.ts_next && s.ts_next.type == C.BAR)
+				while (s.ts_next && !s.ts_next.seqst)
 					s = s.ts_next
 				break
 			case C.GRACE:
