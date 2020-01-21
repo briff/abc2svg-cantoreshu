@@ -80,6 +80,7 @@ user.textrans = {
 	"Empty line in tune header - ignored":
 				"Linha em branco no cabeçalho da música - ignorada",
 	"Erroneous end of voice overlay": "Terminação incorreta de superposição de vozes",
+	"Error loading the module $1": "Error loading the module $1",
 	"Incorrect 1st value in %%repeat": "Primeiro valor incorreto em %%repeat",
 	"Incorrect 2nd value in %%repeat": "Segundo valor incorreto em %%repeat",
 	"Invalid 'r' in tuplet": "'r' inválido em quiáltera",

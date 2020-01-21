@@ -1,6 +1,6 @@
 // abc2svg - modules.js - module handling
 //
-// Copyright (C) 2018-2019 Jean-Francois Moine
+// Copyright (C) 2018-2020 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -66,10 +66,20 @@ abc2svg.modules = {
 			if (typeof console == 'object')
 				return console.log
 			return function(){}
+		} // get_errmsg()
+
+		// call back functions for loadjs()
+		function load_end() {
+			if (--abc2svg.modules.nreq == 0)
+				abc2svg.modules.cbf()
+		}
+		function load_ko(fn) {
+			abc2svg.modules.errmsg('Error loading the module $1', fn)
+			load_end()
 		}
 
 		// test if some keyword in the file
-	    var	m, r,
+	    var	m, r, i,
 		nreq_i = this.nreq,
 		ls = file.match(/(^|\n)(%%|I:).+?\b/g)
 
@@ -79,7 +89,7 @@ abc2svg.modules = {
 			function(){}
 		this.errmsg = errmsg || get_errmsg()
 
-		for (var i = 0; i < ls.length; i++) {
+		for (i = 0; i < ls.length; i++) {
 			m = abc2svg.modules[ls[i].replace(/\n?(%%|I:)/, '')]
 			if (!m || m.loaded)
 				continue
@@ -87,17 +97,8 @@ abc2svg.modules = {
 			m.loaded = true
 
 			// load the module
-				this.nreq++;
-				abc2svg.loadjs(m.fn,
-				    function() {	// if success
-					if (--abc2svg.modules.nreq == 0)
-						abc2svg.modules.cbf()
-				    },
-				    function() {	// if error
-					abc2svg.modules.errmsg('error loading ' + m.fn);
-					if (--abc2svg.modules.nreq == 0)
-						abc2svg.modules.cbf()
-				    })
+			this.nreq++
+			abc2svg.loadjs(m.fn, load_end, function(){load_ko(m.fn)})
 		}
 		return this.nreq == nreq_i
 	}

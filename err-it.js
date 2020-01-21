@@ -82,6 +82,7 @@ user.textrans = {
 	"Empty line in tune header - ignored":
 				"Linea vuota nella testata - ignorata",
 	"Erroneous end of voice overlap": "Fine di voice overlay errata",
+	"Error loading the module $1": "Error loading the module $1",
 	"Incorrect 1st value in %%repeat": "Primo valore in %%repeat errato",
 	"Incorrect 2nd value in %%repeat": "Secondo valore in %%repeat errato",
 	"Invalid 'r' in tuplet": "'r' non valido in gruppo irregolare",

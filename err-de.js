@@ -74,6 +74,7 @@ user.textrans = {
     "Decoration ignored": "Dekoration ignoriert",
     "Empty line in tune header - ignored": "Leerzeile in Kopfbereich - ignoriert",
     "Erroneous end of voice overlay": "Fehlerhaftes Ende einer Stimme in überlagerten Stimmen",
+	"Error loading the module $1": "Error loading the module $1",
     "Incorrect 1st value in %%repeat": "erster Wert fehlerhaft in %%repeat",
     "Incorrect 2nd value in %%repeat": "zweiter Wert fehlerhaft in %%repeat",
     "Invalid 'r' in tuplet": "'r' fehlerhaft in Tuplet",
