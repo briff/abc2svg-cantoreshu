@@ -1,6 +1,6 @@
 // abc2svg - subs.js - text output
 //
-// Copyright (C) 2014-2019 Jean-Francois Moine
+// Copyright (C) 2014-2020 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -364,11 +364,8 @@ function write_text(text, action) {
 		sz = gene.curfont.size,
 		lineskip = sz * cfmt.lineskipfac,
 		parskip = sz * cfmt.parskipfac,
-		p_start = block.started ? function(){} : blk_out,
-		p_flush = block.started ? svg_flush : blk_flush,
 		i, j, x, words, w, k, ww, str;
 
-	p_start()
 	switch (action) {
 	default:
 //	case 'c':
@@ -393,7 +390,7 @@ function write_text(text, action) {
 			}
 			if (i == j) {			// new paragraph
 				vskip(parskip);
-				p_flush();
+				svg_flush()
 				use_font(gene.curfont)
 				while (text[i + 1] == '\n') {
 					vskip(lineskip);
@@ -401,7 +398,6 @@ function write_text(text, action) {
 				}
 				if (i == text.length)
 					break
-				p_start()
 			} else {
 				str = text.slice(j, i);
 				wh = strwh(str);
@@ -413,7 +409,7 @@ function write_text(text, action) {
 			j = i + 1
 		}
 		vskip(parskip);
-		p_flush()
+		svg_flush()
 		break
 	case 'f':
 	case 'j':
@@ -451,7 +447,7 @@ function write_text(text, action) {
 				xy_str(0, 0, str, null, null, wh)
 			}
 			vskip(parskip);
-			p_flush()
+			svg_flush()
 			if (i < 0)
 				break
 			while (text[i + 2] == '\n') {
@@ -460,7 +456,6 @@ function write_text(text, action) {
 			}
 			if (i == text.length)
 				break
-			p_start();
 			use_font(gene.curfont);
 			j = i + 2
 		}
@@ -550,10 +545,8 @@ function put_words(words) {
 
 	for (i = 0; i < i_end || i2 < nw; i++) {
 //fixme:should also permit page break on stanza start
-		if (i < i_end && words[i].length == 0) {
-			blk_out();
+		if (i < i_end && !words[i].length)
 			use_font(gene.curfont)
-		}
 		vskip(cfmt.lineskipfac * gene.curfont.size)
 		if (i < i_end)
 			put_wline(words[i], 45., 0)
@@ -608,7 +601,6 @@ function put_history() {
 			xy_str(w, 0, str[j])
 		}
 		vskip(h * .3);
-		blk_out();
 		use_font(gene.curfont)
 	}
 }
@@ -822,7 +814,6 @@ function write_heading() {
 	var	i, j, area, composer, origin, rhythm, down1, down2,
 		lwidth = get_lwidth()
 
-	blk_out();
 	vskip(cfmt.topspace)
 
 	if (cfmt.titleformat) {

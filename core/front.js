@@ -1,6 +1,6 @@
 // abc2svg - front.js - ABC parsing front-end
 //
-// Copyright (C) 2014-2019 Jean-Francois Moine
+// Copyright (C) 2014-2020 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -624,6 +624,7 @@ function tosvg(in_fname,		// file name
 			sav.maci = clone(maci);
 			info.X = text;
 			parse.state = 1			// tune header
+			blk_out()		// the tune starts by the next SVG
 			if (parse.tune_opts)
 				tune_filter()
 			continue

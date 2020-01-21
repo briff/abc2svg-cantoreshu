@@ -1,6 +1,6 @@
 // abc2svg - tune.js - tune generation
 //
-// Copyright (C) 2014-2019 Jean-Francois Moine
+// Copyright (C) 2014-2020 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -1032,7 +1032,6 @@ Abc.prototype.do_pscom = function(text) {
 		generate(1)
 		switch (param) {
 		case "start":
-			blk_out();
 			multicol = {
 				posy: posy,
 				maxy: posy,
@@ -1158,7 +1157,6 @@ Abc.prototype.do_pscom = function(text) {
 			s.sk2 = h2
 			return
 		}
-		blk_out();
 		vskip(h1);
 		output += '<path class="stroke"\n\td="M';
 		out_sxsy((lwidth - len) / 2 / cfmt.scale, ' ', 0);
@@ -1329,8 +1327,8 @@ Abc.prototype.do_pscom = function(text) {
 			return
 		}
 		if (cmd == "newpage") {
-			blk_flush();
-			block.newpage = true;
+			block.newpage = true
+			blk_out()
 			return
 		}
 		break
