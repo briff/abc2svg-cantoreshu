@@ -1,6 +1,6 @@
 // sndmid.js - audio output using HTML5 MIDI
 //
-// Copyright (C) 2019 Jean-Francois Moine
+// Copyright (C) 2019-2020 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -119,7 +119,7 @@ function Midi5(i_conf) {
 	} // note_run()
 
 	// handle a tie
-	function do_tie(s, b40, d) {
+	function do_tie(s, midi, d) {
 	    var	i, note,
 		v = s.v,
 		end_time = s.time + s.dur
@@ -154,10 +154,10 @@ function Midi5(i_conf) {
 		i = s.notes.length
 		while (--i >= 0) {
 			note = s.notes[i]
-			if (note.b40 == b40) {
+			if (note.midi == midi) {
 				note.ti2 = true		// the sound is generated
 				d += s.pdur / conf.speed * 1000
-				return note.tie_ty ? do_tie(s, b40, d) : d
+				return note.tie_ty ? do_tie(s, midi, d) : d
 			}
 		}
 
@@ -252,7 +252,7 @@ function Midi5(i_conf) {
 						note.midi,
 						t,
 						note.tie_ty ?
-							do_tie(s, note.b40, d) : d)
+							do_tie(s, note.midi, d) : d)
 				}
 				// fall thru
 			case C.REST:
