@@ -215,20 +215,9 @@ function dom_loaded() {
 	// function called on click in the music:
 	//	start / stop playing
 	abc2svg.playseq = function(evt) {
-	    var	e, i,
+	    var	e, i, s,
 		tunes = abc.tunes,	// list of the tunes created by the core
 		svg = evt.target
-
-		// search if click in a SVG image
-		while (svg.tagName != 'svg') {
-			svg = svg.parentNode
-			if (!svg)
-				return
-		}
-		i = svg.getAttribute('class').match(/abc(\d)/)
-		if (!i)
-			return
-		i = i[1] - 1			// tune number
 
 		// initialize the play object
 		if (!abcplay) {
@@ -243,8 +232,6 @@ function dom_loaded() {
 
 		// stop
 		if (playing) {
-//			if (scroll_to)		// if scrolling active
-//				abc2svg.st_scroll()
 			abcplay.stop()
 			return
 		}
@@ -261,11 +248,36 @@ function dom_loaded() {
 			}
 		}
 
-		playing = true
-//		if (document.documentElement.scrollHeight > window.innerHeight)
-//			scroll_to = setTimeout(do_scroll, 500, 0)	// scroll start
+		// search if click in a SVG image
+		e = svg				// keep the clicked element
+		while (svg.tagName != 'svg') {
+			svg = svg.parentNode
+			if (!svg)
+				return
+		}
+		i = svg.getAttribute('class').match(/abc(\d+)/)
+		if (!i || !Number(i[1]))
+			return
+		i = i[1] - 1			// tune number
+		s = tune_lst[i][0]		// first symbol of the tune
 
-		abcplay.play(tune_lst[i][0], null)
+		// check if click on a music symbol
+		// (this works when 'follow' is active)
+		i = e.getAttribute('class')
+		if (i)
+			i = i.match(/abcr _(\d+)_/)
+		if (i) {
+			i = i[1]		// symbol offset in the source
+			while (s && s.istart != i)
+				s = s.ts_next
+			if (!s) {		// fixme: error ?!
+				alert("play bug: no such symbol in the tune")
+				return
+			}
+		}
+
+		playing = true
+		abcplay.play(s, null)
 	} // playseq()
 
 	// function to load javascript files
