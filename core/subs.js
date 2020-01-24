@@ -390,7 +390,7 @@ function write_text(text, action) {
 			}
 			if (i == j) {			// new paragraph
 				vskip(parskip);
-				svg_flush()
+				blk_flush()
 				use_font(gene.curfont)
 				while (text[i + 1] == '\n') {
 					vskip(lineskip);
@@ -409,7 +409,7 @@ function write_text(text, action) {
 			j = i + 1
 		}
 		vskip(parskip);
-		svg_flush()
+		blk_flush()
 		break
 	case 'f':
 	case 'j':
@@ -447,7 +447,7 @@ function write_text(text, action) {
 				xy_str(0, 0, str, null, null, wh)
 			}
 			vskip(parskip);
-			svg_flush()
+			blk_flush()
 			if (i < 0)
 				break
 			while (text[i + 2] == '\n') {

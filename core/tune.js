@@ -1352,7 +1352,7 @@ Abc.prototype.do_begin_end = function(type,
 			s = new_block(type);
 			s.text = text
 		} else {
-			svg_flush();
+			blk_flush()
 			if (user.img_out)
 				user.img_out(text)
 		}

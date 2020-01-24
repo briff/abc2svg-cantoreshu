@@ -4445,11 +4445,11 @@ function block_gen(s) {
 	case "pagewidth":
 	case "scale":
 	case "staffwidth":
-		svg_flush();
+		blk_flush()
 		self.set_format(s.subtype, s.param)
 		break
 	case "ml":
-		svg_flush();
+		blk_flush()
 		user.img_out(s.text)
 		break
 	case "newpage":
