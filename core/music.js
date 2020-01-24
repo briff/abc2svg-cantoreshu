@@ -4454,8 +4454,7 @@ function block_gen(s) {
 		break
 	case "newpage":
 		blk_flush();
-		block.newpage = true;
-		blk_out()
+		blkdiv = 2		// start the next SVG in a new page
 		break
 	case "sep":
 		set_page();
@@ -4965,10 +4964,7 @@ Abc.prototype.output_music = function() {
 				block_gen(blocks.shift())
 		}
 
-		if (cfmt.splittune)
-			blk_flush()
-		else
-			svg_flush()
+		blk_flush()
 		if (tslast)
 			tslast.ts_next.ts_prev = tslast
 		if (!tsnext)

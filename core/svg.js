@@ -47,7 +47,11 @@ var	output = "",		// output buffer
 		g: 0
 //		color: undefined
 	},
-	block = {}		/* started & newpage */
+	blkdiv = 1		// block of contiguous SVGs
+				// -1: block started
+				//  0: no block
+				//  1: start a block
+				//  2: start a new page
 
 // glyphs in music font
 var tgls = {
@@ -1170,6 +1174,13 @@ function svg_flush() {
 	if (psvg)			// if PostScript support
 		psvg.ps_flush(true);	// + setg(0)
 
+	// start a block if needed
+	if (blkdiv > 0) {
+		user.img_out(blkdiv == 1 ?
+			'<div class="nobrk">' :
+			'<div class="nobrk newpage">')
+		blkdiv = -1		// block started
+	}
 	user.img_out(head + output + g + "</svg>");
 	output = ""
 
@@ -1187,28 +1198,12 @@ function svg_flush() {
 	posy = 0
 }
 
-// output a part of a block of images
-function blk_out() {
-	if (multicol || !user.img_out)
-		return
-	blk_flush()
-	if (user.page_format && !block.started) {
-		block.started = true
-		if (block.newpage) {
-			block.newpage = false;
-			user.img_out('<div class="nobrk newpage">')
-		} else {
-			user.img_out('<div class="nobrk">')
-		}
-	}
-}
-
-// output the end of a block (or tune)
+// mark the end of a <div> block
 function blk_flush() {
 	svg_flush()
-	if (block.started) {
-		block.started = false;
+	if (blkdiv < 0 && (!parse.state || cfmt.splittune)) {
 		user.img_out('</div>')
+		blkdiv = 0
 	}
 }
 Abc.prototype.blk_flush = blk_flush

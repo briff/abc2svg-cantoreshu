@@ -1327,8 +1327,8 @@ Abc.prototype.do_pscom = function(text) {
 			return
 		}
 		if (cmd == "newpage") {
-			block.newpage = true
-			blk_out()
+			blk_flush()
+			blkdiv = 2	// start the next SVG in a new page
 			return
 		}
 		break

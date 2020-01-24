@@ -258,8 +258,8 @@ function tosvg(in_fname,		// file name
 		if (info.W)
 			put_words(info.W);
 		put_history();
-		blk_flush();
-		parse.state = 0;		// file header
+		parse.state = 0		// file header
+		blk_flush()		// (force end of block)
 		cfmt = sav.cfmt;
 		info = sav.info;
 		char_tb = sav.char_tb;
@@ -624,7 +624,8 @@ function tosvg(in_fname,		// file name
 			sav.maci = clone(maci);
 			info.X = text;
 			parse.state = 1			// tune header
-			blk_out()		// the tune starts by the next SVG
+			if (blkdiv < 1)		// (if no newpage)
+				blkdiv = 1	// the tune starts by the next SVG
 			if (parse.tune_opts)
 				tune_filter()
 			continue
