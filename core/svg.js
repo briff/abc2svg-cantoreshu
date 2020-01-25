@@ -1,6 +1,6 @@
 // abc2svg - svg.js - svg functions
 //
-// Copyright (C) 2014-2019 Jean-Francois Moine
+// Copyright (C) 2014-2020 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -25,8 +25,7 @@ var	output = "",		// output buffer
 \n.bthW{stroke:currentColor;fill:none;stroke-width:3}\
 \n.slW{stroke:currentColor;fill:none;stroke-width:.7}\
 \n.slthW{stroke:currentColor;fill:none;stroke-width:1.5}\
-\n.sW{stroke:currentColor;fill:none;stroke-width:.7}\
-\n.mtx{font:130% music}',
+\n.sW{stroke:currentColor;fill:none;stroke-width:.7}',
 	font_style = '',
 	posx = cfmt.leftmargin / cfmt.scale,	// default x offset of the images
 	posy = 0,		// y offset in the block
@@ -1034,7 +1033,9 @@ function tempo_build(s) {
 		dy = ' dy="-.05em"'			// notes a bit higher
 		for (i = 0; i < s.tempo_notes.length; i++) {
 			p = tempo_note(s, s.tempo_notes[i])
-			str.push('<tspan\n\tclass="mtx"' + dy + '>' +
+			str.push('<tspan\nclass="mtx" style="font-size:' +
+				(gene.curfont.size * 1.3).toFixed(1) + '"' +
+				dy + '>' +
 				p + '</tspan>')
 			j = p.length > 1 ? 2 : 1	// (note and optional dot)
 			w += j * gene.curfont.swfac
@@ -1052,7 +1053,9 @@ function tempo_build(s) {
 			w += strwh(s.tempo.toString())[0]
 		} else {			// with a beat as a note
 			p = tempo_note(s, s.new_beat)
-			str.push('<tspan\n\tclass="mtx" dy="-.05em">' +
+			str.push('<tspan\nclass="mtx" style="font-size:' +
+				(gene.curfont.size * 1.3).toFixed(1) +
+				'" dy="-.05em">' +
 				p + '</tspan>')
 			j = p.length > 1 ? 2 : 1
 			w += j * gene.curfont.swfac
@@ -1117,7 +1120,9 @@ function svg_flush() {
 	if (multicol || !output || !user.img_out || posy == 0)
 		return
 
-    var	head = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"\n\
+    var	i,
+	mtx = 'music',		// music text font
+	head = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"\n\
 	xmlns:xlink="http://www.w3.org/1999/xlink"\n\
 	color="',
 	g = ''
@@ -1147,15 +1152,17 @@ function svg_flush() {
 		head += '<style type="text/css">' + style + font_style
 		if (musicfont) {
 			if (musicfont.indexOf('(') > 0) {
-				head += '\nsvg{font:24px music}\n\
-@font-face {\n\
+				head += '\nsvg{font:24px music}\
+\n@font-face {\n\
   font-family:"music";\n\
-  src:' + musicfont + '}';
+  src:' + musicfont + '}'
 			} else {
-				head += '\nsvg{font:24px '+ musicfont +'}'
+				head += '\nsvg{font:24px ' + musicfont + '}'
+				mtx = musicfont
 			}
 		}
-		head += '\n</style>\n'
+		head += '\n.mtx{font-family:' + mtx + '}\
+\n</style>\n'
 	}
 	defs += fulldefs
 	if (defs)
@@ -1187,7 +1194,7 @@ function svg_flush() {
 	font_style = ''
 	if (cfmt.fullsvg) {
 		defined_glyph = {}
-		for (var i = 0; i < font_tb.length; i++)
+		for (i = 0; i < font_tb.length; i++)
 			font_tb[i].used = false
 	} else {
 		musicfont = '';
