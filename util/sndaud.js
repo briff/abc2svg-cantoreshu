@@ -388,6 +388,8 @@ function Audio5(i_conf) {
 						stime += (s.ptim - s.rep_p.ptim) /
 								conf.speed
 						s = s.rep_p	// left repeat
+						while (s.ts_next && !s.ts_next.seqst)
+							s = s.ts_next
 						t = stime + s.ptim / conf.speed
 						repn = true
 						break
