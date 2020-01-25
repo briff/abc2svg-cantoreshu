@@ -167,14 +167,21 @@ function Midi5(i_conf) {
 	// generate 2 seconds of music
 	function play_next() {
 	    var	d, i, st, m, note, g, s2,
-		s = s_cur,
-		t = stime + s.ptim / conf.speed * 1000,	// start time
-		maxt = t + 2000			// max time = now + 2 seconds
+		s = s_cur
 
 		if (stop) {
 			onend(repv)
 			return
 		}
+
+		while (s.noplay) {
+			s = s.ts_next
+			if (!s || s == s_end) {
+				onend(repv)
+				return
+			}
+		}
+		t = stime + s.ptim / conf.speed * 1000	// start time
 
 		// if speed change, shift the start time
 		if (conf.new_speed) {
@@ -186,6 +193,7 @@ function Midi5(i_conf) {
 			t = stime + s.ptim / conf.speed * 1000
 		}
 
+		maxt = t + 2000			// max time = now + 2 seconds
 		timouts = []
 		while (1) {
 			switch (s.type) {
@@ -197,6 +205,8 @@ function Midi5(i_conf) {
 						stime += (s.ptim - s.rep_p.ptim) /
 								conf.speed * 1000
 						s = s.rep_p	// left repeat
+						while (s.ts_next && !s.ts_next.seqst)
+							s = s.ts_next
 						t = stime + s.ptim / conf.speed * 1000
 						repn = true
 						break
@@ -216,7 +226,7 @@ function Midi5(i_conf) {
 						break
 					}
 				}
-				while (s.ts_next && s.ts_next.type == C.BAR)
+				while (s.ts_next && !s.ts_next.seqst)
 					s = s.ts_next
 				break
 			case C.BLOCK:
@@ -236,7 +246,7 @@ function Midi5(i_conf) {
 						note = g.notes[m]
 						note_run(g,
 							note.midi,
-							t,
+							t + g.ptim - s.ptim,
 //fixme: there may be a tie...
 							d)
 					}
@@ -265,14 +275,18 @@ function Midi5(i_conf) {
 				setTimeout(onnote, st + d, i, false)
 				break
 			}
-			if (s == s_end || !s.ts_next) {
-				setTimeout(onend,
-					t - window.performance.now() + d,
-					repv)
-				s_cur = s
-				return
+			while (1) {
+				if (s == s_end || !s.ts_next) {
+					setTimeout(onend,
+						t - window.performance.now() + d,
+						repv)
+					s_cur = s
+					return
+				}
+				s = s.ts_next
+				if (!s.noplay)
+					break
 			}
-			s = s.ts_next
 			t = stime + s.ptim / conf.speed * 1000 // next time
 			if (t > maxt)
 				break
