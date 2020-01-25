@@ -1,8 +1,18 @@
 #!/bin/sh
 #
 # abctopdf - converts ABC to PDF using abc2svg
+# and one of
+#	- a chrome/chromium compatible web browser
+#	- weasyprint (https://weasyprint.org/)
+#	- rsvg-convert (https://wiki.gnome.org/Projects/LibRsvg)
 #
-# Copyright (C) 2019 Jean-François Moine - License GPL3+
+# Note: when weasyprint or rsvg-convert are used,
+#	this script forces A4 as the paper size.
+#	For an other size, change
+#		'size: A4' and '--pageheight 29.7cm' with weasyprint
+#		'%%pageheight 29.7cm' with rsvg-convert
+#
+# Copyright (C) 2019-2020 Jean-François Moine - License GPL3+
 
 if [ $# -eq 0 ]; then
 	cat << EOF
@@ -75,7 +85,6 @@ for a do
 done
 
 # check if some chromium-based browser is available
-# test rsvg-convert
 for c in chromium-browser vivaldi opera brave-browser epic google-chrome; do
 	if command -v $c >/dev/null 2>&1; then
 		echo "and $c"
@@ -86,6 +95,59 @@ for c in chromium-browser vivaldi opera brave-browser epic google-chrome; do
 	fi
 done
 
+# try weasyprint
+if command -v weasyprint >/dev/null 2>&1; then
+	echo "and weasyprint"
+
+	rm -f /tmp/abc*.svg
+
+# generate a (XHTML+SVG) file
+# then, extract the SVG images (pages) to /tmp/ and build a file.html
+	cat > /tmp/abc.html <<EOF
+<html> <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<style type="text/css">
+@page {
+ size: A4;
+ margin: 0;
+}
+</style>
+</head>
+<body>
+EOF
+n=0
+command $abcscr --pageheight 29.7cm --fullsvg 1 --musicfont abc2svg "$@" | while read v; do
+	case "$v" in
+	"<svg"*)
+		n=$(($n+1))
+		fn="/tmp/abc$n.svg"
+		echo $v > $fn
+		echo "<img src=\"/tmp/abc${n}.svg\"/>" >> /tmp/abc.html
+		;;
+	"</svg"*)
+		echo $v >> $fn
+		fn=
+		;;
+	"</body"*)
+		break;;
+	*)
+		if [ "X$fn" != "X" ]; then
+			echo $v >> $fn
+		else
+			echo $v >> /tmp/abc.html
+		fi
+		;;
+	esac
+done
+	echo '</body></html>' >> /tmp/abc.html
+
+echo weasyprint -f pdf /tmp/abc.html $out
+	weasyprint -f pdf /tmp/abc.html $out
+	rm -f /tmp/abc*.svg /tmp/abc.html
+	exit 0
+fi
+
+# last chance with rsvg-convert
 # check the required programs
 if ! command -v rsvg-convert >/dev/null 2>&1; then
 	echo "$0: program 'rsvg-convert' not found - abort"
