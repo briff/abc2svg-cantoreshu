@@ -122,6 +122,7 @@ var strwh = typeof document != "undefined" ?
 			}
 			el.innerHTML = str.slice(i0, i);
 			w += el.clientWidth
+//fixme: bad result if space(s) at end of string
 			if (font.size > h)
 				h = font.size;
 
@@ -424,7 +425,7 @@ function write_text(text, action) {
 			w = k = 0
 			font = gene.curfont
 			for (j = 0; j < words.length; j++) {
-				ww = strwh(words[j] + ' ')[0];
+				ww = strwh(words[j])[0];
 				w += ww
 				if (w >= strlw) {
 					str = words.slice(k, j).join(' ');
@@ -437,8 +438,9 @@ function write_text(text, action) {
 					k = j;
 					w = ww
 				}
+				w += cwidf(' ')
 			}
-			if (w != 0) {
+			if (w != 0) {			// last line
 				str = words.slice(k).join(' ');
 				gene.curfont = font;
 				wh = strwh(str);
