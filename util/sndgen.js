@@ -1,6 +1,6 @@
 // sndgen.js - sound generation
 //
-// Copyright (C) 2019 Jean-Francois Moine
+// Copyright (C) 2019-2020 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -84,6 +84,23 @@ function ToAudio() {
 		}
 	} // gen_grace()
 
+	function set_variant(rsk, n, s) {
+	    var	d
+		n = n.match(/[1-8]-[2-9]|[1-9,.]|[^\s]+$/g)
+		while (1) {
+			d = n.shift()
+			if (!d)
+				break
+			if (d[1] == '-')
+				for (i = d[0]; i <= d[2]; i++)
+					rsk.rep_s[i] = s
+			else if (d >= '1' && d <= '9')
+				rsk.rep_s[Number(d)] = s
+			else
+				rsk.rep_s.push(s)
+		}
+	} // set_variant()
+
 	// add() main
 
 	// set the MIDI pitches
@@ -132,21 +149,9 @@ function ToAudio() {
 				if (rsk) {		// if in a variant
 					if (!n)
 						n = "a"		// last time
-					n = n.match(/[1-8]-[2-9]|[1-9,.]|[^\s]+$/g)
-					while (1) {
-						d = n.shift()
-						if (!d)
-							break
-						if (d[1] == '-')
-							for (i = d[0]; i <= d[2]; i++)
-								rsk.rep_s[i] = s
-						else if (d >= '1' && d <= '9')
-							rsk.rep_s[Number(d)] = s
-						else
-							rsk.rep_s.push(s)
-					}
+					set_variant(rsk, n, s)
 					play_fac = rst_fac
-				    break
+					break
 				}
 			}
 
@@ -158,7 +163,8 @@ function ToAudio() {
 			// 1st time repeat
 			} else if (s.text && s.text[0] == '1') {
 				rsk = s
-				s.rep_s = [null, s]	// repeat skip
+				s.rep_s = [null]	// repeat skip
+				set_variant(rsk, s.text, s)
 			}
 			while (s.ts_next && !s.ts_next.seqst) {
 				s = s.ts_next
