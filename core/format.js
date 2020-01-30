@@ -1,6 +1,6 @@
 // abc2svg - format.js - formatting functions
 //
-// Copyright (C) 2014-2019 Jean-Francois Moine
+// Copyright (C) 2014-2020 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -205,10 +205,8 @@ function param_set_font(xxxfont, p) {
 	// the font size is the last item
 	a = p.match(/\s+([0-9.]+|\*)$/)
 	if (a) {
-		if (a[1] != "*") {
+		if (a[1] != "*")
 			font.size = Number(a[1])
-			font.swfac = 0
-		}
 		p = p.replace(a[0], "")
 	}
 
@@ -233,6 +231,10 @@ function param_set_font(xxxfont, p) {
 		font.style = "oblique"
 		p = p.replace(a[0], '')
 	}
+	if (font.size)
+		set_font_fac(font)
+	else
+		font.swfac = 0
 	switch (p) {
 	case "":
 	case "*": return
@@ -241,7 +243,14 @@ function param_set_font(xxxfont, p) {
 	case "Helvetica": p = "sans-serif"; break
 	case "Courier": p = "monospace"; break
 	}
-	font.swfac = 0
+
+	// accept url(...) as the font name
+	if (p[3] == '(') {
+		font.src = p
+		font.fid = font_tb.length
+		font_tb.push(font)
+		p = 'ft' + font.fid
+	}
 	font.name = p
 }
 
@@ -672,14 +681,18 @@ function font_class(font) {
 function use_font(font) {
 	if (!font.used) {
 		font.used = true;
-		if (font.fid == undefined) {
-			font.fid = font_tb.length;
+		if (font.fid == undefined) {	// if default font
+			font.fid = font_tb.length
 			font_tb.push(font)
 			if (!font.swfac)
 				set_font_fac(font)
 		}
 		font_style += "\n.f" + font.fid + cfmt.fullsvg +
-			" {" + style_font(font) + "}"
+			"{" + style_font(font) + "}"
+		if (font.src)
+			font_style += "\n@font-face{\n\
+ font-family:" + font.name + ";\n\
+ src:" + font.src + "}"
 	}
 }
 
@@ -717,7 +730,7 @@ function get_font(fn) {
 		fid = font_st[st]
 		if (fid != undefined)
 			return font_tb[fid]
-		font_st[st] = font_tb.length
+		font_st[st] = font_tb.length	// will be the font id
 		font2.fid = font2.used = undefined
 		font = font2
 	}
