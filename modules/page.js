@@ -222,7 +222,7 @@ abc2svg.page = {
     // start a new page
     open_page: function(page,
 			ht) {	// spacing under the header
-    var	h, o_font,
+    var	h, l,
 //	font_style,
 	abc = page.abc,
 	cfmt = abc.cfmt(),
@@ -250,14 +250,22 @@ abc2svg.page = {
 	// define the header/footer
 	page.hf = ''
 	if (page.header) {
+		l = abc.get_font_style().length
 		h = abc2svg.page.gen_hf(page, true,
 					abc.get_font("header"), page.header)
+		sty = abc.get_font_style().slice(l)
+		if (cfmt.fullsvg || sty != page.hsty) {
+			page.hsty = sty
+			sty = '<style type="text/css">' + sty + '\n</style>\n'
+		} else {
+			sty = ''
+		}
 		abc2svg.page.img_out(page,
 			'<svg xmlns="http://www.w3.org/2000/svg" version="1.1"\n\
 	xmlns:xlink="http://www.w3.org/1999/xlink"\n\
 	width="' + cfmt.pagewidth.toFixed(0) +
 			'px" height="' + (ht + h).toFixed(0) +
-			'px">\n' +
+			'px">\n' + sty +
 			'<g transform="translate(0,' +
 				page.topmargin.toFixed(1) + ')">' +
 				page.hf + '</g>\n</svg>')
@@ -272,8 +280,16 @@ abc2svg.page = {
 			'px">\n</svg>')
 	}
 	if (page.footer) {
+		l = abc.get_font_style().length
 		page.fh = abc2svg.page.gen_hf(page, false,
 					abc.get_font("footer"), page.footer)
+		sty = abc.get_font_style().slice(l)
+		if (cfmt.fullsvg || sty != page.fsty) {
+			page.fsty = sty
+			page.ffsty = '<style type="text/css">' + sty + '\n</style>\n'
+		} else {
+			page.ffsty = ''
+		}
 		page.hmax -= page.fh
 	}
 
@@ -292,7 +308,8 @@ abc2svg.page = {
 	xmlns:xlink="http://www.w3.org/1999/xlink"\n\
 	width="' + cfmt.pagewidth.toFixed(0) +
 			'px" height="' + h.toFixed(0) +
-			'px">\n<g transform="translate(0,' +
+			'px">\n' + page.ffsty +
+			'<g transform="translate(0,' +
 				(h - page.fh).toFixed(1) + ')">' +
 			page.hf + '</g>\n</svg>')
 	}
