@@ -120,12 +120,18 @@ function dom_loaded() {
 		},
 
 		img_out: function(str) {	// image output
-			if (str.slice(0, 4) == "<svg")
-				new_page += '<svg class="abc' +
+			if (str.slice(0, 4) == "<svg") {
+				if (/^[^>]+class=/.test(str))
+				    new_page += str.replace('class="',
+						'class="abc' +
+							abc.tunes.length + ' ')
+				else
+				    new_page += '<svg class="abc' +
 					abc.tunes.length + '"' +
 					str.slice(4)
-			else
+			} else {
 				new_page += str
+			}
 		},
 
 		page_format: true		// define the non-page-breakable blocks

@@ -1072,9 +1072,6 @@ Abc.prototype.do_pscom = function(text) {
 			break
 		}
 		return
-	case "musicfont":
-		musicfont = param
-		return
 	case "ottava":
 		if (parse.state != 3) {
 			if (parse.state != 2)
