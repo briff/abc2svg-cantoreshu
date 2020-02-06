@@ -1,6 +1,6 @@
 // abc2svg - parse.js - ABC parse
 //
-// Copyright (C) 2014-2019 Jean-Francois Moine
+// Copyright (C) 2014-2020 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -1048,6 +1048,8 @@ function do_info(info_type, text) {
 		break
 	case 'V':
 		get_voice(text)
+		if (parse.state == 3)
+			curvoice.ignore = !par_sy.voices[curvoice.v]
 		break
 
 	// key signature at end of tune header or in tune body
@@ -2431,6 +2433,22 @@ function parse_music_line() {
 			c = line.char()
 			if (!c)
 				break
+
+			// skip definitions if the current voice is ignored
+			if (curvoice.ignore) {
+				while (1) {
+					while (c && c != '[')
+						c = line.next_char()
+					if (!c)
+						break
+					if (c == 'V'
+					 && line.buffer[line.index + 1] == ':')
+						break	// [V:nn] found
+					c = line.next_char()
+				}
+				if (!c)
+					break
+			}
 
 			// special case for '.' (dot)
 			if (c == '.') {

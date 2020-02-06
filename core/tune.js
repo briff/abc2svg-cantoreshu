@@ -59,7 +59,6 @@ function voice_filter() {
 function sym_link(s) {
 	if (!s.fname)
 		set_ref(s)
-	if (!curvoice.ignore) {
 		parse.last_sym = s;
 		s.prev = curvoice.last_sym
 		if (curvoice.last_sym)
@@ -67,7 +66,6 @@ function sym_link(s) {
 		else
 			curvoice.sym = s;
 		curvoice.last_sym = s
-	}
 	s.v = curvoice.v;
 	s.p_v = curvoice;
 	s.st = curvoice.cst;
@@ -401,8 +399,6 @@ function voice_adj(sys_chg) {
 				}
 			}
 		}
-		if (p_voice.ignore)
-			p_voice.ignore = false
 		for (s = p_voice.sym; s; s = s.next) {
 			if (s.time >= staves_found)
 				break
@@ -1706,10 +1702,8 @@ function get_staves(cmd, parm) {
 
 	for (v = 0; v < voice_tb.length; v++) {
 		p_voice = voice_tb[v]
-		if (!par_sy.voices[v]) {
-			p_voice.ignore = true
+		if (!par_sy.voices[v])
 			continue
-		}
 		par_sy.voices[v].second = p_voice.second;
 		st = p_voice.st
 		if (st > 0 && !p_voice.norepbra
@@ -1757,8 +1751,6 @@ function get_vover(type) {
 	line = parse.line
 
 	/* treat the end of overlay */
-	if (curvoice.ignore)
-		return
 	if (type == '|'
 	 || type == ')')  {
 		if (!curvoice.last_note) {
@@ -2140,17 +2132,10 @@ function get_voice(parm) {
 				staffscale: 1
 			}
 		}
-	
-		if (!par_sy.voices[v]) {
-//			if (cfmt.alignbars)
-//				syntax(1, "V: does not work with %%alignbars")
-			if (staves_found >= 0)
-				curvoice.ignore = true
-		}
 	}
 
 	if (!curvoice.filtered
-	 && !curvoice.ignore
+	 && par_sy.voices[v]
 	 && (parse.voice_opts
 	  || parse.tune_v_opts)) {
 		curvoice.filtered = true;
