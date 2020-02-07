@@ -11,6 +11,8 @@
 //
 // The header of the tune list ("Tunes:") may be set in a global
 // javascript variable 'list_head'.
+// The tail of the tune list ("(all tunes)") may be set in a global
+// javascript variable 'list_tail'.
 //
 // Copyright (C) 2019-2020 Jean-Francois Moine
 //
@@ -83,7 +85,7 @@ function dom_loaded() {
 		    (function() {
 		     var s_a = document.getElementsByTagName('script')
 			for (var k = 0; k < s_a.length; k++) {
-				if (s_a[k].src.indexOf('abcweb1-') >= 0)
+				if (s_a[k].src.indexOf(app) >= 0)
 					return s_a[k].src.match(/.*\//) || ''
 			}
 			return ""	// ??
@@ -308,25 +310,27 @@ function dom_loaded() {
 		n = 0,
 		i = 0,
 		t = (typeof list_head == "undefined" ? "Tunes:" : list_head) + '<ul>\n'
+		tt = typeof list_tail == "undefined" ? "(all tunes)" : list_tail
 
 		for (;;) {
 			i = page.indexOf("\nX:", i)
 			if (i < 0)
 				break
-			j = page.indexOf("\nT:", ++i)
-			if (j < 0)
-				break
+			k = page.indexOf("\n", ++i)
+			j = page.indexOf("\nT:", i)
 			n++
 			t += '<li><a \
 style="cursor:pointer;color:blue;text-decoration:underline" \
-onclick="abc2svg.do_render(\'' + page.slice(i, j) + '\')">'
-			k = page.indexOf("\n", j + 1)
-			t += page.slice(j + 3, k)
-			if (page[k + 1] == 'T' && page[k + 2] == ':') {
-				j = k + 3
-				k = page.indexOf("\n", j)
-				if (k > 0)
-					t += " - " + page.slice(j, k)
+onclick="abc2svg.do_render(\'' + page.slice(i, k) + '$\')">' +
+				page.slice(i + 2, k).replace(/%.*/,'')
+			if (j > 0 && j < i + 20) {
+				k = page.indexOf("\n", j + 1)
+				t += " " + page.slice(j + 3, k).replace(/%.*/,'')
+				if (page[k + 1] == 'T' && page[k + 2] == ':') {
+					j = k + 3
+					k = page.indexOf("\n", j)
+					t += " - " + page.slice(j, k).replace(/%.*/,'')
+				}
 			}
 			t += '</a></li>\n'
 			i = k
@@ -335,10 +339,14 @@ onclick="abc2svg.do_render(\'' + page.slice(i, j) + '\')">'
 			abc2svg.do_render()
 			return
 		}
-
-		t += '</ul>'
+		t += '<li><a \
+style="cursor:pointer;color:blue;text-decoration:underline" \
+onclick="abc2svg.do_render(\'.*\')">' + tt + '</li>\n\
+</ul>'
 
 		document.body.innerHTML = t
+		if (window.location.hash)
+			window.location.hash = ''
 	} // get_sel()
 
 	// search/ask the tune to be rendered
@@ -383,6 +391,7 @@ onclick="abc2svg.do_render(\'' + page.slice(i, j) + '\')">'
 
 		if (select) {
 			abc.tosvg(app, "%%select " + select)
+			window.location.hash = encodeURIComponent(select)
 		}
 		try {
 			abc.tosvg(app, page)
