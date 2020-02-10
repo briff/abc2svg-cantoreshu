@@ -1,6 +1,6 @@
 // abc2svg - draw.js - draw functions
 //
-// Copyright (C) 2014-2019 Jean-Francois Moine
+// Copyright (C) 2014-2020 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -3658,9 +3658,6 @@ Abc.prototype.draw_symbols = function(p_voice) {
 		}
 	}
 	set_scale(p_voice.sym);
-	draw_all_ties(p_voice);
-// no need to reset the scale as in abcm2ps
-	set_color()
 }
 
 /* -- draw all symbols -- */
@@ -3671,8 +3668,12 @@ function draw_all_sym() {
 	for (v = 0; v < n; v++) {
 		p_voice = voice_tb[v]
 		if (p_voice.sym
-		 && p_voice.sym.x != undefined)
+		 && p_voice.sym.x != undefined) {
 			self.draw_symbols(p_voice)
+			draw_all_ties(p_voice);
+// no need to reset the scale as in abcm2ps
+			set_color()
+		}
 	}
 
 	draw_all_deco();
