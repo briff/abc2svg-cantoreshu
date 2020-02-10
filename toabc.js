@@ -1,6 +1,6 @@
 // abc2svg - toabc.js - convert ABC to ABC
 //
-// Copyright (C) 2016-2019 Jean-Francois Moine
+// Copyright (C) 2016-2020 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -56,6 +56,11 @@
 		[1, "mix"],
 		[3, "m"],
 		[5, "loc"]
+	],
+	k_tb = [			// key names
+		"Cb", "Gb", "Db", "Ab", "Eb", "Bb", "F",
+		"C",
+		"G", "D", "A", "E", "B", "F#", "C#", "G#", "D#", "A#"
 	]
 
 function abc_dump(tsfirst, voice_tb, music_types, info) {
@@ -250,7 +255,8 @@ break
 			if (k.slice(-4) != "font")
 				continue
 			f = cfmt[k]
-			if (f.fid == undefined)
+//			if (f.fid == undefined)
+			if (!f.used)
 				continue	// not used
 			if (old_font[f.fid])
 				continue	// already out
@@ -325,23 +331,7 @@ break
 			ln = "K:none"
 		} else {
 			ln = "K:"
-			switch (s.k_sf + mode_tb[s.k_mode][0]) {
-			case -7: ln += 'Cb'; break
-			case -6: ln += 'Gb'; break
-			case -5: ln += 'Db'; break
-			case -4: ln += 'Ab'; break
-			case -3: ln += 'Eb'; break
-			case -2: ln += 'Bb'; break
-			case -1: ln += 'F'; break
-			case 1: ln += 'G'; break
-			case 2: ln += 'D'; break
-			case 3: ln += 'A'; break
-			case 4: ln += 'E'; break
-			case 5: ln += 'B'; break
-			case 6: ln += 'F#'; break
-			case 7: ln += 'C#'; break
-			default: ln += 'C'; break
-			}
+			ln += k_tb[s.k_sf + 7 + mode_tb[s.k_mode][0]]
 			ln += mode_tb[s.k_mode][1]
 		}
 
