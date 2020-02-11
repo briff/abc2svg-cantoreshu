@@ -253,7 +253,7 @@ abc2svg.page = {
 		l = abc.get_font_style().length
 		h = abc2svg.page.gen_hf(page, true,
 					abc.get_font("header"), page.header)
-		sty = abc.get_font_style().slice(l)
+		sty = abc.get_font_style().slice(l)		// new style(s)
 		if (cfmt.fullsvg || sty != page.hsty) {
 			page.hsty = sty
 			sty = '<style type="text/css">' + sty + '\n</style>\n'
@@ -283,7 +283,7 @@ abc2svg.page = {
 		l = abc.get_font_style().length
 		page.fh = abc2svg.page.gen_hf(page, false,
 					abc.get_font("footer"), page.footer)
-		sty = abc.get_font_style().slice(l)
+		sty = abc.get_font_style().slice(l)		// new style(s)
 		if (cfmt.fullsvg || sty != page.fsty) {
 			page.fsty = sty
 			page.ffsty = '<style type="text/css">' + sty + '\n</style>\n'
@@ -344,7 +344,7 @@ abc2svg.page = {
 		break
 	case "<svg":				// SVG image
 		h = Number(p.match(/height="(\d+)px"/)[1])
-		if (h + page.h >= page.hmax) {	// if page overflow
+		while (h + page.h >= page.hmax) { // if (still) page overflow
 			ht = page.blk ? 0 :
 				this.cfmt().topspace // tune continuation
 
