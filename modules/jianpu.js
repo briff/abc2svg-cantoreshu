@@ -292,6 +292,8 @@ abc2svg.jianpu = {
 	// -- draw_symbols --
 
 	for (s = p_voice.sym; s; s = s.next) {
+		if (s.invis)
+			continue
 		switch (s.type) {
 		case C.NOTE:
 		case C.REST:
