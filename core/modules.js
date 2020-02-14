@@ -27,6 +27,7 @@ if (!abc2svg.loadjs) {
 
 abc2svg.modules = {
 		ambitus: { fn: 'ambitus-1.js' },
+	begingrid: { fn: 'grid3-1.js' },
 		beginps: { fn: 'psvg-1.js' },
 		break: { fn: 'break-1.js' },
 		capo: { fn: 'capo-1.js' },
@@ -75,7 +76,7 @@ abc2svg.modules = {
 				abc2svg.modules.cbf()
 		}
 		function load_ko(fn) {
-			abc2svg.modules.errmsg('Error loading the module $1', fn)
+			abc2svg.modules.errmsg('Error loading the module ' + fn)
 			load_end()
 		}
 

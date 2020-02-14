@@ -23,6 +23,7 @@ cp modules/diag.js diag-$MAJOR.js
 cp modules/equalbars.js equalbars-$MAJOR.js
 cp modules/grid.js grid-$MAJOR.js
 cp modules/grid2.js grid2-$MAJOR.js
+cp modules/grid3.js grid3-$MAJOR.js
 cp modules/jianpu.js jianpu-$MAJOR.js
 cp modules/MIDI.js MIDI-$MAJOR.js
 cat modules/page.js modules/strftime.js > page-$MAJOR.js
