@@ -334,6 +334,7 @@ abc2svg.jianpu = {
 		cfmt.staffsep = 20
 		cfmt.sysstaffsep = 14
 		this.set_v_param("stafflines", "...")
+		cfmt.tuplets = [0, 1, 0, 1]	// [auto, slur, number, above]
 		return
 	}
 	of(cmd, param)
