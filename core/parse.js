@@ -1014,13 +1014,13 @@ function do_info(info_type, text) {
 		}
 		if (parse.state == 2)
 			goto_tune()
-		if (cfmt.writefields.indexOf(info_type) < 0)
-			break
 		s = {
 			type: C.PART,
 			text: text,
 			dur: 0
 		}
+		if (cfmt.writefields.indexOf(info_type) < 0)
+			s.invis = true
 
 		/*
 		 * If not in the main voice, then,

@@ -1790,7 +1790,7 @@ function draw_partempo(st, top) {
 /*fixme: should reduce vertical space if parts don't overlap tempo...*/
 	ymin = staff_tb[st].topbar + 6
 	for (s = tsfirst; s; s = s.ts_next) {
-		if (s.type != C.PART)
+		if (s.type != C.PART || s.invis)
 			continue
 		if (!some_part) {
 			some_part = s;
@@ -1811,7 +1811,7 @@ function draw_partempo(st, top) {
 			dy = ymin + h + ht - top
 
 		for (s = some_part; s; s = s.ts_next) {
-			if (s.type != C.PART)
+			if (s.type != C.PART || s.invis)
 				continue
 			s.x -= 10;
 			if (user.anno_start || user.anno_stop) {
