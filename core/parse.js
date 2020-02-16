@@ -260,6 +260,8 @@ function new_block(subtype) {
 
 	if (parse.state == 2)
 		goto_tune()
+	if (subtype.slice(0, 4) != "midi")	// if not a play command
+		curvoice = voice_tb[0]		// set the block in the first voice
 	sym_link(s)
 	return s
 }

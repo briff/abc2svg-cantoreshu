@@ -1,6 +1,6 @@
 // abc2svg - mei.js - MEI front-end
 //
-// Copyright (C) 2019 Jean-Francois Moine
+// Copyright (C) 2019-2020 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -800,7 +800,7 @@ return true
 	pb: function(tag) {
 	    var	s
 //fixme: tag.n (page number)
-		if (parse.state == 3) {
+		if (parse.state >= 2) {
 			s = new_block("newpage")
 			s.param = tag.n || ""
 		} else {
