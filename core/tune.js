@@ -1023,11 +1023,12 @@ Abc.prototype.do_pscom = function(text) {
 		}
 		break
 	case "multicol":
-		generate(1)
 		if (parse.state >= 2) {
 			if (parse.state == 2)
 				goto_tune()
 			curvoice = voice_tb[0]
+			s = new_block("mc_" + param)
+			break
 		}
 		switch (param) {
 		case "start":

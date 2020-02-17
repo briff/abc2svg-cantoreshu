@@ -4448,6 +4448,41 @@ function block_gen(s) {
 		blk_flush()
 		self.set_format(s.subtype, s.param)
 		break
+	case "mc_start":		// multicol start
+		multicol = {
+			posy: posy,
+			maxy: posy,
+			lmarg: cfmt.leftmargin,
+			rmarg: cfmt.rightmargin
+		}
+		break
+	case "mc_new":			// multicol new
+		if (!multicol) {
+			error(1, s, "%%multicol new without start")
+			break
+		}
+		if (posy > multicol.maxy)
+			multicol.maxy = posy
+		cfmt.leftmargin = multicol.lmarg
+		cfmt.rightmargin = multicol.rmarg
+		img.chg = true
+		set_page()
+		posy = multicol.posy
+		break
+	case "mc_end":			// multicol end
+		if (!multicol) {
+			error(1, s, "%%multicol new without start")
+			break
+		}
+		if (posy < multicol.maxy)
+			posy = multicol.maxy
+		cfmt.leftmargin = multicol.lmarg
+		cfmt.rightmargin = multicol.rmarg
+		multicol = undefined
+		blk_flush()
+		img.chg = true
+		set_page()
+		break
 	case "ml":
 		blk_flush()
 		user.img_out(s.text)
