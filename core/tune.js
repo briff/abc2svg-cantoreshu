@@ -1033,11 +1033,9 @@ Abc.prototype.do_pscom = function(text) {
 		switch (param) {
 		case "start":
 			multicol = {
-				posy: posy,
-				maxy: posy,
+				maxy: 0,
 				lmarg: cfmt.leftmargin,
-				rmarg: cfmt.rightmargin,
-				state: parse.state
+				rmarg: cfmt.rightmargin
 			}
 			break
 		case "new":
@@ -1051,7 +1049,7 @@ Abc.prototype.do_pscom = function(text) {
 			cfmt.rightmargin = multicol.rmarg;
 			img.chg = true;
 			set_page();
-			posy = multicol.posy
+			posy = 0
 			break
 		case "end":
 			if (!multicol) {
