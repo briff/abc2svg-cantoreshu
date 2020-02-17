@@ -486,7 +486,7 @@ function new_key(param) {
 	mode = 0,
 	s = {
 		type: C.KEY,
-		dur:0
+		dur: 0
 	}
 
 	// set the accidentals when K: with modified accidentals
@@ -583,6 +583,7 @@ function new_key(param) {
 		}
 		// fall thru
 	default:
+		s.k_map = []
 		return [s, info_split(param)]
 	}
     }
@@ -2004,7 +2005,7 @@ Abc.prototype.new_note = function(grace, sls) {
 				if (!i && acc_tie)
 					i = acc_tie[apit]
 				if (!i)
-				    i = curvoice.ckey.k_map[apit % 7] || 0
+					i = curvoice.ckey.k_map[apit % 7] || 0
 			}
 			note.b40 = abc2svg.pab40(note.pit, i)
 
