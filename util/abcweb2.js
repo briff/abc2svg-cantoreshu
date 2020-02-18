@@ -102,11 +102,6 @@ function dom_loaded() {
 		svg = evt.target,
 		e = svg			// keep the clicked element
 
-		if (playing) {
-			abcplay.stop()
-			return
-		}
-
 		// search if click in a SVG image
 		while (svg.tagName != 'svg') {
 			svg = svg.parentNode
@@ -147,6 +142,12 @@ function dom_loaded() {
 		i = e.getAttribute('class')
 		if (i)
 			i = i.match(/abcr _(\d+)_/)
+		if (playing) {
+			abcplay.stop()
+			if (!i)
+				return
+		}
+
 		if (i) {
 			i = i[1]		// symbol offset in the source
 			while (s && s.istart != i)
