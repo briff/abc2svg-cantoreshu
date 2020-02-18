@@ -97,9 +97,15 @@ function dom_loaded() {
 
 	// function called on click in the screen
 	abc2svg.playseq = function(evt) {
-	    var	e, i,
+	    var	i, s, t,
 		tunes = abc.tunes,	// list of the tunes created by the core
-		svg = evt.target
+		svg = evt.target,
+		e = svg			// keep the clicked element
+
+		if (playing) {
+			abcplay.stop()
+			return
+		}
 
 		// search if click in a SVG image
 		while (svg.tagName != 'svg') {
@@ -122,25 +128,37 @@ function dom_loaded() {
 			}
 			abcplay = AbcPlay(playconf)
 		}
-		if (playing) {
-			abcplay.stop()
-			return
-		}
 
 		// if first time, get the tunes references
 		// and generate the play data of all tunes
 		if (tunes.length) {
 			tune_lst = tunes.slice(0)	// (array copy)
 			while (1) {
-				e = tunes.shift()
-				if (!e)
+				t = tunes.shift()
+				if (!t)
 					break
-				abcplay.add(e[0], e[1])
+				abcplay.add(t[0], t[1])
+			}
+		}
+
+		// check if click on a music symbol
+		// (this works when 'follow' is active)
+		s = tune_lst[i][0]		// first symbol of the tune
+		i = e.getAttribute('class')
+		if (i)
+			i = i.match(/abcr _(\d+)_/)
+		if (i) {
+			i = i[1]		// symbol offset in the source
+			while (s && s.istart != i)
+				s = s.ts_next
+			if (!s) {		// fixme: error ?!
+				alert("play bug: no such symbol in the tune")
+				return
 			}
 		}
 
 		playing = true
-		abcplay.play(tune_lst[i][0], null)
+		abcplay.play(s, null)
 	} // playseq()
 
 	function render() {
