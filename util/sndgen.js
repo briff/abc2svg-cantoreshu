@@ -32,8 +32,6 @@
 
 function ToAudio() {
  return {
-   clear: function() {		// useless - for compatibility
-   },
 
    // generate the play data of a tune
    add: function(s,		// starting symbol
@@ -63,7 +61,7 @@ function ToAudio() {
 		// on beat
 		} else {
 			d = next.dur / 12
-			if (d & (d - 1) == 0)
+			if (!(d & (d - 1)))
 				d = next.dur / 2	// no dot
 			else
 				d = next.dur / 3
