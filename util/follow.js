@@ -1,8 +1,8 @@
 // follow-1.js - file to include in html pages after
-//	abc2svg-1.js, abcemb[2]-1.js and play-1.js.
+//	abc2svg-1.js, abcweb{1,2}-1.js and snd-1.js.
 //	This script permits to follow the notes while playing.
 //
-// Copyright (C) 2015-2019 Jean-Francois Moine
+// Copyright (C) 2015-2020 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -22,14 +22,13 @@
 // init
 function follow(abc, user, playconf) {
 var	ref = [],
-	ignore_types = {
-		beam:true,
-		slur:true,
-		tuplet:true
+	keep_types = {
+		note: true,
+		rest: true
 	}
 
 user.anno_stop = function(type, start, stop, x, y, w, h) {
-	if (ignore_types[type])
+	if (!keep_types[type])
 		return
 	ref[start] = stop;		// keep the source reference
 
