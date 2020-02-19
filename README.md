@@ -1,67 +1,95 @@
 ## abc2svg
 
-**abc2svg** is a set of tools written in Javascript and based on
-[abcm2ps](https://github.com/leesavide/abcm2ps).
+**abc2svg** is a set of Javascript files which permits
+to edit, display, print and play music that is
+written in the [ABC music notation](http://abcnotation.com/).
 
-It permits to edit, display, print and play music from files written in
-[ABC](http://abcnotation.com/).
+The **abc2svg** core is based on
+[abcm2ps](https://github.com/leesavide/abcm2ps)
+but it may run in any system without recompilation.
 
-Its specific features are described (with abc2svg!) in the document
-[abcm2ps/abc2svg features](http://moinejf.free.fr/abcm2ps-doc/features.xhtml)
-and the parameters in
-[abcm2ps/abc2svg parameters](http://moinejf.free.fr/abcm2ps-doc/index.html).
+The specific features of both abcm2ps and abc2svg are described
+(with abc2svg!) in
+[this page](http://moinejf.free.fr/abcm2ps-doc/index.html).
 
 ### Web usage
 
-**abc2svg** may be used in any web browser.
-The needed files are available in my site
-[http://moinejf.free.fr/js/](http://moinejf.free.fr/js).  
-They are updated on release change.
+The **abc2svg** scripts may be loaded in any web browser when
+they are pointed to by `<script src=` tags in XHTML or HTML files.
 
-These files are:
+These scripts may reside either in the local file system or in a HTTP/web server.
+Especially, they are available in my site
+[http://moinejf.free.fr/js/](http://moinejf.free.fr/js/)
+and are updated when a new release is out.
 
-- `abc2svg-1.js`   
+There are:
+
+- `abc2svg-1.js`  
   This script is the **abc2svg** core.  
-  It contains the ABC parser and the SVG generation engine.  
-  It must be included in the (X)HTML header of the pages
-  where ABC rendering is needed (in `<script src=` tags).
+  It contains the ABC parser and the SVG generation engine.
+  It is needed for music rendering and must be followed by one of
+  the following scripts: `abcweb{1,2}-1.js`, `abcemb{,1,2}` or
+  `abcdoc-1.js`.
 
-- `abcemb-1.js`   
+- `abcweb1-1.js`  
+  This script replaces all the page body by music as SVG images.  
+  It must be declared after the core.  
+  The music sequences start on `X:` or `%abc` at start of line,
+  and stop on any ML tag.  
+  If a ABC sequence contains the characters '<', '>' or '&',
+  it must be enclosed in a XML comment (inside the sequence as a comment).  
+  When there are many tunes in the file, the script displays a list
+  of the tunes. The list step may be bypassed when the URL of the file
+  contains a regular expression as the 'hash' value ('#' followed by
+  a string at the end of the URL - the string does a `--select`).  
+  When one or many tunes are displayed, a menu in the top/right corner
+  offers to go back to the tune list or to modify the ABC source.  
+  Playing and highlighting the played notes may be offered loading
+  the scripts `snd-1.js` and `follow-1.js`.  
+  See [this file](http://moinejf.free.fr/abc/boyvin-2-2.html)
+  for an example (you may note that this HTML file is also
+  a correct ABC file).
+  
+- `abcweb2-1.js`  
+  This script replaces the ABC sequences defined in the elements
+  with the class `abc` by music as SVG images.
+  It keeps the other elements as they are.  
+  It must also be declared after the core.  
+  If a ABC sequence contains the characters '<', '>' or '&',
+    either this sequence must be enclosed in a XML comment, or the characters
+    must be replaced by their XML counterparts
+    ('&amp;lt;', '&amp;gt;' or '&amp;amp;').  
+  Tune selection may be done by a 'hash' value as with the previous script.
+  Playing and highlighting the played notes may also be offered loading
+  the scripts `snd-1.js` and `follow-1.js`.  
+  See [this file](http://moinejf.free.fr/abcm2ps-doc/multicol.xhtml)
+  for an example.  
+  
+- `snd-1.js`  
+  This script may be used with `abcweb{1,2}-1.js` to play the rendered
+  ABC music.  
+
+- `follow-1.js`  
+  This script may be used after `snd-1.js` (or `play-1.js` - see below)
+  to highlight the notes while playing.  
+  With `abcweb{1,2}-1.js`, this script also permits to start playing
+  anywhere in the music.  
+  See [this file](http://moinejf.free.fr/abcm2ps-doc/tabac.xhtml)
+  for an example.
+
+- `abcemb-1.js`  
   This script replaces the ABC or MEI sequences by SVG images of the music
   (the ABC sequences start on `X:` or `%abc` at start of line,
   and stop on any ML tag - see below for MEI).  
+  When the URL of the (X)HTML file ends with '#' followed by a string,
+  only the first tune containing this string is displayed.  
+  As previously, if a ABC sequence contains the characters '<', '>' or '&',
+  it must be enclosed in a XML comment (inside the sequence as a comment).  
   See the
   [%%beginml documentation](http://moinejf.free.fr/abcm2ps-doc/beginml.xhtml)
-  for an example.   
-  When the URL of the (X)HTML file ends with '#' followed by a string,
-  only the first tune containing this string is displayed.   
-  Note that, if the ABC sequence contains the characters '<', '>' or '&',
-  it must be enclosed in a XML comment (starting after the first `X:` or `%abc`).
+  for an example.
 
-- `abcemb1-1.js`   
-  This script is to be used with the core in (X)HTML files.  
-  It works quite the same as the previous script, but replaces the whole
-  page by the selected tune.
-  When there is no selection ('#' + string at the end of the URL),
-  a list of the tunes is displayed.   
-  When a tune is displayed, a menu offers the edition of the ABC source and
-  the automatic scroll of the music (this is done according to the tempo -
-  repeats and parts are not handled).   
-  See [this file](http://moinejf.free.fr/abc/boyvin-2-2.html)
-  for an example.   
-
-- `abcemb2-1.js`   
-  This script is also to be used with the core in (X)HTML files.  
-  The differences with the script `abcemb-1.js` are:
-  - the ABC sequences are replaced in HTML elements with the class `abc`,
-  - the string after '#' in the URL does a real %%select (i.e. this may
-    select many tunes),
-  - there is no menu nor list of tunes
-  - if the ABC sequences contain the characters '<', '>' or '&',
-    either these sequences must be enclosed in a XML comment, or the characters
-    must be replaced by their XML counterparts ('&amp;lt;', '&amp;gt;' or '&amp;amp;').
-  
-- `abcdoc-1.js`   
+- `abcdoc-1.js`  
   This script is also to be used in (X)HTML pages with the core.  
   Mainly used for ABC documentation, it lets the ABC source sequences
   in the page before the SVG images.  
@@ -69,31 +97,21 @@ These files are:
   [abcm2ps/abc2svg features](http://moinejf.free.fr/abcm2ps-doc/features.xhtml)
   for an example.
 
-- `play-1.js`   
-  This script may be used with `abcemb{,1,2}-1.js` for playing the
+- `abcemb1-1.js`  
+  This script is an old version of `abcweb1-1.js`.  
+  It must use `play-1.js` for playing.
+
+- `abcemb2-1.js`  
+  This script is an old version of `abcweb2-1.js`.  
+  It must use `play-1.js` for playing.
+  
+- `play-1.js`  
+  This script must be used with `abcemb{,1,2}-1.js` for playing the
   rendered ABC music.  
-  See [this page](http://moinejf.free.fr/abcm2ps-doc/au_clair.xhtml)
+  See [this file](http://moinejf.free.fr/abcm2ps-doc/au_clair.xhtml)
   for an example.
 
-- `abcweb1-1.js`   
-  This script works the same as `abcemb1-1.js` but it must use `snd-1.js`
-  for playing.
-  
-- `abcweb2-1.js`   
-  This script works the same as `abcemb2-1.js` but it must use `snd-1.js`
-  for playing.
-  
-- `snd-1.js`   
-  This script contains an other way for playing. It is used in the editor
-  and it may be used with `abcweb{1,2}-1.js`.
-
-- `follow-1.js`   
-  This script may be used after `play-1.js` or `snd-1.js` for highlighting
-  the notes while playing.   
-  See [this page](http://moinejf.free.fr/abcm2ps-doc/tabac.xhtml)
-  for an example.
-
-- `edit-1.xhtml`   
+- `edit-1.xhtml`  
   This is a simple web
   [ABC editor/player](http://moinejf.free.fr/js/edit-1.xhtml).
 
@@ -109,8 +127,8 @@ for rendering the tunes one by one.
 - The music is rendered as SVG images. There is one image per
   music line / text block.  
   If you want to move these images to some other files,
-  each one must contain the full CSS and defs. For that, insert   
-  `        %%fullsvg x`   
+  each one must contain the full CSS and defs. For that, insert  
+  `        %%fullsvg x`  
   in the ABC file before rendering (see the
   [fullsvg documentation](http://moinejf.free.fr/abcm2ps-doc/fullsvg.xhtml)
   for more information).
@@ -140,13 +158,13 @@ and
 Installed via **npm**, the **abc2svg** package comes with the
 command line (batch) programs `abc2svg` and `abc2odt`.
 
-These ones may be used as **abcm2ps** to generate XHTML or ODT files.   
+These ones may be used as **abcm2ps** to generate XHTML or ODT files.  
 
-`abc2svg` writes to standard output:   
+`abc2svg` writes to standard output:  
 `        abc2svg mytunes.abc > Out.xhtml`
 
 `abc2odt` output is `abc.odt` or the file specified
-by the command line argument `-o`:   
+by the command line argument `-o`:  
 `        abc2odt my_file.abc -o my_file.odt`
 
 ### Build
@@ -158,7 +176,7 @@ either as a tarball or a Zip archive
 (click `Timeline` and then in the top commit),
 or by cloning the repository in some directory:
 
-> `fossil clone https://chiselapp.com/user/moinejf/repository/abc2svg abc2svg.fossil`   
+> `fossil clone https://chiselapp.com/user/moinejf/repository/abc2svg abc2svg.fossil`  
 > `fossil open abc2svg.fossil`
 
 Then, building is done using the tool [ninja](https://ninja-build.org/)
@@ -171,7 +189,8 @@ You may do it:
   `        NOMIN=1 samu -v`
 
 - in a standard way with minification  
-  In this case, you need the tool `uglifyjs` which comes with nodeJS.
+  In this case, you need the tool `uglifyjs` which comes with nodeJS
+  or [JSMin](https://www.crockford.com/jsmin.html).
 
   `        samu -v`
 
@@ -201,59 +220,63 @@ following shell scripts (the result goes to stdout):
 
 #### backend scripts
 
-By default, the batch scripts generate (XHTML+SVG) files.   
+By default, the batch scripts generate (XHTML+SVG) files.  
 This output may be modified by backend scripts. These ones must appear
-just after the command.   
+just after the command.  
 There are:
 
-- `toabc.js`   
-  This script outputs back the (selected) ABC tunes of the ABC source file.   
-  Transposition is applied.   
-  The resulting file does not contain the formatting parameters.   
-  Example:   
+- `toabc.js`  
+  This script outputs back the (selected) ABC tunes of the ABC source file.  
+  Transposition is applied.  
+  The resulting file does not contain the formatting parameters.  
+  Example:  
   `        abcqjs toabc.js my_file.abc --select X:2 > tune_2.abc`
 
-- `toabw.js`   
+- `toabw.js`  
   This script outputs a Abiword file (ABW+SVG) which may be read by some
   word processors (abiword, libreoffice...) and converted to many other
-  formats by the batch function of abiword.   
+  formats by the batch function of abiword.  
   The abc2svg music font (`abc2svf.woff` or `abc2svg.ttf`) must be installed
-  in the local system for displaying and/or converting the .abw file.   
-  Example:   
+  in the local system for displaying and/or converting the .abw file.  
+  Example:  
   `        abcv8 toabw.js my_file.abc > my_file.abw`
 
-- `tomei.js`   
-  This script outputs the music as a [MEI](https://music-encoding.org/) file.   
+- `tomei.js`  
+  This script outputs the music as a [MEI](https://music-encoding.org/) file.  
   Indeed, only one tune may be translated from ABC to MEI (multi-tunes ABC
   generates bad MEI).
 
-- `toodt.js`   
+- `toodt.js`  
   This script creates an Open Document (ODT+SVG) which may be read by most
-  word processors (abiword, libreoffice...).   
+  word processors (abiword, libreoffice...).  
   It runs only with the npm script `abc2svg` and asks for the npm module
-  `jszip` to be installed.   
+  `jszip` to be installed.  
   The output ODT document may be specified by the command line argument `-o`
-  (default `abc.odt`).   
-  Example:   
+  (default `abc.odt`).  
+  Example:  
   `        abc2svg toodt.js my_file.abc -o my_file.odt`
 
-- `toparam.js`   
+- `toparam.js`  
   This script just outputs the abc2svg parameters.
 
 #### PDF generation
 
 `abctopdf` is a shell script which converts ABC to PDF using one of the
 previous shell scripts and, either a chrome/chromium compatible web browser,
-or the program `weasyprint` (https://weasyprint.org/) or
-the program `rsvg-convert`.   
+or the program [weasyprint](https://weasyprint.org/) or
+the program `rsvg-convert`.
+
 With `rsvg-convert`, the used music font must be installed and defined by
-`%%musicfont <fontname>`.   
+`%%musicfont <fontname>`.
+
 Note also that, with `weasyprint` or `rsvg-convert`, the paper size is
 forced to A4. Instructions for changing this size may be found in the
-script source.   
+script source.
+
 The output PDF document may be specified by the command line argument `-o`
-(default `abc.pdf`).   
-Example:   
+(default `abc.pdf`).
+
+Example:  
 `        abctopdf my_file.abc -o my_file.pdf`
 
 ### MEI support
@@ -268,3 +291,5 @@ mei2svg-1.js after checking the music notation type (`%abc` or `X:` is ABC,
 
 In batch mode, the script `abcqjs` also loads the right abc2svg core
 according to the source file extension (`.abc` or `.mei`).
+
+[Jean-François Moine](http://moinejf.free.fr)
