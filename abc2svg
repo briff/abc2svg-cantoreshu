@@ -1,4 +1,4 @@
-#! /usr/bin/env node
+#!/usr/bin/env node
 
 // abc2svg with native nodeJS
 

@@ -239,8 +239,8 @@ p span {line-height:' + ((cfmt.lineskipfac * 100) | 0).toString() + '%}\n' +
 				(cfmt.pagewidth / 96).toFixed(2) + 'in ' +
 				(cfmt.pageheight / 96).toFixed(2) + 'in;margin:0}')
 		else
-			abc2svg.print('@page{margin:0' + topmargin + ' 0 ' +
-							 botmargin + ' 0}')
+			abc2svg.print('@page{margin:' + topmargin + ' 0 ' +
+							botmargin + ' 0}')
 		abc2svg.print('</style>\n\
 <title> ' + abc.parse.fname.replace(/.*\//, '') + '</title>\n\
 </head>\n\

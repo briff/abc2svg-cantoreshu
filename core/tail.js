@@ -1,6 +1,6 @@
 // abc2svg - tail.js
 //
-// Copyright (C) 2014-2019 Jean-Francois Moine
+// Copyright (C) 2014-2020 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
