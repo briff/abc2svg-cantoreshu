@@ -102,6 +102,37 @@ function abc_dump(tsfirst, voice_tb, music_types, info) {
 					ln += ' microscale=' + p_voice.uscale
 			}
 			abc2svg.print(ln)
+
+			if (p_voice.instr) {
+				for (var s = p_voice.sym; s && s.time == 0; s = s.next) {
+					if (s.subtype == "midiprog") {
+						p_voice.instr = null
+						break
+					}
+				}
+//fixme: the MIDI program may be the one of the channel 10
+				if (p_voice.clef.clef_type == "p")
+					p_voice.instr = null
+				if (p_voice.instr)
+					abc2svg.print("%%MIDI program " + p_voice.instr)
+				p_voice.instr = null
+			}
+			if (p_voice.midictl) {
+				if (p_voice.midictl[0] == 1
+				 && p_voice.midictl[32] == 0) {
+					delete p_voice.midictl[0]
+					delete p_voice.midictl[32]
+					abc2svg.print("%%MIDI channel 10")
+				}
+				for (k in p_voice.midictl)
+					abc2svg.print("%%MIDI control " +
+						k + ' ' + p_voice.midictl[k])
+				p_voice.midictl = null
+			}
+//fixme: to do
+//			if (p_voice.mididrum) {
+//				p_voice.mididrum = null
+//			}
 		} // vi_out()
 
 		if (nv == 1) {
@@ -135,6 +166,16 @@ function abc_dump(tsfirst, voice_tb, music_types, info) {
 	function block_dump(s) {
 	    var	ln = "%%" + s.subtype + ' '
 		switch (s.subtype) {
+		case "midictl":
+			if (!s.p_v.midictl)
+				s.p_v.midictl = []
+			s.p_v.midictl[s.ctrl] = s.val
+			s.time = -1	// force %%MIDI
+			return
+		case "midiprog":
+			s.p_v.instr = s.instr
+			s.time = -1	// force %%MIDI
+			return
 		case "ml":
 			ln += s.text
 			break
@@ -526,7 +567,7 @@ break
 					if (staff.flags & CLOSE_BRACKET)
 						ln += ']'
 					if (!(staff.flags & STOP_BAR))
-						ln += '|'
+						ln += '| '
 				}
 				staff = sy.staves[++st]
 				if (staff.flags & OPEN_BRACKET)
