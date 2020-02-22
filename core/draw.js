@@ -2516,7 +2516,7 @@ function draw_note_ties(not1, job) {
 			if (s1.notes[m - 1].shhd > sh)
 				sh = s1.notes[m - 1].shhd
 	}
-	x1 = s1.x + sh * .6
+	x1 = s1.x + sh // * .6
 
 	if (job != 2) {
 		for (m = 0; m < s2.nhd; m++)
@@ -2532,7 +2532,7 @@ function draw_note_ties(not1, job) {
 				if (s2.notes[m - 1].shhd < sh)
 					sh = s2.notes[m - 1].shhd
 		}
-		x2 += sh * .6
+		x2 += sh // * .6
 	}
 
 	switch (job) {
@@ -2580,7 +2580,7 @@ function draw_note_ties(not1, job) {
 	  || (dir < 0 && s1.dot_low)))
 		x1 += 5
 
-	y = staff_tb[st].y + 3 * (p - 18)
+	y = staff_tb[st].y + 3 * (p - 18) + /* 1.0 * */ dir
 
 	h = (.03 * (x2 - x1) + 16) * dir
 //	anno_start(k1, 'slur')
