@@ -259,7 +259,8 @@ function Audio5(i_conf) {
 	    var	g, st,
 		instr = s.instr,
 		parm = params[instr][key | 0],
-		o = ac.createBufferSource()
+		o = ac.createBufferSource(),
+		v = s.p_v.vol || 1	// volume (gain)
 
 		if (!parm)		// if the instrument could not be loaded
 			return		// or if it has not this key
@@ -279,15 +280,15 @@ function Audio5(i_conf) {
 
 		g = ac.createGain()
 		if (parm.hold < 0.002) {
-			g.gain.setValueAtTime(1, t)
+			g.gain.setValueAtTime(v, t)
 		} else {
 			if (parm.attack < 0.002) {
-				g.gain.setValueAtTime(1, t)
+				g.gain.setValueAtTime(v, t)
 			} else {
 				g.gain.setValueAtTime(0, t)
 				g.gain.linearRampToValueAtTime(1, t + parm.attack)
 			}
-			g.gain.setValueAtTime(1, t + parm.hold)
+			g.gain.setValueAtTime(v, t + parm.hold)
 		}
 
 		g.gain.exponentialRampToValueAtTime(parm.sustain,
@@ -412,7 +413,14 @@ function Audio5(i_conf) {
 				while (s.ts_next && !s.ts_next.seqst)
 					s = s.ts_next
 				break
+			case C.BLOCK:
+				if (s.subtype == "midictl"
+				 && s.ctrl == 7)		// if volume
+					s.p_v.vol = s.val / 127
+				break
 			case C.GRACE:
+				if (s.p_v.vol === 0)		// volume = 0
+					break
 				for (g = s.extra; g; g = g.next) {
 					d = g.pdur / conf.speed
 					for (m = 0; m <= g.nhd; m++) {
@@ -426,6 +434,7 @@ function Audio5(i_conf) {
 				}
 				break
 			case C.NOTE:
+			    if (s.p_v.vol !== 0) {		// if volume != 0
 				d = s.pdur / conf.speed
 				for (m = 0; m <= s.nhd; m++) {
 					note = s.notes[m]
@@ -437,6 +446,7 @@ function Audio5(i_conf) {
 						note.tie_ty ? 
 							do_tie(s, note.midi, d) : d)
 				}
+			    }
 				// fall thru
 			case C.REST:
 				d = s.pdur / conf.speed
