@@ -1601,15 +1601,15 @@ function slur_out(x1, y1, x2, y2, dir, height, dotted) {
 	xx2 = x2 + beta * (xx2 - x2);
 	yy2 = y2 + beta * (yy2 - y2);
 
-	dx = .03 * (x2 - x1);
-//	if (dx > 10.)
-//		dx = 10.
 //	dy = 1.6 * dir
 	dy = 2 * dir;
-	dz = .2 + .001 * (x2 - x1)
+	dz = .2 + .001 * dx
 	if (dz > .6)
 		dz = .6;
 	dz *= dir
+	dx *= .03
+//	if (dx > 10.)
+//		dx = 10.
 
 //	var scale_y = stv_g.st < 0 ? stv_g.scale : 1
 	var scale_y = 1			// (see set_dscale())
@@ -1634,7 +1634,7 @@ function slur_out(x1, y1, x2, y2, dir, height, dotted) {
 			((xx1 + dx - x2) / stv_g.scale).toFixed(1) + ' ' +
 			((y2 + dz - yy1 - dy) / scale_y).toFixed(1) + ' ' +
 			((x1 - x2) / stv_g.scale).toFixed(1) + ' ' +
-			((y2 + dz - y1) / scale_y).toFixed(1);
+			((y2 - y1) / scale_y).toFixed(1)
 	output += '"/>\n'
 }
 
