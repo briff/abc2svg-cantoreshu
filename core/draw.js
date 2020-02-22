@@ -2582,7 +2582,7 @@ function draw_note_ties(not1, job) {
 
 	y = staff_tb[st].y + 3 * (p - 18) + /* 1.0 * */ dir
 
-	h = (.03 * (x2 - x1) + 16) * dir
+	h = (.03 * (x2 - x1) + 16) * dir * cfmt.tieheight
 //	anno_start(k1, 'slur')
 	slur_out(x1, y, x2, y, dir, h, not1.tie_ty & C.SL_DOTTED)
 //	anno_stop(k1, 'slur')

@@ -97,6 +97,7 @@ H "History: "',
 	textfont: {name: "serif", size: 16},
 //	textoption: undefined,
 	textspace: 14,
+	tieheight: 1.0,
 	titlefont: {name: "serif", size: 20},
 //	titleleft: false,
 	titlespace: 6,
@@ -437,6 +438,7 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "slurheight":
 	case "stemheight":
 	case "stretchlast":
+	case "tieheight":
 		f = parseFloat(param)
 		if (isNaN(f)) {
 			syntax(1, errs.bad_val, '%%' + cmd)
