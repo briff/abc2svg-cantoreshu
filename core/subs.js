@@ -299,12 +299,12 @@ function trim_title(title, is_subtitle) {
 			if (i < title.length - cfmt.titletrim - 2)
 				i = 0
 		}
+		if (i)
+			title = title.slice(i + 2).trim() + ' ' + title.slice(0, i)
 	}
 	if (!is_subtitle
 	 && cfmt.writefields.indexOf('X') >= 0)
 		title = info.X + '.  ' + title
-	if (i)
-		title = title.slice(i + 2).trim() + ' ' + title.slice(0, i)
 	if (cfmt.titlecaps)
 		return title.toUpperCase()
 	return title
