@@ -19,15 +19,24 @@
 
 // user definitions
 var user = {
-	read_file: function(fn) {	// include a file (%%abc-include)
-	    var	file = abc2svg.readFile(fn),
-		i = file.indexOf('\r')
+	read_file: function(fn) {	// read a file (main or included)
+	    var	i,
+		file = abc2svg.readFile(fn)
 
-		if (i < 0)
-			return file	// standard
-		if (file[i + 1] == '\n')
-			return file.replace(/\r\n/g, '\n')	// M$
-		return file.replace(/\r/g, '\n')		// Mac
+		if (!file)
+			return file
+		i = file.indexOf('\r')
+		if (i >= 0) {
+			if (file[i + 1] == '\n')
+				file =  file.replace(/\r\n/g, '\n')	// M$
+			else
+				fike =  file.replace(/\r/g, '\n')	// Mac
+		}
+
+		// load the required modules (synchronous)
+		abc2svg.modules.load(file)
+
+		return file
 	},
 	errtxt: ''
 }
@@ -72,9 +81,6 @@ function do_file(fn) {
 		abc.mei2mus(file)
 		return
 	}
-
-	// load the required modules (synchronous)
-	abc2svg.modules.load(file)
 
 	// generate
 	try {
