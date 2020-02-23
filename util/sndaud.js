@@ -327,7 +327,7 @@ function Audio5(i_conf) {
 					s = s.rep_s[repv + 1]
 					end_time = s.time
 				}
-				while (s.ts_next && s.ts_next.type == C.BAR)
+				while (s.ts_next && !s.ts_next.dur)
 					s = s.ts_next
 			}
 			if (s.time > end_time)
@@ -389,7 +389,7 @@ function Audio5(i_conf) {
 						stime += (s.ptim - s.rep_p.ptim) /
 								conf.speed
 						s = s.rep_p	// left repeat
-						while (s.ts_next && !s.ts_next.seqst)
+						while (s.ts_next && !s.ts_next.dur)
 							s = s.ts_next
 						t = stime + s.ptim / conf.speed
 						repn = true
@@ -410,7 +410,7 @@ function Audio5(i_conf) {
 						break
 					}
 				}
-				while (s.ts_next && !s.ts_next.seqst)
+				while (s.ts_next && !s.ts_next.dur)
 					s = s.ts_next
 				break
 			case C.BLOCK:

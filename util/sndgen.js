@@ -138,7 +138,7 @@ function ToAudio() {
 			if (s.bar_type[0] == ':') {
 				s.rep_p = rst		// :| to |:
 				n = s.text		// variants
-				while (s.ts_next && s.ts_next.type == C.BAR) {
+				while (s.ts_next && !s.ts_next.dur) {
 					s = s.ts_next
 					s.ptim = p_time
 					if (!n && s.text)
@@ -164,7 +164,7 @@ function ToAudio() {
 				s.rep_s = [null]	// repeat skip
 				set_variant(rsk, s.text, s)
 			}
-			while (s.ts_next && !s.ts_next.seqst) {
+			while (s.ts_next && !s.ts_next.dur) {
 				s = s.ts_next
 				s.ptim = p_time
 			}
