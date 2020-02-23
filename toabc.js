@@ -715,8 +715,20 @@ break
 			gch_dump(s.a_gch)
 		if (s.a_dd)
 			deco_dump(s.a_dd)
-		if (s.invis && s.type != C.REST && s.type != C.SPACE)
-			line += "!invisible!"
+		if (s.invis) {
+			switch (s.type) {
+			case C.REST:
+			case C.SPACE:
+				break
+			case C.BAR:
+				if (s.bar_type == '[' || s.bar_type == ']')
+					break
+				// fall thru
+			default:
+				line += "!invisible!"
+				break
+			}
+		}
 		if (s.color)
 			line += "!" + s.color + "!"
 		if (s.feathered_beam)
