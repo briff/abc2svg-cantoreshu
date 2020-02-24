@@ -40,10 +40,7 @@ abc2svg.quit = function() {
 	std.exit(1)
 }
 abc2svg.readFile = function(fname) {
-    var	l, f,
-	b = "",
-	bt = "",
-	cnt = 30
+    var	f, b
 
 	try {
 		f = std.open(fname, "r")
@@ -51,19 +48,9 @@ abc2svg.readFile = function(fname) {
 		return ""
 	}
 
-	while (1) {
-		if (--cnt < 0) {
-			cnt = 30
-			bt += b
-			b = ""
-		}
-		l = f.getline()
-		if (l == null)
-			break
-		b += l + "\n"
-	}
+	b = f.readAsString()
 	f.close()
-	return bt + b
+	return b
 } // readfile()
 
 abc2svg.get_mtime = function(fn) {
