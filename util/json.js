@@ -1,7 +1,8 @@
 //#javascript
 // Generate a JSON representation of ABC
 //
-// Copyright (C) 2016 Jean-Francois Moine
+// Copyright (C) 2016-2020 Jean-Francois Moine
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License version 2 as
 // published by the Free Software Foundation.
@@ -47,7 +48,7 @@ function AbcJSON(nindent) {			// indentation level
 		}
 	// generate an attribute
 	function attr_gen(ind, attr, val) {
-		var	i, e,
+		var	i, e, l,
 			indn = ind + inb	// next indentation
 
 		if (links[attr]) {
