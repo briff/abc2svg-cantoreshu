@@ -19,7 +19,6 @@
 
 var	output = "",		// output buffer
 	style = '\
-\ntext, tspan{fill:currentColor}\
 \n.stroke{stroke:currentColor;fill:none}\
 \n.bW{stroke:currentColor;fill:none;stroke-width:1}\
 \n.bthW{stroke:currentColor;fill:none;stroke-width:3}\
@@ -1158,7 +1157,10 @@ function svg_flush() {
 	}
 
 	if (style || font_style)
-		head += '<style type="text/css">' + style + font_style +
+		head += '<style type="text/css">\n.' +
+				font_class(font) +	// for fill color
+					' text,tspan{fill:currentColor}' +
+			font_style + style +
 			'\n</style>\n'
 
 	defs += fulldefs
