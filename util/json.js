@@ -52,12 +52,17 @@ function AbcJSON(nindent) {			// indentation level
 			indn = ind + inb	// next indentation
 
 		if (links[attr]) {
-			if (attr == "extra") {
+			switch (attr) {
+			case "extra":
 				json += h + ind + '"extra": [';
 				h = '\n'
 				for (e = val ; e; e = e.next)
 					attr_gen(indn, null, e);
 				json += '\n' + ind + ']'
+				break
+			case "tie_s":
+				json += h + ind + '"ti1": true'
+				break
 			}
 			return
 		}
