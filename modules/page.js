@@ -392,7 +392,7 @@ abc2svg.page = {
 	if (cmd == "pageheight") {
 		v = this.get_unit(parm)
 		if (isNaN(v)) {
-			this.syntax(1, errs.bad_val, '%%' + cmd)
+			this.syntax(1, this.errs.bad_val, '%%' + cmd)
 			return
 		}
 		cfmt.pageheight = v
@@ -461,7 +461,7 @@ abc2svg.page = {
 				break
 			v = Number(parm)
 			if (isNaN(v)) {
-				this.syntax(1, errs.bad_val, '%%' + cmd)
+				this.syntax(1, this.errs.bad_val, '%%' + cmd)
 				return
 			}
 			page.pn = v - 1
@@ -471,7 +471,7 @@ abc2svg.page = {
 		case "topmargin":
 			v = this.get_unit(parm)
 			if (isNaN(v)) {
-				this.syntax(1, errs.bad_val, '%%' + cmd)
+				this.syntax(1, this.errs.bad_val, '%%' + cmd)
 				return
 			}
 			page[cmd] = v
