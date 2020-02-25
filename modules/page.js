@@ -364,6 +364,8 @@ abc2svg.page = {
 				blkcpy(page)	// output the beginning of the tune
 				page.h = nh
 			}
+			if (h > page.hmax)
+				break		// error
 		}
 
 		// if no overflow yet, keep the block
