@@ -258,24 +258,21 @@ function param_set_font(xxxfont, p) {
 
 // get a length with a unit - return the number of pixels
 function get_unit(param) {
-	var v = parseFloat(param)
+    var	v = param.toLowerCase().match(/([\d.]+)(.*)/)
 
-	switch (param.slice(-2)) {
-	case "CM":
+	v[1] = Number(v[1])
+	switch (v[2]) {
 	case "cm":
-		v *= CM
-		break
-	case "IN":
+		return v[1] * CM
 	case "in":
-		v *= IN
-		break
-	case "PT":		// paper point in 1/72 inch
-	case "pt":
-		v *= .75
-		break
-//	default:  // ('px')	// screen pixel in 1/96 inch
+		return v[1] * IN
+	case "pt":		// paper point in 1/72 inch
+		return v[1] * .75
+	case "px":		// screen pixel in 1/96 inch
+	case "":
+		return v[1]
 	}
-	return v
+	return NaN
 }
 
 // set the infoname
