@@ -372,6 +372,7 @@ function Midi5(i_conf) {
 			if (conf.onnote)
 				onnote = conf.onnote
 
+			stop = false
 			s_end = i_end
 			s_cur = i_start
 			repv = i_lvl || 0
