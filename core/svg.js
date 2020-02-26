@@ -1040,7 +1040,7 @@ function tempo_build(s) {
 			str.push('<tspan\nclass="' +
 					font_class(cfmt.musicfont) +
 				'" style="font-size:' +
-				(gene.curfont.size * 1.3).toFixed(1) + '"' +
+				(gene.curfont.size * 1.3).toFixed(1) + 'px"' +
 				dy + '>' +
 				p + '</tspan>')
 			j = p.length > 1 ? 2 : 1	// (note and optional dot)
@@ -1063,7 +1063,7 @@ function tempo_build(s) {
 					font_class(cfmt.musicfont) +
 				'" style="font-size:' +
 				(gene.curfont.size * 1.3).toFixed(1) +
-				'" dy="-.05em">' +
+				'px" dy="-.05em">' +
 				p + '</tspan>')
 			j = p.length > 1 ? 2 : 1
 			w += j * gene.curfont.swfac

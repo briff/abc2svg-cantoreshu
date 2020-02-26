@@ -37,7 +37,7 @@ abc2svg.grid3 = {
 	    var	i, k, l, line, bl, bar, w, hr, x0, x, y, yl, cl, cell,
 		lc = '',
 		path = '<path class="stroke" stroke-width="1" d="M',
-		sf = '" style="font-size:' + (font.size * .72).toFixed(1)
+		sf = '" style="font-size:' + (font.size * .72).toFixed(1) + 'px'
 						// small font
 
 		function build_ch(cl, x, y, n) {
@@ -168,13 +168,15 @@ abc2svg.grid3 = {
 						(x - 5).toFixed(1) +
 						'" y="' + y.toFixed(1) +
 						'" style="font-weight:bold;font-size:' +
-						(font.size * 1.6).toFixed(1) + '">:</text>\n'
+						(font.size * 1.6).toFixed(1) +
+						'px">:</text>\n'
 				if (bar.slice(-1) == ':')
 					line += '<text class="' + cls + '" x="' +
 						(x + 5).toFixed(1) +
 						'" y="' + y.toFixed(1) +
 						'" style="font-weight:bold;font-size:' +
-						(font.size * 1.6).toFixed(1) + '">:</text>\n'
+						(font.size * 1.6).toFixed(1) +
+						'px">:</text>\n'
 				x += wc
 			}
 		}

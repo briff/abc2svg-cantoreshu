@@ -43,7 +43,7 @@ function build_grid(chords, bars, font, wmx) {
 	lc = '',
 	cells = [],
 	nc = grid.n,
-	sf = '" style="font-size:' + (font.size * .72).toFixed(1)
+	sf = '" style="font-size:' + (font.size * .72).toFixed(1) + 'px'
 						// small font
 
 	// set some chord(s) in each cell
@@ -245,7 +245,7 @@ function build_grid(chords, bars, font, wmx) {
 				(x - 5).toFixed(1) +
 				'" y="' + y.toFixed(1) +
 				'" style="font-weight:bold;font-size:' +
-			(font.size + 2).toFixed(1) + '">:</text>\n'
+			(font.size + 2).toFixed(1) + 'px">:</text>\n'
 		if (i == 0
 		 || (grid.repbrk
 		  && (bars[i].slice(-1) == ':' || bars[i][0] == ':'))
@@ -260,7 +260,7 @@ function build_grid(chords, bars, font, wmx) {
 				(x + 5).toFixed(1) +
 				'" y="' + y.toFixed(1) +
 				'" style="font-weight:bold;font-size:' +
-			(font.size + 2).toFixed(1) + '">:</text>\n'
+			(font.size + 2).toFixed(1) + 'px">:</text>\n'
 		x += wmx
 	}
 
