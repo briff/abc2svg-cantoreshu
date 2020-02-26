@@ -395,6 +395,7 @@ if (0) {
 
 			v_i = []		// must do a reset of all channels
 			stime = window.performance.now() + 200	// start time + 0.2s
+				- s_cur.ptim * conf.speed * 1000
 			play_next()
 		}, // play()
 
