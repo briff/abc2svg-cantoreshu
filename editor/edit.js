@@ -273,7 +273,7 @@ function gotoabc(l, c) {
 	}
 	c = Number(c) + idx;
 	s.focus();
-	s.setSelectionRange(c, syms[c].iend || c + 1)
+	s.setSelectionRange(c, syms[c] ? syms[c].iend : c + 1)
 }
 
 // click in the target
