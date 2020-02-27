@@ -205,6 +205,7 @@ function dom_loaded() {
 				alert("abc2svg javascript error: " + e.message +
 					"\nStack:\n" + e.stack)
 			}
+			abc2svg.abc_end()	// close the page if %%pageheight
 			if (errtxt) {
 				new_page += '<pre style="background:#ff8080">' +
 						errtxt + "</pre>\n"
@@ -220,7 +221,6 @@ function dom_loaded() {
 					"\nStack:\n" + e.stack)
 			}
 		}
-		abc2svg.abc_end()		// close the page if %%pageheight
 	} // render()
 
 	// convert HTML to ABC
