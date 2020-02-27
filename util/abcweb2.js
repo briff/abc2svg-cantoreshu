@@ -1,5 +1,5 @@
 //#javascript
-// abcweb2-1.js file to include in html pages with abc2svg-1.js
+// abcweb2-1.js file to include in (x)html pages with abc2svg-1.js
 //
 // Copyright (C) 2018-2020 Jean-Francois Moine
 //
@@ -17,6 +17,18 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with abc2svg.  If not, see <http://www.gnu.org/licenses/>.
+//
+// This script replaces the ABC sequences defined in the HTML elements
+// with the class "abc" by music as SVG images.
+// It keeps the other elements as they are.
+// It must be declared after the core abc2sg-1,js.
+// If a ABC sequence contains the characters '<', '>' or '&',
+// - either this sequence must be defined in a <script> tag
+//   (with type="text/vnd.abc" and class="abc") and also
+//   enclosed in a XML comment (%<![CDATA[ .. %]]>) if in a XHTML file,
+// - or the characters must be replaced by their XML counterparts
+//   ('&lt;', '&gt;' or '&amp;').
+// Tune selection may be done by a 'hash' value in the URL of the page.
 
 window.onerror = function(msg, url, line) {
 	if (typeof msg == 'string')
@@ -199,7 +211,10 @@ function dom_loaded() {
 				errtxt = ""
 			}
 			try {
-				elts[i].innerHTML = new_page
+				elts[i].outerHTML =
+					elts[i].tagName.toLowerCase() == "script" ?
+						'<div>' + new_page + '</div>' :
+						new_page
 			} catch (e) {
 				alert("abc2svg bad generated SVG: " + e.message +
 					"\nStack:\n" + e.stack)
