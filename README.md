@@ -56,9 +56,9 @@ There are:
   It keeps the other elements as they are.  
   It must also be declared after the core.  
   If a ABC sequence contains the characters '<', '>' or '&', either
-    - this sequence must be defined in a <script> tag
+    - this sequence must be defined in a &lt;script&gt; tag
       (with type="text/vnd.abc" and class="abc") and also
-      enclosed in a XML comment (%<![CDATA[ .. %]]>) if in a XHTML file, or
+      enclosed in a XML comment (%&lt;![CDATA[ .. %]]&gt;) if in a XHTML file, or
     - the characters must be replaced by their XML counterparts
       ('&amp;lt;', '&amp;gt;' or '&amp;amp;').  
   Tune selection may be done by a 'hash' value as with the previous script.
