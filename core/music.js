@@ -4488,7 +4488,9 @@ function block_gen(s) {
 		user.img_out(s.text)
 		break
 	case "newpage":
-		blk_flush();
+		svg_flush()
+		if (blkdiv < 0)		// split the tune
+			user.img_out('</div>')
 		blkdiv = 2		// start the next SVG in a new page
 		break
 	case "sep":
