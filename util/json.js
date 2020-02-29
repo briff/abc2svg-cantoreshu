@@ -40,6 +40,7 @@ function AbcJSON(nindent) {			// indentation level
 			ts_next: true,
 			ts_prev: true,
 			extra: true,
+			note: true,
 			p_v: true,
 			s: true,
 			sn: true,
