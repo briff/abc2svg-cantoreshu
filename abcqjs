@@ -90,7 +90,7 @@ Usage:\n\
 Arguments:\n\
   script.js  generation script to load - default: toxhtml.js (XHTML+SVG)\n\
   options    ABC options (the last options are moved before the last file)\n\
-  ABC_file   ABC file'')
+  ABC_file   ABC file')
 		abc2svg.quit()
 	}
 	abc_cmd("abcqjs", args)
