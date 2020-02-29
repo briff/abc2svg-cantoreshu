@@ -1,6 +1,6 @@
 // abc2svg - abc2svg.js
 //
-// Copyright (C) 2014-2019 Jean-Francois Moine
+// Copyright (C) 2014-2020 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -184,6 +184,7 @@ var	OPEN_BRACE = 0x01,
 var errs = {
 	bad_char: "Bad character '$1'",
 	bad_grace: "Bad character in grace note sequence",
+	bad_transp: "Bad transpose value",
 	bad_val: "Bad value in $1",
 	bar_grace: "Cannot have a bar in grace notes",
 	ignored: "$1: inside tune - ignored",

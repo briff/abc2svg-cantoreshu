@@ -133,7 +133,7 @@ function get_interval(param, score) {
 		note = tmp.buffer[tmp.index] ? parse_acc_pit(tmp) : null
 		if (!note) {
 			if (i != 1 || !score) {
-				syntax(1, "Bad transpose value")
+				syntax(1, errs.bad_transp)
 				return
 			}
 			pit[i] = 242			// 'c' (C5)
@@ -370,13 +370,12 @@ Abc.prototype.set_vp = function(a) {
 			item = a.shift()
 			if (cfmt.sound)
 				break
-			curvoice.transp = get_transp(item)
+			curvoice.transp = get_interval(item, true)
 			break
 		case "shift=":
 			curvoice.shift = curvoice.sndsh = get_interval(a.shift())
 			break
 		case "sound=":
-		case "transpose=":		// (abcMIDI compatibility)
 // concert-score display: apply sound=
 // sounding-score display: apply sound= only if M != c/C
 // sound: apply sound=
@@ -413,6 +412,16 @@ Abc.prototype.set_vp = function(a) {
 				syntax(1, "Bad %%staffscale value")
 			else
 				curvoice.staffscale = val
+			break
+		case "transpose=":		// (abcMIDI compatibility)
+			val = get_transp(a.shift())
+			if (val == undefined) {
+				syntax(1, errs.bad_transp)
+			} else {
+				curvoice.sndtran = val
+				if (cfmt.sound)
+					curvoice.transp = val
+			}
 			break
 		default:
 			switch (item.slice(0, 4)) {

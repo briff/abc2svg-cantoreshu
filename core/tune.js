@@ -947,7 +947,7 @@ function pit_adj() {
 	}
 } // pit_adj()
 
-// get a transposition value as a base-40 interval
+// get a abcm2ps/abcMIDI compatible transposition value as a base-40 interval
 // The value may be
 // - [+|-]<number of semitones>[s|f]
 // - <note1>[<note2>]  % <note2> default is 'c'
@@ -958,7 +958,7 @@ function get_transp(param) {
 	    var	val = parseInt(param)
 		if (isNaN(val) || val < -36 || val > 36) {
 //fixme: no source reference...
-			syntax(1, "Bad transpose value")
+			syntax(1, errs.bad_transp)
 			return
 		}
 		val += 36
@@ -967,7 +967,7 @@ function get_transp(param) {
 					abc2svg.ifb40 :
 					abc2svg.isb40)[val % 12]
 	}
-	return get_interval(param, true)
+	// return undefined
 } // get_transp()
 
 /* -- process a pseudo-comment (%% or I:) -- */
@@ -1250,16 +1250,25 @@ Abc.prototype.do_pscom = function(text) {
 	case "transpose":		// (abcm2ps compatibility)
 		if (cfmt.sound)
 			return
+		val = get_transp(param)
 		switch (parse.state) {
 		case 0:
 			cfmt.transp = 0
 			// fall thru
 		case 1:
 		case 2:
-			val = get_transp(param)
-			if (val)
+			if (val == undefined)
+				syntax(1, errs.bad_transp)
+			else
 				cfmt.transp = (cfmt.transp || 0) + val
 			return
+		}
+		if (val == undefined) {		// accept note interval
+			val = get_interval(param)
+			if (val == undefined) {
+				syntax(1, errs.bad_transp)
+				return
+			}
 		}
 		for (s = curvoice.last_sym; s; s = s.prev) {
 			switch (s.type) {
@@ -1275,7 +1284,7 @@ Abc.prototype.do_pscom = function(text) {
 			}
 			break
 		}
-		do_info('V', curvoice.id + ' score=' + param)
+		curvoice.transp = val
 		return
 	case "tune":
 //fixme: to do
