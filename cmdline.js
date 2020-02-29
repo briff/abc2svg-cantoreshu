@@ -1,6 +1,6 @@
 // abc2svg - cmdline.js - command line
 //
-// Copyright (C) 2014-2018 Jean-Francois Moine
+// Copyright (C) 2014-2020 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -119,7 +119,7 @@ function abc_cmd(cmd, args) {
 	}
 
 	// put the last options before the last ABC file
-	if (args[args.length - 2].slice(0, 2) == '--')
+	if (args.length > 2 && args[args.length - 2].slice(0, 2) == '--')
 		arg_reorder(args)
 
 	while (1) {
