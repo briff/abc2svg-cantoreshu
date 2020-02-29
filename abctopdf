@@ -18,11 +18,10 @@ if [ $# -eq 0 ]; then
 	cat << EOF
 ABC to PDF translator using abc2svg
 Usage:
-  abctopdf [g_options] ABC_file [f_options] [ABC_file [f_options]]* [-o output_file]
+  abctopdf [options] ABC_file [[options] ABC_file] [options] [-o output_file]
 Arguments:
-  g_options   global ABC options
+  options     ABC options (the last options are moved before the last file)
   ABC_file    ABC file
-  f_options   file options
   output_file output file - default is "./abc.pdf"
 EOF
 	exit 1

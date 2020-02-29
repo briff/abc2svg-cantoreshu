@@ -93,6 +93,19 @@ function do_file(fn) {
 function abc_cmd(cmd, args) {
 	var	arg, parm, fn;
 
+	// put the last options before the last file
+	function arg_reorder(a) {
+	    var	f,
+		i = a.length - 2
+
+		while (i > 2 && a[i].slice(0, 2) == '--')
+			i -= 2
+		f = a[--i]
+		a.splice(i, 1)
+		a.push(f)
+	} // arg_reorder()
+
+
 	// initialize the backend
 	abc = new abc2svg.Abc(user)
 	if (typeof global == "object" && !global.abc)
@@ -105,28 +118,24 @@ function abc_cmd(cmd, args) {
 	} catch (e) {
 	}
 
+	// put the last options before the last ABC file
+	if (args[args.length - 2].slice(0, 2) == '--')
+		arg_reorder(args)
+
 	while (1) {
 		arg = args.shift()
 		if (!arg)
 			break
-		if (arg[0] == "-") {
-			if (arg[1] == "-") {
-				parm = args.shift();
-				parm = arg.replace('--', 'I:') + " " + parm + "\n"
-				abc2svg.modules.load(parm);
-				abc.tosvg(cmd, parm)
-			}
+		if (arg[0] == "-" && arg[1] == "-") {
+			parm = arg.replace('--', 'I:') + " " +
+				args.shift() + "\n"
+			abc2svg.modules.load(parm)
+			abc.tosvg(cmd, parm)
 		} else {
-			if (fn) {
-				do_file(fn);
-				abc.tosvg('cmd', '%%select\n')
-			}
-			fn = arg
+			do_file(arg)
+			abc.tosvg('cmd', '%%select\n')
 		}
 	}
-	if (fn)
-		do_file(fn);
-
 	abc2svg.abc_end()
 }
 

@@ -77,12 +77,11 @@ function main(args) {
 		print('ABC translator with jsc (webkit2gtk)\
  and abc2svg-' + abc2svg.version + ' ' + abc2svg.vdate + '\n\
 Usage:\n\
-  abcjsc [script.js] [g_options] ABC_file [f_options] [ABC_file [f_options]]*\n\
+  abcjsc [script.js] [options] ABC_file [[options] ABC_file]* [options]\n\
 Arguments:\n\
   script.js  script to load - default: toxhtml.js (XHTML+SVG generation)\n\
-  g_options  global ABC options\n\
-  ABC_file   ABC file\n\
-  f_options  file options')
+  options    ABC options (the last options are moved before the last file)\n\
+  ABC_file   ABC file')
 		quit()
 	}
 	if (typeof(abc2svg.abc_init) != 'function')

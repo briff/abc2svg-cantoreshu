@@ -67,12 +67,11 @@ cat <<EOF >> /tmp/toto.js
 		abc2svg.print('ABC translator with nodeJS\
  and abc2svg-' + abc2svg.version + ' ' + abc2svg.vdate + '\n\
 Usage:\n\
-  abcnode [script.js] [g_options] ABC_file [f_options] [ABC_file [f_options]]*\n\
+  abcnode [script.js] [options] ABC_file [[options] ABC_file]* [options]\n\
 Arguments:\n\
   script.js  generation script to load - default: toxhtml.js (XHTML+SVG)\n\
-  g_options  global ABC options\n\
-  ABC_file   ABC file\n\
-  f_options  file options');
+  options    ABC options (the last options are moved before the last file)\n\
+  ABC_file   ABC file');
 		abc2svg.quit(1)
 	}
 	args.shift()
