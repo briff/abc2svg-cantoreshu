@@ -48,7 +48,7 @@ if (typeof abc2svg == "undefined")
 
 // function called when abc2svg is fully loaded
 function dom_loaded() {
-    var	abc, i, elt,
+    var	abc, i,
 	errtxt = '',
 	app = "abcweb2",
 	elts,				// ABC HTML elements
@@ -175,7 +175,7 @@ function dom_loaded() {
 	} // playseq()
 
 	function render() {
-	    var	i, sel
+	    var	i, sel, elt
 
 		// aweful hack: user.anno_stop must be defined before Abc creation
 		// for being set later by follow() !
@@ -196,7 +196,14 @@ function dom_loaded() {
 		}
 
 		// generate and replace
-		for (i = 0; i < elts.length; i++) {
+		i = 0
+		while (1) {
+
+			// get the next ABC element
+			elt = document.getElementsByClassName('abc')[0]
+			if (!elt)
+				break
+
 			new_page = ""
 
 			try {
@@ -212,14 +219,16 @@ function dom_loaded() {
 				errtxt = ""
 			}
 			try {
-				elts[i].outerHTML =
-					elts[i].tagName.toLowerCase() == "script" ?
+				elt.outerHTML =
+					elt.tagName.toLowerCase() == "script" ?
 						'<div>' + new_page + '</div>' :
 						new_page
 			} catch (e) {
 				alert("abc2svg bad generated SVG: " + e.message +
 					"\nStack:\n" + e.stack)
 			}
+
+			i++
 		}
 	} // render()
 
@@ -257,9 +266,8 @@ function dom_loaded() {
 	// extract the ABC source
 	elts = document.getElementsByClassName('abc')
 	for (i = 0; i < elts.length; i++) {
-		elt = elts[i]
 		indx[i] = abcsrc.length
-		abcsrc += toabc(elt.innerHTML) + '\n'
+		abcsrc += toabc(elts[i].innerHTML) + '\n'
 	}
 	indx[i] = abcsrc.length
 
