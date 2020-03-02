@@ -94,8 +94,8 @@ function ToAudio() {
 					rsk.rep_s[i] = s
 			else if (d >= '1' && d <= '9')
 				rsk.rep_s[Number(d)] = s
-			else
-				rsk.rep_s.push(s)
+			else if (d != ',')
+				rsk.rep_s.push(s)	// last
 		}
 	} // set_variant()
 
@@ -157,9 +157,11 @@ function ToAudio() {
 			if (s.bar_type.slice(-1) == ':') {
 				rst = s
 				rst_fac = play_fac
+				rsk = null
 
 			// 1st time repeat
-			} else if (s.text && s.text[0] == '1') {
+			} else if (s.text && s.text[0] == '1'
+				&& !rsk) {		// error if already |1
 				rsk = s
 				s.rep_s = [null]	// repeat skip
 				set_variant(rsk, s.text, s)
