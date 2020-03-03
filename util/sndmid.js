@@ -176,7 +176,7 @@ function Midi5(i_conf) {
 
 	// generate 2 seconds of music
 	function play_next() {
-	    var	d, i, st, m, note, g, s2,
+	    var	d, i, st, m, note, g, s2, t, maxt,
 		s = s_cur
 
 		if (stop) {
