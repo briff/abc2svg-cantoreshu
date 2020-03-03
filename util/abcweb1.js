@@ -312,6 +312,8 @@ function dom_loaded() {
 		t = (typeof list_head == "undefined" ? "Tunes:" : list_head) + '<ul>\n'
 		tt = typeof list_tail == "undefined" ? "(all tunes)" : list_tail
 
+		window.onclick = null
+
 		for (;;) {
 			i = page.indexOf("\nX:", i)
 			if (i < 0)
@@ -427,6 +429,9 @@ onclick="abc2svg.do_render(\'.*\')">' + tt + '</li>\n\
 			return
 		}
 
+		// prepare for play on click
+		window.onclick = abc2svg.playseq
+
 		// update the menu
 		setTimeout(function() {
 
@@ -450,9 +455,6 @@ onclick="abc2svg.do_render(\'.*\')">' + tt + '</li>\n\
 
 	// accept page formatting
 	abc2svg.abc_end = function() {}
-
-	// prepare for play on click
-	window.onclick = abc2svg.playseq
 
 	// load the required modules, then render the music
 	if (abc2svg.modules.load(page, render))
