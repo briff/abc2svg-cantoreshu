@@ -46,6 +46,30 @@ function ToAudio() {
 	rsk,			// repeat variant (repeat skip)
 	instr = []		// [voice] bank + instrument
 
+	// handle a block symbol
+	function do_block(s) {
+		switch (s.subtype) {
+		case "midictl":
+			switch (s.ctrl) {
+			case 0:			// MSB bank
+				instr[v] = (instr[v] & 0x3fff) |
+					(s.val << 14)
+				break
+			case 32:		// LSB bank
+				instr[v] = (instr[v] & 0x1fc07f) |
+					(s.val << 7)
+				break
+//			case 121:		// reset all controllers
+//				instr = []
+//				break
+			}
+			break
+		case "midiprog":
+			instr[v] = (instr[v] & ~0x7f) | s.instr
+			break
+		}
+	} // do_block()
+
 	// generate the grace notes
 	function gen_grace(s) {
 	    var	g, i, n, t, d, s2,
@@ -161,37 +185,20 @@ function ToAudio() {
 
 			// 1st time repeat
 			} else if (s.text && s.text[0] == '1'
-				&& !rsk) {		// error if already |1
+				&& !rsk) {		// error if |1 already
 				rsk = s
 				s.rep_s = [null]	// repeat skip
 				set_variant(rsk, s.text, s)
 			}
 			while (s.ts_next && !s.ts_next.dur) {
 				s = s.ts_next
+				if (s.type == C.BLOCK)
+					do_block(s)
 				s.ptim = p_time
 			}
 			break
 		case C.BLOCK:
-			switch (s.subtype) {
-			case "midictl":
-				switch (s.ctrl) {
-				case 0:			// MSB bank
-					instr[v] = (instr[v] & 0x3fff) |
-						(s.val << 14)
-					break
-				case 32:		// LSB bank
-					instr[v] = (instr[v] & 0x1fc07f) |
-						(s.val << 7)
-					break
-//				case 121:		// reset all controllers
-//					instr = []
-//					break
-				}
-				break
-			case "midiprog":
-				instr[v] = (instr[v] & ~0x7f) | s.instr
-				break
-			}
+			do_block(s)
 			break
 		case C.GRACE:
 			if (s.time == 0		// if before beat at start time

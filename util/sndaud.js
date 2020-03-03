@@ -410,8 +410,12 @@ function Audio5(i_conf) {
 						break
 					}
 				}
-				while (s.ts_next && !s.ts_next.dur)
+				while (s.ts_next && !s.ts_next.dur) {
 					s = s.ts_next
+					if (s.subtype == "midictl"
+					 && s.ctrl == 7)	// if volume
+						s.p_v.vol = s.val / 127
+				}
 				break
 			case C.BLOCK:
 				if (s.subtype == "midictl"

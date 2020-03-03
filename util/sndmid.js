@@ -164,6 +164,16 @@ function Midi5(i_conf) {
 		return d
 	} // do_tie()
 
+	// send a MIDI control
+	function midi_ctrl(s, t) {
+	    var	i = s.v & 0x0f		// voice = channel
+		if ((s.instr & ~0x7f) == 16384) // if percussion
+			i = 9		// force the channel 10
+		op.send(new Uint8Array([0xb0 + i,
+					s.ctrl, s.val]),
+			t)
+	} // midi_ctrl()
+
 	// generate 2 seconds of music
 	function play_next() {
 	    var	d, i, st, m, note, g, s2,
@@ -226,18 +236,15 @@ function Midi5(i_conf) {
 						break
 					}
 				}
-				while (s.ts_next && !s.ts_next.dur)
+				while (s.ts_next && !s.ts_next.dur) {
 					s = s.ts_next
+					if (s.subtype == "midictl")
+						midi_ctrl(s, t)
+				}
 				break
 			case C.BLOCK:
-				if (s.subtype == "midictl") {
-					i = s.v & 0x0f		// voice = channel
-					if ((s.instr & ~0x7f) == 16384) // if percussion
-						i = 9		// force the channel 10
-					op.send(new Uint8Array([0xb0 + i,
-								s.ctrl, s.val]),
-						t)
-				}
+				if (s.subtype == "midictl")
+					midi_ctrl(s, t)
 				break
 			case C.GRACE:
 				for (g = s.extra; g; g = g.next) {
