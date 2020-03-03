@@ -48,6 +48,8 @@ function ToAudio() {
 
 	// handle a block symbol
 	function do_block(s) {
+	    var	v = s.v
+
 		switch (s.subtype) {
 		case "midictl":
 			switch (s.ctrl) {
