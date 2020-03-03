@@ -120,7 +120,7 @@ function dom_loaded() {
 			if (!svg)
 				return
 		}
-		i = svg.getAttribute('class').match(/abc(\d)/)
+		i = svg.getAttribute('class').match(/abc(\d+)/)
 		if (!i)
 			return
 		i = i[1] - 1			// tune number
