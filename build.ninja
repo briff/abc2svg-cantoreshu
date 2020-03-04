@@ -1,4 +1,4 @@
-# rules for ninja (ninja-build)
+# rules for ninja (ninja-build) or samurai
 
 # minifying with 'jsmin' or 'uglifyjs' may be disabled by running
 #	NOMIN=1 ninja -v
@@ -24,7 +24,7 @@ rule font
 
 rule jsc
   command = VERSION=`grep '"version"' package.json|cut -d'"' -f4`;$
-   if command -v fossil >/dev/null 2>&1; then $
+   if [ -e .fslckout ] && command -v fossil >/dev/null 2>&1; then $
 	c=`fossil info | grep checkout:`;$
 	t=`fossil info | grep tags: | awk '{print $$NF}'`;$
 	if [ "$${t#v}" != "$$VERSION" ]; then $
@@ -155,7 +155,7 @@ default all
 # npm/fossil new release
 rule version
   command = npm version $out;$
-	tag=`ag '"version"' package.json|cut -d'"' -f4`;$
+	tag=`ag -Q '"version"' package.json|cut -d'"' -f4`;$
 	fossil commit -m "New release v$$tag" -tag v$$tag;$
 	$tool -v;$
 	npm publish
