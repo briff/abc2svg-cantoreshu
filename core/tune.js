@@ -355,7 +355,8 @@ function voice_adj(sys_chg) {
 		s.time = t
 	} // end set_feathered_beam()
 
-	/* if Q: from tune header, put it at start of the music */
+	// if Q: from tune header, put it at start of the music
+	// (after the staff system)
 	s = glovar.tempo
 	if (s && staves_found <= 0) {	// && !s.del) {		- play problem
 		v = par_sy.top_voice;
@@ -366,10 +367,15 @@ function voice_adj(sys_chg) {
 			s.p_v = p_voice;
 			s.st = p_voice.st;
 			s.time = 0;
-			s.next = p_voice.sym
-			if (s.next)
-				s.next.prev = s;
-			p_voice.sym = s
+			if (p_voice.sym) {
+				s.prev = p_voice.sym
+				s.next = p_voice.sym.next
+				if (s.next)
+					s.next.prev = s
+				p_voice.sym.next = s
+			} else {
+				p_voice.sym = s
+			}
 		}
 	}
 
