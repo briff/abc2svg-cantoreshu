@@ -108,6 +108,17 @@ function ToAudio() {
 		}
 	} // gen_grace()
 
+	// change the tempo
+	function set_tempo(s) {
+	    var	i,
+		d = 0,
+		n = s.tempo_notes.length
+
+		for (i = 0; i < n; i++)
+			d += s.tempo_notes[i]
+		return d * s.tempo / 60
+	} // set_tempo()
+
 	function set_variant(rsk, n, s) {
 	    var	d
 		n = n.match(/[1-8]-[2-9]|[1-9,.]|[^\s]+$/g)
@@ -137,13 +148,6 @@ function ToAudio() {
 		if (s.noplay) {			// in display macro sequence
 			s = s.ts_next
 			continue
-		}
-		if (s.tempo) {				// tempo change
-			d = 0
-			n = s.tempo_notes.length
-			for (i = 0; i < n; i++)
-				d += s.tempo_notes[i]
-			play_fac = d * s.tempo / 60
 		}
 
 		dt = s.time - abc_time
@@ -196,6 +200,8 @@ function ToAudio() {
 				s = s.ts_next
 				if (s.type == C.BLOCK)
 					do_block(s)
+				else if (s.tempo)
+					play_fac = set_tempo(s)
 				s.ptim = p_time
 			}
 			break
@@ -229,6 +235,10 @@ function ToAudio() {
 			d /= play_fac
 			s.pdur = d
 			s.instr = instr[v]
+			break
+		case C.TEMPO:
+			if (s.tempo)
+				play_fac = set_tempo(s)
 			break
 		}
 		s = s.ts_next
