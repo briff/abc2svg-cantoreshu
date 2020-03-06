@@ -4942,7 +4942,6 @@ Abc.prototype.output_music = function() {
 	gen_init()
 	if (!tsfirst)
 		return
-	tunes.push([tsfirst, voice_tb])	// keep tune data for playing
 	set_global()
 	if (voice_tb.length > 1)	/* if many voices */
 		self.set_stem_dir()	// set the stems direction in 'multi'

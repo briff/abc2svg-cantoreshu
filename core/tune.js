@@ -1441,6 +1441,8 @@ function generate(in_mc) {
 	if (user.img_out)		// if SVG generation
 		self.output_music()
 
+	tunes.push([tsfirst, voice_tb])	// keep tune data for playing
+
 	// if inside multicol, reset the parser
 	if (!in_mc)
 		return
