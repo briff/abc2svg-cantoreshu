@@ -46,30 +46,24 @@
 // stop() - stop playing
 
 function Midi5(i_conf) {
-    var	C = abc2svg.C,
+    var	po,
 	conf = i_conf,		// configuration
-	onend = function() {},
-	onnote = function() {},
+	empty = function() {},
 	rf,			// get_outputs result function
+	op			// output MIDI port
 
-// MIDI variables
-	op,			// output port
-	v_i = [],		// voice (channel) to instrument
-
-	s_cur,			// current music symbol
-	s_end,			// last music symbol / null
-	stop,			// stop playing
-	repn,			// don't repeat when true
-	repv = 0,		// repeat variant number
-	stime,			// start playing time in ms
-	timouts = []		// note start events
+	// return the play real time in seconds
+	function get_time(po) {
+		return window.performance.now() / 1000
+	} // get_time()
 
 	// create a note
+	// @po = play object
 	// @s = symbol
 	// @k = MIDI key + detune
-	// @t = audio start time (ms)
-	// @d = duration adjusted for speed (ms)
-	function note_run(s, k, t, d) {
+	// @t = audio start time (s)
+	// @d = duration adjusted for speed (s)
+	function note_run(po, s, k, t, d) {
 	    var	j,
 		a = (k * 100) % 100,	// detune in cents
 		i = s.instr,
@@ -78,29 +72,32 @@ function Midi5(i_conf) {
 
 		k |= 0			// remove the detune value
 
+		t *= 1000		// convert to ms
+		d *= 1000		
+
 		if ((s.instr & ~0x7f) == 16384)	// if bank 128 (percussion)
 //fixme: may conflict with the voice 9
 			c = 9			// force the channel 10
-		if (i != v_i[c]) {		// if program change
+		if (i != po.v_i[c]) {		// if program change
 
 			// at channel start, reset and initialize the controllers
-			if (v_i[c] == undefined) {
+			if (po.v_i[c] == undefined) {
 //fixme: does not work with fluidsynth
-				op.send(new Uint8Array([0xb0 + c, 121, 0]))
+				po.op.send(new Uint8Array([0xb0 + c, 121, 0]))
 				if (s.p_v.midictl) {
 				    for (j in s.p_v.midictl)
-					op.send(new Uint8Array([0xb0 + c,
+					po.op.send(new Uint8Array([0xb0 + c,
 								j,
 								s.p_v.midictl[j]]))
 				}
 			}
 
-			v_i[c] = i
-			op.send(new Uint8Array([0xc0 + c, i & 0x7f]))	// program
+			po.v_i[c] = i
+			po.op.send(new Uint8Array([0xc0 + c, i & 0x7f])) // program
 		}
 		if (a && Midi5.ma.sysexEnabled) {	// if microtone
 // fixme: should cache the current microtone values
-			op.send(new Uint8Array([
+			po.op.send(new Uint8Array([
 				0xf0, 0x7f,	// realtime SysEx
 				0x7f,		// all devices
 				0x08,		// MIDI tuning standard
@@ -114,197 +111,19 @@ function Midi5(i_conf) {
 				0xf7		// SysEx end
 				]), t)
 		}
-		op.send(new Uint8Array([0x90 + c, k, 127]), t)		// note on
-		op.send(new Uint8Array([0x80 + c, k, 0]), t + d - 20)	// note off
+		po.op.send(new Uint8Array([0x90 + c, k, 127]), t)	// note on
+		po.op.send(new Uint8Array([0x80 + c, k, 0]), t + d - 20) // note off
 	} // note_run()
 
-	// handle a tie
-	function do_tie(s, midi, d) {
-	    var	i, note,
-		v = s.v,
-		end_time = s.time + s.dur
-
-		// search the end of the tie
-		while (1) {
-			s = s.ts_next
-			if (!s)
-				return d
-			switch (s.type) {
-			case C.BAR:
-				if (s.rep_p) {
-					if (!repn) {
-						s = s.rep_p
-						end_time = s.time
-					}
-				}
-				if (s.rep_s) {
-					if (!s.rep_s[repv + 1])
-						return d
-					s = s.rep_s[repv + 1]
-					end_time = s.time
-				}
-				while (s.ts_next && !s.ts_next.dur)
-					s = s.ts_next
-			}
-			if (s.time > end_time)
-				return d
-			if (s.type == C.NOTE && s.v == v)
-				break
-		}
-		i = s.notes.length
-		while (--i >= 0) {
-			note = s.notes[i]
-			if (note.midi == midi) {
-				note.ti2 = true		// the sound is generated
-				d += s.pdur / conf.speed * 1000
-				return note.tie_ty ? do_tie(s, midi, d) : d
-			}
-		}
-
-		return d
-	} // do_tie()
-
 	// send a MIDI control
-	function midi_ctrl(s, t) {
+	function midi_ctrl(po, s, t) {
 	    var	i = s.v & 0x0f		// voice = channel
 		if ((s.instr & ~0x7f) == 16384) // if percussion
 			i = 9		// force the channel 10
-		op.send(new Uint8Array([0xb0 + i,
+		po.op.send(new Uint8Array([0xb0 + i,
 					s.ctrl, s.val]),
 			t)
 	} // midi_ctrl()
-
-	// generate 2 seconds of music
-	function play_next() {
-	    var	d, i, st, m, note, g, s2, t, maxt,
-		s = s_cur
-
-		if (stop) {
-			onend(repv)
-			return
-		}
-
-		while (s.noplay) {
-			s = s.ts_next
-			if (!s || s == s_end) {
-				onend(repv)
-				return
-			}
-		}
-		t = stime + s.ptim / conf.speed * 1000	// start time
-
-		// if speed change, shift the start time
-		if (conf.new_speed) {
-			stime = window-performance.now() -
-					(window.performance.now() - stime) *
-						conf.speed / conf.new_speed
-			conf.speed = conf.new_speed
-			conf.new_speed = 0
-			t = stime + s.ptim / conf.speed * 1000
-		}
-
-		maxt = t + 2000			// max time = now + 2 seconds
-		timouts = []
-		while (1) {
-			switch (s.type) {
-			case C.BAR:
-				if (s.bar_type.slice(-1) == ':') // left repeat
-					repv = 0
-				if (s.rep_p) {			// right repeat
-					if (!repn) {
-						stime += (s.ptim - s.rep_p.ptim) /
-								conf.speed * 1000
-						s = s.rep_p	// left repeat
-						while (s.ts_next && !s.ts_next.dur)
-							s = s.ts_next
-						t = stime + s.ptim / conf.speed * 1000
-						repn = true
-						break
-					}
-					repn = false
-				}
-				if (s.rep_s) {			// first variant
-					s2 = s.rep_s[++repv]	// next variant
-					if (s2) {
-						stime += (s.ptim - s2.ptim) /
-								conf.speed * 1000
-						s = s2
-						t = stime + s.ptim / conf.speed * 1000
-						repn = false
-					} else {		// end of tune
-						s = s_end
-						break
-					}
-				}
-				while (s.ts_next && !s.ts_next.dur) {
-					s = s.ts_next
-					if (s.subtype == "midictl")
-						midi_ctrl(s, t)
-				}
-				break
-			case C.BLOCK:
-				if (s.subtype == "midictl")
-					midi_ctrl(s, t)
-				break
-			case C.GRACE:
-				for (g = s.extra; g; g = g.next) {
-					d = g.pdur / conf.speed * 1000
-					for (m = 0; m <= g.nhd; m++) {
-						note = g.notes[m]
-						note_run(g,
-							note.midi,
-							t + g.ptim - s.ptim,
-//fixme: there may be a tie...
-							d)
-					}
-				}
-				break
-			case C.NOTE:
-				d = s.pdur / conf.speed * 1000
-				for (m = 0; m <= s.nhd; m++) {
-					note = s.notes[m]
-					if (note.ti2)
-						continue
-					note_run(s,
-						note.midi,
-						t,
-						note.tie_ty ?
-							do_tie(s, note.midi, d) : d)
-				}
-				// fall thru
-			case C.REST:
-				d = s.pdur / conf.speed * 1000
-
-				// follow the notes/rests while playing
-				i = s.istart
-				st = t - window.performance.now()
-				timouts.push(setTimeout(onnote, st, i, true))
-				setTimeout(onnote, st + d, i, false)
-				break
-			}
-			while (1) {
-				if (s == s_end || !s.ts_next) {
-					setTimeout(onend,
-						t - window.performance.now() + d,
-						repv)
-					s_cur = s
-					return
-				}
-				s = s.ts_next
-				if (!s.noplay)
-					break
-			}
-			t = stime + s.ptim / conf.speed * 1000 // next time
-			if (t > maxt)
-				break
-		}
-		s_cur = s
-
-		// delay before next sound generation
-		timouts.push(setTimeout(play_next,
-					t - window.performance.now()
-						- 300))	// wake before end of playing
-	} // play_next()
 
 	// MIDI output is possible,
 	// return the possible ports in return to get_outputs()
@@ -372,17 +191,27 @@ function Midi5(i_conf) {
 
 		// play the symbols
 		play: function(i_start, i_end, i_lvl) {
+			po = {
+				conf: conf,	// configuration
+				onend: conf.onend || empty,
+				onnote: conf.onnote || empty,
+//				stop: false,	// stop playing
+				s_end: i_end,	// last music symbol / null
+				s_cur: i_start,	// current music symbol
+//				repn: false,	// don't repeat
+				repv: i_lvl || 0, // repeat variant number
+				stime: get_time() +
+					+ .2	// start time + 0.2s
+					- i_start.ptim * conf.speed,
+				tgen: 2, 	// generate by 2 seconds
+				get_time: get_time,
+				midi_ctrl: midi_ctrl,
+				note_run: note_run,
 
-			// get the callback functions
-			if (conf.onend)
-				onend = conf.onend
-			if (conf.onnote)
-				onnote = conf.onnote
-
-			stop = false
-			s_end = i_end
-			s_cur = i_start
-			repv = i_lvl || 0
+				// MIDI specific
+				op: op,		// output port
+				v_i: []		// voice (channel) to instrument
+			}
 if (0) {
 // temperament
 			op.send(new Uint8Array([
@@ -400,19 +229,17 @@ if (0) {
 				]), t)
 }
 
-			v_i = []		// must do a reset of all channels
-			stime = window.performance.now() + 200	// start time + 0.2s
-				- s_cur.ptim * conf.speed * 1000
-			play_next()
+			play_next(po)
 		}, // play()
 
 		// stop playing
 		stop: function() {
-			stop = true
-			timouts.forEach(function(id) {
+			po.stop = true
+			po.timouts.forEach(function(id) {
 						clearTimeout(id)
 					})
-			onend(repv)
+			play_next(po)
+//			po.onend(repv)
 //fixme: op.clear() should exist...
 			if (op && op.clear)
 				op.clear()

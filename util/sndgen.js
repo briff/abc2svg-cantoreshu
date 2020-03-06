@@ -243,9 +243,224 @@ function ToAudio() {
 		}
 		s = s.ts_next
 	} // loop
-   } // add()
+   }, // add()
  } // return
 } // ToAudio()
+
+// play some next symbols
+//
+// This function is called by the upper function to start playing.
+// It is called by itself after delay and continue sound generation
+// up to the stop symbol or explicit stop by the user.
+//
+// The po object (Play Object) contains the following items:
+// - variables
+//  - stime: start time
+//		must be set by the calling function at startup time
+//  - stop: stop flag
+//		set by the user to stop playing
+//  - s_cur: current symbol (next to play)
+//		must be set to the first symbol to be played at startup time
+//  - s_end: stop playing on this symbol
+//		this symbol is not played. It may be null.
+//  - conf
+//    - speed: current speed factor
+//		must be set to 1 at startup time
+//    - new_conf: new speed factor
+//		set by the user
+// - internal variables
+//  - repn: don't repeat
+//  - repv: variant number
+//  - timouts: array of the current timeouts
+//		this array may be used by the upper function in case of hard stop
+// - methods
+//  - onend: (optional)
+//  - onnote: (optional)
+//  - note_run: start playing a note
+//  - get_time: return the time of the underlaying sound system
+function play_next(po) {
+    var	d, i, st, m, note, g, s2, t, maxt,
+	C = abc2svg.C,
+	s = po.s_cur
+
+	// handle a tie
+	function do_tie(s, midi, d) {
+	    var	i, note,
+		v = s.v,
+		end_time = s.time + s.dur
+
+		// search the end of the tie
+		while (1) {
+			s = s.ts_next
+			if (!s)
+				return d
+			switch (s.type) {
+			case C.BAR:
+				if (s.rep_p) {
+					if (!po.repn) {
+						s = s.rep_p
+						end_time = s.time
+					}
+				}
+				if (s.rep_s) {
+					if (!s.rep_s[po.repv + 1])
+						return d
+					s = s.rep_s[po.repv + 1]
+					end_time = s.time
+				}
+				while (s.ts_next && !s.ts_next.dur)
+					s = s.ts_next
+			}
+			if (s.time > end_time)
+				return d
+			if (s.type == C.NOTE && s.v == v)
+				break
+		}
+		i = s.notes.length
+		while (--i >= 0) {
+			note = s.notes[i]
+			if (note.midi == midi) {
+				note.ti2 = true		// the sound is generated
+				d += s.pdur / po.conf.speed
+				return note.tie_ty ? do_tie(s, midi, d) : d
+			}
+		}
+
+		return d
+	} // do_tie()
+
+	if (po.stop) {
+		if (po.onend)
+			po.onend(po.repv)
+		return
+	}
+
+	while (s.noplay) {
+		s = s.ts_next
+		if (!s || s == po.s_end) {
+			if (po.onend)
+				po.onend(po.repv)
+			return
+		}
+	}
+	t = po.stime + s.ptim / po.conf.speed	// start time
+
+	// if speed change, shift the start time
+	if (po.conf.new_speed) {
+		d = po.get_time(po)
+		po.stime = d - (d - po.stime) *
+					po.conf.speed / po.conf.new_speed
+		po.conf.speed = po.conf.new_speed
+		po.conf.new_speed = 0
+		t = po.stime + s.ptim / po.conf.speed
+	}
+
+	maxt = t + po.tgen		// max time = now + 'tgen' seconds
+	po.timouts = []
+	while (1) {
+		switch (s.type) {
+		case C.BAR:
+			if (s.bar_type.slice(-1) == ':') // left repeat
+				po.repv = 0
+			if (s.rep_p) {			// right repeat
+				if (!po.repn) {
+					po.stime += (s.ptim - s.rep_p.ptim) /
+							po.conf.speed
+					s = s.rep_p	// left repeat
+					while (s.ts_next && !s.ts_next.dur)
+						s = s.ts_next
+					t = po.stime + s.ptim / po.conf.speed
+					po.repn = true
+					break
+				}
+				po.repn = false
+			}
+			if (s.rep_s) {			// first variant
+				s2 = s.rep_s[++po.repv]	// next variant
+				if (s2) {
+					po.stime += (s.ptim - s2.ptim) /
+							po.conf.speed
+					s = s2
+					t = po.stime + s.ptim / po.conf.speed
+					po.repn = false
+				} else {		// end of tune
+					s = po.s_end
+					break
+				}
+			}
+			while (s.ts_next && !s.ts_next.dur) {
+				s = s.ts_next
+				if (s.subtype == "midictl")
+					midi_ctrl(po, s, t)
+			}
+			break
+		case C.BLOCK:
+			if (s.subtype == "midictl")
+				midi_ctrl(po, s, t)
+			break
+		case C.GRACE:
+			for (g = s.extra; g; g = g.next) {
+				d = g.pdur / po.conf.speed
+				for (m = 0; m <= g.nhd; m++) {
+					note = g.notes[m]
+					po.note_run(po, g,
+						note.midi,
+						t + g.ptim - s.ptim,
+//fixme: there may be a tie...
+						d)
+				}
+			}
+			break
+		case C.NOTE:
+			d = s.pdur / po.conf.speed
+			for (m = 0; m <= s.nhd; m++) {
+				note = s.notes[m]
+				if (note.ti2)
+					continue
+				po.note_run(po, s,
+					note.midi,
+					t,
+					note.tie_ty ?
+						do_tie(s, note.midi, d) : d)
+			}
+			// fall thru
+		case C.REST:
+			d = s.pdur / po.conf.speed
+
+			// follow the notes/rests while playing
+			if (po.onnote) {
+				i = s.istart
+				st = (t - po.get_time(po)) * 1000
+				po.timouts.push(setTimeout(po.onnote, st, i, true))
+				setTimeout(po.onnote, st + d * 1000, i, false)
+			}
+			break
+		}
+		while (1) {
+			if (s == po.s_end || !s.ts_next) {
+				if (po.onend)
+					setTimeout(po.onend,
+						(t - po.get_time(po) + d) * 1000,
+						po.repv)
+				po.s_cur = s
+				return
+			}
+			s = s.ts_next
+			if (!s.noplay)
+				break
+		}
+		t = po.stime + s.ptim / po.conf.speed // next time
+		if (t > maxt)
+			break
+	}
+	po.s_cur = s
+
+	// delay before next sound generation
+	po.timouts.push(setTimeout(play_next,
+				(t - po.get_time(po)) * 1000
+					- 300,	// wake before end of playing
+				po))
+} // play_next()
 
 // nodejs
 if (typeof module == 'object' && typeof exports == 'object')

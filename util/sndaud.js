@@ -62,10 +62,9 @@
     var	abcsf2 = []			// SF2 instruments
 
 function Audio5(i_conf) {
-    var	C = abc2svg.C,
+    var	po,			// play object
 	conf = i_conf,		// configuration
-	onend = function() {},
-	onnote = function() {},
+	empty = function() {},
 	errmsg = alert,
 	ac,			// audio context
 	gain,			// global gain
@@ -74,16 +73,7 @@ function Audio5(i_conf) {
 	instr = [],		// [voice] bank + instrument
 	params = [],		// [instr][key] note parameters per instrument
 	rates = [],		// [instr][key] playback rates
-	w_instr = 0,		// number of instruments being loaded
-
-	// -- play the memorized events --
-	s_cur,			// current music symbol
-	s_end,			// last music symbol / null
-	stop,			// stop playing
-	repn,			// don't repeat when true
-	repv,			// repeat level (variant number)
-	stime,			// start playing time
-	timouts = []		// note start events
+	w_instr = 0		// number of instruments being loaded
 
 	// default sound font load function
 	if (!conf.instr_load) {
@@ -236,9 +226,8 @@ function Audio5(i_conf) {
 	} // load_instr()
 
 	// start loading the instruments
-	function load_res() {
-	    var i,
-		s = s_cur
+	function load_res(s) {
+	    var i
 
 		while (s) {
 			i = s.instr
@@ -250,16 +239,26 @@ function Audio5(i_conf) {
 		}
 	}
 
+	// return the play real time in seconds
+	function get_time(po) {
+		return po.ac.currentTime
+	} // get_time()
+
+	// MIDI control is not treated
+	function midi_ctrl(po, s, t) {
+	} // midi_ctrl()
+
 	// create a note
+	// @po = play object
 	// @s = symbol
 	// @key = MIDI key + detune
 	// @t = audio start time
 	// @d = duration adjusted for speed
-	function note_run(s, key, t, d) {
+	function note_run(po, s, key, t, d) {
 	    var	g, st,
 		instr = s.instr,
-		parm = params[instr][key | 0],
-		o = ac.createBufferSource(),
+		parm = po.params[instr][key | 0],
+		o = po.ac.createBufferSource(),
 		v = s.p_v.vol || 1	// volume (gain)
 
 		if (!parm)		// if the instrument could not be loaded
@@ -276,9 +275,9 @@ function Audio5(i_conf) {
 				 o.detune.value = dt
 		}
 //		o.playbackRate.setValueAtTime(parm.rate, ac.currentTime)
-		o.playbackRate.value = rates[instr][key]
+		o.playbackRate.value = po.rates[instr][key]
 
-		g = ac.createGain()
+		g = po.ac.createGain()
 		if (parm.hold < 0.002) {
 			g.gain.setValueAtTime(v, t)
 		} else {
@@ -295,208 +294,25 @@ function Audio5(i_conf) {
 					t + parm.decay)
 
 		o.connect(g)
-		g.connect(gain)
+		g.connect(po.gain)
 
 		// start the note
 		o.start(t)
 		o.stop(t + d)
 	} // note_run()
 
-	// handle a tie
-	function do_tie(s, midi, d) {
-	    var	i, note,
-		v = s.v,
-		end_time = s.time + s.dur
-
-		// search the end of the tie
-		while (1) {
-			s = s.ts_next
-			if (!s)
-				return d
-			switch (s.type) {
-			case C.BAR:
-				if (s.rep_p) {
-					if (!repn) {
-						s = s.rep_p
-						end_time = s.time
-					}
-				}
-				if (s.rep_s) {
-					if (!s.rep_s[repv + 1])
-						return d
-					s = s.rep_s[repv + 1]
-					end_time = s.time
-				}
-				while (s.ts_next && !s.ts_next.dur)
-					s = s.ts_next
-			}
-			if (s.time > end_time)
-				return d
-			if (s.type == C.NOTE && s.v == v)
-				break
-		}
-		i = s.notes.length
-		while (--i >= 0) {
-			note = s.notes[i]
-			if (note.midi == midi) {
-				note.ti2 = true		// the sound is generated
-				d += s.pdur / conf.speed
-				return note.tie_ty ? do_tie(s, midi, d) : d
-			}
-		}
-
-		return d
-	} // do_tie()
-
-	// generate 2 seconds of music
-	function play_next() {
-	    var	d, i, st, m, note, g, s2, t, maxt,
-		s = s_cur
-
-		if (stop) {			// stop
-			onend(repv)
-			return
-		}
-
-		while (s.noplay) {
-			s = s.ts_next
-			if (!s || s == s_end) {
-				onend(repv)
-				return
-			}
-		}
-		t = stime + s.ptim / conf.speed		// start time
-
-		// if speed change, shift the start time
-		if (conf.new_speed) {
-			stime = ac.currentTime -
-					(ac.currentTime - stime) *
-						conf.speed / conf.new_speed
-			conf.speed = conf.new_speed
-			conf.new_speed = 0
-			t = stime + s.ptim / conf.speed
-		}
-
-		maxt = t + 2			// max time = now + 2 seconds
-		timouts = []
-		while (1) {
-			switch (s.type) {
-			case C.BAR:
-				if (s.bar_type.slice(-1) == ':') // left repeat
-					repv = 0
-				if (s.rep_p) {			// right repeat
-					if (!repn) {
-						stime += (s.ptim - s.rep_p.ptim) /
-								conf.speed
-						s = s.rep_p	// left repeat
-						while (s.ts_next && !s.ts_next.dur)
-							s = s.ts_next
-						t = stime + s.ptim / conf.speed
-						repn = true
-						break
-					}
-					repn = false
-				}
-				if (s.rep_s) {			// first variant
-					s2 = s.rep_s[++repv]	// next variant
-					if (s2) {
-						stime += (s.ptim - s2.ptim) /
-								conf.speed
-						s = s2
-						t = stime + s.ptim / conf.speed
-						repn = false
-					} else {		// end of tune
-						s = s_end
-						break
-					}
-				}
-				while (s.ts_next && !s.ts_next.dur) {
-					s = s.ts_next
-					if (s.subtype == "midictl"
-					 && s.ctrl == 7)	// if volume
-						s.p_v.vol = s.val / 127
-				}
-				break
-			case C.BLOCK:
-				if (s.subtype == "midictl"
-				 && s.ctrl == 7)		// if volume
-					s.p_v.vol = s.val / 127
-				break
-			case C.GRACE:
-				if (s.p_v.vol === 0)		// volume = 0
-					break
-				for (g = s.extra; g; g = g.next) {
-					d = g.pdur / conf.speed
-					for (m = 0; m <= g.nhd; m++) {
-						note = g.notes[m]
-						note_run(g,
-							note.midi,
-							t + g.ptim - s.ptim,
-//fixme: there may be a tie...
-							d)
-					}
-				}
-				break
-			case C.NOTE:
-			    if (s.p_v.vol !== 0) {		// if volume != 0
-				d = s.pdur / conf.speed
-				for (m = 0; m <= s.nhd; m++) {
-					note = s.notes[m]
-					if (note.ti2)
-						continue
-					note_run(s,
-						note.midi,
-						t,
-						note.tie_ty ? 
-							do_tie(s, note.midi, d) : d)
-				}
-			    }
-				// fall thru
-			case C.REST:
-				d = s.pdur / conf.speed
-
-				// follow the notes/rests while playing
-				i = s.istart
-				st = (t - ac.currentTime) * 1000
-				timouts.push(setTimeout(onnote, st, i, true))
-				setTimeout(onnote, st + d * 1000, i, false)
-				break
-			}
-			while (1) {
-				if (s == s_end || !s.ts_next) {
-					setTimeout(onend,
-						(t - ac.currentTime + d) * 1000,
-						repv)
-					s_cur = s
-					return
-				}
-				s = s.ts_next
-				if (!s.noplay)
-					break
-			}
-			t = stime + s.ptim / conf.speed	// next time
-			if (t > maxt)
-				break
-		}
-		s_cur = s
-
-		// delay before next sound generation
-		timouts.push(setTimeout(play_next, (t - ac.currentTime)
-			* 1000 - 300))		// wake before end of playing
-	} // play_next()
-
 	// wait for all resources, then start playing
 	function play_start() {
-		if (stop) {			// stop playing
-			onend(repv)
+		if (po.stop) {			// stop playing
+			po.onend(repv)
 			return
 		}
 
 		// all resources are there
 		gain.connect(ac.destination)
 		stime = ac.currentTime + .2		// start time + 0.2s
-			- s_cur.ptim * conf.speed
-		play_next()
+			- po.s_cur.ptim * conf.speed
+		play_next(po)
 	} // play_start()
 
 	// Audio5 function
@@ -519,10 +335,6 @@ function Audio5(i_conf) {
 	play: function(i_start, i_end, i_lvl) {
 
 		// get the callback functions
-		if (conf.onend)
-			onend = conf.onend
-		if (conf.onnote)
-			onnote = conf.onnote
 		if (conf.errmsg)
 			errmsg = conf.errmsg
 
@@ -550,25 +362,44 @@ function Audio5(i_conf) {
 			gain.gain.value = conf.gain
 		}
 
-		s_end = i_end
-		stop = false
 		while (i_start.noplay)
 			i_start = i_start.ts_next
-		s_cur = i_start
-		repv = i_lvl || 0
+		po = {
+			conf: conf,	// configuration
+			onend: conf.onend || empty,
+			onnote: conf.onnote || empty,
+//			stop: false,	// stop playing
+			s_end: i_end,	// last music symbol / null
+			s_cur: i_start,	// current music symbol
+//			repn: false,	// don't repeat
+			repv: i_lvl || 0, // repeat variant number
+			stime: ac.currentTime
+				+ .2	// start time + 0.2s
+				- i_start.ptim * conf.speed,
+			tgen: 2,	// // generate by 2 seconds
+			get_time: get_time,
+			midi_ctrl: midi_ctrl,
+			note_run: note_run,
+
+			// audio specific
+			ac: ac,
+			gain: gain,
+			params: params,
+			rates: rates
+		}
 		w_instr++
-		load_res()
+		load_res(i_start)
 		if (--w_instr == 0)		// all resources are there
 			play_start()
 	}, // play()
 
 	// stop playing
 	stop: function() {
-		stop = true
-		timouts.forEach(function(id) {
+		po.stop = true
+		po.timouts.forEach(function(id) {
 					clearTimeout(id)
 				})
-		play_next()
+		play_next(po)
 		if (gain) {
 			gain.disconnect()
 			gain = null
