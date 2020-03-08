@@ -366,6 +366,14 @@ function unlksym(s) {
 			s.ts_next.shrink = s.shrink;
 			s.ts_next.space = s.space
 		    }
+		} else {
+			if (s.ts_next.seqst
+			 && s.ts_prev && s.ts_prev.seqst
+			 && !w_tb[s.ts_prev.type]) {
+				s.ts_next.seqst = false
+				s.shrink = s.ts_next.shrink
+				s.space = s.ts_next.space
+			}
 		}
 		s.ts_next.ts_prev = s.ts_prev
 	}
