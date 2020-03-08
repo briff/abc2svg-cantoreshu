@@ -122,6 +122,8 @@ function dom_loaded() {
 		},
 
 		img_out: function(str) {	// image output
+
+			// set the tune number (0..n-1) in the SVG element
 			if (str.slice(0, 4) == "<svg") {
 				if (/^[^>]+class=/.test(str))
 				    new_page += str.replace('class="',
@@ -264,9 +266,9 @@ function dom_loaded() {
 				return
 		}
 		i = svg.getAttribute('class').match(/abc(\d+)/)
-		if (!i || !Number(i[1]))
+		if (!i)
 			return
-		i = i[1] - 1			// tune number
+		i = i[1]			// tune number
 		s = tune_lst[i][0]		// first symbol of the tune
 
 		// check if click on a music symbol
