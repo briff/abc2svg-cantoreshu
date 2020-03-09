@@ -312,7 +312,7 @@ function Audio5(i_conf) {
 		gain.connect(ac.destination)
 		stime = ac.currentTime + .2		// start time + 0.2s
 			- po.s_cur.ptim * conf.speed
-		play_next(po)
+		abc2svg.play_next(po)
 	} // play_start()
 
 	// Audio5 function
@@ -399,7 +399,7 @@ function Audio5(i_conf) {
 		po.timouts.forEach(function(id) {
 					clearTimeout(id)
 				})
-		play_next(po)
+		abc2svg.play_next(po)
 		if (gain) {
 			gain.disconnect()
 			gain = null

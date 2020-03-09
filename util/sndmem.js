@@ -17,9 +17,11 @@
 // You should have received a copy of the GNU General Public License
 // along with abc2svg.  If not, see <http://www.gnu.org/licenses/>.
 
-// Generate play events from the play information in the tunes
+// The function abc2svg.sndmem() must be called after the abc2svg generation
+// and after the play data have been defined (by the function audio.add
+// in util/sndgen.js).
 //
-// This ones are put in an array of Float32Array:
+// It returns an array of Float32Array:
 //	[0]: index of the note in the ABC source
 //	[1]: time in seconds
 //	[2]: if >= 0: MIDI instrument (MIDI GM number - 1)
@@ -29,7 +31,7 @@
 //	[5]: volume (0..1)
 //	[6]: voice number
 
-function sndmem(abc) {
+abc2svg.sndmem = function(abc) {
     var	po, i, tune
 
 	// create a note
@@ -95,7 +97,7 @@ function sndmem(abc) {
 		po.repn = false
 		po.repv = 0
 
-		play_next(po)
+		abc2svg.play_next(po)
 	}
 	return po.a_e
 } //sndmem()

@@ -278,7 +278,7 @@ function ToAudio() {
 //  - onnote: (optional)
 //  - note_run: start playing a note
 //  - get_time: return the time of the underlaying sound system
-function play_next(po) {
+abc2svg.play_next = function(po) {
     var	d, i, st, m, note, g, s2, t, maxt,
 	C = abc2svg.C,
 	s = po.s_cur
@@ -456,7 +456,7 @@ function play_next(po) {
 	po.s_cur = s
 
 	// delay before next sound generation
-	po.timouts.push(setTimeout(play_next,
+	po.timouts.push(setTimeout(abc2svg.play_next,
 				(t - po.get_time(po)) * 1000
 					- 300,	// wake before end of playing
 				po))

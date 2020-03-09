@@ -229,7 +229,7 @@ if (0) {
 				]), t)
 }
 
-			play_next(po)
+			abc2svg.play_next(po)
 		}, // play()
 
 		// stop playing
@@ -238,7 +238,7 @@ if (0) {
 			po.timouts.forEach(function(id) {
 						clearTimeout(id)
 					})
-			play_next(po)
+			abc2svg.play_next(po)
 //			po.onend(repv)
 //fixme: op.clear() should exist...
 			if (op && op.clear)
