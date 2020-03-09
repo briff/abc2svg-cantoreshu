@@ -244,8 +244,10 @@ function Audio5(i_conf) {
 		return po.ac.currentTime
 	} // get_time()
 
-	// MIDI control is not treated
+	// MIDI control
 	function midi_ctrl(po, s, t) {
+		if (s.ctrl == 7)		// if volume
+			s.p_v.vol = s.val / 127
 	} // midi_ctrl()
 
 	// create a note
