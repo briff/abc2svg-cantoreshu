@@ -391,12 +391,12 @@ abc2svg.play_next = function(po) {
 			while (s.ts_next && !s.ts_next.dur) {
 				s = s.ts_next
 				if (s.subtype == "midictl")
-					midi_ctrl(po, s, t)
+					po.midi_ctrl(po, s, t)
 			}
 			break
 		case C.BLOCK:
 			if (s.subtype == "midictl")
-				midi_ctrl(po, s, t)
+				po.midi_ctrl(po, s, t)
 			break
 		case C.GRACE:
 			for (g = s.extra; g; g = g.next) {
