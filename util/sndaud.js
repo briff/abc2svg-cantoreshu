@@ -375,9 +375,7 @@ function Audio5(i_conf) {
 			s_cur: i_start,	// current music symbol
 //			repn: false,	// don't repeat
 			repv: i_lvl || 0, // repeat variant number
-			stime: ac.currentTime
-				+ .2	// start time + 0.2s
-				- i_start.ptim * conf.speed,
+//			stime: ...	// start time
 			tgen: 2,	// // generate by 2 seconds
 			get_time: get_time,
 			midi_ctrl: midi_ctrl,

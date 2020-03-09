@@ -279,9 +279,6 @@ function ToAudio() {
 //  - note_run: start playing a note
 //  - get_time: return the time of the underlaying sound system
 abc2svg.play_next = function(po) {
-    var	d, i, st, m, note, g, s2, t, maxt,
-	C = abc2svg.C,
-	s = po.s_cur
 
 	// handle a tie
 	function do_tie(s, midi, d) {
@@ -328,6 +325,12 @@ abc2svg.play_next = function(po) {
 
 		return d
 	} // do_tie()
+
+    // start and continue to play
+    function play_cont(po) {
+    var	d, i, st, m, note, g, s2, t, maxt,
+	C = abc2svg.C,
+	s = po.s_cur
 
 	if (po.stop) {
 		if (po.onend)
@@ -460,6 +463,12 @@ abc2svg.play_next = function(po) {
 				(t - po.get_time(po)) * 1000
 					- 300,	// wake before end of playing
 				po))
+    } // play_cont()
+
+    // --- play_next ---
+	po.stime = po.get_time(po) + .3	// start time + 0.3s
+			- po.s_cur.ptim * po.conf.speed
+	play_cont(po)			// start playing
 } // play_next()
 
 // nodejs

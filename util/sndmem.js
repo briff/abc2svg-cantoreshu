@@ -73,7 +73,6 @@ abc2svg.sndmem = function(abc) {
 		conf: {		// configuration
 			speed: 1
 		},
-		stime: 0,	// start time
 		tgen: 3600, 	// generate by (for) 1 hour
 		get_time: get_time,
 		midi_ctrl: midi_ctrl,
