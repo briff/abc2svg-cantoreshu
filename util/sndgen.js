@@ -326,6 +326,26 @@ abc2svg.play_next = function(po) {
 		return d
 	} // do_tie()
 
+	// set the MIDI controls up to now
+	function set_ctrl(po, s2, t) {
+	    var	i,
+		s = {
+			subtype: "midictl",
+			p_v: s2.p_v
+		}
+
+		for (i in s2.p_v.midictl) {
+			s.ctrl = i
+			s.val = s2.p_v.midictl[i]
+			po.midi_ctrl(po, s, t)
+		}
+		for (s = s2.p_v.sym; s != s2; s = s.next) {
+			if (s.subtype == "midictl")
+				po.midi_ctrl(po, s, t)
+		}
+		po.p_v[s2.v] = true	// synchronization done
+	}
+
     // start and continue to play
     function play_cont(po) {
     var	d, i, st, m, note, g, s2, t, maxt,
@@ -361,6 +381,8 @@ abc2svg.play_next = function(po) {
 	maxt = t + po.tgen		// max time = now + 'tgen' seconds
 	po.timouts = []
 	while (1) {
+		if (!po.p_v[s.v])		// if new voice
+			set_ctrl(po, s, t)	// set the MIDI controls
 		switch (s.type) {
 		case C.BAR:
 			if (s.bar_type.slice(-1) == ':') // left repeat
@@ -468,6 +490,8 @@ abc2svg.play_next = function(po) {
     // --- play_next ---
 	po.stime = po.get_time(po) + .3	// start time + 0.3s
 			- po.s_cur.ptim * po.conf.speed
+	po.p_v = []			// voice table for the MIDI controls
+
 	play_cont(po)			// start playing
 } // play_next()
 
