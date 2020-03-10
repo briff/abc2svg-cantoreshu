@@ -481,7 +481,7 @@ abc2svg.play_next = function(po) {
 	po.s_cur = s
 
 	// delay before next sound generation
-	po.timouts.push(setTimeout(abc2svg.play_next,
+	po.timouts.push(setTimeout(play_cont,
 				(t - po.get_time(po)) * 1000
 					- 300,	// wake before end of playing
 				po))
