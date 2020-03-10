@@ -647,10 +647,7 @@ function out_stem(x, y, h, grace,
 			}
 		} else {			// straight
 			output += '<path d="'
-//fixme: to do
 			if (!grace) {
-//fixme: check endpoints
-				y += 1
 				while (--nflags >= 0) {
 					out_XYAB('MX Yl7 3.2 0 3.2 -7 -3.2z\n',
 						x, y);
@@ -685,8 +682,6 @@ function out_stem(x, y, h, grace,
 		} else {			// straight
 			output += '<path d="'
 			if (!grace) {
-//fixme: check endpoints
-				y += 1
 				while (--nflags >= 0) {
 					out_XYAB('MX Yl7 -3.2 0 -3.2 -7 3.2z\n',
 						x, y);
