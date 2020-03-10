@@ -122,7 +122,7 @@ function Midi5(i_conf) {
 			i = 9		// force the channel 10
 		po.op.send(new Uint8Array([0xb0 + i,
 					s.ctrl, s.val]),
-			t)
+			t * 1000)
 	} // midi_ctrl()
 
 	// MIDI output is possible,
