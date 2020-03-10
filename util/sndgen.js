@@ -283,6 +283,7 @@ abc2svg.play_next = function(po) {
 	// handle a tie
 	function do_tie(s, midi, d) {
 	    var	i, note,
+		C = abc2svg.C,
 		v = s.v,
 		end_time = s.time + s.dur
 
