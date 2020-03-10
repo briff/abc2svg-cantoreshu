@@ -869,6 +869,7 @@ function new_meter(p) {
 /* Q: tempo */
 function new_tempo(text) {
     var	i, c, d, nd,
+	txt = text,			// (for info.Q)
 	s = {
 		type: C.TEMPO,
 		dur: 0
@@ -952,7 +953,7 @@ function new_tempo(text) {
 
 	if (parse.state != 3) {
 		if (parse.state == 1) {			// tune header
-			info.Q = text;
+			info.Q = txt
 			glovar.tempo = s
 			return
 		}
