@@ -278,6 +278,8 @@ function ToAudio() {
 //  - onnote: (optional)
 //  - note_run: start playing a note
 //  - get_time: return the time of the underlaying sound system
+if (!abc2svg)
+    var	abc2svg = {}
 abc2svg.play_next = function(po) {
 
 	// handle a tie
