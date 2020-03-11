@@ -2020,7 +2020,11 @@ function draw_slurs(s, last) {
 		}
 
 		// build the path of the symbols under the slur
-		if (dir *			// if slur on first voice
+		if (s.v == s2.v) {
+			v = s.v
+		} if (!cur_sy.voices[s.v] || !cur_sy.voices[s2.v]) {
+			v = s.v > s2.v ? s.v : s2.v
+		} else if (dir *			// if slur on first voice
 			(cur_sy.voices[s.v].range <= cur_sy.voices[s2.v].range ?
 				1 : -1) > 0)
 			v = s.v
