@@ -46,6 +46,80 @@ function ToAudio() {
 	rsk,			// repeat variant (repeat skip)
 	instr = []		// [voice] bank + instrument
 
+	// adjust the MIDI pitches according to the transpositions
+	function midi_transp(s, voice_tb) {
+	    var p_v, s,
+		temper = voice_tb[0].temper,	// (set by the module temper.js)
+		v = voice_tb.length
+
+		// loop on the voice symbols
+		function vloop(s, sndtran, ctrans) {
+		    var	i, g, note,
+			transp = sndtran + ctrans
+
+			function set_note(note) {
+			    var m = abc2svg.b40m(note.b40 + transp)
+				if (temper		// if not equal temperament
+				 && (!note.acc
+				  || note.acc | 0 == note.acc)) // and not micro-tone
+					m += temper[m % 12]
+				note.midi = m
+			} // set_note()
+
+			while (s) {
+				switch (s.type) {
+				case C.CLEF:
+					ctrans = (s.clef_octave && !s.clef_oct_transp) ?
+							(s.clef_octave / 7 * 40) : 0
+					transp = ctrans + sndtran
+					break
+				case C.KEY:
+					if (s.k_sndtran != undefined) {
+						sndtran = s.k_sndtran
+						transp = ctrans + sndtran
+					}
+					break
+				case C.GRACE:
+					for (g = s.extra; g; g = g.next) {
+						for (i = 0; i <= g.nhd; i++)
+							set_note(g.notes[i])
+					}
+					break
+				case C.NOTE:
+					for (i = 0; i <= s.nhd; i++)
+						set_note(s.notes[i])
+					break
+				}
+				s = s.next
+			}
+		} // vloop()
+
+		// initialize the clefs and keys
+		while (--v >= 0) {
+			p_v = voice_tb[v]
+			if (!p_v.sym)
+				continue
+			if (p_v.key.k_bagpipe
+			 && !temper)
+	// detune in cents for just intonation in A
+	//  C    ^C     D    _E     E     F    ^F     G    _A     A    _B     B
+	// 15.3 -14.0  -2.0 -10.0   1.9  13.3 -16.0 -31.8 -12.0   0.0  11.4   3.8
+	// (C is ^C,			F is ^F and G is =G)
+	// 86				 84
+	// temp = [100-14, -14, -2, -10, 2, 100-16, -16, -32, -12, 0, 11, 4]
+	// but 'A' bagpipe = 480Hz => raise Math.log2(480/440)*1200 = 151
+				temper = new Float32Array([
+	2.37, 1.37, 1.49, 1.41, 1.53, 2.35, 1.35, 1.19, 1.39, 1.51, 1.62, 1.55
+				])
+
+			s = p_v.clef
+			vloop(p_v.sym,
+				p_v.key.k_sndtran || 0,
+				s.clef_octave && !s.clef_oct_transp ?
+					(s.clef_octave / 7 * 40) : 0)
+		}
+	} // midi_transp()
+
 	// handle a block symbol
 	function do_block(s) {
 	    var	v = s.v
@@ -94,7 +168,7 @@ function ToAudio() {
 			next.time += d
 			next.dur -= d
 		}
-//fixme: assume the grace notes have the same duration
+//fixme: assume the grace notes in the sequence have the same duration
 		n = 0
 		for (g = s.extra; g; g = g.next)
 			n++
@@ -138,10 +212,10 @@ function ToAudio() {
 
 	// add() main
 
-	// set the MIDI pitches
-	AbcMIDI().add(s, voice_tb)
+	// transpose the MIDI pitches
+	midi_transp(s, voice_tb)
 
-	// loop on the symbols
+	// set the time parameters
 	rst = s
 	rst_fac = play_fac
 	while (s) {
@@ -243,15 +317,17 @@ function ToAudio() {
 		}
 		s = s.ts_next
 	} // loop
-   }, // add()
+   } // add()
  } // return
 } // ToAudio()
 
 // play some next symbols
 //
-// This function is called by the upper function to start playing.
-// It is called by itself after delay and continue sound generation
-// up to the stop symbol or explicit stop by the user.
+// This function is called to start playing.
+// Playing is stopped on either
+// - reaching the 'end' symbol (not played) or
+// - reaching the end of tune or
+// - seeing the 'stop' flag (user request).
 //
 // The po object (Play Object) contains the following items:
 // - variables
@@ -273,6 +349,7 @@ function ToAudio() {
 //  - repv: variant number
 //  - timouts: array of the current timeouts
 //		this array may be used by the upper function in case of hard stop
+//  - p_v: voice table used for MIDI control
 // - methods
 //  - onend: (optional)
 //  - onnote: (optional)
