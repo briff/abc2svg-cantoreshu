@@ -58,6 +58,12 @@ abc2svg.C = {
 	SL_DOTTED: 0x08		// (modifier bit)
     };
 
+// !! tied to the symbol types in abc2svg.js !!
+abc2svg.sym_name = ['bar', 'clef', 'custos', '', 'grace',
+		'key', 'meter', 'Zrest', 'note', 'part',
+		'rest', 'yspace', 'staves', 'Break', 'tempo',
+		'', 'block', 'remark']
+
 	// key table - index = number of accidentals + 7
 abc2svg.keys = [
 	new Int8Array([-1,-1,-1,-1,-1,-1,-1 ]),	// 7 flat signs

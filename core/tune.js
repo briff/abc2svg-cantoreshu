@@ -1436,7 +1436,7 @@ function generate(in_mc) {
 
 	// give the parser result to the application
 	if (user.get_abcmodel)
-		user.get_abcmodel(tsfirst, voice_tb, anno_type, info)
+		user.get_abcmodel(tsfirst, voice_tb, abc2svg.sym_name, info)
 
 	if (user.img_out)		// if SVG generation
 		self.output_music()

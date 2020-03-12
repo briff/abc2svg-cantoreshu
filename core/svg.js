@@ -401,12 +401,6 @@ function delayed_update() {
 }
 
 // output the annotations
-// !! tied to the symbol types in abc2svg.js !!
-var anno_type = ['bar', 'clef', 'custos', '', 'grace',
-		'key', 'meter', 'Zrest', 'note', 'part',
-		'rest', 'yspace', 'staves', 'Break', 'tempo',
-		'', 'block', 'remark']
-
 function anno_out(s, t, f) {
 	if (s.istart == undefined)
 		return
@@ -418,7 +412,7 @@ function anno_out(s, t, f) {
 	if (s.grace)
 		type = C.GRACE
 
-	f(t || anno_type[type], s.istart, s.iend,
+	f(t || abc2svg.sym_name[type], s.istart, s.iend,
 		s.x - wl - 2, staff_tb[s.st].y + s.ymn + h - 2,
 		wl + wr + 4, h, s);
 }
