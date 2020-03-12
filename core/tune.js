@@ -359,23 +359,23 @@ function voice_adj(sys_chg) {
 	// (after the staff system)
 	s = glovar.tempo
 	if (s && staves_found <= 0) {	// && !s.del) {		- play problem
+					//fixme: which play problem?
 		v = par_sy.top_voice;
 		p_voice = voice_tb[v];
-		if (p_voice.sym && p_voice.sym.type != C.TEMPO) {
+		if (p_voice.sym
+		 && p_voice.sym.type != C.TEMPO
+		 && (!p_voice.sym.next
+		  || p_voice.sym.next.type != C.TEMPO)) {
 			s = clone(s);
 			s.v = v;
 			s.p_v = p_voice;
 			s.st = p_voice.st;
 			s.time = 0;
-			if (p_voice.sym) {
-				s.prev = p_voice.sym
-				s.next = p_voice.sym.next
-				if (s.next)
-					s.next.prev = s
-				p_voice.sym.next = s
-			} else {
-				p_voice.sym = s
-			}
+			s.prev = p_voice.sym
+			s.next = p_voice.sym.next
+			if (s.next)
+				s.next.prev = s
+			p_voice.sym.next = s
 		}
 	}
 
