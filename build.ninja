@@ -130,7 +130,7 @@ build toaudio-$MAJOR.js: jscu util/toaudio.js
 build play-$MAJOR.js: jscu util/play.js util/toaudio.js $
  util/toaudio5.js util/midi.js util/sf2-parser.js util/tomidi5.js
 build snd-$MAJOR.js: jscu util/play.js util/sndgen.js $
- util/sndaud.js util/midi.js util/sf2-parser.js util/sndmid.js
+ util/sndaud.js util/sf2-parser.js util/sndmid.js
 
 build edit-$MAJOR.xhtml: cpm editor/edit.xhtml
 build abckbd-$MAJOR.js: edit editor/abckbd.js
