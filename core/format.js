@@ -661,8 +661,8 @@ function st_font(font) {
 		r += font.weight + " "
 	if (font.style)
 		r += font.style + " "
-	if (n.indexOf(' ') > 0)
-		n = '"' + n.replace(/"/g, "") + '"'	// '
+	if (n.indexOf('"') < 0 && n.indexOf(' ') > 0)
+		n = '"' + n + '"'
 	return r + font.size.toFixed(1) + 'px ' + n
 }
 function style_font(font) {
