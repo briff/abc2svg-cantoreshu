@@ -43,7 +43,7 @@ function ToAudio() {
 	i, n, dt, d, v,
 	rst = s,		// left repeat (repeat restart)
 	rst_fac,		// play factor on repeat restart
-	rsk,			// repeat variant (repeat skip)
+	rsk,			// repeat variant array (repeat skip)
 	instr = []		// [voice] bank + instrument
 
 	// adjust the MIDI pitches according to the transpositions
@@ -202,11 +202,11 @@ function ToAudio() {
 				break
 			if (d[1] == '-')
 				for (i = d[0]; i <= d[2]; i++)
-					rsk.rep_s[i] = s
+					rsk[i] = s
 			else if (d >= '1' && d <= '9')
-				rsk.rep_s[Number(d)] = s
+				rsk[Number(d)] = s
 			else if (d != ',')
-				rsk.rep_s.push(s)	// last
+				rsk.push(s)	// last
 		}
 	} // set_variant()
 
@@ -238,23 +238,16 @@ function ToAudio() {
 		switch (s.type) {
 		case C.BAR:
 
+			if (s.text && rsk) {		// if new variant
+				set_variant(rsk, s.text, s)
+				play_fac = rst_fac
+			}
+
 			// right repeat
 			if (s.bar_type[0] == ':') {
 				s.rep_p = rst		// :| to |:
-				n = s.text		// variants
-				while (s.ts_next && !s.ts_next.dur) {
-					s = s.ts_next
-					s.ptim = p_time
-					if (!n && s.text)
-						n = s.text
-				}
-				if (rsk) {		// if in a variant
-					if (!n)
-						n = "a"		// last time
-					set_variant(rsk, n, s)
-					play_fac = rst_fac
-					break
-				}
+				if (rsk)
+					s.rep_v = rsk // for knowing the number of variants
 			}
 
 			// left repeat
@@ -266,16 +259,12 @@ function ToAudio() {
 			// 1st time repeat
 			} else if (s.text && s.text[0] == '1'
 				&& !rsk) {		// error if |1 already
-				rsk = s
-				s.rep_s = [null]	// repeat skip
+				s.rep_s = rsk = [null]	// repeat skip
 				set_variant(rsk, s.text, s)
+				rst_fac = play_fac
 			}
-			while (s.ts_next && !s.ts_next.dur) {
+			while (s.ts_next && s.ts_next.type == C.BAR) {
 				s = s.ts_next
-				if (s.type == C.BLOCK)
-					do_block(s)
-				else if (s.tempo)
-					play_fac = set_tempo(s)
 				s.ptim = p_time
 			}
 			break
@@ -414,7 +403,7 @@ abc2svg.play_next = function(po) {
 			p_v: s2.p_v
 		}
 
-		for (i in s2.p_v.midictl) {
+		for (i in s2.p_v.midictl) { // MIDI controls at voice start time
 			s.ctrl = i
 			s.val = s2.p_v.midictl[i]
 			po.midi_ctrl(po, s, t)
@@ -424,7 +413,7 @@ abc2svg.play_next = function(po) {
 				po.midi_ctrl(po, s, t)
 		}
 		po.p_v[s2.v] = true	// synchronization done
-	}
+	} // set_ctrl()
 
     // start and continue to play
     function play_cont(po) {
@@ -466,14 +455,20 @@ abc2svg.play_next = function(po) {
 		switch (s.type) {
 		case C.BAR:
 			if (s.bar_type.slice(-1) == ':') // left repeat
-				po.repv = 0
-			if (s.rep_p) {			// right repeat
-				if (!po.repn) {
+				po.repv = 1
+			if (s.rep_p) {		// right repeat
+				po.repv++
+				if (!po.repn	// if repeat a first time
+				 && (!s.rep_v	// and no variant (anymore)
+				  || po.repv < s.rep_v.length)) {
 					po.stime += (s.ptim - s.rep_p.ptim) /
 							po.conf.speed
 					s = s.rep_p	// left repeat
-					while (s.ts_next && !s.ts_next.dur)
+					while (s.ts_next && !s.ts_next.dur) {
 						s = s.ts_next
+						if (s.subtype == "midictl")
+							po.midi_ctrl(po, s, t)
+					}
 					t = po.stime + s.ptim / po.conf.speed
 					po.repn = true
 					break
@@ -481,7 +476,7 @@ abc2svg.play_next = function(po) {
 				po.repn = false
 			}
 			if (s.rep_s) {			// first variant
-				s2 = s.rep_s[++po.repv]	// next variant
+				s2 = s.rep_s[po.repv]	// next variant
 				if (s2) {
 					po.stime += (s.ptim - s2.ptim) /
 							po.conf.speed
@@ -571,6 +566,8 @@ abc2svg.play_next = function(po) {
 	po.stime = po.get_time(po) + .3	// start time + 0.3s
 			- po.s_cur.ptim * po.conf.speed
 	po.p_v = []			// voice table for the MIDI controls
+	if (!po.repv)
+		po.repv = 1
 
 	play_cont(po)			// start playing
 } // play_next()
