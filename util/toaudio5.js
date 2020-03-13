@@ -1,6 +1,6 @@
 // toaudio5.js - audio output using HTML5 audio
 //
-// Copyright (C) 2015-2019 Jean-Francois Moine
+// Copyright (C) 2015-2020 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -72,7 +72,7 @@ function Audio5(i_conf) {
 	var	conf = i_conf,		// configuration
 		onend = function() {},
 		onnote = function() {},
-		errmsg = alert,
+		errmsg,
 		ac,			// audio context
 		gain,			// global gain
 
@@ -429,8 +429,7 @@ function Audio5(i_conf) {
 			onend = conf.onend
 		if (conf.onnote)
 			onnote = conf.onnote
-		if (conf.errmsg)
-			errmsg = conf.errmsg
+		errmsg = conf.errmsg || alert
 
 		// play a null file to unlock the iOS audio
 		// This is needed for iPhone/iPad/...

@@ -65,7 +65,7 @@ function Audio5(i_conf) {
     var	po,			// play object
 	conf = i_conf,		// configuration
 	empty = function() {},
-	errmsg = alert,
+	errmsg,
 	ac,			// audio context
 	gain,			// global gain
 
@@ -337,8 +337,7 @@ function Audio5(i_conf) {
 	play: function(i_start, i_end, i_lvl) {
 
 		// get the callback functions
-		if (conf.errmsg)
-			errmsg = conf.errmsg
+		errmsg = conf.errmsg || alert
 
 		// play a null file to unlock the iOS audio
 		// This is needed for iPhone/iPad/...
