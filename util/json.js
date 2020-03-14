@@ -51,6 +51,8 @@ function AbcJSON(nindent) {			// indentation level
 			last_note: true,
 			lyric_restart: true,
 			sym_restart: true,
+			rep_p: true,
+			rep_v: true,
 		        rep_s: true
 		},
 		objstk = []
@@ -87,9 +89,11 @@ function AbcJSON(nindent) {			// indentation level
 				json += "null"
 				break
 			}
-			if (objstk.indexOf(val) >= 0)
-				throw new Error("!!! loop !!!\n" +
-						json.slice(-200))
+			if (objstk.indexOf(val) >= 0) {
+				json += "!!! to_json: loop in '" + attr + "' !!!"
+				break
+			}
+			objstk.push(val)
 			if (Array.isArray(val)) {
 				if (val.length == 0) {
 					json += "[]"
@@ -101,14 +105,13 @@ function AbcJSON(nindent) {			// indentation level
 					attr_gen(indn, null, val[i]);
 				json += '\n' + ind + ']'
 			} else {
-				objstk.push(val)
 				h = '{\n'
 				for (i in val)
 				    if (val.hasOwnProperty(i))
 					attr_gen(indn, i, val[i]);
 				json += '\n' + ind + '}'
-				objstk.pop()
 			}
+			objstk.pop()
 			break
 		default:
 			json += JSON.stringify(val)
