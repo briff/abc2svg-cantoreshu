@@ -3022,8 +3022,8 @@ function new_sym(s, p_v, last_s) {
 
 /* -- init the symbols at start of a music line -- */
 function init_music_line() {
-	var	p_voice, s, s2, s3, last_s, v, st, shr, shrmx,
-		nv = voice_tb.length
+   var	p_voice, s, s2, s3, last_s, v, st, shr, shrmx, shl,
+	nv = voice_tb.length
 
 	/* initialize the voices */
 	for (v = 0; v < nv; v++) {
@@ -3188,6 +3188,7 @@ function init_music_line() {
 	while (1) {
 		s2 = s;
 		shrmx = 0
+		shl = 0
 		do {
 			self.set_width(s);
 			shr = s.wl
@@ -3195,6 +3196,8 @@ function init_music_line() {
 				shr += s.prev.wr
 			if (shr > shrmx)
 				shrmx = shr;
+			if (s.wr > shl)
+				shl = s.wr	// left width for next symbol
 			s = s.ts_next
 		} while (s != last_s && !s.seqst);
 		s2.shrink = shrmx;
@@ -3213,9 +3216,9 @@ function init_music_line() {
 			shr = s.wl;
 		s = s.ts_next
 	} while (s && !s.seqst);
-	last_s.shrink = s2.wr + shr
+	last_s.shrink = shl + shr
 	last_s.space = 0
-}
+} // init_music_line()
 
 /* -- set a pitch in all symbols and the start/stop of the beams -- */
 // and sort the pitches in the chords
