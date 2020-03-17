@@ -800,7 +800,7 @@ function set_transp() {
 				break
 			s = s.prev
 			if (!s) {
-				s = curvoice.key
+				s = curvoice.ckey
 				break
 			}
 		}
@@ -2031,8 +2031,8 @@ function new_voice(id) {
 //		cst: 0,
 		ulen: glovar.ulen,
 		dur_fact: 1,
-		key: clone(parse.ckey),	// key at start of tune (parse) / line (gene)
-		ckey: clone(parse.ckey),	// current key (parse)
+		key: clone(parse.ckey),		// key at start of tune (parse / gene)
+		ckey: clone(parse.ckey),	// current key (parse / gene)
 		okey: clone(parse.ckey),	// key without transposition (parse)
 		meter: clone(glovar.meter),
 		wmeasure: glovar.meter.wmeasure,

@@ -1123,7 +1123,7 @@ function draw_gracenotes(s) {
 
 	/* slur */
 //fixme: have a full key symbol in voice
-	if (s.p_v.key.k_bagpipe			/* no slur when bagpipe */
+	if (s.p_v.ckey.k_bagpipe		/* no slur when bagpipe */
 	 || !cfmt.graceslurs
 	 || slur				// explicit slur
 	 || s.tie_s				// some tie
@@ -3539,7 +3539,7 @@ Abc.prototype.draw_symbols = function(p_voice) {
 		if (s.invis) {
 			switch (s.type) {
 			case C.KEY:
-				p_voice.key = s
+				p_voice.ckey = s
 			default:
 				continue
 			case C.NOTE:	// (beams may start on invisible notes)
@@ -3618,7 +3618,7 @@ Abc.prototype.draw_symbols = function(p_voice) {
 			anno_stop(s)
 			break
 		case C.KEY:
-			p_voice.key = s
+			p_voice.ckey = s
 			if (s.second
 			 || s.invis
 			 || !staff_tb[s.st].topbar)

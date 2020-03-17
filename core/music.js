@@ -1736,10 +1736,10 @@ function get_ck_width() {
 	p_voice = voice_tb[0]
 
 	self.set_width(p_voice.clef);
-	self.set_width(p_voice.key);
+	self.set_width(p_voice.ckey);
 	self.set_width(p_voice.meter)
 	return [p_voice.clef.wl + p_voice.clef.wr +
-			p_voice.key.wl + p_voice.key.wr,
+			p_voice.ckey.wl + p_voice.ckey.wr,
 		p_voice.meter.wl + p_voice.meter.wr]
 }
 
@@ -2132,7 +2132,7 @@ function set_ottava() {
 		case C.NOTE:
 			delta = staff_d[st]
 			if (delta
-			 && !s.p_v.key.k_drum) {
+			 && !s.p_v.ckey.k_drum) {
 				for (m = s.nhd; m >= 0; m--) {
 					note = s.notes[m];
 					if (!note.opit)
@@ -2145,7 +2145,7 @@ function set_ottava() {
 			for (g = s.extra; g; g = g.next) {
 				delta = staff_d[st]
 				if (delta
-				 && !s.p_v.key.k_drum) {
+				 && !s.p_v.ckey.k_drum) {
 					for (m = 0; m <= g.nhd; m++) {
 						note = g.notes[m]
 						if (!note.opit)
@@ -2588,7 +2588,7 @@ Abc.prototype.set_pitch = function(last_s) {
 			for (g = s.extra; g; g = g.next) {
 				delta = staff_delta[g.st]
 				if (delta
-				 && !s.p_v.key.k_drum) {
+				 && !s.p_v.ckey.k_drum) {
 					for (m = 0; m <= g.nhd; m++) {
 						note = g.notes[m];
 						note.opit = note.pit
@@ -2626,7 +2626,7 @@ Abc.prototype.set_pitch = function(last_s) {
 		case C.NOTE:
 			delta = staff_delta[st]
 			if (delta
-			 && !s.p_v.key.k_drum) {
+			 && !s.p_v.ckey.k_drum) {
 				for (m = s.nhd; m >= 0; m--) {
 					note = s.notes[m]
 					note.opit = note.pit
@@ -3112,7 +3112,7 @@ function init_music_line() {
 			last_s = last_s.ts_next
 			continue
 		}
-		s2 = p_voice.key
+		s2 = p_voice.ckey
 		if (s2.k_sf || s2.k_a_acc) {
 			s = clone(s2)
 			new_sym(s, p_voice, last_s)
@@ -3403,6 +3403,7 @@ function set_global() {
 	for (v = 0; v < nv; v++) {
 		p_voice = voice_tb[v];
 		set_words(p_voice)
+		p_voice.ckey = p_voice.key	// starting key
 // (test removed because v.second may change after %%staves)
 //		if (!p_voice.second && !p_voice.norepbra)
 			set_rb(p_voice)
