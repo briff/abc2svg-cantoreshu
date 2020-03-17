@@ -593,6 +593,7 @@ function new_key(param) {
 		// fall thru
 	default:
 		s.k_map = []
+		s.k_mode = 0
 		return [s, info_split(param)]
 	}
     }
