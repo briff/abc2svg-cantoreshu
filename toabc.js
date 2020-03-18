@@ -63,7 +63,7 @@
 		"G", "D", "A", "E", "B", "F#", "C#", "G#", "D#", "A#"
 	]
 
-function abc_dump(tsfirst, voice_tb, music_types, info) {
+function abc_dump(tsfirst, voice_tb, info) {
     var	i, v, s, g, line, ulen, tmp, tmp2, grace, bagpipe, eoln, curv,
 	nv = voice_tb.length,
 	vo = [],		// dump line per voice
@@ -318,6 +318,7 @@ break
 
 	function gch_dump(a_gch) {
 	    var i, j, gch
+
 		for (i = 0; i < a_gch.length; i++) {
 			gch = a_gch[i]
 			font_def(gch.type == 'g' ? "gchord" : "annotation", gch.text)
@@ -875,7 +876,7 @@ break
 			break
 		default:
 			voice_out();
-			abc2svg.print('% ??sym: ' + music_types[s.type])
+			abc2svg.print('% ??sym: ' + abc2svg.sym_name[s.type])
 			break
 		}
 	} // sym_dump()
@@ -940,7 +941,6 @@ break
 	lyric_dump();
 	header_dump("W")
 } // abc_dump()
-user.get_abcmodel = abc_dump
 
 // -- local functions
 abc2svg.abc_init = function(args) {
@@ -951,8 +951,19 @@ abc2svg.abc_init = function(args) {
 }
 
 abc2svg.abc_end = function() {
+    var	t,
+	tunes = abc.tunes.slice(0)	// get a copy of the generated tunes
+
 	if (user.errtxt)
-		abc2svg.print("Errors:\n" + user.errtxt)
+		abc2svg.print("\n--- Errors ---\n" + user.errtxt)
+
+	while (1) {
+		t = tunes.shift()
+		if (!t)
+			break
+		abc_dump(t[0], t[1], t[2])
+	}
+
 }
 
 abc2svg.abort = function(e) {
