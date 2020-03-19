@@ -150,18 +150,18 @@ abc2svg.MIDI = {
 	for (i = 0; i < a.length; i++) {
 		switch (a[i]) {
 		case "instr=":			// %%MIDI program
-			curvoice.instr = a[i + 1]
+			curvoice.instr = a[++i]
 			break
 		case "midictl=":		// %%MIDI control
 			if (!curvoice.midictl)
 				curvoice.midictl = []
-			item = a[i + 1].split(' ');
+			item = a[++i].split(' ');
 			curvoice.midictl[item[0]] = Number(item[1])
 			break
 		case "mididrum=":		// %%MIDI drummap note midipitch
 			if (!curvoice.map)
 				curvoice.map = {}
-			curvoice.map = a[i + 1]
+			curvoice.map = a[++i]
 			break
 		}
 	}
