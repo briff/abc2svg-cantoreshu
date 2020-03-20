@@ -15,15 +15,10 @@ abc2svg.page = {
 
 	page.user_out(p)
 	
-	// user.img_out may have been changed ..
+	// if user.img_out has been changed
 	if (user.img_out != cur_img_out) {
-		page.user_out = user.img_out;
-		if (cur_img_out == page.img_out_sav) {	// .. by the backend
-			user.img_out = abc2svg.page.img_in.bind(page.abc);
-			page.img_out_sav = user.img_out	// keep our reference
-		} else {
-			user.img_out = cur_img_out	// .. by an other extension
-		}
+		page.user_out = user.img_out	// save the new function
+		user.img_out = cur_img_out	// and restore ours
 	}
     },
 
