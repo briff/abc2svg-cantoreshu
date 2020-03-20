@@ -122,20 +122,7 @@ function dom_loaded() {
 		},
 
 		img_out: function(str) {	// image output
-
-			// set the tune number (0..n-1) in the SVG element
-			if (str.slice(0, 4) == "<svg") {
-				if (/^[^>]+class=/.test(str))
-				    new_page += str.replace('class="',
-						'class="abc' +
-							abc.tunes.length + ' ')
-				else
-				    new_page += '<svg class="abc' +
-					abc.tunes.length + '"' +
-					str.slice(4)
-			} else {
-				new_page += str
-			}
+			new_page += str
 		},
 
 		page_format: true		// define the non-page-breakable blocks
@@ -265,7 +252,7 @@ function dom_loaded() {
 			if (!svg)
 				return
 		}
-		i = svg.getAttribute('class').match(/abc(\d+)/)
+		i = svg.getAttribute('class').match(/tune(\d+)/)
 		if (!i)
 			return
 		i = i[1]			// tune number

@@ -1133,7 +1133,8 @@ function svg_flush() {
 		head += ' style="background-color: ' + cfmt.bgcolor + '"';
 
 	font = get_font("music")
-	head += ' class="' + font_class(font) + '"\n'
+	head += ' class="' + font_class(font) +
+		' tune' + tunes.length + '"\n'	// tune index for play
 
 	posy *= cfmt.scale
 	if (user.imagesize) {
