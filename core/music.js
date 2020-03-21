@@ -4932,7 +4932,8 @@ function gen_init() {
 			continue
 		case C.STAVES:
 			cur_sy = s.sy
-			break
+//			break
+			continue
 		case C.BLOCK:
 			if (s.play)
 				continue	// keep for play
