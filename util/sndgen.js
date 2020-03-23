@@ -464,11 +464,8 @@ abc2svg.play_next = function(po) {
 					po.stime += (s.ptim - s.rep_p.ptim) /
 							po.conf.speed
 					s = s.rep_p	// left repeat
-					while (s.ts_next && !s.ts_next.dur) {
+					while (s.ts_next && s.ts_next.type == C.BAR)
 						s = s.ts_next
-						if (s.subtype == "midictl")
-							po.midi_ctrl(po, s, t)
-					}
 					t = po.stime + s.ptim / po.conf.speed
 					po.repn = true
 					break
@@ -488,11 +485,8 @@ abc2svg.play_next = function(po) {
 					break
 				}
 			}
-			while (s.ts_next && !s.ts_next.dur) {
+			while (s.ts_next && s.ts_next.type == C.BAR)
 				s = s.ts_next
-				if (s.subtype == "midictl")
-					po.midi_ctrl(po, s, t)
-			}
 			break
 		case C.BLOCK:
 			if (s.subtype == "midictl")
