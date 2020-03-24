@@ -2592,8 +2592,6 @@ function parse_music_line() {
 				sls.push(parse_vpos())
 				continue
 			case ')':			// slur end
-				if (curvoice.ignore)
-					break
 				s = curvoice.last_sym
 				if (s) {
 					switch (s.type) {
