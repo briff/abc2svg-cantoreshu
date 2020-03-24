@@ -981,6 +981,8 @@ function get_transp(param) {
 Abc.prototype.do_pscom = function(text) {
     var	h1, val, s, cmd, param, n, k, b
 
+	if (curvoice && curvoice.ignore)
+		return
 	cmd = text.match(/(\w|-)+/)
 	if (!cmd)
 		return
