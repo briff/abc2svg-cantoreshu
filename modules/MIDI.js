@@ -76,8 +76,11 @@ abc2svg.MIDI = {
 
     // do_midi()
     var	n, v, s, maps,
-	a = parm.split(/\s+/)
+	a = parm.split(/\s+/),
+	curvoice = this.get_curvoice()
 
+	if (curvoice && curvoice.ignore)
+		return
 	switch (a[1]) {
 	case "channel":				// channel 10 is bank 128
 		if (a[2] != "10")
