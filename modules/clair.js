@@ -67,21 +67,22 @@ abc2svg.clair = {
     ],
 
 // draw the helper lines
-    draw_hl: function(of, x, s, hltype) {
+    draw_hl: function(of, s) {
 	if (!s.p_v.clair) {
-		of(x, s, hltype)
+		of(x)
 		return
 	}
 
     var	i, m, hl,
-	staffb = this.get_staff_tb()[s.st].y
+	dx = s.grace ? 4 : [4.7, 5, 6, 7.2, 7.5][s.head] * 1.4,
+	p_st = this.get_staff_tb()[s.st]
 
 	for (m = 0; m <= s.nhd; m++) {
 		hl = abc2svg.clair.hl_tb[s.notes[m].pit]
 		if (!hl)
 			continue
 		for (i = 0; i < hl.length; i++)
-			this.xygl(x, staffb + hl[i] * 3, hltype)
+			this.set_hl(p_st, hl[i], s.x, -dx, dx)
 	}
     }, // draw_hl()
 

@@ -53,16 +53,16 @@ var dx_tb = new Float32Array([
 	10,		// EMPTY
 	11,		// OVAL
 	13,		// OVALBARS
-	13		// SQUARE
+	15		// SQUARE
 ])
 
 // head width  - index = note head type
 var hw_tb = new Float32Array([
-	4.5,		// FULL
+	4.7,		// FULL
 	5,		// EMPTY
 	6,		// OVAL
-	7,		// OVALBARS
-	8		// SQUARE
+	7.2,		// OVALBARS
+	7.5		// SQUARE
 ])
 
 /* head width for voice overlap - index = note head type */
@@ -4619,6 +4619,12 @@ function set_piece() {
 					break
 				}
 			}
+
+			// ledger lines
+			// index = line number
+			// values = [x symbol, x start, x stop]
+			p_staff.hlu = []	// above the staff
+			p_staff.hld = []	// under the staff
 		}
 	} // set_top_bot()
 

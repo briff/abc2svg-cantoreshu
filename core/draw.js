@@ -737,11 +737,42 @@ function draw_acc(x, y, acc,
 	xygl(x, y, "acc" + acc)
 }
 
+// memorize the helper/ledger lines
+function set_hl(p_st, n, x, dx1, dx2) {
+    var	i, hl
+
+	if (n >= 0) {
+		hl = p_st.hlu[n]
+		if (!hl)
+			hl = p_st.hlu[n] = []
+	} else {
+		hl = p_st.hld[-n]
+		if (!hl)
+			hl = p_st.hld[-n] = []
+	}
+
+	for (i = 0; i < hl.length; i++) {
+		if (x >= hl[i][0])
+			break
+	}
+	dx1 *= stv_g.scale
+	dx2 *= stv_g.scale
+	if (i == hl.length) {
+		hl.push([x, dx1, dx2])
+	} else if (x > hl[i][0]) {
+		hl.splice(++i, 0, [x, dx1, dx2])
+	} else {
+		if (dx1 < hl[i][1])
+			hl[i][1] = dx1
+		if (dx2 > hl[i][2])
+			hl[i][2] = dx2
+	}
+} // set_hl()
+
 // draw helper lines
-//fixme: double lines when needed for different voices
 // (possible hook)
-Abc.prototype.draw_hl = function(x, s, hltype) {
-    var	i, j, n,
+Abc.prototype.draw_hl = function(s) {
+    var	i, j, n, note,
 	hla = [],
 	st = s.st,
 	p_staff = staff_tb[st]
@@ -750,47 +781,63 @@ Abc.prototype.draw_hl = function(x, s, hltype) {
 	if (!p_staff.hll)
 		return			// no helper line (no line)
 	for (i = 0; i <= s.nhd; i++) {
-		if (!p_staff.hlmap[s.notes[i].pit - p_staff.hll])
-			hla.push((s.notes[i].pit - 18) * 3)
+		note = s.notes[i]
+		if (!p_staff.hlmap[note.pit - p_staff.hll])
+			hla.push([note.pit - 18,
+				  note.shhd * stv_g.scale])
 	}
 	n = hla.length
 	if (!n)
 		return			// no
 
 	// handle the helper lines out of the staff
-    var	staffb = p_staff.y,
+    var	dx1, dx2, hl, shhd,hlp,
 	stafflines = p_staff.stafflines,
-	top = (stafflines.length - 1) * 6,
-	bot = p_staff.botline,
+	top = stafflines.length - 1,
+	yu =  top,
+	bot = p_staff.botline / 6,
 	yl = bot,
-	yu = top
+	dx = s.grace ? 4 : hw_tb[s.head] * 1.4
+
+	// get the x start and x stop of the intermediate helper lines
+	note = s.notes[s.stem < 0 ? s.nhd : 0]
+	shhd = note.shhd
 
 	for (i = 0; i < hla.length; i++) {
-		if (hla[i] < yl) {
-			yl = (((hla[i] + 51) / 6) | 0) * 6 - 48;
+		hlp = hla[i][0]
+		dx1 = (hla[i][1] < shhd ? hla[i][1] : shhd) - dx
+		dx2 = (hla[i][1] > shhd ? hla[i][1] : shhd) + dx
+		if (hlp < yl * 2) {
+			yl = ++hlp >> 1
 			n--
-		} else if (hla[i] > yu) {
-			yu = ((hla[i] / 6) | 0) * 6;
+		} else if (hlp > yu * 2) {
+			yu = hlp >> 1
 			n--
 		}
+		set_hl(p_staff, hlp >> 1, s.x, dx1, dx2)
 	}
-	for (; yl < bot; yl += 6)
-		xygl(x, staffb + yl, hltype)
-	for (; yu > top; yu -= 6)
-		xygl(x, staffb + yu, hltype)
+
+	dx1 = shhd - dx
+	dx2 = shhd + dx
+	while (++yl < bot)
+		set_hl(p_staff, yl,
+			s.x, dx1, dx2)
+	while (--yu > top)
+		set_hl(p_staff, yu,
+			s.x, dx1, dx2)
 	if (!n)
 		return			// no more helper lines
 
 	// draw the helper lines inside the staff
 	i = yl;
 	j = yu
-	while (i > bot && stafflines[i / 6] == '-')
-		i -= 6
-	while (j < top && stafflines[j / 6] == '-')
-		j += 6
-	for ( ; i < j; i += 6) {
-		if (stafflines[i / 6] == '-')
-			xygl(x, staffb + i, hltype)	// hole
+	while (i > bot && stafflines[i] == '-')
+		i--
+	while (j < top && stafflines[j] == '-')
+		j++
+	for ( ; i < j; i++) {
+		if (stafflines[i] == '-')
+			set_hl(p_staff, i, s.x, dx1, dx2)
 	}
 }
 
@@ -911,8 +958,9 @@ Abc.prototype.draw_keysig = function(x, s) {
 			else if (acc.acc != last_acc)
 				x += 3;
 			last_acc = acc.acc;
+			s2.x = x
 			s2.notes[0].pit = shift / 3 + 18;
-			self.draw_hl(x, s2, "hl");
+			self.draw_hl(s2)
 			last_shift = shift;
 			draw_acc(x, staffb + shift,
 				 acc.acc, acc.micro_n, acc.micro_d);
@@ -1290,24 +1338,6 @@ function draw_basic_note(x, s, m, y_tb) {
 		dots = elts[1],
 		nflags = elts[2]
 
-	/* output a ledger line if horizontal shift / chord
-	 * and note on a line */
-	if (y % 6 == 0
-	 && shhd != (s.stem > 0 ? s.notes[0].shhd : s.notes[s.nhd].shhd)) {
-		yy = 0
-		if (y >= 30) {
-			yy = y
-			if (yy % 6)
-				yy -= 3
-		} else if (y <= -6) {
-			yy = y
-			if (yy % 6)
-				yy += 3
-		}
-		if (yy)
-			xygl(x_note, yy + staffb, "hl")
-	}
-
 	/* draw the head */
 	if (note.invis) {
 		;
@@ -1351,6 +1381,7 @@ function draw_basic_note(x, s, m, y_tb) {
 			if (!tsnext && s.next
 			 && s.next.type == C.BAR && !s.next.next)
 				dots = 0
+			x_note += 1
 			break
 		case C.EMPTY:
 			p = "Hd"		// white note
@@ -1410,36 +1441,17 @@ function draw_basic_note(x, s, m, y_tb) {
 /* (the staves are defined) */
 function draw_note(s,
 		   fl) {		// draw flags
-	var	s2, i, m, y, staffb, slen, c, hltype, nflags,
-		x, y, note, x_hl,
-		y_tb = new Array(s.nhd + 1)
+    var	s2, i, m, y, staffb, slen, c, nflags,
+	x, y, note,
+	y_tb = new Array(s.nhd + 1)
 
 	if (s.dots)
 		setdoty(s, y_tb)
 
 	note = s.notes[s.stem < 0 ? s.nhd : 0];	// master note head
-	x_hl = x = x_head(s, note);
 	staffb = staff_tb[s.st].y
 
-	/* output the ledger lines */
-	if (s.grace) {
-		hltype = "ghl";
-		x_hl += 1.5
-	} else {
-		hltype = "hl"
-		switch (s.head) {
-		case C.OVALBARS:
-		case C.OVAL:
-			x_hl -= .3;
-			hltype = "hl1"
-			break
-		case C.SQUARE:
-			x_hl -= 2;
-			hltype = "hl1"
-			break
-		}
-	}
-	self.draw_hl(x_hl, s, hltype)
+	self.draw_hl(s)
 
 	/* draw the stem and flags */
 	y = y_head(s, note)
@@ -3218,7 +3230,7 @@ function draw_systems(indent) {
 		var	w, ws, i, dy, ty,
 			y = 0,
 			ln = "",
-			stafflines = cur_sy.staves[st].stafflines,
+			stafflines = staff_tb[st].stafflines,
 			l = stafflines.length
 
 		if (!/[\[|]/.test(stafflines))
@@ -3669,6 +3681,45 @@ function draw_all_sym() {
 	var	p_voice, v,
 		n = voice_tb.length
 
+	// draw all the helper/ledger lines
+	function draw_all_hl() {
+	    var	st, p_st
+
+		function hlud(hla, d) {
+		    var	hl, hll, i, xp,
+			n = hla.length
+
+			if (!n)
+				return
+			for (i = 0; i < n; i++) {	// for all lines
+				hll = hla[i]
+				if (!hll || !hll.length)
+					continue
+				xp = hll[0][0]			// previous x
+				output +=
+				    '<path class="stroke" stroke-width="1.1" d="M' +
+					sx(xp).toFixed(1) + ' ' +
+					sy(p_st.y + d * i).toFixed(1)
+				while (1) {
+					hl = hll.shift()
+					if (!hl)
+						break
+					output += 'm' +
+						    (hl[0] - xp + hl[1]).toFixed(1) +
+						' 0h' + (-hl[1] + hl[2]).toFixed(1)
+					xp = hl[0] + hl[2]
+				}
+				output += '"/>\n'
+			}
+		} // hlud()
+
+		for (st = 0; st <= nstaff; st++) {
+			p_st = staff_tb[st]
+			hlud(p_st.hlu, 6)
+			hlud(p_st.hld, -6)
+		}
+	} // draw_all_hl()
+
 	for (v = 0; v < n; v++) {
 		p_voice = voice_tb[v]
 		if (p_voice.sym
@@ -3682,6 +3733,7 @@ function draw_all_sym() {
 
 	draw_all_deco();
 	set_sscale(-1)				/* restore the scale */
+	draw_all_hl()
 }
 
 /* -- set the tie directions for one voice -- */
