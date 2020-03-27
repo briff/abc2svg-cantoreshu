@@ -1802,7 +1802,7 @@ function slur_add(enote, e_is_note) {
 			return
 		}
 	}
-	syntax(1, "Lack of starting slur")
+	syntax(1, "End of slur without start")
 }
 
 // (possible hook)

@@ -81,6 +81,7 @@ user.textrans = {
 	"Decoration ignored": "Décoration ignorée",
 	"Empty line in tune header - ignored":
 				"Ligne vide dans en-tête de morceau - ignorée",
+	"End of slur without start": "Fin de liaison sans début",
 	"Erroneous end of voice overlay": "Fin de superposition de voix erronée",
 	"Error loading the module $1": "Erreur de chargement du module $1",
 	"Incorrect 1st value in %%repeat": "Première valeur incorrecte dans %%repeat",

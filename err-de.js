@@ -73,6 +73,7 @@ user.textrans = {
     "Cannot read file '$1'": "File '$1' kann nicht gelesen werden",
     "Decoration ignored": "Dekoration ignoriert",
     "Empty line in tune header - ignored": "Leerzeile in Kopfbereich - ignoriert",
+	"End of slur without start": "End of slur without start",
 	"Erroneous end of voice overlay":
 			"Fehlerhaftes Ende einer Stimme in Stimm-Überlagerung",
 	"Error loading the module $1": "Error loading the module $1",
