@@ -1449,6 +1449,7 @@ function draw_note(s,
 		setdoty(s, y_tb)
 
 	note = s.notes[s.stem < 0 ? s.nhd : 0];	// master note head
+	x = x_head(s, note)
 	staffb = staff_tb[s.st].y
 
 	self.draw_hl(s)
