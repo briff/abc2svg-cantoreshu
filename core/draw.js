@@ -3715,6 +3715,8 @@ function draw_all_sym() {
 
 		for (st = 0; st <= nstaff; st++) {
 			p_st = staff_tb[st]
+			if (!p_st.hlu)
+				continue	// (staff not yet displayed)
 			hlud(p_st.hlu, 6)
 			hlud(p_st.hld, -6)
 		}
