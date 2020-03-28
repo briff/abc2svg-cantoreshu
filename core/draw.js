@@ -2062,7 +2062,7 @@ function draw_slurs(s, last) {
 		}
 
 		if (!s2.grace) {		// if end on a normal note
-			while (1) {
+			while (s) {
 				if (s.v == v)
 					path.push(s)
 				if (s == s2)
@@ -2071,7 +2071,7 @@ function draw_slurs(s, last) {
 			}
 		} else if (s.grace) {		// if start/end in the same sequence
 			while (1) {
-				if (s.v == v)
+//				if (s.v == v)
 					path.push(s)
 				if (s == s2)
 					break
