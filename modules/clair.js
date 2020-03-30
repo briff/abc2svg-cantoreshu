@@ -69,7 +69,7 @@ abc2svg.clair = {
 // draw the helper lines
     draw_hl: function(of, s) {
 	if (!s.p_v.clair) {
-		of(x)
+		of(s)
 		return
 	}
 
