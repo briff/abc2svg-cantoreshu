@@ -1627,6 +1627,10 @@ function set_nl(s) {
 				}
 				unlksym(s2);		// remove
 				lktsym(s2, s.ts_next);	// link in time at eol
+				if (!s2.prev) {		// if start of voice
+					s2 = s3
+					break
+				}
 				s = s2
 				while (1) {		// link in voice
 					s2 = s2.ts_prev
@@ -4528,10 +4532,10 @@ function block_gen(s) {
 /* -- define the start and end of a piece of tune -- */
 /* tsnext becomes the beginning of the next line */
 function set_piece() {
-	var	s, last, p_voice, st, v, nst, nv, tmp,
-		non_empty = [],
-		non_empty_gl = [],
-		sy = cur_sy
+    var	s, last, p_voice, st, v, nv, tmp,
+	non_empty = [],
+	non_empty_gl = [],
+	sy = cur_sy
 
 	function reset_staff(st) {
 		var	p_staff = staff_tb[st],
@@ -4629,8 +4633,8 @@ function set_piece() {
 	} // set_top_bot()
 
 	/* reset the staves */
-	nstaff = nst = sy.nstaff
-	for (st = 0; st <= nst; st++)
+	nstaff = sy.nstaff
+	for (st = 0; st <= nstaff; st++)
 		reset_staff(st);
 
 	/*
@@ -4655,12 +4659,8 @@ function set_piece() {
 			set_brace();
 			sy.st_print = new Uint8Array(non_empty);
 			sy = s.sy;
-			nst = sy.nstaff
-			if (nstaff < nst) {
-				for (st = nstaff + 1; st <= nst; st++)
-					reset_staff(st);
-				nstaff = nst
-			}
+			while (nstaff < sy.nstaff)
+				reset_staff(++nstaff)
 			non_empty = []
 			continue
 
@@ -4673,14 +4673,24 @@ function set_piece() {
 		st = s.st
 		if (non_empty[st])
 			continue
+		if (st > nstaff) {
+			switch (s.type) {
+			case C.CLEF:
+				staff_tb[st].clef = s	// clef warning/change for new staff
+				break
+			case C.KEY:
+				s.p_v.ckey = s
+				break
+//useless ?
+//			case C.METER:
+//				s.p_v.meter = s
+//				break
+			}
+			unlksym(s)
+			continue
+		}
 		switch (s.type) {
 		default:
-			continue
-		case C.CLEF:
-			if (st > nstaff) {	// if clef warning/change for new staff
-				staff_tb[st].clef = s;
-				unlksym(s)
-			}
 			continue
 		case C.BAR:
 			if (s.bar_mrep
