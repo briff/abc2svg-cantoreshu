@@ -67,21 +67,17 @@ function Midi5(i_conf) {
 	    var	j,
 		a = (k * 100) % 100,	// detune in cents
 		i = s.instr,
-//fixme: problem when more than 16 voices
-		c = s.v & 0x0f		// channel
+		c = s.chn
 
 		k |= 0			// remove the detune value
 
 		t *= 1000		// convert to ms
 		d *= 1000		
 
-		if ((s.instr & ~0x7f) == 16384)	// if bank 128 (percussion)
-//fixme: may conflict with the voice 9
-			c = 9			// force the channel 10
-		if (i != po.v_i[c]) {		// if program change
+		if (i != po.c_i[c]) {		// if program change
 
 			// at channel start, reset and initialize the controllers
-			if (po.v_i[c] == undefined) {
+			if (po.c_i[c] == undefined) {
 //fixme: does not work with fluidsynth
 				po.op.send(new Uint8Array([0xb0 + c, 121, 0]))
 				if (s.p_v.midictl) {
@@ -92,7 +88,7 @@ function Midi5(i_conf) {
 				}
 			}
 
-			po.v_i[c] = i
+			po.c_i[c] = i
 			po.op.send(new Uint8Array([0xc0 + c, i & 0x7f])) // program
 		}
 		if (a && Midi5.ma.sysexEnabled) {	// if microtone
@@ -117,10 +113,7 @@ function Midi5(i_conf) {
 
 	// send a MIDI control
 	function midi_ctrl(po, s, t) {
-	    var	i = s.v & 0x0f		// voice = channel
-		if ((s.instr & ~0x7f) == 16384) // if percussion
-			i = 9		// force the channel 10
-		po.op.send(new Uint8Array([0xb0 + i,
+		po.op.send(new Uint8Array([0xb0 + s.chn,
 					s.ctrl, s.val]),
 			t * 1000)
 	} // midi_ctrl()
@@ -208,7 +201,7 @@ function Midi5(i_conf) {
 
 				// MIDI specific
 				op: op,		// output port
-				v_i: []		// voice (channel) to instrument
+				c_i: []		// channel to instrument
 			}
 if (0) {
 // temperament

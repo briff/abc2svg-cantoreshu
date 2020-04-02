@@ -1,12 +1,12 @@
 // MIDI.js - module to handle the %%MIDI parameters
 //
-// Copyright (C) 2019 Jean-Francois Moine - GPL3+
+// Copyright (C) 2019-2020 Jean-Francois Moine - GPL3+
 //
 // This module is loaded when "%%MIDI" appears in a ABC source.
 //
 // Parameters (see abcMIDI for details)
 //	%%MIDI channel n
-//	%%MIDI program n
+//	%%MIDI program [channel] n
 //	%%MIDI control k v
 //	%%MIDI drummap ABC_note MIDI_pitch
 
@@ -82,9 +82,24 @@ abc2svg.MIDI = {
 	if (curvoice && curvoice.ignore)
 		return
 	switch (a[1]) {
-	case "channel":				// channel 10 is bank 128
-		if (a[2] != "10")
-			break			// other channel values are ignored
+	case "channel":
+		v = parseInt(a[2])
+		if (isNaN(v) || v <= 0 || v > 16) {
+			this.syntax(1, this.errs.bad_val, "%%MIDI channel")
+			break
+		}
+		if (--v != 9) {			// channel range 1..16 => 0..15
+			if (this.parse.state == 3) {
+				s = this.new_block("midichn");
+				s.play = true
+				s.chn = v
+			} else {
+				this.set_v_param("channel", v)
+			}
+			break
+		}
+
+		// channel 10 is bank 128
 		abc2svg.MIDI.do_midi.call(this, "MIDI control 0 1")	// MSB bank
 		abc2svg.MIDI.do_midi.call(this, "MIDI control 32 0")	// LSB bank
 		break
@@ -105,13 +120,15 @@ abc2svg.MIDI = {
 		this.set_v_param("mididrum", "MIDIdrum")
 		break
 	case "program":
-		if (a[3] != undefined)	// the channel is unused
+		if (a[3] != undefined) {	// with a channel
+			abc2svg.MIDI.do_midi.call(this, "MIDI channel " + a[2])
 			v = a[3]
-		else
+		} else {
 			v = a[2];
+		}
 		v = parseInt(v)
 		if (isNaN(v) || v < 0 || v > 127) {
-			this.syntax(1, "Bad program in %%MIDI")
+			this.syntax(1, this.errs.bad_val, "%%MIDI program")
 			return
 		}
 		if (this.parse.state == 3) {
@@ -149,10 +166,16 @@ abc2svg.MIDI = {
     set_midi: function(a) {
     var	i, item,
 	curvoice = this.get_curvoice()
-
 	for (i = 0; i < a.length; i++) {
 		switch (a[i]) {
+		case "channel=":		// %%MIDI channel
+			curvoice.chn = a[++i]
+			break
 		case "instr=":			// %%MIDI program
+			if (curvoice.chn == undefined)
+				curvoice.chn = curvoice.v < 9 ?
+						curvoice.v :
+						curvoice.v + 1
 			curvoice.instr = a[++i]
 			break
 		case "midictl=":		// %%MIDI control

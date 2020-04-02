@@ -27,6 +27,7 @@
 // - in NOTE and REST
 //	s.pdur = play duration
 //	s.instr = bank + instrument
+//	s.chn = MIDI channel
 // - in the notes[] of NOTE
 //	s.notes[i].midi
 
@@ -40,11 +41,12 @@ function ToAudio() {
 	p_time = 0,		// last playing time
 	abc_time = 0,		// last ABC time
 	play_fac = C.BLEN / 4 * 120 / 60, // play time factor - default: Q:1/4=120
-	i, n, dt, d, v,
+	i, n, dt, d, v, c,
 	rst = s,		// left repeat (repeat restart)
 	rst_fac,		// play factor on repeat restart
 	rsk,			// repeat variant array (repeat skip)
-	instr = []		// [voice] bank + instrument
+	instr = [],		// [voice] bank + instrument
+	chn = []		// [voice] MIDI channel
 
 	// adjust the MIDI pitches according to the transpositions
 	function midi_transp(s, voice_tb) {
@@ -122,26 +124,34 @@ function ToAudio() {
 
 	// handle a block symbol
 	function do_block(s) {
-	    var	v = s.v
+	    var	v = s.v,
+		c = chn[v]
 
 		switch (s.subtype) {
+		case "midichn":
+			chn[v] = s.chn
+			break
 		case "midictl":
 			switch (s.ctrl) {
 			case 0:			// MSB bank
-				instr[v] = (instr[v] & 0x3fff) |
+				instr[c] = (instr[c] & 0x3fff) |
 					(s.val << 14)
 				break
 			case 32:		// LSB bank
-				instr[v] = (instr[v] & 0x1fc07f) |
+				instr[c] = (instr[c] & 0x1fc07f) |
 					(s.val << 7)
 				break
 //			case 121:		// reset all controllers
 //				instr = []
 //				break
 			}
+			if ((instr[c] & ~0x7f) == 16384) { // if percussion
+				s.chn = chn[v] = 9	// force the channel 10
+				instr[9] = instr[c]
+			}
 			break
 		case "midiprog":
-			instr[v] = (instr[v] & ~0x7f) | s.instr
+			instr[c] = (instr[c] & ~0x7f) | s.instr
 			break
 		}
 	} // do_block()
@@ -177,7 +187,8 @@ function ToAudio() {
 		for (g = s.extra; g; g = g.next) {
 			g.ptim = t
 			g.pdur = d
-			g.instr = instr[s.v]
+			g.chn = chn[s.v]
+			g.instr = instr[g.chn]
 			t += d
 		}
 	} // gen_grace()
@@ -231,13 +242,20 @@ function ToAudio() {
 		}
 		s.ptim = p_time
 		v = s.v
+		c = chn[v]			// channel
 
-		if (instr[v] == undefined)
-			instr[v] = voice_tb[v].instr || 0
+		if (c == undefined) {
+			if ((instr[v] & ~0x7f) == 16384) // if bank 128 (percussion)
+				c = 9			// channel '10'
+			else
+				c = v < 9 ? v : v + 1
+			chn[v] = c
+		}
+		if (instr[c] == undefined)
+			instr[c] = voice_tb[v].instr || 0
 
 		switch (s.type) {
 		case C.BAR:
-
 			if (s.text && rsk) {		// if new variant
 				set_variant(rsk, s.text, s)
 				play_fac = rst_fac
@@ -297,7 +315,8 @@ function ToAudio() {
 			}
 			d /= play_fac
 			s.pdur = d
-			s.instr = instr[v]
+			s.chn = c
+			s.instr = instr[c]
 			break
 		case C.TEMPO:
 			if (s.tempo)
