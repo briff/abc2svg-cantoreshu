@@ -70,11 +70,12 @@ function abc_dump(tsfirst, voice_tb, info) {
 	vold = [],		// false/true for voice name
 	vti = []
 
+	// dump an information field on voice 'v'
 	function info_out(inf) {
-		if (vo[s.v].length != 0)
+		if (vo[v].length && vo[v].slice(-1) != '\n')
 			line += '[' + inf + ']'
 		else
-			abc2svg.print(inf)
+			line += inf + '\n'
 	} // info_out()
 
 	function voice_out() {
@@ -136,7 +137,7 @@ function abc_dump(tsfirst, voice_tb, info) {
 		} // vi_out()
 
 		if (nv == 1) {
-			if (vo[0].length == 0)
+			if (!vo[0].length)
 				return
 			if (!vold[0]
 			 && (voice_tb[0].nm || voice_tb[0].snm
@@ -144,10 +145,10 @@ function abc_dump(tsfirst, voice_tb, info) {
 				vi_out(0);
 			if (eoln) {
 				eoln = false
-				vo[0][vo[0].length - 1] += "$"
+				vo[0] += "$"
 			}
-			abc2svg.print(vo[0].join(''));
-			vo[0] = []
+			abc2svg.print(vo[0])
+			vo[0] = ""
 			return
 		}
 		for (var v = 0; v < nv; v++) {
@@ -156,10 +157,10 @@ function abc_dump(tsfirst, voice_tb, info) {
 			vi_out(v);
 			if (eoln) {
 				eoln = false
-				vo[v][vo[v].length - 1] += "$"
+				vo[v] += "$"
 			}
-			abc2svg.print(vo[v].join(''));
-			vo[v] = []
+			abc2svg.print(vo[v])
+			vo[v] = ""
 		}
 	} // voice_out()
 
@@ -354,8 +355,8 @@ break
 	} // gch_dump()
 
 	function header_dump(hl) {
-	    var l
-		for (var i = 0; i < hl.length; i++) {
+	    var l, i
+		for (i = 0; i < hl.length; i++) {
 			l = hl[i]
 			if (info[l])
 				abc2svg.print(l + ':' + info[l].replace(/\n/g, '\n' + l + ':'))
@@ -609,7 +610,7 @@ break
 			sym_dump(s);
 			s.del = true
 			if (line) {
-				vo[s.v].push(line);
+				vo[s.v] += line
 				line = ""
 			}
 		}
@@ -894,19 +895,23 @@ break
 	header_dump("OABDFGRNPSZH")
 
 	for (v = 0; v < nv; v++) {
-		vo[v] = [];
+		vo[v] = ""
 		vti[v] = 0
 	}
 
 	if (info.Q) {
+//		abc2svg.print("Q: " + info.Q)
 		for (s = tsfirst; s; s = s.ts_next) {
 			if (s.type == C.TEMPO) {
+				line = ""
 				tempo_dump(s);
+				abc2svg.print(line.slice(0, -1))
 				s.del = true
 				break
 			}
 		}
 	}
+
 	abc2svg.print(key_dump(voice_tb[0].key, voice_tb[0].clef))
 
 	// loop by time
@@ -916,18 +921,19 @@ break
 		if (s.del)
 			continue
 		line = "";
+		v = s.v				// (used in info_out)
 		// (all voices are synchronized on %%score)
-		if (s.type != C.STAVES && s.time > vti[s.v]) {
+		if (s.type != C.STAVES && s.time > vti[v]) {
 //fixme: put 'X' if more than one measure
-			if (s.time > vti[s.v] + 2) {
+			if (s.time > vti[v] + 2) {
 				line += 'x';
-				dur_dump(s.time - vti[s.v]);
+				dur_dump(s.time - vti[v]);
 			}
-			vti[s.v] = s.time
+			vti[v] = s.time
 		}
 		sym_dump(s)
 		if (s.dur)
-			vti[s.v] = s.time + s.dur
+			vti[v] = s.time + s.dur
 		if (s.next) {
 			if (s.beam_end && !s.beam_st && !s.next.beam_end)
 				line += ' '
@@ -935,7 +941,7 @@ break
 				eoln = true
 		}
 		if (line)
-			vo[s.v].push(line)
+			vo[v] += line
 	}
 	voice_out();
 	lyric_dump();
