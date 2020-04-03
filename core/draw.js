@@ -3629,6 +3629,10 @@ Abc.prototype.draw_symbols = function(p_voice) {
 			anno_start(s);
 			draw_meter(x, s);
 			anno_stop(s)
+			if (s.insert) {		// if warning about meter change
+				delete s.insert	// in the previous line
+				insert_meter |= 1 // display the meter again
+			}
 			break
 		case C.KEY:
 			p_voice.ckey = s

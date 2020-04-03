@@ -1619,8 +1619,11 @@ function set_nl(s) {
 					continue
 				// fall thru
 			case C.METER:
-				if (s2.type == C.METER && !cfmt.timewarn)
-					continue
+				if (s2.type == C.METER) {
+					if (!cfmt.timewarn)
+						continue
+					s.insert = true	// display on next line
+				}
 				s3 = s2.ts_prev;
 				if (s3 == s) {		// if next symbol
 					s = s2		// advance the eol
