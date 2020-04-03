@@ -1147,14 +1147,8 @@ function set_sp_tup(s, s_et) {
 //		s = s.ts_prev
 
 	// stop outside the tuplet sequence
-	// and add a measure bar when at end of tune
 	do {
-		if (!s_et.ts_next) {
-			s2 = add_end_bar(s_et);
-			s_et = s2
-		} else {
-			s_et = s_et.ts_next
-		}
+		s_et = s_et.ts_next
 	} while (!s_et.seqst)
 
 	// check the minimum spacing
@@ -1203,8 +1197,12 @@ function add_end_bar(s) {
 		wr: 0,
 		prev: s,
 		ts_prev: s,
+		next: s.next,
+		ts_next: s.ts_next,
 		shrink: s.wr + 3
 	}
+	s.next.prev = bar
+	s.ts_next.ts_prev = bar
 	s.next = s.ts_next = bar
 	return bar
 }
@@ -1576,6 +1574,9 @@ function set_nl(s) {
 		if (cfmt.custos && voice_tb.length == 1)
 			custos_add(s)
 		s.nl = true
+		s = s.ts_prev
+		if (s.type != C.BAR)
+			add_end_bar(s)
 	} // set_eol()
 
 	// set the eol on the next symbol
@@ -4773,15 +4774,6 @@ function set_piece() {
 			p_voice.s_next = p_voice.sym;
 			p_voice.sym = null
 		}
-	}
-
-	// if the last symbol is not a bar, add an invisible bar
-	if (last.type != C.BAR) {
-		s = add_end_bar(last);
-		s.space = set_space(s, last.time)
-		if (s.space < s.shrink
-		 && last.type != C.KEY)
-			s.space = s.shrink
 	}
 }
 
