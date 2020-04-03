@@ -900,15 +900,12 @@ break
 	}
 
 	if (info.Q) {
-//		abc2svg.print("Q: " + info.Q)
+		abc2svg.print("Q: " + info.Q)
 		for (s = tsfirst; s; s = s.ts_next) {
-			if (s.type == C.TEMPO) {
-				line = ""
-				tempo_dump(s);
-				abc2svg.print(line.slice(0, -1))
-				s.del = true
+			if (s.time)
 				break
-			}
+			if (s.type == C.TEMPO)
+				s.del = true
 		}
 	}
 
