@@ -960,11 +960,9 @@ function new_tempo(text) {
 		}
 		goto_tune()
 	}
-	if (curvoice.v == par_sy.top_voice) {	/* tempo only for first voice */
-		sym_link(s)
-		if (glovar.tempo && curvoice.time == 0)
-			glovar.tempo.del = true
-	}
+	sym_link(s)
+	if (glovar.tempo && curvoice.time == 0)
+		glovar.tempo.del = true
 }
 
 // treat the information fields which may embedded
@@ -1035,25 +1033,7 @@ function do_info(info_type, text) {
 		}
 		if (cfmt.writefields.indexOf(info_type) < 0)
 			s.invis = true
-
-		/*
-		 * If not in the main voice, then,
-		 * if the voices are synchronized and no P: yet in the main voice,
-		 * the misplaced P: goes into the main voice.
-		 */
-		var p_voice = voice_tb[par_sy.top_voice]
-		if (curvoice.v != p_voice.v) {
-			if (curvoice.time != p_voice.time)
-				break
-			if (p_voice.last_sym && p_voice.last_sym.type == C.PART)
-				break		// already a P:
-			var voice_sav = curvoice;
-			curvoice = p_voice;
-			sym_link(s);
-			curvoice = voice_sav
-		} else {
-			sym_link(s)
-		}
+		sym_link(s)
 		break
 	case 'Q':
 		if (parse.state == 0)

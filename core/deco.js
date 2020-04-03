@@ -1,6 +1,6 @@
 // abc2svg - deco.js - decorations
 //
-// Copyright (C) 2014-2019 Jean-Francois Moine
+// Copyright (C) 2014-2020 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -1731,9 +1731,10 @@ function draw_measnb() {
 /* -- draw the parts and the tempo information -- */
 /* (the staves are being defined) */
 function draw_partempo(st, top) {
-	var	s, some_part, some_tempo, h, w, y,
-		dy = 0,		/* put the tempo indication at top */
-		ht = 0
+    var	s, some_part, some_tempo, h, w, y,
+	tim = -1,
+	dy = 0,		/* put the tempo indication at top */
+	ht = 0
 
 	/* get the minimal y offset */
 	var	ymin = staff_tb[st].topbar + 8,
@@ -1771,6 +1772,7 @@ function draw_partempo(st, top) {
 		/* draw the tempo indications */
 		for (s = some_tempo; s; s = s.ts_next) {
 			if (s.type != C.TEMPO
+			 || s.time == tim	// (one per voice)
 			 || s.del)		// (displayed by %%titleformat)
 				continue
 			if (user.anno_start || user.anno_stop) {
@@ -1782,6 +1784,7 @@ function draw_partempo(st, top) {
 			}
 			writempo(s, s.x - 16, (dosh & 1) ? h : y);
 			anno_stop(s);
+			tim = s.time
 			dosh >>= 1
 		}
 	}
@@ -1810,8 +1813,10 @@ function draw_partempo(st, top) {
 		if (top < ymin + h + ht)
 			dy = ymin + h + ht - top
 
+		tim = -1
 		for (s = some_part; s; s = s.ts_next) {
-			if (s.type != C.PART || s.invis)
+			if (s.type != C.PART || s.invis
+			 || s.time == tim)	// (one per voice)
 				continue
 			s.x -= 10;
 			if (user.anno_start || user.anno_stop) {
@@ -1824,6 +1829,7 @@ function draw_partempo(st, top) {
 			}
 			xy_str(s.x, 2 - ht - h, s.text);
 			anno_stop(s)
+			tim = s.time
 		}
 	}
 	return dy
