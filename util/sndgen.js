@@ -146,12 +146,14 @@ function ToAudio() {
 //				break
 			}
 			if ((instr[c] & ~0x7f) == 16384) { // if percussion
-				s.chn = chn[v] = 9	// force the channel 10
-				instr[9] = instr[c]
+				instr[9] = instr[c]	// force the channel 10
+				chn[v] = c = 9
 			}
+			s.chn = c
 			break
 		case "midiprog":
 			instr[c] = (instr[c] & ~0x7f) | s.instr
+			s.chn = c
 			break
 		}
 	} // do_block()
