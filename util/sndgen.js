@@ -421,7 +421,8 @@ abc2svg.play_next = function(po) {
 	    var	i,
 		s = {
 			subtype: "midictl",
-			p_v: s2.p_v
+			p_v: s2.p_v,
+			chn: s2.p_v.chn
 		}
 
 		for (i in s2.p_v.midictl) { // MIDI controls at voice start time

@@ -1,6 +1,6 @@
 // perc.js - module to handle %%percmap
 //
-// Copyright (C) 2018-2019 Jean-Francois Moine - GPL3+
+// Copyright (C) 2018-2020 Jean-Francois Moine - GPL3+
 //
 // This module is loaded when "%%percmap" appears in a ABC source.
 //
@@ -266,6 +266,7 @@ var prn = {
     var	i, item,
 	curvoice = this.get_curvoice()
 
+	curvoice.chn = 9				// percussion channel
 	for (i = 0; i < a.length; i++) {
 		switch (a[i]) {
 		case "perc=":				// %%percmap

@@ -79,8 +79,14 @@ abc2svg.MIDI = {
 	a = parm.split(/\s+/),
 	curvoice = this.get_curvoice()
 
-	if (curvoice && curvoice.ignore)
-		return
+	if (curvoice) {
+		if (curvoice.ignore)
+			return
+		if (curvoice.chn == undefined)
+			curvoice.chn = curvoice.v < 9 ?
+					curvoice.v :
+					curvoice.v + 1
+	}
 	switch (a[1]) {
 	case "channel":
 		v = parseInt(a[2])
@@ -166,16 +172,16 @@ abc2svg.MIDI = {
     set_midi: function(a) {
     var	i, item,
 	curvoice = this.get_curvoice()
+	if (curvoice.chn == undefined)
+		curvoice.chn = curvoice.v < 9 ?
+				curvoice.v :
+				curvoice.v + 1
 	for (i = 0; i < a.length; i++) {
 		switch (a[i]) {
 		case "channel=":		// %%MIDI channel
 			curvoice.chn = a[++i]
 			break
 		case "instr=":			// %%MIDI program
-			if (curvoice.chn == undefined)
-				curvoice.chn = curvoice.v < 9 ?
-						curvoice.v :
-						curvoice.v + 1
 			curvoice.instr = a[++i]
 			break
 		case "midictl=":		// %%MIDI control
