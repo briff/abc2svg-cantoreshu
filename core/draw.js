@@ -3722,6 +3722,7 @@ function draw_all_sym() {
 			p_st = staff_tb[st]
 			if (!p_st.hlu)
 				continue	// (staff not yet displayed)
+			set_sscale(st)
 			hlud(p_st.hlu, 6)
 			hlud(p_st.hld, -6)
 		}
@@ -3739,8 +3740,8 @@ function draw_all_sym() {
 	}
 
 	draw_all_deco();
-	set_sscale(-1)				/* restore the scale */
 	draw_all_hl()
+	set_sscale(-1)				/* restore the scale */
 }
 
 /* -- set the tie directions for one voice -- */
