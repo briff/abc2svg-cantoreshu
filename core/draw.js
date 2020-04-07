@@ -755,8 +755,6 @@ function set_hl(p_st, n, x, dx1, dx2) {
 		if (x >= hl[i][0])
 			break
 	}
-	dx1 *= stv_g.scale
-	dx2 *= stv_g.scale
 	if (i == hl.length) {
 		hl.push([x, dx1, dx2])
 	} else if (x > hl[i][0]) {
@@ -797,7 +795,7 @@ Abc.prototype.draw_hl = function(s) {
 	yu =  top,
 	bot = p_staff.botline / 6,
 	yl = bot,
-	dx = s.grace ? 4 : hw_tb[s.head] * 1.4
+	dx = s.grace ? 4 : hw_tb[s.head] * 1.3
 
 	// get the x start and x stop of the intermediate helper lines
 	note = s.notes[s.stem < 0 ? s.nhd : 0]
@@ -3691,7 +3689,7 @@ function draw_all_sym() {
 	    var	st, p_st
 
 		function hlud(hla, d) {
-		    var	hl, hll, i, xp,
+		    var	hl, hll, i, xp, dx2, x2,
 			n = hla.length
 
 			if (!n)
@@ -3700,19 +3698,22 @@ function draw_all_sym() {
 				hll = hla[i]
 				if (!hll || !hll.length)
 					continue
-				xp = hll[0][0]			// previous x
+				xp = sx(hll[0][0])	// previous x
 				output +=
-				    '<path class="stroke" stroke-width="1.1" d="M' +
-					sx(xp).toFixed(1) + ' ' +
+				    '<path class="stroke" stroke-width="1" d="M' +
+					xp.toFixed(1) + ' ' +
 					sy(p_st.y + d * i).toFixed(1)
+				dx2 = 0
 				while (1) {
 					hl = hll.shift()
 					if (!hl)
 						break
+					x2 = sx(hl[0])
 					output += 'm' +
-						    (hl[0] - xp + hl[1]).toFixed(1) +
+						(x2 - xp + hl[1] - dx2).toFixed(1) +
 						' 0h' + (-hl[1] + hl[2]).toFixed(1)
-					xp = hl[0] + hl[2]
+					xp = x2
+					dx2 = hl[2]
 				}
 				output += '"/>\n'
 			}
