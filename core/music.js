@@ -4670,8 +4670,10 @@ function set_piece() {
 
 		// the block symbols will be treated after music line generation
 		case C.BLOCK:
-			if (!s.play)
+			if (!s.play) {
 				blocks.push(s)
+				unlksym(s)
+			}
 			continue
 		}
 		st = s.st
