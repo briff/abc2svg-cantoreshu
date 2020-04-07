@@ -4347,20 +4347,14 @@ function check_bar(s) {
 	if (s.type != C.BAR)
 		return
 
-	if (s.text != undefined) {		// if repeat bar
-		p_voice.bar_start = clone(s);
-		p_voice.bar_start.bar_type = ""
-		delete s.text
-		delete s.a_gch
-//		return
-	}
 	bar_type = s.bar_type
 	if (bar_type == ":")
 		return
-	if (bar_type.slice(-1) != ':')		// if not left repeat bar
+	if (bar_type.slice(-1) != ':'		// if not a left repeat bar
+	 && s.text == undefined)		// nor a variant
 		return
 
-	// add a left repeat bar in the next music line
+	// add a bar in the next music line
 	s2 = p_voice.s_next
 	while (1) {
 		switch (s2.type) {
@@ -4407,6 +4401,15 @@ function check_bar(s) {
 				s2.space = 0
 			}
 		}
+	}
+
+	if (s.text != undefined) {		// if a variant
+		s_bs.bar_type = ""
+		s_bs.text = s.text
+		s_bs.a_gch = s.a_gch
+		delete s.text
+		delete s.a_gch
+		return true
 	}
 
 	if (bar_type[0] != ':') {		// 'xx:' (not ':xx:')
