@@ -751,6 +751,8 @@ break
 				line += '.';
 			line += s.bar_type
 			if (s.text) {
+				if (!s.bar_type)
+					line += '['
 				if (s.text[0] >= '0' && s.text[0] <= '9')
 					line += s.text + ' '
 				else
