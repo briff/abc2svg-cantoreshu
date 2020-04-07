@@ -130,6 +130,10 @@ function abc_dump(tsfirst, voice_tb, info) {
 						k + ' ' + p_voice.midictl[k])
 				p_voice.midictl = null
 			}
+			if (p_voice.chn != undefined) {
+				abc2svg.print("%%MIDI channel " + (p_voice.chn + 1))
+				p_voice.chn = undefined
+			}
 //fixme: to do
 //			if (p_voice.mididrum) {
 //				p_voice.mididrum = null
@@ -167,6 +171,10 @@ function abc_dump(tsfirst, voice_tb, info) {
 	function block_dump(s) {
 	    var	ln = "%%" + s.subtype + ' '
 		switch (s.subtype) {
+		case "midichn":
+			s.p_v.chn = s.chn
+			s.time = -1	// force %%MIDI
+			return
 		case "midictl":
 			if (!s.p_v.midictl)
 				s.p_v.midictl = []
