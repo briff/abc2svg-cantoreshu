@@ -2157,7 +2157,7 @@ function draw_slurs(s, last) {
 /* (delayed output) */
 /* See http://moinejf.free.fr/abcm2ps-doc/tuplets.xhtml
  * for the value of 'tp.f' */
-function draw_tuplet(s1, tp) {
+function draw_tuplet(s1) {
     var	s2, s3, g, upstaff, nb_only, some_slur,
 	x1, x2, y1, y2, xm, ym, a, s0, yy, yx, dy, a, dir, r,
 	tp = s1.tp.shift()		// tuplet parameters
@@ -2305,6 +2305,33 @@ function draw_tuplet(s1, tp) {
 
 /*fixme: two staves not treated*/
 /*fixme: to optimize*/
+
+	// first, get the x offsets
+	x1 = s1.x - 4
+
+	// end the bracket according to the last note duration
+	if (s2.dur > s2.prev.dur) {
+		s3 = s2.next
+		if (!s3	// maybe a note in an overlay voice
+		 || s3.time != s2.time + s2.dur) {
+			for (s3 = s2.ts_next; s3; s3 = s3.ts_next) {
+				if (s3.seqst)
+					break
+			}
+		}
+//fixme: s3 cannot be null (bar at end of staff)
+		x2 = s3 ? s3.x - s3.wl - 5 : realwidth - 6
+	} else {
+		x2 = s2.x + 4
+		r = s2.stem >= 0 ? 0 : s2.nhd
+		if (s2.notes[r].shhd > 0)
+			x2 += s2.notes[r].shhd
+		if (s2.st == upstaff
+		 && s2.stem > 0)
+			x2 += 3.5
+	}
+
+    // above
     if (dir == C.SL_ABOVE) {
 
 	/* sole or upper voice: the bracket is above the staff */
@@ -2315,7 +2342,6 @@ function draw_tuplet(s1, tp) {
 		y2 = s2.ymx
 	}
 
-	x1 = s1.x - 4;
 	if (s1.st == upstaff) {
 		for (s3 = s1; !s3.dur; s3 = s3.next)
 			;
@@ -2332,22 +2358,6 @@ function draw_tuplet(s1, tp) {
 		ym = y_get(upstaff, 1, s3.x - 4, 8)
 		if (ym > y2)
 			y2 = ym
-	}
-
-	// end the bracket according to the last note duration
-	if (s2.dur > s2.prev.dur) {
-		if (s2.next)
-			x2 = s2.next.x - s2.next.wl - 5
-		else
-			x2 = realwidth - 6
-	} else {
-		x2 = s2.x + 4;
-		r = s2.stem >= 0 ? 0 : s2.nhd
-		if (s2.notes[r].shhd > 0)
-			x2 += s2.notes[r].shhd
-		if (s2.st == upstaff
-		 && s2.stem > 0)
-			x2 += 3.5
 	}
 
 	xm = .5 * (x1 + x2);
@@ -2405,23 +2415,11 @@ function draw_tuplet(s1, tp) {
 		}
 	}
 
+    // below
     } else {	/* lower voice of the staff: the bracket is below the staff */
 /*fixme: think to all of that again..*/
-	x1 = s1.x - 7
-	if (s2.dur > s2.prev.dur) {
-		if (s2.next)
-			x2 = s2.next.x - s2.next.wl - 8
-		else
-			x2 = realwidth - 6
-	} else {
-		x2 = s2.x + 2
-		if (s2.notes[s2.nhd].shhd > 0)
-			x2 += s2.notes[s2.nhd].shhd
-	}
-	if (s1.stem >= 0) {
-		x1 += 2;
-		x2 += 2
-	}
+	if (s1.stem < 0)
+		x1 -= 2
 
 	if (s1.st == upstaff) {
 		for (s3 = s1; !s3.dur; s3 = s3.next)
