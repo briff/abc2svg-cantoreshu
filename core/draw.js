@@ -2315,7 +2315,8 @@ function draw_tuplet(s1) {
 		if (!s3	// maybe a note in an overlay voice
 		 || s3.time != s2.time + s2.dur) {
 			for (s3 = s2.ts_next; s3; s3 = s3.ts_next) {
-				if (s3.seqst)
+				if (s3.seqst
+				 && s3.time >= s2.time + s2.dur)
 					break
 			}
 		}
