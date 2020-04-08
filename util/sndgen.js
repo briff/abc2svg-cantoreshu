@@ -283,7 +283,7 @@ function ToAudio() {
 				set_variant(rsk, s.text, s)
 				rst_fac = play_fac
 			}
-			while (s.ts_next && s.ts_next.type == C.BAR) {
+			while (s.ts_next && !s.ts_next.seqst) {
 				s = s.ts_next
 				s.ptim = p_time
 			}
@@ -486,7 +486,7 @@ abc2svg.play_next = function(po) {
 					po.stime += (s.ptim - s.rep_p.ptim) /
 							po.conf.speed
 					s = s.rep_p	// left repeat
-					while (s.ts_next && s.ts_next.type == C.BAR)
+					while (s.ts_next && !s.ts_next.seqst)
 						s = s.ts_next
 					t = po.stime + s.ptim / po.conf.speed
 					po.repn = true
@@ -507,7 +507,7 @@ abc2svg.play_next = function(po) {
 					break
 				}
 			}
-			while (s.ts_next && s.ts_next.type == C.BAR)
+			while (s.ts_next && !s.ts_next.seqst)
 				s = s.ts_next
 			break
 		case C.BLOCK:
