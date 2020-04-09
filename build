@@ -59,6 +59,7 @@ gen util/abcdoc.js > abcdoc-$MAJOR.js
 gen util/abcemb.js > abcemb-$MAJOR.js
 gen util/abcemb1.js > abcemb1-$MAJOR.js
 gen util/abcemb2.js > abcemb2-$MAJOR.js
+gen util/abcweb.js > abcweb-$MAJOR.js
 gen util/abcweb1.js > abcweb1-$MAJOR.js
 gen util/abcweb2.js > abcweb2-$MAJOR.js
 gen util/follow.js > follow-$MAJOR.js
