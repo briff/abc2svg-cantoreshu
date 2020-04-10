@@ -247,6 +247,14 @@ function dom_loaded() {
 		document.head.appendChild(s)
 	}
 
+	// --- dom_loaded() main code ---
+
+	// load the abc2svg core if not done by <script>
+	if (!abc2svg.Abc) {
+		abc2svg.loadjs("abc2svg-1.js", dom_loaded)
+		return
+	}
+
 	// accept page formatting
 	abc2svg.abc_end = function() {}
 
