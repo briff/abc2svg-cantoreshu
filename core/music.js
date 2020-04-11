@@ -3062,8 +3062,12 @@ function init_music_line() {
 	}
 	for (v = 0; v < nv; v++) {
 		p_voice = voice_tb[v]
-		if (p_voice.sym && p_voice.sym.type == C.CLEF)
+		if (p_voice.sym && p_voice.sym.type == C.CLEF) {
+			if (p_voice.sym == last_s)
+				last_s = last_s.ts_next
+			delete p_voice.sym.clef_small
 			continue
+		}
 		if (!cur_sy.voices[v]
 		 || (cur_sy.voices[v].second
 		  && !p_voice.bar_start))	// needed for correct linkage
@@ -3081,8 +3085,7 @@ function init_music_line() {
 		s.next = p_voice.sym
 		if (s.next)
 			s.next.prev = s;
-		p_voice.sym = s;
-		p_voice.last_sym = s;
+		p_voice.sym = p_voice.last_sym = s
 		s.ts_next = last_s;
 		if (last_s)
 			s.ts_prev = last_s.ts_prev
@@ -3090,7 +3093,6 @@ function init_music_line() {
 			s.ts_prev = null
 		if (!s.ts_prev) {
 			tsfirst = s;
-			s.seqst = true
 		} else {
 			s.ts_prev.ts_next = s
 			delete s.seqst
@@ -3193,6 +3195,7 @@ function init_music_line() {
 	self.set_pitch(last_s);
 
 	s = tsfirst
+	s.seqst = true
 	while (1) {
 		s2 = s;
 		shrmx = 0
@@ -3215,8 +3218,6 @@ function init_music_line() {
 	}
 
 	// update the spacing before the first old time sequence
-	if (!s)
-		return
 	shr = 0
 	do {
 		self.set_width(s)
@@ -4639,6 +4640,18 @@ function set_piece() {
 		}
 	} // set_top_bot()
 
+	// remove the staff system at start of line
+	if (tsfirst.type == C.STAVES) {
+		s = tsfirst
+		tsfirst = tsfirst.ts_next
+		tsfirst.ts_prev = null
+		if (s.seqst)
+			tsfirst.seqst = true
+		s.p_v.sym = s.next
+		if (s.next)
+			 s.next.prev = null
+	}
+
 	/* reset the staves */
 	nstaff = sy.nstaff
 	for (st = 0; st <= nstaff; st++)
@@ -4659,8 +4672,6 @@ function set_piece() {
 //			}
 			break
 		}
-		if (!s.ts_next)
-			last = s	// keep the last symbol of the tune
 		switch (s.type) {
 		case C.STAVES:
 			set_brace();
@@ -4680,8 +4691,6 @@ function set_piece() {
 			continue
 		}
 		st = s.st
-		if (non_empty[st])
-			continue
 		if (st > nstaff) {
 			switch (s.type) {
 			case C.CLEF:
@@ -4691,13 +4700,15 @@ function set_piece() {
 				s.p_v.ckey = s
 				break
 //useless ?
-//			case C.METER:
-//				s.p_v.meter = s
-//				break
+			case C.METER:
+				s.p_v.meter = s
+				break
 			}
 			unlksym(s)
 			continue
 		}
+		if (non_empty[st])
+			continue
 		switch (s.type) {
 		default:
 			continue
