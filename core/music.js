@@ -3126,6 +3126,7 @@ function init_music_line() {
 		if (s2.k_sf || s2.k_a_acc) {
 			s = clone(s2)
 			new_sym(s, p_voice, last_s)
+			delete s.invis
 			s.k_old_sf = s2.k_sf	// no key cancel
 		}
 	}
