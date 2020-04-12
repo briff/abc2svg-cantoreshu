@@ -1622,7 +1622,7 @@ function set_nl(s) {
 				if (s2.type == C.METER) {
 					if (!cfmt.timewarn)
 						continue
-					s.insert = true	// display on next line
+					s2.insert = true // display on next line
 				}
 				s3 = s2.ts_prev;
 				if (s3 == s) {		// if next symbol
