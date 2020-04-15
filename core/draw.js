@@ -3576,8 +3576,7 @@ Abc.prototype.draw_symbols = function(p_voice) {
 				bm.s2 = null
 			break
 		case C.REST:
-			if (s.invis
-			 || !staff_tb[st].topbar)
+			if (!staff_tb[st].topbar)
 				break
 			draw_rest(s);
 			break
@@ -3587,7 +3586,6 @@ Abc.prototype.draw_symbols = function(p_voice) {
 			if (s.time >= staff_tb[st].clef.time)
 				staff_tb[st].clef = s
 			if (s.second
-			 || s.invis
 			 || !staff_tb[st].topbar)
 				break
 			set_color();
@@ -3618,7 +3616,6 @@ Abc.prototype.draw_symbols = function(p_voice) {
 		case C.METER:
 			p_voice.meter = s
 			if (s.second
-//			 || s.invis
 			 || !staff_tb[s.st].topbar)
 				break
 			set_color();
@@ -3634,7 +3631,6 @@ Abc.prototype.draw_symbols = function(p_voice) {
 		case C.KEY:
 			p_voice.ckey = s
 			if (s.second
-			 || s.invis
 			 || !staff_tb[s.st].topbar)
 				break
 			set_color();
