@@ -2233,7 +2233,7 @@ Abc.prototype.new_note = function(grace, sls) {
 function tp_adj(s, fact) {
     var	tim = s.time
 
-	curvoice.time = s.time + (curvoice.time - s.time) * fact
+	curvoice.time = tim + (curvoice.time - tim) * fact
 	while (1) {
 //fixme: tuplets in grace notes?
 		s.in_tuplet = true
@@ -2245,7 +2245,7 @@ function tp_adj(s, fact) {
 			}
 		}
 		if (!s.next) {
-			s.dur = curvoice.time - s.time
+			s.dur = curvoice.time - tim
 			if (s.tpe)
 				s.tpe++
 			else
