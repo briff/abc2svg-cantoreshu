@@ -1134,7 +1134,7 @@ function adjust_dur(s) {
 }
 
 /* -- parse a bar -- */
-function new_bar() {
+function new_bar(dotted) {
 	var	s2, c, bar_type,
 		line = parse.line,
 		s = {
@@ -1145,6 +1145,8 @@ function new_bar() {
 			multi: 0		// needed for decorations
 		}
 
+	if (dotted)
+		s.bar_dotted = true
 	if (vover && vover.bar)			// end of voice overlay
 		get_vover('|')
 	if (glovar.new_nbar) {			// %%setbarnb
@@ -1288,8 +1290,6 @@ function new_bar() {
 				curvoice.acc_tie = curvoice.acc_tie_rep.slice()
 		}
 	}
-	curvoice.acc = []			// no accidental anymore
-
 	if (curvoice.ulen < 0)			// L:auto
 		adjust_dur(s);
 
@@ -1401,6 +1401,9 @@ function new_bar() {
 		delete s.text;
 		s.rbstart = 0
 	}
+
+	if (!s.bar_dotted && !s.invis)
+		curvoice.acc = []		// no accidental anymore
 }
 
 // parse %%staves / %%score
@@ -2764,10 +2767,7 @@ function parse_music_line() {
 					syntax(1, errs.bar_grace)
 					break
 				}
-				c = line.buffer[line.index - 1];
-				new_bar()
-				if (c == '.')
-					curvoice.last_sym.bar_dotted = true
+				new_bar(line.buffer[line.index - 1] == '.')
 				continue
 			case '}':
 				s = curvoice.last_note
