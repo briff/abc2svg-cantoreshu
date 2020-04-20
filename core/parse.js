@@ -1266,7 +1266,8 @@ function new_bar(dotted) {
 
 	// handle the accidentals (ties and repeat)
 	if (s.text) {
-		if (bar_type.slice(-1) == '[')
+		if (bar_type.slice(-1) == '['
+		 && bar_type != '[')
 			bar_type = bar_type.slice(0, -1)
 		if (s.text[0] == '1') {
 			if (curvoice.tie_s)
@@ -1296,7 +1297,7 @@ function new_bar(dotted) {
 	s2 = curvoice.last_sym
 	if (s2 && s2.time == curvoice.time) {
 		if (bar_type == "["
-			|| bar_type == "|:") {
+		 || bar_type == "|:") {
 
 			// search if a previous bar at this time
 			do {
