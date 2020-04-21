@@ -271,6 +271,17 @@ function new_block(subtype) {
 Abc.prototype.set_vp = function(a) {
     var	s, item, pos, val, clefpit
 
+	// add the global parameters if not done yet
+	if (!curvoice.init) {
+		curvoice.init = true
+		if (info.V) {
+			if (info.V['*'])
+				a = info.V['*'].concat(a)
+			if (info.V[curvoice.id])
+				a = info.V[curvoice.id].concat(a)
+		}
+	}
+
 	while (1) {
 		item = a.shift()
 		if (!item)
@@ -460,20 +471,6 @@ Abc.prototype.set_vp = function(a) {
 } // set_vp()
 
 // set the K: / V: parameters
-function set_kv_parm(a) {	// array of items
-	if (!curvoice.init) {	// add the global parameters if not done yet
-		curvoice.init = true
-		if (info.V) {
-			if (info.V['*'])
-				a = info.V['*'].concat(a)
-			if (info.V[curvoice.id])
-				a = info.V[curvoice.id].concat(a)
-		}
-	}
-	if (a.length)
-		self.set_vp(a)
-} // set_kv_parm()
-
 // memorize the K:/V: parameters
 function memo_kv_parm(vid,	// voice ID (V:) / '*' (K:/V:*)
 			a) {	// array of items

@@ -1939,7 +1939,7 @@ function get_key(parm) {
 		break
 	}
 	if (a.length)
-		set_kv_parm(a);
+		self.set_vp(a)
 
 	if (!curvoice.ckey.k_bagpipe && !curvoice.ckey.k_drum
 	 && (cfmt.transp != undefined
@@ -2127,7 +2127,7 @@ function get_voice(parm) {
 		return
 	}
 	curvoice = new_voice(vid);
-	set_kv_parm(a)
+	self.set_vp(a)
 	if (parse.state == 2)			// if first voice
 		goto_tune();
 	set_transp();
@@ -2195,7 +2195,7 @@ function goto_tune(is_K) {
 	}
 
 	if (!curvoice.init && !is_K) {
-		set_kv_parm([]);
+		self.set_vp([])
 		set_transp()
 	}
 
