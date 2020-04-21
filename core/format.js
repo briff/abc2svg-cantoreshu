@@ -351,18 +351,11 @@ function set_writefields(parm) {
 
 // set a voice specific parameter
 function set_v_param(k, v) {
-	if (curvoice) {
-		self.set_vp([k + '=', v])
-		return
-	}
-	k = [k + '=', v];
-	var vid = '*'
-	if (!info.V)
-		info.V = {}
-	if (info.V[vid])
-		Array.prototype.push.apply(info.V[vid], k)
+	k = [k + '=', v]
+	if (curvoice)
+		self.set_vp(k)
 	else
-		info.V[vid] = k
+		memo_kv_parm('*', k)
 }
 
 function set_page() {
