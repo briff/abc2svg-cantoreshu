@@ -61,8 +61,8 @@ abc2svg.modules = {
 		function get_errmsg() {
 			if (typeof user == 'object' && user.errmsg)
 				return user.errmsg
-			if (typeof printErr == 'function')
-				return printErr
+			if (typeof abc2svg.printErr == 'function')
+				return abc2svg.printErr
 			if (typeof alert == 'function')
 				return function(m) { alert(m) }
 			if (typeof console == 'object')
