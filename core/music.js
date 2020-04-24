@@ -346,6 +346,10 @@ function lktsym(s, next) {	// time linkage
 	} else {
 		s.ts_next = s.ts_prev = null
 	}
+	s.seqst = !s.ts_prev || s.ts_prev.type != s.type
+	s = s.ts_next
+	if (s)
+		s.seqst = s.ts_prev.type != s.type
 }
 
 /* -- unlink a symbol -- */
@@ -420,8 +424,6 @@ function insert_clef(s, clef_type, clef_line) {
 	while (!s.seqst)
 		s = s.ts_prev;
 	lktsym(new_s, s)
-	if (new_s.ts_prev.type != C.CLEF)
-		new_s.seqst = true
 	return new_s
 }
 
@@ -1545,7 +1547,6 @@ function custos_add(s) {
 	s.prev = new_s;
 	lktsym(new_s, s);
 
-	new_s.seqst = true;
 	new_s.shrink = s.shrink
 	if (new_s.shrink < 8 + 4)
 		new_s.shrink = 8 + 4;
@@ -1594,21 +1595,14 @@ function set_nl(s) {
 		return s
 	} // set_eol_next()
 
-	// go to the end of the time sequence
-	// for adding keywarn or timewarn
-	while (s) {
-		if (!s.ts_next)
-			return // null
-		if (s.ts_next.seqst)
-			break
-		s = s.ts_next
-	}
+	// 's' is the last symbol of the previous line
+	function do_warn(s) {
+	    var s2, s3
 
-	// if keywarn or timewarn, move K: and M: to the end of the previous line
-	if (cfmt.keywarn || cfmt.timewarn) {
+		// advance in the next line
 		for (s2 = s.ts_next; s2; s2 = s2.ts_next) {
 			switch (s2.type) {
-			case C.BAR:
+//			case C.BAR:
 			case C.CLEF:
 				continue
 			case C.KEY:
@@ -1619,53 +1613,54 @@ function set_nl(s) {
 					continue
 				// fall thru
 			case C.METER:
-				if (s2.type == C.METER) {
-					if (!cfmt.timewarn)
-						continue
-					s2.insert = true // display on next line
-				}
-				s3 = s2.ts_prev;
-				if (s3 == s) {		// if next symbol
-					s = s2		// advance the eol
+				if (s2.type == C.METER
+				 && !cfmt.timewarn)
 					continue
-				}
-				unlksym(s2);		// remove
-				lktsym(s2, s.ts_next);	// link in time at eol
-				if (!s2.prev) {		// if start of voice
-					s2 = s3
-					break
-				}
-				s = s2
+
+				// put the warning symbol at end of line
+				s3 = clone(s2)		// duplicate the K:/M:
+				lktsym(s3, s.ts_next)	// link in time at eol
+				if (!s3.prev)		// if start of voice
+					continue
+				s = s3			// new last symbol
 				while (1) {		// link in voice
-					s2 = s2.ts_prev
-					if (s2.v == s.v) {
-						s.next = s2.next;
-						s.prev = s2;
-						s.next.prev = s;
-						s2.next = s
+					s3 = s3.ts_prev
+					if (s3.v == s.v) {
+						s.next = s3.next
+						s.prev = s3
+						s.next.prev = s
+						s3.next = s
 						break
 					}
 				}
 
 				// care with spacing
 				if (s.type != s.ts_prev.type) {
-					if (!s.seqst) {
-						s.seqst = true;
-						s.shrink = s.wl + s.prev.wr;
-						s.space = s.ts_next.space;
-						s.ts_next.space = 0
-					}
-				} else {
-					delete s.seqst
+					s.shrink = s.wl + s.prev.wr
+					s.space = s.ts_next.space
+					s.ts_next.space = 0
 				}
-
-				s2 = s3		// restart
 				continue
 			}
 			if (w_tb[s2.type])
 				break		// symbol with a width
 		}
+		return s
+	} // do_warn()
+
+	// go to the end of the time sequence
+	while (s) {
+		if (!s.ts_next)
+			return // null
+		if (s.ts_next.seqst)
+			break
+		s = s.ts_next
 	}
+
+	// if keywarn or timewarn,
+	// add the symbols at the end of the previous line
+	if (cfmt.keywarn || cfmt.timewarn)
+		s = do_warn(s)
 
 	/* if normal symbol, cut here */
 	switch (s.type) {
@@ -3020,17 +3015,12 @@ function new_sym(s, p_v, last_s) {
 	p_v.last_sym = s;
 
 	lktsym(s, last_s)
-	if (s.ts_prev.type != s.type)
-		s.seqst = true
-	if (last_s.type == s.type && s.v != last_s.v) {
-		delete last_s.seqst;
-		last_s.shrink = 0
-	}
 }
 
 /* -- init the symbols at start of a music line -- */
 function init_music_line() {
-   var	p_voice, s, s2, s3, last_s, v, st, shr, shrmx, shl,
+   var	p_voice, s, s1, s2, s3, last_s, v, st, shr, shrmx, shl,
+	shlp, p_st, top,
 	nv = voice_tb.length
 
 	/* initialize the voices */
@@ -3046,28 +3036,50 @@ function init_music_line() {
 		while (st < nstaff && !cur_sy.st_print[st])
 			st++;
 		p_voice.st = st
+		if (!p_voice.second) {
+			staff_tb[st].key = p_voice.ckey
+			staff_tb[st].meter = p_voice.meter
+		}
 	}
 
-	/* add a clef at start of the main voices */
-	last_s = tsfirst
-	while (last_s && last_s.type == C.CLEF) {	// move the starting clefs
-		v = last_s.v
-		if (cur_sy.voices[v]
-		 && !cur_sy.voices[v].second) {
-			delete last_s.clef_small;	/* normal clef */
-			p_voice = last_s.p_v;
-			p_voice.last_sym = p_voice.sym = last_s
-		}
-		last_s = last_s.ts_next
-	}
-	for (v = 0; v < nv; v++) {
-		p_voice = voice_tb[v]
-		if (p_voice.sym && p_voice.sym.type == C.CLEF) {
-			if (p_voice.sym == last_s)
-				last_s = last_s.ts_next
-			delete p_voice.sym.clef_small
+	// move the first clefs, key signatures and time signatures
+	// to the staves
+	s = tsfirst
+	while (s) {
+		switch (s.type) {
+		case C.CLEF:
+		case C.KEY:
+		case C.METER:
+			switch (s.type) {
+			case C.CLEF:
+				staff_tb[s.st].clef = s
+				break
+			case C.KEY:
+				s.p_v.ckey = s
+				break
+			case C.METER:
+				s.p_v.meter = s
+				insert_meter |= 1
+				break
+			}
+			unlksym(s)
+			// fall thru
+		case C.PART:
+		case C.TEMPO:
+		case C.BLOCK:
+		case C.REMARK:
+			s = s.ts_next
 			continue
 		}
+		break
+	}
+
+	// generate the starting clefs, key signatures and time signatures
+
+	// add a clef at start of the main voices
+	last_s = tsfirst
+	for (v = 0; v < nv; v++) {
+		p_voice = voice_tb[v]
 		if (!cur_sy.voices[v]
 		 || (cur_sy.voices[v].second
 		  && !p_voice.bar_start))	// needed for correct linkage
@@ -3116,12 +3128,6 @@ function init_music_line() {
 		 || !cur_sy.st_print[cur_sy.voices[v].st])
 			continue
 		p_voice = voice_tb[v]
-		if (last_s && last_s.v == v && last_s.type == C.KEY) {
-			p_voice.last_sym = last_s;
-			last_s.k_old_sf = last_s.k_sf;	// no key cancel
-			last_s = last_s.ts_next
-			continue
-		}
 		s2 = p_voice.ckey
 		if (s2.k_sf || s2.k_a_acc) {
 			s = clone(s2)
@@ -3141,11 +3147,6 @@ function init_music_line() {
 			 || !cur_sy.st_print[cur_sy.voices[v].st]
 			 || !s2.a_meter.length)
 				continue
-			if (last_s && last_s.v == v && last_s.type == C.METER) {
-				p_voice.last_sym = last_s;
-				last_s = last_s.ts_next
-				continue
-			}
 			s = clone(s2)
 			new_sym(s, p_voice, last_s)
 		}
@@ -3197,15 +3198,13 @@ function init_music_line() {
 
 	s = tsfirst
 	s.seqst = true
+	shlp = 0
 	while (1) {
 		s2 = s;
-		shrmx = 0
-		shl = 0
+		shl = shrmx = 0
 		do {
 			self.set_width(s);
-			shr = s.wl
-			if (s.prev)
-				shr += s.prev.wr
+			shr = s.wl + shlp
 			if (shr > shrmx)
 				shrmx = shr;
 			if (s.wr > shl)
@@ -3216,6 +3215,7 @@ function init_music_line() {
 		s2.space = 0
 		if (s == last_s)
 			break
+		shlp = shl
 	}
 
 	// update the spacing before the first old time sequence
@@ -4337,11 +4337,14 @@ function check_bar(s) {
     var	bar_type, i, b1, b2, s_bs, s2,
 	p_voice = s.p_v
 
+	if (s.type == C.BAR && s.invis) {	// bar at end of line
+		s = s.prev
+		if (!s)
+			return
+	}
+
 	/* search the last bar */
 	while (s.type == C.CLEF || s.type == C.KEY || s.type == C.METER) {
-		if (s.type == C.METER
-		 && s.time > p_voice.sym.time)	/* if not empty voice */
-			insert_meter |= 1;	/* meter in the next line */
 		s = s.prev
 		if (!s)
 			return
@@ -4369,6 +4372,7 @@ function check_bar(s) {
 			s2 = s2.next
 			if (!s2)
 				return
+			continue
 		}
 		break
 	}
@@ -4384,7 +4388,7 @@ function check_bar(s) {
 			s2.prev.next = s_bs
 		s2.prev = s_bs
 
-		while (!s2.seqst)
+		while (!s2.seqst || s2.time > s_bs.time)
 			s2 = s2.ts_prev
 		s_bs.ts_next = s2
 		s_bs.ts_prev = s2.ts_prev
@@ -4392,7 +4396,6 @@ function check_bar(s) {
 			tsnext = s_bs
 		else
 			s2.ts_prev.ts_next = s_bs
-		s2.ts_prev = s_bs
 		delete s_bs.seqst
 		if (s_bs == tsnext || s2.ts_prev.type != C.BAR) {
 			if (s2.seqst) {
@@ -4403,6 +4406,7 @@ function check_bar(s) {
 				s2.space = 0
 			}
 		}
+		s2.ts_prev = s_bs
 	}
 
 	if (s.text != undefined) {		// if a variant
