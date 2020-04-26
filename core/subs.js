@@ -467,10 +467,12 @@ function write_text(text, action) {
 
 /* -- output the words after tune -- */
 function put_words(words) {
-	var p, i, j, n, nw, i2, i_end, have_text;
+    var	p, i, j, nw, w, lw, x1, x2, i1, i2, do_flush,
+	maxn = 0,			// max number of characters per line
+	n = 1				// number of verses
 
 	// output a line of words after tune
-	function put_wline(p, x, right) {
+	function put_wline(p, x) {
 		var i = 0, j, k
 
 		if (p[i] == '$' && p[i +  1] >= '0' && p[i + 1] <= '9')
@@ -494,78 +496,88 @@ function put_words(words) {
 			xy_str(x, 0, p.slice(j, k), 'r')
 		if (i < p.length)
 			xy_str(x + 5, 0, p.slice(i), 'l')
-		return i >= p.length && k == 0
 	} // put_wline()
 
 	set_font("words")
+	vskip(cfmt.wordsspace)
+	svg_flush()
 
-	/* see if we may have 2 columns */
-	var	middle = get_lwidth() / 2,
-		max2col = (middle - 45.) / cwidf('a');
-	n = 0;
-	words = words.split('\n');
+	// estimate the width of the lines
+	words = words.split('\n')
 	nw = words.length
 	for (i = 0; i < nw; i++) {
 		p = words[i]
-/*fixme:utf8*/
-		if (p.length > max2col) {
-			n = 0
-			break
-		}
 		if (!p) {
-			if (have_text) {
-				n++;
-				have_text = false
-			}
-		} else {
-			have_text = true
+			while (i + 1 < nw && !words[i + 1])
+				i++
+			n++
+		} else if (p.length > maxn) {
+			maxn = p.length
 		}
 	}
-	if (n > 0) {
-		i = n = ((n + 1) / 2) | 0;
-		have_text = false
-		for (i_end = 0; i_end < nw; i_end++) {
-			p = words[i_end];
-			j = 0
-			while (p[j] == ' ')
-				j++
-			if (j == p.length) {
-				if (have_text && --i <= 0)
+
+	w = get_lwidth() / 2		// half line width
+	lw = maxn * cwidf('a')		// max line width
+	if (lw < w) {			// if 2 columns
+		x1 = (w - lw) / 2 + 10
+		x2 = x1 + w
+		j = n >> 1
+		for (i = 0; i < nw; i++) {
+			p = words[i]
+			if (!p) {
+				if (--j <= 0)
+					i1 = i
+				while (i + 1 < nw && !words[i + 1])
+					i++
+				if (j <= 0) {
+					i2 = i + 1
 					break
-				have_text = false
-			} else {
-				have_text = true
+				}
 			}
 		}
-		i2 = i_end + 1
-	} else {
-		i2 = i_end = nw
+		n >>= 1
+	} else {				// one column
+		x2 = w - lw / 2 + 10
+		i1 = i2 = 0
 	}
 
-	/* output the text */
-	vskip(cfmt.wordsspace)
-
-	for (i = 0; i < i_end || i2 < nw; i++) {
-//fixme:should also permit page break on stanza start
-		if (i < i_end && !words[i].length)
-			use_font(gene.curfont)
+	do_flush = true
+	for (i = 0; i < i1 || i2 < nw; i++, i2++) {
 		vskip(cfmt.lineskipfac * gene.curfont.size)
-		if (i < i_end)
-			put_wline(words[i], 45., 0)
+		if (i < i1) {
+			p = words[i]
+			if (p)
+				put_wline(p, x1)
+			else
+				use_font(gene.curfont)
+		}
 		if (i2 < nw) {
-			if (put_wline(words[i2], 20. + middle, 1)) {
-				if (--n == 0) {
-					if (i < i_end) {
-						n++
-					} else if (i2 < words.length - 1) {
+			p = words[i2]
+			if (p) {
+				put_wline(p, x2)
+			} else {
 
-						/* center the last words */
-/*fixme: should compute the width average.. */
-						middle *= .6
+
+				if (--n == 0) {
+					if (i < i1) {
+						n++
+					} else if (i2 < nw - 1) {
+
+						// center the last verse
+						x2 = w - lw / 2 + 10
+						svg_flush()
 					}
 				}
 			}
-			i2++
+		}
+
+		if (!words[i + 1] && !words[i2 + 1]) {
+			if (do_flush) {
+				svg_flush()
+				do_flush = false
+			}
+		} else {
+			do_flush = true
 		}
 	}
 }
