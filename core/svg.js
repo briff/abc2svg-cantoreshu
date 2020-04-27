@@ -1147,7 +1147,7 @@ function svg_flush() {
 	}
 
 	if (style || font_style)
-		head += '<style type="text/css">\n.' +
+		head += '<style>\n.' +
 				font_class(font) +	// for fill color
 					' text,tspan{fill:currentColor}' +
 			font_style + style +

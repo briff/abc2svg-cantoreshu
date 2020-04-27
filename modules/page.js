@@ -251,7 +251,7 @@ abc2svg.page = {
 		sty = abc.get_font_style().slice(l)		// new style(s)
 		if (cfmt.fullsvg || sty != page.hsty) {
 			page.hsty = sty
-			sty = '<style type="text/css">' + sty + '\n</style>\n'
+			sty = '<style>' + sty + '\n</style>\n'
 		} else {
 			sty = ''
 		}
@@ -281,7 +281,7 @@ abc2svg.page = {
 		sty = abc.get_font_style().slice(l)		// new style(s)
 		if (cfmt.fullsvg || sty != page.fsty) {
 			page.fsty = sty
-			page.ffsty = '<style type="text/css">' + sty + '\n</style>\n'
+			page.ffsty = '<style>' + sty + '\n</style>\n'
 		} else {
 			page.ffsty = ''
 		}

@@ -227,7 +227,7 @@ abc2svg.abc_init = function() {
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>\n\
 <meta name="generator" content="abc2svg-' + abc2svg.version + '"/>\n\
 <!-- CreationDate: ' + get_date() + '-->\n\
-<style type="text/css">\n\
+<style>\n\
 svg {display:block}\n\
 body {width:' + cfmt.pagewidth.toFixed(0) +'px}\n\
 p {' + set_pstyle() + 'margin-top:0}\n\
@@ -267,6 +267,6 @@ abc2svg.abc_end = function() {
 	if (user.errtxt)
 		abc2svg.print("<pre>" + clean_txt(user.errtxt) + "</pre>")
 	if (font_style)				// if some %%text at the end
-		abc2svg.print('<style type="text/css">' + font_style + '\n</style>');
+		abc2svg.print('<style>' + font_style + '\n</style>');
 	abc2svg.print("</body>\n</html>")
 }

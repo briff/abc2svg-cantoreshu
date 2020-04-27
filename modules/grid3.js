@@ -124,7 +124,7 @@ abc2svg.grid3 = {
 		i = cfmt.bgcolor
 		if (i)
 			line += ' style="background-color: ' + i + '"'
-		line += '>\n<style type="text/css">\n\
+		line += '>\n<style>\n\
 .mid {text-anchor:middle}\n'
 
 		if (cfmt.fullsvg)

@@ -1368,15 +1368,16 @@ Abc.prototype.do_begin_end = function(type,
 	case "svg":
 		j = 0
 		while (1) {
-			i = text.indexOf('<style type="text/css">\n', j)
+			i = text.indexOf('<style', j)
 			if (i < 0)
 				break
+			i = text.indexOf('>', i)
 			j = text.indexOf('</style>', i)
 			if (j < 0) {
 				syntax(1, "No </style> in %%beginsvg sequence")
 				break
 			}
-			style += text.slice(i + 23, j).replace(/\s+$/, '')
+			style += text.slice(i + 1, j).replace(/\s+$/, '')
 		}
 		j = 0
 		while (1) {
