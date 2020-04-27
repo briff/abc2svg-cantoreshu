@@ -1603,8 +1603,6 @@ function set_nl(s) {
 		for (s2 = s.ts_next; s2; s2 = s2.ts_next) {
 			switch (s2.type) {
 //			case C.BAR:
-			case C.CLEF:
-				continue
 			case C.KEY:
 				if (!cfmt.keywarn
 				 || (!s2.k_a_acc && !s2.k_sf && !s2.k_old_sf)
@@ -1616,9 +1614,11 @@ function set_nl(s) {
 				if (s2.type == C.METER
 				 && !cfmt.timewarn)
 					continue
+				// fall thru
+			case C.CLEF:
 
 				// put the warning symbol at end of line
-				s3 = clone(s2)		// duplicate the K:/M:
+				s3 = clone(s2)		// duplicate the K:/M:/clef
 				lktsym(s3, s.ts_next)	// link in time at eol
 				if (!s3.prev)		// if start of voice
 					continue
@@ -1657,10 +1657,8 @@ function set_nl(s) {
 		s = s.ts_next
 	}
 
-	// if keywarn or timewarn,
-	// add the symbols at the end of the previous line
-	if (cfmt.keywarn || cfmt.timewarn)
-		s = do_warn(s)
+	// add the warning symbols at the end of the previous line
+	s = do_warn(s)
 
 	/* if normal symbol, cut here */
 	switch (s.type) {
