@@ -1783,13 +1783,16 @@ function set_lines(	s,		/* first symbol */
     var	first, s2, s3, x, xmin, xmid, xmax, wwidth, shrink, space, ws,
 	nlines, cut_here
 
+	ws = get_width(s, last)		// 2 widths: nice and shrinked
+
 	// take care of big key signatures at end of line
 	if (cfmt.keywarn && last && last.type == C.BAR
 	 && last.next && last.next.time == last.next.time
-	 && last.next.type == C.KEY)
-		last = last.next
+	 && last.next.type == C.KEY) {
+		ws[0] += last.next.wr
+		ws[1] += last.next.wr
+	}
 
-	ws = get_width(s, last)		// 2 widths: nice and shrinked
 
 	// check if the symbols can enter in one line
 	if (ws[1] + indent < lwidth) {
