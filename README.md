@@ -121,11 +121,10 @@ title="Copy me">keyboard 2</a>.
 #### 1.3 Publishing music on your web pages
 
 To insert music in your web pages, you just have to insert the lines
-```
-	<script src="http://moinejf.free.fr/js/abcweb-1.js"></script>  
-	<script src="http://moinejf.free.fr/js/snd-1.js"></script>  
-	<script src="http://moinejf.free.fr/js/follow-1.js"></script>  
-```
+
+	<script src="http://moinejf.free.fr/js/abcweb-1.js"></script>
+	<script src="http://moinejf.free.fr/js/snd-1.js"></script>
+	<script src="http://moinejf.free.fr/js/follow-1.js"></script>
 
 in the HTML &lt;head&gt; and put the music as
 ABC sequences in the &lt;body&gt;.
