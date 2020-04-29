@@ -255,6 +255,7 @@ function tosvg(in_fname,		// file name
 
 	function end_tune() {
 		generate()
+		set_page()		// the page layout may have changed
 		if (info.W)
 			put_words(info.W);
 		put_history();
