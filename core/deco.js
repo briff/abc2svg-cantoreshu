@@ -1743,7 +1743,7 @@ function draw_partempo(st, top) {
 		x = -100	// (must be negative for %%soloffs)
 
 	for (s = tsfirst; s; s = s.ts_next) {
-		if (s.type != C.TEMPO || s.del)
+		if (s.type != C.TEMPO || s.invis)
 			continue
 		if (!some_tempo)
 			some_tempo = s;
@@ -1773,7 +1773,7 @@ function draw_partempo(st, top) {
 		for (s = some_tempo; s; s = s.ts_next) {
 			if (s.type != C.TEMPO
 			 || s.time == tim	// (one per voice)
-			 || s.del)		// (displayed by %%titleformat)
+			 || s.invis)		// (displayed by %%titleformat)
 				continue
 			if (user.anno_start || user.anno_stop) {
 				s.wl = 16;

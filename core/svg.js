@@ -1104,7 +1104,7 @@ function writempo(s, x, y) {
 	}
 
 	// don't display anymore
-	s.del = true
+	s.invis = true
 } // writempo()
 
 // update the vertical offset

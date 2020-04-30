@@ -892,7 +892,7 @@ function new_tempo(text) {
 	set_ref(s)
 
 	if (cfmt.writefields.indexOf('Q') < 0)
-		s.del = true			// don't display
+		s.invis = true			// don't display
 
 	/* string before */
 	if (text[0] == '"') {
@@ -959,7 +959,7 @@ function new_tempo(text) {
 	}
 	sym_link(s)
 	if (glovar.tempo && curvoice.time == 0)
-		glovar.tempo.del = true
+		glovar.tempo.invis = true
 }
 
 // treat the information fields which may embedded

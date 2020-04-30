@@ -358,7 +358,7 @@ function voice_adj(sys_chg) {
 	// if Q: from tune header, put it at start of the music
 	// (after the staff system)
 	s = glovar.tempo
-	if (s && staves_found <= 0) {	// && !s.del) {		- play problem
+	if (s && staves_found <= 0) {	// && !s.invis) {	- play problem
 					//fixme: which play problem?
 		v = par_sy.top_voice;
 		p_voice = voice_tb[v];
