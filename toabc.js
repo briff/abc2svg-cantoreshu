@@ -65,6 +65,7 @@
 
 function abc_dump(tsfirst, voice_tb, info) {
     var	i, v, s, g, line, ulen, tmp, tmp2, grace, bagpipe, eoln, curv,
+	cfmt = abc.cfmt(),
 	nv = voice_tb.length,
 	vo = [],		// dump line per voice
 	vold = [],		// false/true for voice name
@@ -289,7 +290,7 @@ break
 			c = p[i + 1]
 			if (c >= '1' && c <= '9') {
 				c = "u" + c
-				f = abc.cfmt()[c + "font"]	// user font
+				f = cfmt[c + "font"]		// user font
 				f.fid = abc.get_font(c).fid	// dump it!
 			}
 		}
@@ -297,8 +298,7 @@ break
 	} // font_def()
 
 	function font_dump() {
-	    var	k, f, def,
-		cfmt = abc.cfmt()
+	    var	k, f, def
 //		fs = abc.get_font_style().split("\n").shift()
 
 		for (k in cfmt) {
@@ -729,6 +729,8 @@ break
 			switch (s.type) {
 			case C.REST:
 			case C.SPACE:
+			case C.PART:
+			case C.TEMPO:
 				break
 			case C.BAR:
 				if (s.bar_type == '[' || s.bar_type == ']')
@@ -853,8 +855,29 @@ break
 			}
 			break
 		case C.PART:
-			font_def("parts", s.text)
-			info_out('P:' + s.text)
+				i = 'P'
+			// fall thru
+		case C.TEMPO:
+			if (s.type == C.TEMPO)
+				i = 'Q'
+			if ((s.invis && cfmt.writefields.indexOf(i) >= 0)
+			 || (!s.invis && cfmt.writefields.indexOf(i) < 0)) {
+				voice_out()
+				if (s.invis) {
+					abc2svg.print("%%writefields " + i + ' 0')
+					cfmt.writefields =
+						cfmt.writefields.replace(i, '')
+				} else {
+					abc2svg.print("%%writefields " + i + ' 1')
+					cfmt.writefields += i
+				}
+			}
+			if (s.type == C.PART) {
+				font_def("parts", s.text)
+				info_out('P:' + s.text)
+			} else {
+				tempo_dump(s)
+			}
 			break
 		case C.REST:
 			line += s.invis ? 'x' : 'z';
@@ -875,9 +898,6 @@ break
 			abc2svg.print('%%staffbreak ' + s.xmx.toString() +
 				(s.stbrk_forced ? 'f' : ''))
 			break
-		case C.TEMPO:
-			tempo_dump(s)
-			break
 		case C.BLOCK:
 			voice_out();
 			block_dump(s)
@@ -892,6 +912,28 @@ break
 		}
 	} // sym_dump()
 
+	function wf_dump() {
+	    var i, a,
+		wf = "CMOPQsTWw"	// default printed fields
+
+		if (cfmt.writefields == wf)
+			return
+		a = ""
+		for (i = 0; i < cfmt.writefields.length; i++) {
+			if (wf.indexOf(cfmt.writefields[i]) < 0)
+				a += cfmt.writefields[i]
+		}
+		if (a)
+			abc2svg.print('%%writefields ' + a + " 1")
+		a = ""
+		for (i = 0; i < wf.length; i++) {
+			if (cfmt.writefields.indexOf(wf[i]) < 0)
+				a += wf[i]
+		}
+		if (a)
+			abc2svg.print('%%writefields ' + a + " 0")
+	} // wf_dump()
+
 	font_dump()
 
 	abc2svg.print('\nX:' + info['X'])
@@ -903,6 +945,8 @@ break
 	abc2svg.print('L:1/' + (C.BLEN / ulen).toString());
 
 	header_dump("OABDFGRNPSZH")
+
+	wf_dump()
 
 	for (v = 0; v < nv; v++) {
 		vo[v] = ""
