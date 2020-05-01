@@ -353,7 +353,7 @@ function set_writefields(parm) {
 function set_v_param(k, v) {
 	k = [k + '=', v]
 	if (curvoice)
-		self.set_vp(k)
+		set_kv_parm(k)
 	else
 		memo_kv_parm('*', k)
 }
