@@ -169,7 +169,7 @@ abc2svg.MIDI = {
     }, // do_midi()
 
     // set the MIDI parameters in the current voice
-    set_midi: function(a) {
+    set_vp: function(of, a) {
     var	i, item,
 	curvoice = this.get_curvoice()
 	if (curvoice.chn == undefined)
@@ -197,18 +197,14 @@ abc2svg.MIDI = {
 			break
 		}
 	}
-    }, // set_midi()
+	of(a)
+    }, // set_vp()
 
     do_pscom: function(of, text) {
 	if (text.slice(0, 5) == "MIDI ")
 		abc2svg.MIDI.do_midi.call(this, text)
 	else
 		of(text)
-    },
-
-    set_vp: function(of, a) {
-	abc2svg.MIDI.set_midi.call(this, a);
-	of(a)
     },
 
     set_hooks: function(abc) {
