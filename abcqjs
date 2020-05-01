@@ -3,6 +3,12 @@
 
 exec qjs --std -e '
 
+    var	i,
+	args = scriptArgs,
+	core = "abc2svg-1.js",
+	path = args.shift().	// the 1st argument is the script name
+			match(/.*\//)
+
 // interpreter specific functions
 function load(fn) {
 	return std.loadScript(fn)
@@ -35,7 +41,7 @@ var abc2svg = {
 	},
 	loadjs: function(fn, relay, onerror) {
 		try {
-			load(path + fn)
+			load(fn[0] == "/" ? fn : (path + fn))
 			if (relay)
 				relay()
 		} catch(e) {
@@ -48,12 +54,6 @@ var abc2svg = {
 } // abc2svg
 
 // --- main ---
-
-    var	i,
-	args = scriptArgs,
-	core = "abc2svg-1.js",
-	path = args.shift().	// the 1st argument is the script name
-			match(/.*\//)
 
 	path = path ? path[0] : ""
 
@@ -68,27 +68,7 @@ var abc2svg = {
 	load(path + core)
 	load(path + "cmdline.js")
 
-	if (/\.js$/.test(args[0])) {
-		if (args[0][0] == "/")
-			load(args[0])
-		else
-			load(path + args[0])
-		args.shift()
-	}
-	if (typeof abc2svg.abc_init != "function")
-		load(path + "toxhtml.js")
-	if (!args[0]) {
-		abc2svg.printErr("ABC/MEI translator with QuickJS\
- and abc2svg-" + abc2svg.version + " " + abc2svg.vdate + "\n\
-Usage:\n\
-  abcqjs [script.js] [options] ABC_file [[options] ABC_file]* [options]\n\
-Arguments:\n\
-  script.js  generation script to load - default: toxhtml.js (XHTML+SVG)\n\
-  options    ABC options (the last options are moved before the last file)\n\
-  ABC_file   ABC file")
-		abc2svg.quit()
-	}
-	abc_cmd("abcqjs", args)
+	abc_cmd("abcqjs", args, "QuickJS")
 ' $0 "$@"
 
 The previous solution with the shebang line as

@@ -1,8 +1,7 @@
 :;# abc2svg with raw nodeJS
 progdir=`dirname $0`
 
-cp ${progdir}/abc2svg-1.js /tmp/toto.js
-cat ${progdir}/cmdline.js >> /tmp/toto.js
+cat ${progdir}/abc2svg-1.js ${progdir}/cmdline.js > /tmp/toto.js
 case $1 in
 	*.js)
 		cat $1 >> /tmp/toto.js
@@ -13,7 +12,7 @@ case $1 in
 		;;
 esac
 if [ "x$x" != 'xno' ]; then
-	cat ${progdir}/toxhtml.js >> /tmp/toto.js
+	cat ${progdir}/tohtml.js >> /tmp/toto.js
 fi
 
 cat <<EOF >> /tmp/toto.js
@@ -58,26 +57,13 @@ abc2svg.loadjs = function(fn, relay, onerror) {
 // (this file is wrapped)
 global.Abc = Abc
 global.abc2svg = abc2svg
-EOF
 
-cat <<EOF >> /tmp/toto.js
 // main
-	var args = process.argv
-	if (!args[2]) {
-		abc2svg.print('ABC translator with nodeJS\
- and abc2svg-' + abc2svg.version + ' ' + abc2svg.vdate + '\n\
-Usage:\n\
-  abcnode [script.js] [options] ABC_file [[options] ABC_file]* [options]\n\
-Arguments:\n\
-  script.js  generation script to load - default: toxhtml.js (XHTML+SVG)\n\
-  options    ABC options (the last options are moved before the last file)\n\
-  ABC_file   ABC file');
-		abc2svg.quit(1)
-	}
+    var	args = process.argv
 	args.shift()
 	args.shift()
 	global.user = user;		// (for modules/page.js)
-	abc_cmd("abcnode", args)
+	abc_cmd("abcnode", process.argv, "nodeJS")
 EOF
 
 node /tmp/toto.js "$@"

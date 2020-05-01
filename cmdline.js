@@ -90,7 +90,7 @@ function do_file(fn) {
 	}
 } // do_file()
 
-function abc_cmd(cmd, args) {
+function abc_cmd(cmd, args, interp_name) {
 	var	arg, parm, fn;
 
 	// put the last options before the last file
@@ -105,6 +105,28 @@ function abc_cmd(cmd, args) {
 		a.push(f)
 	} // arg_reorder()
 
+	// if the first argument is a javascript file, load it
+	if (/\.js$/.test(args[0])) {
+		abc2svg.loadjs(args[0])
+		args.shift()
+	}
+
+	if (!args[0]) {
+		abc2svg.printErr('ABC translator with ' + interp_name +
+			' and abc2svg-' + abc2svg.version + ' ' +
+					abc2svg.vdate +
+			'\nUsage:\n  ' + cmd +
+		    ' [script.js] [options] ABC_file [[options] ABC_file]* [options]\n\
+Arguments:\n\
+  script.js  generation script to load - default: tohtml.js (HTML+SVG)\n\
+  options    ABC options (the last options are moved before the last file)\n\
+  ABC_file   ABC file')
+		abc2svg.quit()
+	}
+
+	// the default output is HTML+SVG
+	if (typeof abc2svg.abc_init != 'function')
+		abc2svg.loadjs("tohtml.js")
 
 	// initialize the backend
 	abc = new abc2svg.Abc(user)

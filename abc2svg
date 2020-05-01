@@ -5,18 +5,6 @@
 // define the system functions
     var	sep = require('path').sep
 
-function usage() {
-	abc2svg.printErr('ABC translator with Node.js\
- and abc2svg-' + abc2svg.version + ' ' + abc2svg.vdate + '\n\
-Usage:\n\
-  abc2svg [script.js] [options] ABC_file [[options] ABC_file]* [options]\n\
-Arguments:\n\
-  script.js  generation script to load - default: toxhtml.js (XHTML+SVG)\n\
-  options    ABC options (the last options are moved before the last file)\n\
-  ABC_file   ABC file')
-	abc2svg.quit()
-}
-
 // load the abc2svg core
 var m = require("abc2svg/abc2svg-1");
 global.abc2svg = m.abc2svg;
@@ -65,21 +53,7 @@ global.abc_cmd = m.abc_cmd
 
 // main
 var args = process.argv
-if (!args[2])
-	usage();
 args.shift();
 args.shift()
 
-// if the first argument is a script, load it
-if (/\.js$/.test(args[0])) {
-    var fn = args[0][0] == '/' ? args[0] : (__dirname + '/' + args[0]),
-	f = abc2svg.readFile(fn);
-	eval(f);
-	args.shift()
-}
-
-// if no rendering engine, load xhtml
-if (typeof(abc2svg.abc_init) != 'function')
-	require("abc2svg/toxhtml");
-
-abc_cmd("nodeJS", args)
+abc_cmd("nodeJS", args, "Node.js")
