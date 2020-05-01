@@ -261,7 +261,7 @@ function Audio5(i_conf) {
 		instr = s.instr,
 		parm = po.params[instr][key | 0],
 		o = po.ac.createBufferSource(),
-		v = s.p_v.vol || 1	// volume (gain)
+		v = s.p_v.vol == undefined ? 1 : s.p_v.vol	// volume (gain)
 
 		if (!parm)		// if the instrument could not be loaded
 			return		// or if it has not this key
