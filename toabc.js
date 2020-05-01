@@ -81,12 +81,10 @@ function abc_dump(tsfirst, voice_tb, info) {
 
 	function voice_out() {
 		function vi_out(v) {
-			if (v == curv)		// (for one voice in %score)
-				return
-			curv = v
 		    var	p_voice = voice_tb[v],
-			ln = 'V:' + p_voice.id
+			ln = voice_tb.length == 1 ? '' : 'V:' + p_voice.id
 
+			curv = v
 			if (!vold[v]) {
 				vold[v] = true
 				if (p_voice.clef
@@ -103,7 +101,8 @@ function abc_dump(tsfirst, voice_tb, info) {
 				if (p_voice.uscale)
 					ln += ' microscale=' + p_voice.uscale
 			}
-			abc2svg.print(ln)
+			if (ln)
+				abc2svg.print(ln)
 
 			if (p_voice.instr) {
 				for (var s = p_voice.sym; s && s.time == 0; s = s.next) {
@@ -141,21 +140,6 @@ function abc_dump(tsfirst, voice_tb, info) {
 //			}
 		} // vi_out()
 
-		if (nv == 1) {
-			if (!vo[0].length)
-				return
-			if (!vold[0]
-			 && (voice_tb[0].nm || voice_tb[0].snm
-			  || voice_tb[0].scale != 1 || voice_tb[0].uscale))
-				vi_out(0);
-			if (eoln) {
-				eoln = false
-				vo[0] += "$"
-			}
-			abc2svg.print(vo[0])
-			vo[0] = ""
-			return
-		}
 		for (var v = 0; v < nv; v++) {
 			if (vo[v].length == 0)
 				continue
