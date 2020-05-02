@@ -285,13 +285,13 @@ The general syntax of the command line is:
 with:
 
 - `script.js` is an optional backend script.  
-  It defaults to `toxhtml.js` (XHTML+SVG)
+  It defaults to `tohtml.js` (HTML+SVG)
 - `options` are the ABC options.  
   For compatibility, the last options are moved before the last ABC file.
 
 #### 2.2 Backend scripts
 
-By default, the shell scripts generate (XHTML+SVG) files.  
+By default, the shell scripts generate (HTML+SVG) files.  
 This output may be modified by backend scripts. These ones must appear
 immediately following the name of the shell script.  
 They are:
