@@ -263,7 +263,8 @@ function Audio5(i_conf) {
 		o = po.ac.createBufferSource(),
 		v = s.p_v.vol == undefined ? 1 : s.p_v.vol	// volume (gain)
 
-		if (!parm)		// if the instrument could not be loaded
+		if (!v			// mute voice
+		 || !parm)		// if the instrument could not be loaded
 			return		// or if it has not this key
 		o.buffer = parm.buffer
 		if (parm.loopStart) {
@@ -287,12 +288,12 @@ function Audio5(i_conf) {
 				g.gain.setValueAtTime(v, t)
 			} else {
 				g.gain.setValueAtTime(0, t)
-				g.gain.linearRampToValueAtTime(1, t + parm.attack)
+				g.gain.linearRampToValueAtTime(v, t + parm.attack)
 			}
 			g.gain.setValueAtTime(v, t + parm.hold)
 		}
 
-		g.gain.exponentialRampToValueAtTime(parm.sustain,
+		g.gain.exponentialRampToValueAtTime(parm.sustain * v,
 					t + parm.decay)
 
 		o.connect(g)
