@@ -87,9 +87,9 @@ done
 for c in chromium-browser vivaldi opera brave-browser epic google-chrome; do
 	if command -v $c >/dev/null 2>&1; then
 		echo "and $c"
-		command $abcscr "$@" > /tmp/o.xhtml
-		$c --headless --disable-gpu --print-to-pdf=$out /tmp/o.xhtml
-		rm /tmp/o.xhtml
+		command $abcscr "$@" > /tmp/o.html
+		$c --headless --disable-gpu --print-to-pdf=$out /tmp/o.html
+		rm /tmp/o.html
 		exit 0
 	fi
 done
@@ -100,7 +100,7 @@ if command -v weasyprint >/dev/null 2>&1; then
 
 	rm -f /tmp/abc*.svg
 
-# generate a (XHTML+SVG) file
+# generate a (HTML+SVG) file
 # then, extract the SVG images (pages) to /tmp/ and build a file.html
 	cat > /tmp/abc.html <<EOF
 <html> <head>
@@ -273,7 +273,7 @@ EOF
 # purge /tmp
 rm -f /tmp/abc*.svg
 
-# generate a (XHTML+SVG) file with a abc2svg batch script
+# generate a (HTML+SVG) file with a abc2svg batch script
 # then, extract the SVG images (pages) to /tmp
 n=0
 command $abcscr /tmp/fix.abc "$@" | while read v; do
