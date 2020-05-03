@@ -1732,7 +1732,6 @@ function draw_measnb() {
 /* (the staves are being defined) */
 function draw_partempo(st, top) {
     var	s, some_part, some_tempo, h, w, y,
-	tim = -1,
 	dy = 0,		/* put the tempo indication at top */
 	ht = 0
 
@@ -1772,7 +1771,6 @@ function draw_partempo(st, top) {
 		/* draw the tempo indications */
 		for (s = some_tempo; s; s = s.ts_next) {
 			if (s.type != C.TEMPO
-			 || s.time == tim	// (one per voice)
 			 || s.invis)		// (displayed by %%titleformat)
 				continue
 			if (user.anno_start || user.anno_stop) {
@@ -1784,8 +1782,9 @@ function draw_partempo(st, top) {
 			}
 			writempo(s, s.x - 16, (dosh & 1) ? h : y);
 			anno_stop(s);
-			tim = s.time
 			dosh >>= 1
+			while (s.ts_next && s.ts_next.type == C.TEMPO)
+				s = s.ts_next
 		}
 	}
 
@@ -1813,10 +1812,8 @@ function draw_partempo(st, top) {
 		if (top < ymin + h + ht)
 			dy = ymin + h + ht - top
 
-		tim = -1
 		for (s = some_part; s; s = s.ts_next) {
-			if (s.type != C.PART || s.invis
-			 || s.time == tim)	// (one per voice)
+			if (s.type != C.PART || s.invis)
 				continue
 			s.x -= 10;
 			if (user.anno_start || user.anno_stop) {
@@ -1829,7 +1826,8 @@ function draw_partempo(st, top) {
 			}
 			xy_str(s.x, 2 - ht - h, s.text);
 			anno_stop(s)
-			tim = s.time
+			while (s.ts_next && s.ts_next.type == C.PART)
+				s = s.ts_next
 		}
 	}
 	return dy
