@@ -144,6 +144,8 @@ function abc_dump(tsfirst, voice_tb, info) {
 			if (vo[v].length == 0)
 				continue
 			vi_out(v);
+			if (vo[v].slice(-1) == '\n')
+				vo[v] = vo[v].slice(0, -1)
 			if (eoln) {
 				eoln = false
 				vo[v] += "$"
@@ -713,7 +715,6 @@ break
 			switch (s.type) {
 			case C.REST:
 			case C.SPACE:
-			case C.PART:
 			case C.TEMPO:
 				break
 			case C.BAR:
@@ -838,30 +839,20 @@ break
 				tmp--
 			}
 			break
-		case C.PART:
-				i = 'P'
-			// fall thru
 		case C.TEMPO:
-			if (s.type == C.TEMPO)
-				i = 'Q'
-			if ((s.invis && cfmt.writefields.indexOf(i) >= 0)
-			 || (!s.invis && cfmt.writefields.indexOf(i) < 0)) {
+			if ((s.invis && cfmt.writefields.indexOf('Q') >= 0)
+			 || (!s.invis && cfmt.writefields.indexOf('Q') < 0)) {
 				voice_out()
 				if (s.invis) {
-					abc2svg.print("%%writefields " + i + ' 0')
+					abc2svg.print("%%writefields Q 0")
 					cfmt.writefields =
-						cfmt.writefields.replace(i, '')
+						cfmt.writefields.replace('Q', '')
 				} else {
-					abc2svg.print("%%writefields " + i + ' 1')
-					cfmt.writefields += i
+					abc2svg.print("%%writefields Q 1")
+					cfmt.writefields += 'Q'
 				}
 			}
-			if (s.type == C.PART) {
-				font_def("parts", s.text)
-				info_out('P:' + s.text)
-			} else {
-				tempo_dump(s)
-			}
+			tempo_dump(s)
 			break
 		case C.REST:
 			line += s.invis ? 'x' : 'z';
@@ -951,10 +942,24 @@ break
 
 	// loop by time
 	for (s = tsfirst; s; s = s.ts_next) {
+		if (s.type == C.PART) {		// new part
+			voice_out()
+			if (s.invis && cfmt.writefields.indexOf('P') >= 0) {
+				abc2svg.print("%%writefields P 0")
+				cfmt.writefields =
+						cfmt.writefields.replace('P', '')
+			} else if (!s.invis && cfmt.writefields.indexOf('P') < 0) {
+				abc2svg.print("%%writefields P 1")
+				cfmt.writefields += 'P'
+			}
+			font_def("parts", s.text)
+			abc2svg.print('P:' + s.text)
+			while (s.ts_next && s.ts_next.type == C.PART)
+				s = s.ts_next
+			continue
+		}
 		if (eoln && s.seqst)
 			voice_out();
-		if (s.del)
-			continue
 		line = "";
 		v = s.v				// (used in info_out)
 		// (all voices are synchronized on %%score)
@@ -1004,7 +1009,6 @@ abc2svg.abc_end = function() {
 			break
 		abc_dump(t[0], t[1], t[2])
 	}
-
 }
 
 abc2svg.abort = function(e) {
