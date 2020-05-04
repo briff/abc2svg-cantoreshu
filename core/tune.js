@@ -1026,7 +1026,12 @@ Abc.prototype.do_pscom = function(text) {
 		return
 	case "maxsysstaffsep":
 		if (parse.state == 3) {
-			par_sy.voices[curvoice.v].maxsep = get_unit(param)
+			val = get_unit(param)
+			if (isNaN(val)) {
+				syntax(1, errs.bad_val, "%%maxsysstaffsep")
+				return
+			}
+			par_sy.voices[curvoice.v].maxsep = val
 			return
 		}
 		break
@@ -1145,6 +1150,10 @@ Abc.prototype.do_pscom = function(text) {
 				if (values[2])
 					len = get_unit(values[2])
 			}
+			if (isNaN(h1) || isNaN(h2) || isNaN(len)) {
+				syntax(1, errs.bad_val, "%%sep")
+				return
+			}
 		}
 		if (h1 < 1)
 			h1 = 14
@@ -1212,7 +1221,11 @@ Abc.prototype.do_pscom = function(text) {
 			dur:0
 		}
 		if (param[0] >= '0' && param[0] <= '9') {
-			s.xmx = get_unit(param)
+			val = get_unit(param)
+			if (isNaN(val)) {
+				syntax(1, errs.bad_val, "%%staffbreak")
+				return
+			}
 			if (param.slice(-1) == 'f')
 				s.stbrk_forced = true
 		} else {
@@ -1242,7 +1255,12 @@ Abc.prototype.do_pscom = function(text) {
 	case "sysstaffsep":
 //--fixme: may be global
 		if (parse.state == 3) {
-			par_sy.voices[curvoice.v].sep = get_unit(param)
+			val = get_unit(param)
+			if (isNaN(val)) {
+				syntax(1, errs.bad_val, "%%sysstaffsep")
+				return
+			}
+			par_sy.voices[curvoice.v].sep = val
 			return
 		}
 		break
@@ -1310,6 +1328,10 @@ Abc.prototype.do_pscom = function(text) {
 		return
 	case "vskip":
 		val = get_unit(param)
+		if (isNaN(val)) {
+			syntax(1, errs.bad_val, "%%vskip")
+			return
+		}
 		if (val < 0) {
 			syntax(1, "%%vskip cannot be negative")
 			return
