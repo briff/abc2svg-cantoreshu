@@ -1190,7 +1190,7 @@ function add_end_bar(s) {
 		dur: 0,
 		seqst: true,
 		invis: true,
-		time: s.time + s.dur,
+		time: s.time + s.dur / 2,
 		nhd: 0,
 		notes: [{
 			pit: s.notes[0].pit
@@ -1203,9 +1203,12 @@ function add_end_bar(s) {
 		ts_next: s.ts_next,
 		shrink: s.wr + 3
 	}
-	s.next.prev = bar
-	s.ts_next.ts_prev = bar
+	if (s.next)
+		s.next.prev = bar
+	if (s.ts_next)
+		s.ts_next.ts_prev = bar
 	s.next = s.ts_next = bar
+	bar.space = set_space(bar, s.time)
 	return bar
 }
 
@@ -1274,6 +1277,12 @@ function set_allsymwidth() {
 			s2 = s2.ts_next
 		} while (!s2.seqst)
 	}
+
+	// there must be a bar at the end of the tune
+	while (s2.ts_next)
+		s2 = s2.ts_next
+	if (s2.type != C.BAR)
+		add_end_bar(s2)
 
 	// let the chord symbols at the same offset
 	if (s_chs)
