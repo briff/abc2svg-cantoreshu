@@ -2249,7 +2249,6 @@ function tp_adj(s, fact) {
 			}
 		}
 		if (!s.next) {
-			s.dur = curvoice.time - tim
 			if (s.tpe)
 				s.tpe++
 			else
