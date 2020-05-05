@@ -1220,18 +1220,19 @@ Abc.prototype.do_pscom = function(text) {
 			type: C.STBRK,
 			dur:0
 		}
-		if (param[0] >= '0' && param[0] <= '9') {
+		if (param.slice(-1) == 'f') {
+			s.stbrk_forced = true
+			param = param.replace(/\sf$/, '')
+		}
+		if (param) {
 			val = get_unit(param)
 			if (isNaN(val)) {
 				syntax(1, errs.bad_val, "%%staffbreak")
 				return
 			}
-			if (param.slice(-1) == 'f')
-				s.stbrk_forced = true
+			s.xmx = val
 		} else {
 			s.xmx = 14
-			if (param[0] == 'f')
-				s.stbrk_forced = true
 		}
 		sym_link(s)
 		return
