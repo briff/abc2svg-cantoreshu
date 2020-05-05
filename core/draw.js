@@ -3505,9 +3505,9 @@ function draw_systems(indent) {
 				s2 = s.prev
 				if (!s2)
 					break
-				x2 = s2.x
-				if (s2.type != C.BAR)
-					x2 += s2.wr
+				x2 = s2.type == C.BAR ?
+					s2.x :
+					s.x - s.xmx
 				if (x >= x2)
 					break
 				draw_staff(st, x, x2)
