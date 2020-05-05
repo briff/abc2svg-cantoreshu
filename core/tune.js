@@ -1459,6 +1459,9 @@ function generate(in_mc) {
 	self.set_bar_num()
 	pit_adj()
 
+	if (info.P)
+		tsfirst.parts = info.P	// for play
+
 	// give the parser result to the application
 	if (user.get_abcmodel)
 		user.get_abcmodel(tsfirst, voice_tb, abc2svg.sym_name, info)

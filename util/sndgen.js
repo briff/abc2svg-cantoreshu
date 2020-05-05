@@ -35,13 +35,14 @@ function ToAudio() {
  return {
 
    // generate the play data of a tune
-   add: function(s,		// starting symbol
+   add: function(first,		// starting symbol
 		voice_tb) {	// voice table
     var	C = abc2svg.C,
 	p_time = 0,		// last playing time
 	abc_time = 0,		// last ABC time
 	play_fac = C.BLEN / 4 * 120 / 60, // play time factor - default: Q:1/4=120
 	i, n, dt, d, v, c,
+	s = first,
 	rst = s,		// left repeat (repeat restart)
 	rst_fac,		// play factor on repeat restart
 	rsk,			// repeat variant array (repeat skip)
@@ -121,6 +122,72 @@ function ToAudio() {
 					(s.clef_octave / 7 * 40) : 0)
 		}
 	} // midi_transp()
+
+	// build the information about the parts
+	function build_parts(first) {
+	    var	i, j, c, n, v,
+		s = first,
+		p = s.parts,
+		st = [],
+		r = ""
+
+		// build a linear string of the parts
+		for (i = 0; i < p.length; i++) {
+			c = p[i]
+			switch (c) {
+			case '.':
+				continue
+			case '(':
+				st.push(r.length)
+				continue
+			case ')':
+				j = st.pop()
+				if (j == undefined)
+					j = r.length
+				continue
+			}
+			if (c >= 'A' && c <= 'Z') {
+				j = r.length
+				r += c
+				continue
+			}
+			n = Number(c)
+//fixme:one digit is enough!
+//			while (1) {
+//				c = p[i + 1]
+//				if (c < '0' || c > '9')
+//					break
+//				n = n * 10 + Number(c)
+//				i++
+//			}
+			if (isNaN(n))
+				break
+			v = r.slice(j)
+			if (r.length + v.length * n > 128)
+				continue
+			while (--n > 0)
+				r += v
+		}
+		s.parts = r
+
+		// build the part table in the first symbol
+		// and put the reverse pointers in the P: symbols
+		s.p_s = []			// pointers to the parts
+		while (1) {
+			if (!s.ts_next) {
+				s.part = first	// end of tune = end of part
+				break
+			}
+			s = s.ts_next
+			if (s.type == C.PART) {
+				s.part = first		// reverse pointer
+				for (i = 0; i < first.parts.length; i++) {
+					if (first.parts[i] == s.text)
+						first.p_s[i] = s
+				}
+			}
+		}
+	} // build_parts()
 
 	// handle a block symbol
 	function do_block(s) {
@@ -227,6 +294,9 @@ function ToAudio() {
 
 	// transpose the MIDI pitches
 	midi_transp(s, voice_tb)
+
+	if (s.parts)
+		build_parts(s)
 
 	// set the time parameters
 	rst = s
@@ -509,6 +579,21 @@ abc2svg.play_next = function(po) {
 			}
 			while (s.ts_next && !s.ts_next.seqst)
 				s = s.ts_next
+			if (!s.part)
+				break
+			// fall thru
+		case C.PART:
+			if (s.part				// if end of part
+			 && po.i_p != undefined) {
+				s2 = s.part.p_s[++po.i_p]	// next part
+				if (s2) {
+					po.stime += (s.ptim - s2.ptim) / po.conf.speed
+					s = s2
+					t = po.stime + s.ptim / po.conf.speed
+				} else {
+					s = po.s_end
+				}
+			}
 			break
 		case C.BLOCK:
 			if (s.subtype == "midictl")
@@ -578,7 +663,29 @@ abc2svg.play_next = function(po) {
 				po))
     } // play_cont()
 
+    // search the index in the parts
+    function get_part(po) {
+    var	s, i, s_p
+	for (s = po.s_cur; s; s = s.ts_prev) {
+		if (s.parts) {
+			po.i_p = 0
+			return
+		}
+		s_p = s.part
+		if (!s_p || !s_p.p_s)
+			continue
+		for (i = 0; i < s_p.p_s.length; i++) {
+			if (s_p.p_s[i] == s) {
+				po.i_p = i	// index in the parts
+				return
+			}
+		}
+	}
+    } // get_part()
+
     // --- play_next ---
+	get_part(po)
+
 	po.stime = po.get_time(po) + .3	// start time + 0.3s
 			- po.s_cur.ptim * po.conf.speed
 	po.p_v = []			// voice table for the MIDI controls
