@@ -3499,20 +3499,20 @@ function draw_systems(indent) {
 						draw_lstaff(s.x)
 				}
 			}
-			s2 = s.prev
-			if (!s2)
-				break
-			x2 = s2.x
-			if (s2.type != C.BAR)
-				x2 += s2.wr;
 			st = s.st;
 			x = xstaff[st]
 			if (x >= 0) {
+				s2 = s.prev
+				if (!s2)
+					break
+				x2 = s2.x
+				if (s2.type != C.BAR)
+					x2 += s2.wr
 				if (x >= x2)
-					continue
+					break
 				draw_staff(st, x, x2)
+				xstaff[st] = s.x
 			}
-			xstaff[st] = s.x
 			break
 //		default:
 //fixme:does not work for "%%staves K: M: $" */
