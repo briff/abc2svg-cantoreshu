@@ -113,7 +113,7 @@ abc2svg.page = {
 			case 'I':
 				c = str[++i]
 			case 'T':
-				t = abc.info()[c]
+				t = page.abc.info()[c]
 				if (t)
 					r[j] += t.split('\n', 1)[0]
 				break
