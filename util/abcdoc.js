@@ -18,6 +18,8 @@
 // You should have received a copy of the GNU General Public License
 // along with abc2svg.  If not, see <http://www.gnu.org/licenses/>.
 
+    var user
+
 (function(){
 
 window.onerror = function(msg, url, line) {
@@ -47,7 +49,7 @@ function abcdoc() {
 			}
 			return ""	// ??
 
-	})(),
+	})()
     user = {	// -- abc2svg init argument
 	errmsg: function(msg, l, c) {	// get the errors
 		errtxt += clean_txt(msg) + '\n'
