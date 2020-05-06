@@ -308,7 +308,7 @@ function ToAudio() {
 		}
 
 		dt = s.time - abc_time
-		if (dt > 0) {
+		if (dt != 0) {		// may go backwards after grace notes
 			p_time += dt / play_fac
 			abc_time = s.time
 		}
