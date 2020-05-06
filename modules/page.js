@@ -98,11 +98,14 @@ abc2svg.page = {
 			case 'd':
 				if (!abc2svg.get_mtime)
 					break // cannot know the change time of the file
-				r[j] += strftime(cfmt.dateformat,
-						abc2svg.get_mtime(page.abc.parse.fname))
-				break
+				t = abc2svg.get_mtime(page.abc.parse.fname)
+				// fall thru
 			case 'D':
-				r[j] += strftime(cfmt.dateformat)
+				if (c == 'D')
+					t = new Date()
+				if (cfmt.dateformat[0] == '"')
+					cfmt.dateformat = cfmt.dateformat.slice(1, -1)
+				r[j] += strftime(cfmt.dateformat, t)
 				break
 			case 'F':
 				r[j] += page.abc.parse.fname
