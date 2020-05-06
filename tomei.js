@@ -747,7 +747,7 @@ abc2svg.printErr('!! V:'+s.p_v.id+' '+s.time+' '+s.type+' st '+s.st)
 	} // note_dump()
 
 	function tempo_dump(s) {
-		if (s.del)
+		if (s.invis)
 			return
 	    var	v,
 		t = '\t  <tempo place="above" startid="#a',
