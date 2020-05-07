@@ -1577,7 +1577,7 @@ function custos_add(s) {
 
 /* -- define the beginning of a new music line -- */
 function set_nl(s) {
-    var	s2, s3, p_voice, done
+    var	s2, s3, p_voice, done, tim
 
 	// set the end of line marker
 	function set_eol(s) {
@@ -1657,8 +1657,21 @@ function set_nl(s) {
 		return s
 	} // do_warn()
 
+	// if on a note or rest, goto the next time
+	if (s.dur) {
+		tim = s.time + s.dur
+		while (s) {
+			if (!s.ts_next)
+				return // null
+			if (s.time >= tim)
+				break
+			s = s.ts_next
+		}
+		s = s.ts_prev
+
 	// go to the end of the time sequence
-	while (s) {
+	} else
+	    while (s) {
 		if (!s.ts_next)
 			return // null
 		if (s.ts_next.seqst)
