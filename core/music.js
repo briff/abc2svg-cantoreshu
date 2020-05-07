@@ -1699,7 +1699,9 @@ function set_nl(s) {
 			break
 		switch (s.type) {
 		case C.STAVES:
-			if (s.ts_prev && s.ts_prev.type == C.BAR)
+			if (!s.ts_prev)
+				return // null		// no music yet
+			if (s.ts_prev.type == C.BAR)
 				break
 			while (s.ts_next) {
 				if (w_tb[s.ts_next.type] != 0
@@ -2019,12 +2021,6 @@ function cut_tune(lwidth, indent) {
 		if (!s2)
 			break
 
-		// (s2 may be tsfirst - no ts_prev - when only one
-		//  embedded info in the first line after the first K:)
-		if (!s2.ts_prev) {
-			delete s2.nl
-			continue
-		}
 		s = s2.ts_prev;		// don't miss an eoln
 		indent = 0
 	}
