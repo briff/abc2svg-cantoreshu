@@ -64,7 +64,7 @@
 	]
 
 function abc_dump(tsfirst, voice_tb, info) {
-    var	i, v, s, g, line, ulen, tmp, tmp2, grace, bagpipe, eoln, curv,
+    var	i, v, s, g, line, ulen, tmp, tmp2, grace, bagpipe, curv,
 	cfmt = abc.cfmt(),
 	nv = voice_tb.length,
 	vo = [],		// dump line per voice
@@ -146,10 +146,6 @@ function abc_dump(tsfirst, voice_tb, info) {
 			vi_out(v);
 			if (vo[v].slice(-1) == '\n')
 				vo[v] = vo[v].slice(0, -1)
-			if (eoln) {
-				eoln = false
-				vo[v] += "$"
-			}
 			abc2svg.print(vo[v])
 			vo[v] = ""
 		}
@@ -958,10 +954,13 @@ break
 				s = s.ts_next
 			continue
 		}
-		if (eoln && s.seqst)
+		v = s.v
+		if (s.soln && s.seqst) {
+			vo[v] += '$'
 			voice_out();
+		}
 		line = "";
-		v = s.v				// (used in info_out)
+
 		// (all voices are synchronized on %%score)
 		if (s.type != C.STAVES && s.time > vti[v]) {
 //fixme: put 'X' if more than one measure
@@ -977,8 +976,6 @@ break
 		if (s.next) {
 			if (s.beam_end && !s.beam_st && !s.next.beam_end)
 				line += ' '
-			if (s.eoln)
-				eoln = true
 		}
 		if (line)
 			vo[v] += line

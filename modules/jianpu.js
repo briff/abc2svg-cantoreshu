@@ -110,8 +110,8 @@ abc2svg.jianpu = {
 
 			if (!s.ts_next) {
 				s.ts_next = s2
-				if (s.eoln)
-					s.eoln = false
+				if (s.soln)
+					s.soln = false
 				s2.ts_prev = s
 				s2.seqst = true
 			} else {

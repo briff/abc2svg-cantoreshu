@@ -2504,9 +2504,8 @@ function parse_music_line() {
 				if (cfmt.barsperstaff)
 					break
 				if (par_sy.voices[curvoice.v]
-				 && par_sy.voices[curvoice.v].range == 0
-				 && curvoice.last_sym)
-					curvoice.last_sym.eoln = true
+				 && par_sy.voices[curvoice.v].range == 0)
+					curvoice.eoln = true
 				break
 			case '&':			// voice overlay
 				if (grace) {
@@ -2837,7 +2836,6 @@ function parse_music_line() {
 		return
 	if (char_tb['\n'.charCodeAt(0)] == '\n'
 	 && par_sy.voices[curvoice.v]
-	 && par_sy.voices[curvoice.v].range == 0
-	 && curvoice.last_sym)
-		curvoice.last_sym.eoln = true
+	 && par_sy.voices[curvoice.v].range == 0)
+		curvoice.eoln = true
 }

@@ -77,6 +77,10 @@ function sym_link(s) {
 		s.second = true
 	if (curvoice.floating)
 		s.floating = true
+	if (curvoice.eoln) {
+		s.soln = true
+		curvoice.eoln = false
+	}
 }
 
 /* -- add a new symbol in a voice -- */

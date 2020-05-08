@@ -916,7 +916,7 @@ return true
 
 	// newline for music
 	sb: function(tag) {
-		curvoice.last_sym.eoln = true
+		curvoice.eoln = true
 	}, // sb()
 
 //	score: function(tag) {

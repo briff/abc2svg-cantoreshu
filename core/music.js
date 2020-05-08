@@ -1576,7 +1576,7 @@ function custos_add(s) {
 }
 
 /* -- define the beginning of a new music line -- */
-function set_nl(s) {
+function set_nl(s) {			// s = start of line
     var	s2, s3, p_voice, done, tim
 
 	// set the end of line marker
@@ -1657,7 +1657,9 @@ function set_nl(s) {
 		return s
 	} // do_warn()
 
-	// if on a note or rest, goto the next time
+	s = s.ts_prev				// end of previous line
+
+	// if on a note or rest, go to the next time
 	if (s.dur) {
 		tim = s.time + s.dur
 		while (s) {
@@ -1668,15 +1670,6 @@ function set_nl(s) {
 			s = s.ts_next
 		}
 		s = s.ts_prev
-
-	// go to the end of the time sequence
-	} else
-	    while (s) {
-		if (!s.ts_next)
-			return // null
-		if (s.ts_next.seqst)
-			break
-		s = s.ts_next
 	}
 
 	// add the warning symbols at the end of the previous line
@@ -1768,16 +1761,16 @@ function get_ck_width() {
 		p_voice.meter.wl + p_voice.meter.wr]
 }
 
-// get the width of the symbols up to the next eoln or eof
+// get the width of the symbols up to the next soln or eof
 // also, set a x (nice spacing) to all symbols
 // two returned values: width of nice spacing, width with max shrinking
-function get_width(s, last) {
+function get_width(s, next) {
     var	shrink, space,
 	w = 0,
 	wmx = 0,
 	sp_fac = (1 - cfmt.maxshrink)
 
-	do {
+	while (s != next) {
 		if (s.seqst) {
 			shrink = s.shrink
 			wmx += shrink
@@ -1788,39 +1781,36 @@ function get_width(s, last) {
 					+ space * sp_fac
 			s.x = w
 		}
-		if (s == last)
-			break
 		s = s.ts_next
-	} while (s)
-	if (last)
-		wmx += last.wr		// big key signatures may be wide enough
+	}
+	if (next)
+		wmx += next.wr		// big key signatures may be wide enough
 	return [w, wmx]
 }
 
 /* -- search where to cut the lines according to the staff width -- */
 function set_lines(	s,		/* first symbol */
-			last,		/* last symbol / null */
+			next,		/* symbol of the next line / null */
 			lwidth,		/* w - (clef & key sig) */
 			indent) {	/* for start of tune */
     var	first, s2, s3, x, xmin, xmid, xmax, wwidth, shrink, space, ws,
-	nlines, cut_here
+	nlines,
+	last = next ? next.ts_prev : null
 
-	ws = get_width(s, last)		// 2 widths: nice and shrinked
+	ws = get_width(s, next)		// 2 widths: nice and shrinked
 
 	// take care of big key signatures at end of line
-	if (cfmt.keywarn && last && last.type == C.BAR
-	 && last.next && last.next.time == last.next.time
-	 && last.next.type == C.KEY) {
-		ws[0] += last.next.wr
-		ws[1] += last.next.wr
+	if (cfmt.keywarn && next
+	 && next.type == C.KEY && !last.dur) {
+		ws[0] += next.wr
+		ws[1] += next.wr
 	}
-
 
 	// check if the symbols can enter in one line
 	if (ws[1] + indent < lwidth) {
-		if (last)
-			last = set_nl(last)
-		return last
+		if (next)
+			next = set_nl(next)
+		return next
 	}
 
 	/* loop on cutting the tune into music lines */
@@ -1828,9 +1818,9 @@ function set_lines(	s,		/* first symbol */
 	while (1) {
 		nlines = Math.ceil(wwidth / lwidth)
 		if (nlines <= 1) {
-			if (last)
-				last = set_nl(last)
-			return last
+			if (next)
+				next = set_nl(next)
+			return next
 		}
 
 		s2 = first = s;
@@ -1838,7 +1828,7 @@ function set_lines(	s,		/* first symbol */
 		xmax = xmin + lwidth;
 		xmid = xmin + wwidth / nlines;
 		xmin += wwidth / nlines * cfmt.breaklimit;
-		for (s = s.ts_next; s != last ; s = s.ts_next) {
+		for (s = s.ts_next; s != next ; s = s.ts_next) {
 			if (!s.x)
 				continue
 			if (s.type == C.BAR)
@@ -1847,16 +1837,15 @@ function set_lines(	s,		/* first symbol */
 				break
 		}
 //fixme: can this occur?
-		if (s == last) {
-			if (last)
-				last = set_nl(last)
-			return last
+		if (s == next) {
+			if (next)
+				next = set_nl(next)
+			return next
 		}
 
 		/* try to cut on a measure bar */
-		cut_here = false;
 		s3 = null
-		for ( ; s != last; s = s.ts_next) {
+		for ( ; s != next; s = s.ts_next) {
 			x = s.x
 			if (!x)
 				continue
@@ -1875,21 +1864,14 @@ function set_lines(	s,		/* first symbol */
 			break
 		}
 
-		/* if a bar, cut here */
-		if (s3) {
-			s = s3;
-			cut_here = true
-		}
-
-		/* try to avoid to cut a beam or a tuplet */
-		if (!cut_here) {
+		// no bar, try to avoid to cut a beam or a tuplet */
+		if (!s3) {
 			var	beam = 0,
 				bar_time = s2.time;
 
 			xmax -= 8; // (left width of the inserted bar in set_allsymwidth)
 			s = s2;			// restart from start or last bar
-			s3 = null
-			for ( ; s != last; s = s.ts_next) {
+			for ( ; s != next; s = s.ts_next) {
 				if (s.beam_st)
 					beam++
 				if (s.beam_end && beam > 0)
@@ -1917,16 +1899,12 @@ function set_lines(	s,		/* first symbol */
 				s3 = s
 				break
 			}
-			if (s3) {
-				s = s3;
-				cut_here = true
-			}
 		}
 
 		// cut anyhere
-		if (!cut_here) {
+		if (!s3) {
 			s3 = s = s2
-			for ( ; s != last; s = s.ts_next) {
+			for ( ; s != next; s = s.ts_next) {
 				x = s.x
 				if (!x)
 					continue
@@ -1941,14 +1919,16 @@ function set_lines(	s,		/* first symbol */
 				s3 = s
 				break
 			}
-			s = s3
 		}
+		s = s3.ts_next
+		while (!s.seqst)
+			s = s.ts_next
 
 		if (s.nl) {		/* already set here - advance */
 			error(0, s,
 			    "Line split problem - adjust maxshrink and/or breaklimit");
 			nlines = 2
-			for (s = s.ts_next; s != last; s = s.ts_next) {
+			for (s = s.ts_next; s != next; s = s.ts_next) {
 				if (!s.x)
 					continue
 				if (--nlines <= 0)
@@ -1957,7 +1937,7 @@ function set_lines(	s,		/* first symbol */
 		}
 		s = set_nl(s)
 		if (!s
-		 || (last && s.time >= last.time))
+		 || (next && s.time >= next.time))
 			break
 		wwidth -= s.x - first.x;
 		indent = 0
@@ -2002,7 +1982,8 @@ function cut_tune(lwidth, indent) {
 			 || !s2.bar_num
 			 || --i > 0)
 				continue
-			s2.eoln = true;
+			if (s2.ts_next)
+				s2.ts_next.soln = true
 			i = cfmt.barsperstaff
 		}
 	}
@@ -2026,15 +2007,17 @@ function cut_tune(lwidth, indent) {
 //		}
 		if (!s.ts_next)
 			s = null
-		else if (!s.eoln)
+		else if (!s.soln)
 			continue
 		else
-			s.eoln = false
+			s.soln = false
 		s2 = set_lines(s2, s, lwidth, indent)
 		if (!s2)
 			break
 
-		s = s2.ts_prev;		// don't miss an eoln
+//--fixme
+//		s = s2.ts_prev;		// don't miss an eoln
+		s = s2
 		indent = 0
 	}
 
