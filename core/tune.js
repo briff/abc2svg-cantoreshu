@@ -1920,8 +1920,6 @@ function is_voice_sig() {
 
 // treat a clef found in the tune body
 function get_clef(s) {
-	var	s2, s3
-
 	if (is_voice_sig()) {
 		curvoice.clef = s
 		return
@@ -1930,6 +1928,23 @@ function get_clef(s) {
 	// clef change
 	sym_link(s);
 	s.clef_small = true
+
+	// move the clef before a (not right repeat) bar
+    var	s2 = s.prev
+	if (s2 && s2.type == C.BAR
+	 && s2.bar_type[0] != ':') {
+		s.next = s2
+		s.prev = s2.prev
+		if (s.prev)
+			s.prev.next = s
+		s2.prev = s
+		s2.next = null
+		curvoice.last_sym = s2
+		if (s.soln) {
+			delete s.soln
+			curvoice.eoln = true
+		}
+	}
 }
 
 // treat K: (kp = key signature + parameters)
