@@ -276,7 +276,7 @@ function xy_str(x, y, str,
 //	//	xy_str(x, y, str, action, w);
 //		output += '</g>\n'
 		output += '<rect class="stroke" x="';
-		out_sxsy(x - 2, '" y="', y + wh[1]);
+		out_sxsy(x - 2, '" y="', y + wh[1] + 1);
 		output += '" width="' + (wh[0] + 4).toFixed(1) +
 			'" height="' + (wh[1] + 2).toFixed(1) +
 			'"/>\n'
