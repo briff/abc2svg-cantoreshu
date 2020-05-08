@@ -1577,7 +1577,7 @@ function custos_add(s) {
 
 /* -- define the beginning of a new music line -- */
 function set_nl(s) {			// s = start of line
-    var	s2, s3, p_voice, done, tim
+    var	p_voice, done, tim
 
 	// set the end of line marker
 	function set_eol(s) {
@@ -2005,12 +2005,15 @@ function cut_tune(lwidth, indent) {
 //			}
 //			continue
 //		}
-		if (!s.ts_next)
+		if (!s.ts_next) {
 			s = null
-		else if (!s.soln)
+		} else if (!s.soln) {
 			continue
-		else
+		} else {
 			s.soln = false
+			while (!s.seqst)
+				s = s.ts_prev
+		}
 		s2 = set_lines(s2, s, lwidth, indent)
 		if (!s2)
 			break
@@ -4364,19 +4367,11 @@ function check_bar(s) {
 	// add a bar in the next music line
 	s2 = p_voice.s_next
 	while (1) {
-		switch (s2.type) {
-		case C.BAR:
-		case C.GRACE:
-		case C.NOTE:
-		case C.REST:
+		if (w_tb[s2.type])
 			break
-		default:
-			s2 = s2.next
-			if (!s2)
-				return
-			continue
-		}
-		break
+		s2 = s2.next
+		if (!s2)
+			return
 	}
 	if (s2.type == C.BAR) {
 		s_bs = s2		// bar start
