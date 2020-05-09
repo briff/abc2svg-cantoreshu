@@ -313,8 +313,6 @@ function Audio5(i_conf) {
 
 		// all resources are there
 		gain.connect(ac.destination)
-		stime = ac.currentTime + .2		// start time + 0.2s
-			- po.s_cur.ptim * conf.speed
 		abc2svg.play_next(po)
 	} // play_start()
 
@@ -375,7 +373,6 @@ function Audio5(i_conf) {
 			s_cur: i_start,	// current music symbol
 //			repn: false,	// don't repeat
 			repv: i_lvl || 0, // repeat variant number
-//			stime: ...	// start time
 			tgen: 2,	// // generate by 2 seconds
 			get_time: get_time,
 			midi_ctrl: midi_ctrl,
