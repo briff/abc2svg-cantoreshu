@@ -411,8 +411,6 @@ function ToAudio() {
 //
 // The po object (Play Object) contains the following items:
 // - variables
-//  - stime: start time
-//		must be set by the calling function at startup time
 //  - stop: stop flag
 //		set by the user to stop playing
 //  - s_cur: current symbol (next to play)
@@ -425,6 +423,7 @@ function ToAudio() {
 //    - new_conf: new speed factor
 //		set by the user
 // - internal variables
+//  - stim: start time
 //  - repn: don't repeat
 //  - repv: variant number
 //  - timouts: array of the current timeouts
@@ -489,18 +488,21 @@ abc2svg.play_next = function(po) {
 	// set the MIDI controls up to now
 	function set_ctrl(po, s2, t) {
 	    var	i,
+		p_v = s2.p_v,
+		tim = s2.time,
 		s = {
 			subtype: "midictl",
-			p_v: s2.p_v,
-			chn: s2.p_v.chn
+			p_v: p_v,
+			v: p_v.v,
+			chn: p_v.chn
 		}
 
-		for (i in s2.p_v.midictl) { // MIDI controls at voice start time
+		for (i in p_v.midictl) { // MIDI controls at voice start time
 			s.ctrl = i
-			s.val = s2.p_v.midictl[i]
+			s.val = p_v.midictl[i]
 			po.midi_ctrl(po, s, t)
 		}
-		for (s = s2.p_v.sym; s != s2; s = s.next) {
+		for (s = p_v.sym; s && s.time <= tim; s = s.next) {
 			if (s.subtype == "midictl")
 				po.midi_ctrl(po, s, t)
 		}
@@ -527,16 +529,16 @@ abc2svg.play_next = function(po) {
 			return
 		}
 	}
-	t = po.stime + s.ptim / po.conf.speed	// start time
+	t = po.stim + s.ptim / po.conf.speed	// start time
 
 	// if speed change, shift the start time
 	if (po.conf.new_speed) {
 		d = po.get_time(po)
-		po.stime = d - (d - po.stime) *
+		po.stim = d - (d - po.stim) *
 					po.conf.speed / po.conf.new_speed
 		po.conf.speed = po.conf.new_speed
 		po.conf.new_speed = 0
-		t = po.stime + s.ptim / po.conf.speed
+		t = po.stim + s.ptim / po.conf.speed
 	}
 
 	maxt = t + po.tgen		// max time = now + 'tgen' seconds
@@ -553,12 +555,12 @@ abc2svg.play_next = function(po) {
 				if (!po.repn	// if repeat a first time
 				 && (!s.rep_v	// and no variant (anymore)
 				  || po.repv < s.rep_v.length)) {
-					po.stime += (s.ptim - s.rep_p.ptim) /
+					po.stim += (s.ptim - s.rep_p.ptim) /
 							po.conf.speed
 					s = s.rep_p	// left repeat
 					while (s.ts_next && !s.ts_next.seqst)
 						s = s.ts_next
-					t = po.stime + s.ptim / po.conf.speed
+					t = po.stim + s.ptim / po.conf.speed
 					po.repn = true
 					break
 				}
@@ -567,10 +569,10 @@ abc2svg.play_next = function(po) {
 			if (s.rep_s) {			// first variant
 				s2 = s.rep_s[po.repv]	// next variant
 				if (s2) {
-					po.stime += (s.ptim - s2.ptim) /
+					po.stim += (s.ptim - s2.ptim) /
 							po.conf.speed
 					s = s2
-					t = po.stime + s.ptim / po.conf.speed
+					t = po.stim + s.ptim / po.conf.speed
 					po.repn = false
 				} else {		// end of tune
 					s = po.s_end
@@ -587,9 +589,9 @@ abc2svg.play_next = function(po) {
 			 && po.i_p != undefined) {
 				s2 = s.part.p_s[++po.i_p]	// next part
 				if (s2) {
-					po.stime += (s.ptim - s2.ptim) / po.conf.speed
+					po.stim += (s.ptim - s2.ptim) / po.conf.speed
 					s = s2
-					t = po.stime + s.ptim / po.conf.speed
+					t = po.stim + s.ptim / po.conf.speed
 				} else {
 					s = po.s_end
 				}
@@ -650,7 +652,7 @@ abc2svg.play_next = function(po) {
 			if (!s.noplay)
 				break
 		}
-		t = po.stime + s.ptim / po.conf.speed // next time
+		t = po.stim + s.ptim / po.conf.speed // next time
 		if (t > maxt)
 			break
 	}
@@ -668,7 +670,7 @@ abc2svg.play_next = function(po) {
     var	s, i, s_p
 	for (s = po.s_cur; s; s = s.ts_prev) {
 		if (s.parts) {
-			po.i_p = 0
+			po.i_p = -1
 			return
 		}
 		s_p = s.part
@@ -686,7 +688,7 @@ abc2svg.play_next = function(po) {
     // --- play_next ---
 	get_part(po)
 
-	po.stime = po.get_time(po) + .3	// start time + 0.3s
+	po.stim = po.get_time(po) + .3	// start time + 0.3s
 			- po.s_cur.ptim * po.conf.speed
 	po.p_v = []			// voice table for the MIDI controls
 	if (!po.repv)
