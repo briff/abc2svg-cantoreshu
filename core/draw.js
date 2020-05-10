@@ -3063,8 +3063,9 @@ function draw_vname(indent) {
 
 // -- set the y offset of the staves and return the height of the whole system --
 function set_staff() {
-	var	s, i, st, prev_staff, v,
-		y, staffsep, dy, maxsep, mbot, val, p_voice, p_staff
+var	s, i, st, prev_staff, v,
+	y, staffsep, dy, maxsep, mbot, val, p_voice, p_staff,
+	sy = cur_sy
 
 	/* set the scale of the voices */
 	for (v = 0; v < voice_tb.length; v++) {
@@ -3110,11 +3111,11 @@ function set_staff() {
 
 	/* set the offset of the other staves */
 	prev_staff = st
-	var sy_staff_prev = cur_sy.staves[prev_staff]
+	var sy_staff_prev = sy.staves[prev_staff]
 	for (st++; st <= nstaff; st++) {
-		p_staff = staff_tb[st]
 		if (!gene.st_print[st])
 			continue
+		p_staff = staff_tb[st]
 		staffsep = sy_staff_prev.sep || cfmt.sysstaffsep;
 		maxsep = sy_staff_prev.maxsep || cfmt.maxsysstaffsep;
 
@@ -3146,7 +3147,12 @@ function set_staff() {
 		p_staff.y = -y;
 
 		prev_staff = st;
-		sy_staff_prev = cur_sy.staves[prev_staff]
+		while (1) {
+			sy_staff_prev = sy.staves[prev_staff]
+			if (sy_staff_prev)
+				break
+			sy = sy.next
+		}
 	}
 	mbot = 0
 	for (i = 0; i < YSTEP; i++) {
