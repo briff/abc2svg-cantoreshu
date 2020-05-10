@@ -114,6 +114,7 @@ function mrest_expand(s) {
 
 	/* change the multi-rest (type bar) to a single rest */
 	var a_dd = s.a_dd;
+	s.a_dd = null
 	s.type = C.REST;
 	s.dur = s.dur_orig = dur;
 
