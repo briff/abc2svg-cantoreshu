@@ -2167,6 +2167,73 @@ function set_ottava() {
 	}
 }
 
+// expand the multi-rests as needed
+function mrest_expand() {
+    var	s, s2
+
+	// expand a multi-rest into a set of rest + bar
+	function mexp(s) {
+	    var	s2, s3, next, tim,
+		nb = s.nmes,
+		dur = s.dur / nb
+//		a_dd = s.a_dd
+
+		// change the multi-rest into a single rest
+//		s.a_dd = null
+		s.type = C.REST
+		s.dur = s.dur_orig = dur
+		s.nflags = -2
+
+		/* add the bar(s) and rest(s) */
+		next = s.next			// bar
+		tim = s.time + dur
+		s3 = s2 = s
+		while (--nb > 0) {
+			s2 = clone(next)	// new bar
+			delete s2.sol
+			lkvsym(s2, next)
+			s2.time = tim
+			while (s3 && s3.time < tim)
+				s3 = s3.ts_next
+			lktsym(s2, s3)
+
+			s2 = clone(s)		// new rest
+			delete s2.a_dd
+			lkvsym(s2, next)
+			s2.time = tim
+			while (s3 && s3.time < tim)
+				s3 = s3.ts_next
+			lktsym(s2, s3)
+
+			tim += dur
+			s = s2
+		}
+
+//		// copy the mrest decorations to the last rest
+//		s2.a_dd = a_dd
+	} // mexp()
+
+	for (s = tsfirst; s; s = s.ts_next) {
+		if (s.type != C.MREST)
+			continue
+		s2 = s.ts_next
+		while (!s2.seqst) {
+			if (s2.type != C.MREST)
+				break
+			s2 = s2.ts_next
+		}
+		if (s2.type != C.MREST) {
+			while (s.type == C.MREST) {
+				mexp(s)
+				s = s2.ts_next
+			}
+		} else {
+			while (s.ts_next && !s.ts_next.seqst)
+				s = s.ts_next
+		}
+	}
+} // mrest_expand()
+
 // set the clefs (treble or bass) in a 'auto clef' sequence
 // return the starting clef type
 function set_auto_clef(st, s_start, clef_type_start) {
@@ -3402,12 +3469,10 @@ function set_global() {
 	/* get the max number of staves */
 	sy = cur_sy;
 	st = sy.nstaff;
-//	sy.st_print = new Uint8Array(sy.staves.length)
 	while (1) {
 		sy = sy.next
 		if (!sy)
 			break
-//		sy.st_print = new Uint8Array(sy.staves.length)
 		if (sy.nstaff > st)
 			st = sy.nstaff
 	}
@@ -3429,6 +3494,10 @@ function set_global() {
 
 	if (glovar.ottava && cfmt.sound != "play")
 		set_ottava();
+
+	// expand the multi-rests as needed
+	if (nv != 1 && glovar.mrest_p)
+		mrest_expand()
 
 	// set the clefs and adjust the pitches of all symbol
 	set_clefs();

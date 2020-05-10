@@ -1891,6 +1891,8 @@ Abc.prototype.new_note = function(grace, sls) {
 				pit: 18,
 				dur: s.dur
 			}]
+		} else {
+			glovar.mrest_p = true
 		}
 		break
 	case 'y':

@@ -106,42 +106,6 @@ function sym_add(p_voice, type) {
 	return s
 }
 
-/* -- expand a multi-rest into single rests and measure bars -- */
-function mrest_expand(s) {
-	var	p_voice, s2, next,
-		nb = s.nmes,
-		dur = s.dur / nb
-
-	/* change the multi-rest (type bar) to a single rest */
-	var a_dd = s.a_dd;
-	s.a_dd = null
-	s.type = C.REST;
-	s.dur = s.dur_orig = dur;
-
-	/* add the bar(s) and rest(s) */
-	next = s.next;
-	p_voice = s.p_v;
-	p_voice.last_sym = s;
-	p_voice.time = s.time + dur;
-	p_voice.cst = s.st;
-	s2 = s
-	while (--nb > 0) {
-		s2 = sym_add(p_voice, C.BAR);
-		s2.bar_type = "|";
-		s2 = sym_add(p_voice, C.REST);
-		if (s.invis)
-			s2.invis = true;
-		s2.dur = s2.dur_orig = dur;
-		p_voice.time += dur
-	}
-	s2.next = next
-	if (next)
-		next.prev = s2;
-
-	/* copy the mrest decorations to the last rest */
-	s2.a_dd = a_dd
-}
-
 /* -- sort all symbols by time and vertical sequence -- */
 // weight of the symbols !! depends on the symbol type !!
 var w_tb = new Uint8Array([
@@ -171,7 +135,6 @@ function sort_all() {
 	nv = voice_tb.length,
 	vtb = [],
 	vn = [],			// voice indexed by range
-	mrest_time = -1,
 	sy = cur_sy
 
 	for (v = 0; v < nv; v++)
@@ -229,50 +192,10 @@ function sort_all() {
 			} else if (w < wmin) {
 				wmin = w
 			}
-			if (s.type == C.MREST) {
-				if (s.nmes == 1)
-					mrest_expand(s)
-				else if (multi > 0)
-					mrest_time = time
-			}
 		}
 
 		if (wmin > 127)
 			break			// done
-
-		/* if some multi-rest and many voices, expand */
-		if (time == mrest_time) {
-			nb = 0
-			for (ir = 0; ir < nv; ir++) {
-				v = vn[ir]
-				if (v == undefined)
-					break
-				s = vtb[v]
-				if (!s || s.time != time
-				 || w_tb[s.type] != wmin)
-					continue
-				if (s.type != C.MREST) {
-					mrest_time = -1 /* some note or rest */
-					break
-				}
-				if (nb == 0) {
-					nb = s.nmes
-				} else if (nb != s.nmes) {
-					mrest_time = -1	/* different duration */
-					break
-				}
-			}
-			if (mrest_time < 0) {
-				for (ir = 0; ir < nv; ir++) {
-					v = vn[ir]
-					if (v == undefined)
-						break
-					s = vtb[v]
-					if (s && s.type == C.MREST)
-						mrest_expand(s)
-				}
-			}
-		}
 
 		/* link the vertical sequence */
 		for (ir = 0; ir < nv; ir++) {
