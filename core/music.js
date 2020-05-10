@@ -4664,16 +4664,8 @@ function set_piece() {
 	 * and mark the empty staves
 	 */
 	for (s = tsfirst; s; s = s.ts_next) {
-		if (s.nl) {
-//fixme: not useful
-//			// delay the next block symbols
-//			while (s && s.type == C.BLOCK) {
-//				blocks.push(s);
-//				unlksym(s);
-//				s = s.ts_next
-//			}
+		if (s.nl)
 			break
-		}
 		switch (s.type) {
 		case C.STAVES:
 			set_brace();
@@ -4740,8 +4732,6 @@ function set_piece() {
 
 	/* set the last empty staves */
 	set_brace()
-//	for (st = 0; st <= nstaff; st++)
-//		sy.st_print[st] = non_empty[st];
 	sy.st_print = new Uint8Array(non_empty);
 
 	/* define the offsets of the measure bars */
@@ -4955,6 +4945,7 @@ function gen_init() {
 		case C.NOTE:
 		case C.REST:
 		case C.MREST:
+		case C.SPACE:
 			set_page()
 			return
 		default:
