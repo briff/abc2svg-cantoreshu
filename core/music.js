@@ -346,10 +346,10 @@ function lktsym(s, next) {	// time linkage
 	} else {
 		s.ts_next = s.ts_prev = null
 	}
-	s.seqst = !s.ts_prev || s.ts_prev.type != s.type
+	s.seqst = !s.ts_prev || w_tb[s.ts_prev.type] != w_tb[s.type]
 	s = s.ts_next
 	if (s)
-		s.seqst = s.ts_prev.type != s.type
+		s.seqst = w_tb[s.ts_prev.type] != w_tb[s.type]
 }
 
 /* -- unlink a symbol -- */
@@ -1278,12 +1278,6 @@ function set_allsymwidth() {
 		} while (!s2.seqst)
 	}
 
-	// there must be a bar at the end of the tune
-	while (s2.ts_next)
-		s2 = s2.ts_next
-	if (s2.type != C.BAR)
-		add_end_bar(s2)
-
 	// let the chord symbols at the same offset
 	if (s_chs)
 		set_w_chs(s_chs)
@@ -2173,7 +2167,7 @@ function mrest_expand() {
 
 	// expand a multi-rest into a set of rest + bar
 	function mexp(s) {
-	    var	s2, s3, next, tim,
+	    var	s2, s3, s4, next, tim,
 		nb = s.nmes,
 		dur = s.dur / nb
 //		a_dd = s.a_dd
@@ -2183,30 +2177,69 @@ function mrest_expand() {
 		s.type = C.REST
 		s.dur = s.dur_orig = dur
 		s.nflags = -2
+		s.head = C.FULL
 
 		/* add the bar(s) and rest(s) */
-		next = s.next			// bar
 		tim = s.time + dur
+		next = s.next			// bar
 		s3 = s2 = s
 		while (--nb > 0) {
-			s2 = clone(next)	// new bar
-			delete s2.sol
-			lkvsym(s2, next)
+
+			// add the bar
+			if (next) {
+				s2 = clone(next)
+				delete s2.sol
+				lkvsym(s2, next)
+			} else {
+				s2 = {			// end of tune
+					type: C.BAR,
+					bar_type: "|",
+					fname: s.fname,
+					istart: s.istart,
+					iend: s.iend,
+					v: s.v,
+					p_v: s.p_v,
+					st: s.st,
+					dur: 0,
+					nhd: 0,
+					notes: [{
+						pit: s.notes[0].pit
+					}],
+					prev: s
+				}
+				s.next = s2
+			}
 			s2.time = tim
-			while (s3 && s3.time < tim)
-				s3 = s3.ts_next
+			while (s3.time < tim)
+				s3 = s3.ts_next	// bar at end of measure
+			while (s3 && s3.v < s.v && s3.type == C.BAR)
+				s3 = s3.ts_next	// keep in order
 			lktsym(s2, s3)
 
-			s2 = clone(s)		// new rest
-			delete s2.a_dd
-			lkvsym(s2, next)
-			s2.time = tim
-			while (s3 && s3.time < tim)
+			// add the rest
+			s4 = clone(s)
+			delete s4.a_dd
+			if (s2.next) {
+				s4.next = s2.next
+				s4.next.prev = s4
+			} else {
+				s4.next = null
+			}
+			s2.next = s4
+			s4.prev = s2
+			s4.time = tim
+
+			while (s3 && s3.type == C.BAR)
 				s3 = s3.ts_next
-			lktsym(s2, s3)
+			while (s3 && s3.v < s.v) {
+				s3 = s3.ts_next	// keep in order
+				if (s3.seqst)
+					break
+			}
+			lktsym(s4, s3)
 
 			tim += dur
-			s = s2
+			s = s3 = s4
 		}
 
 //		// copy the mrest decorations to the last rest
@@ -2216,20 +2249,23 @@ function mrest_expand() {
 	for (s = tsfirst; s; s = s.ts_next) {
 		if (s.type != C.MREST)
 			continue
-		s2 = s.ts_next
-		while (!s2.seqst) {
-			if (s2.type != C.MREST)
-				break
-			s2 = s2.ts_next
+		if (!s.seqst && w_tb[s.ts_prev.type]) {
+			s2 = s
+		} else {
+			s2 = s.ts_next
+			while (!s2.seqst) {
+				if (s2.type != C.MREST)
+					break
+				s2 = s2.ts_next
+			}
 		}
-		if (s2.type != C.MREST) {
+		if (!s2.seqst) {
 			while (s.type == C.MREST) {
 				mexp(s)
-				s = s2.ts_next
+				s = s.ts_next
 			}
 		} else {
-			while (s.ts_next && !s.ts_next.seqst)
-				s = s.ts_next
+			s = s2.ts_prev
 		}
 	}
 } // mrest_expand()
@@ -3302,6 +3338,37 @@ function init_music_line() {
 	last_s.space = 0
 } // init_music_line()
 
+// check if the tune ends on a measure bar
+function check_end_bar() {
+    var	s2,
+	s = tsfirst
+	while (s.ts_next)
+		s = s.ts_next
+	if (s.type != C.BAR) {
+		s2 = {
+			type: C.BAR,
+			bar_type: "|",
+			fname: s.fname,
+			istart: s.istart,
+			iend: s.iend,
+			v: s.v,
+			p_v: s.p_v,
+			st: s.st,
+			dur: 0,
+			seqst: true,
+			invis: true,
+			time: s.time + (s.dur || 0),
+			nhd: 0,
+			notes: [{
+				pit: s.notes[0].pit
+			}],
+			prev: s,
+			ts_prev: s
+		}
+		s.next = s.ts_next = s2
+	}
+} // check_end_bar()
+
 /* -- set a pitch in all symbols and the start/stop of the beams -- */
 // and sort the pitches in the chords
 function set_words(p_voice) {
@@ -3464,11 +3531,12 @@ function set_rb(p_voice) {
 var delpit = [0, -7, -14, 0]
 
 function set_global() {
-	var p_voice, st, v, nv, sy
+    var	p_voice, v,
+	nv = voice_tb.length,
+	sy = cur_sy,
+	st = sy.nstaff
 
 	/* get the max number of staves */
-	sy = cur_sy;
-	st = sy.nstaff;
 	while (1) {
 		sy = sy.next
 		if (!sy)
@@ -3478,8 +3546,10 @@ function set_global() {
 	}
 	nstaff = st;
 
+	// there must be a bar at end of tune
+	check_end_bar()
+
 	/* set the pitches, the words (beams) and the repeat brackets */
-	nv = voice_tb.length
 	for (v = 0; v < nv; v++) {
 		p_voice = voice_tb[v];
 		set_words(p_voice)
@@ -3490,14 +3560,16 @@ function set_global() {
 	}
 
 	/* set the staff of the floating voices */
-	set_float();
+	if (nv > 1) {
+		set_float()
+
+	// expand the multi-rests as needed
+		if (glovar.mrest_p)
+			mrest_expand()
+	}
 
 	if (glovar.ottava && cfmt.sound != "play")
 		set_ottava();
-
-	// expand the multi-rests as needed
-	if (nv != 1 && glovar.mrest_p)
-		mrest_expand()
 
 	// set the clefs and adjust the pitches of all symbol
 	set_clefs();
@@ -5039,20 +5111,21 @@ function gen_init() {
 /* -- generate the music -- */
 // (possible hook)
 Abc.prototype.output_music = function() {
-    var v, lwidth, indent, line_height, ts1st, tslast, p_v
+    var v, lwidth, indent, line_height, ts1st, tslast, p_v,
+	nv = voice_tb.length
 
 	gen_init()
 	if (!tsfirst)
 		return
 	set_global()
-	if (voice_tb.length > 1)	/* if many voices */
+	if (nv > 1)			// if many voices
 		self.set_stem_dir()	// set the stems direction in 'multi'
 
-	for (v = 0; v < voice_tb.length; v++)
+	for (v = 0; v < nv; v++)
 		set_beams(voice_tb[v].sym);	/* decide on beams */
 
 	self.set_stems()		// set the stem lengths
-	if (voice_tb.length > 1) {	/* if many voices */
+	if (nv > 1) {			// if many voices
 		set_rest_offset();	/* set the vertical offset of rests */
 		set_overlap();		/* shift the notes on voice overlap */
 //		set_rp_bars()		// set repeat bars
@@ -5077,7 +5150,7 @@ Abc.prototype.output_music = function() {
 
 	// save symbol pointers for play
 	ts1st = tsfirst
-	v = voice_tb.length
+	v = nv
 	while (--v >= 0)
 		voice_tb[v].osym = voice_tb[v].sym
 
@@ -5123,7 +5196,7 @@ Abc.prototype.output_music = function() {
 
 	// restore for play
 	tsfirst = ts1st
-	v = voice_tb.length
+	v = nv
 	while (--v >= 0) {
 		p_v = voice_tb[v]
 		if (p_v.sym && p_v.s_prev)
