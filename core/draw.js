@@ -1012,9 +1012,13 @@ function draw_rest(s) {
 
 		/* don't use next/prev: there is no bar in voice overlay */
 		s2 = s.ts_next
-		while (s2 && s2.time != s.time + s.dur)
-			s2 = s2.ts_next;
-		x = s2 ? s2.x : realwidth;
+//fix: there is a bar at end of line
+//		while (s2 && s2.time != s.time + s.dur)
+//			s2 = s2.ts_next;
+//		x = s2 ? s2.x : realwidth;
+		while (s2.time != s.time + s.dur)
+			s2 = s2.ts_next
+		x = s2.x
 		s2 = s
 		while (!s2.seqst)
 			s2 = s2.ts_prev;
@@ -2268,9 +2272,9 @@ function draw_tuplet(s1) {
 		xm = (s2.x + s1.x) / 2
 		a = s2.x - s1.x			// width around the middle
 		if (dir == C.SL_ABOVE)
-			ym = y_get(upstaff, 1, xm - a / 2, a) + 2
+			ym = y_get(upstaff, 1, xm - a / 2, a)
 		else
-			ym = y_get(upstaff, 0, xm - a / 2, a) - 10
+			ym = y_get(upstaff, 0, xm - a / 2, a) - 6
 
 		if (s1.stem * s2.stem > 0) {
 			if (s1.stem > 0)
@@ -2289,7 +2293,7 @@ function draw_tuplet(s1) {
 				break
 		}
 		if (dir == C.SL_ABOVE) {
-			ym += 10
+			ym += 12
 			if (s3.ymx < ym)
 				s3.ymx = ym;
 			y_set(upstaff, true, xm - 3, 6, ym)
@@ -2337,7 +2341,7 @@ function draw_tuplet(s1) {
 
 	/* sole or upper voice: the bracket is above the staff */
 	if (s1.st == s2.st) {
-		y1 = y2 = staff_tb[upstaff].topbar + 4
+		y1 = y2 = staff_tb[upstaff].topbar + 2
 	} else {
 		y1 = s1.ymx;
 		y2 = s2.ymx
@@ -2473,7 +2477,7 @@ function draw_tuplet(s1) {
 			break
 	}
 
-	ym += dy - 10;
+	ym += dy - 8
 	y1 = ym + a * (x1 - xm);
 	y2 = ym + a * (x2 - xm);
 
