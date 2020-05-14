@@ -1804,7 +1804,7 @@ function set_lines(	s,		/* first symbol */
 	if (ws[1] + indent < lwidth) {
 		if (next)
 			next = set_nl(next)
-		return next
+		return next || last
 	}
 
 	/* loop on cutting the tune into music lines */
@@ -1814,7 +1814,7 @@ function set_lines(	s,		/* first symbol */
 		if (nlines <= 1) {
 			if (next)
 				next = set_nl(next)
-			return next
+			return next || last
 		}
 
 		s2 = first = s;
