@@ -100,7 +100,10 @@ function clean_txt(txt) {
 			if (!svg)
 				return
 		}
-		i = svg.getAttribute('class').match(/tune(\d+)/)
+		i = svg.getAttribute('class')
+		if (!i)
+			return
+		i = i.match(/tune(\d+)/)
 		if (!i)
 			return
 		i = i[1]		// tune number
