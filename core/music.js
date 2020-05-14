@@ -3359,9 +3359,7 @@ function check_end_bar() {
 			invis: true,
 			time: s.time + (s.dur || 0),
 			nhd: 0,
-			notes: [{
-				pit: s.notes[0].pit
-			}],
+			notes: s.notes,
 			prev: s,
 			ts_prev: s
 		}
