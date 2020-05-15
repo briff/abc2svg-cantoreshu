@@ -4602,7 +4602,8 @@ function sym_staff_move(st) {
 // generate a block symbol
 var blocks = []		// array of delayed block symbols
 
-function block_gen(s) {
+// (possible hook)
+Abc.prototype.block_gen = function(s) {
 	switch (s.subtype) {
 	case "leftmargin":
 	case "rightmargin":
@@ -5096,7 +5097,7 @@ function gen_init() {
 		case C.BLOCK:
 			if (s.play)
 				continue	// keep for play
-			block_gen(s)
+			self.block_gen(s)
 			break
 		}
 		unlksym(s)
@@ -5170,7 +5171,7 @@ Abc.prototype.output_music = function() {
 				insert_meter &= ~2	// no more indentation
 			}
 			while (blocks.length)
-				block_gen(blocks.shift())
+				self.block_gen(blocks.shift())
 		}
 
 		blk_flush()

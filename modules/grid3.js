@@ -12,11 +12,17 @@
 
 abc2svg.grid3 = {
 
-// handle %%begingrid
-    do_begin_end: function(of, type, opt, txt) {
+// generate the grid
+    block_gen: function(of, s) {
+	if (s.subtype != "grid") {
+		of(s)
+		return
+	}
+
     var	abc = this,
 	cfmt = abc.cfmt(),
 	img = abc.get_img(),
+	txt = s.text,
 	font, font_cl, cls, w,
 	ln, i,
 	lines = [],
@@ -26,11 +32,6 @@ abc2svg.grid3 = {
 	nr = 0,			// number of rows
 	nc = 0,			// number of columns
 	wc = 0			// width of a cell
-
-	if (type != "grid") {
-		of(type, opt, txt)
-		return
-	}
 
 	// generate the grid
 	function build_grid() {
@@ -44,7 +45,6 @@ abc2svg.grid3 = {
 			return '<text class="' + cl + '" x="' +
 				x.toFixed(1) + '" y="' + y.toFixed(1) + '">' +
 					cell[n] + '</text>\n'
-
 		} // build_ch()
 
 		function build_cell(cell, x, y, yl, hr) {
@@ -98,7 +98,7 @@ abc2svg.grid3 = {
 
 		// generate the cells
 		yl = 1
-		y = 1 - font.size * .7
+		y = 3 - font.size * .7
 		x0 = (img.width - w) / 2
 		while (1) {
 			cl = cells.shift()
@@ -116,26 +116,9 @@ abc2svg.grid3 = {
 			}
 		}
 
-		// build the SVG image
-		line = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"\n\
-	xmlns:xlink="http://www.w3.org/1999/xlink"\n\
-	color="black" width="' + img.width.toFixed(0) +
-			'px" height="' + (hr * nr + 6).toFixed(0) + 'px"'
-		i = cfmt.bgcolor
-		if (i)
-			line += ' style="background-color: ' + i + '"'
-		line += '>\n<style>\n\
-.mid {text-anchor:middle}\n'
-
-		if (cfmt.fullsvg)
-			line += '\
-.stroke {stroke: currentColor; fill: none}\n\
-.' + font_cl + '{' + abc.style_font(font) +  '}\n'
-		line += '</style>\n'
-
 		// draw the lines
-		line += '<path class="stroke" d="\n'
-		y = 1
+		line = '<path class="stroke" d="\n'
+		y = 3
 		for (i = 0; i <= nr; i++) {
 			line += 'M' + x0.toFixed(1) + ' ' + y.toFixed(1) +
 				'h' + w.toFixed(1)+ '\n'
@@ -152,7 +135,7 @@ abc2svg.grid3 = {
 		line += lc
 
 		// show the repeat signs
-		y = 1 - font.size * .7
+		y = 3 - font.size * .7
 		while (1) {
 			bl = bars.shift()
 			if (!bl)
@@ -180,15 +163,11 @@ abc2svg.grid3 = {
 				x += wc
 			}
 		}
-
-		return line + '</svg>'
+		abc.out_svg(line)
+		abc.vskip(hr * nr + 6)
 	} // build_grid()
 
-	// -- do_begin_end() --
-
-	// the grid must appear after the title
-	if (abc.parse.state == 2)
-		abc.goto_tune()
+	// ----- block_gen ----
 
 	// set the text style
 	if (!cfmt.gridfont)
@@ -196,6 +175,7 @@ abc2svg.grid3 = {
 	font = abc.get_font('grid')
 	font_cl = abc.font_class(font)
 	cls = font_cl + " mid"
+	abc.add_style("\n.mid {text-anchor:middle}")
 	abc.set_font('grid')		// (for strwh())
 
 	// scan the grid content
@@ -250,14 +230,31 @@ abc2svg.grid3 = {
 		}
 		nr++
 	}
-	// create the grid
 	wc += abc.strwh('  ')[0]
 
 	// build the grid and insert it in the music
-	of("ml", opt, build_grid())
+	abc.blk_flush()
+	build_grid()
+	abc.blk_flush()
+    }, // block_gen()
+
+// handle %%begingrid
+    do_begin_end: function(of, type, opt, txt) {
+	if (type != "grid") {
+		of(type, opt, txt)
+	} else if (this.parse.state >= 2) {
+		s = this.new_block(type)
+		s.text = txt
+	} else {
+		abc2svg.grid3.block_gen.call(this, null, {
+						subtype: type,
+						text: txt
+						})
+	}
     }, // do_begin_end()
 
     set_hooks: function(abc) {
+	abc.block_gen = abc2svg.grid3.block_gen.bind(abc, abc.block_gen)
 	abc.do_begin_end = abc2svg.grid3.do_begin_end.bind(abc, abc.do_begin_end)
     }
 } // grid3

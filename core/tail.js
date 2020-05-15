@@ -78,6 +78,7 @@ Abc.prototype.syntax = syntax;
 Abc.prototype.tunes = tunes
 Abc.prototype.unlksym = unlksym;
 Abc.prototype.use_font = use_font;
+Abc.prototype.vskip = vskip
 Abc.prototype.xy_str = xy_str;
 Abc.prototype.xygl = xygl;
 
