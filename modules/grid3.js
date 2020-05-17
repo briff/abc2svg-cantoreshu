@@ -97,7 +97,7 @@ abc2svg.grid3 = {
 		w = wc * nc				// grid width
 
 		// generate the cells
-		yl = 1
+		yl = 3
 		y = 3 - font.size * .7
 		x0 = (img.width - w) / 2
 		while (1) {
@@ -126,7 +126,7 @@ abc2svg.grid3 = {
 		}
 		x = x0
 		for (i = 0; i <= nc; i++) {
-			line += 'M' + x.toFixed(1) + ' 1v' + (hr * nr).toFixed(1) + '\n'
+			line += 'M' + x.toFixed(1) + ' 3v' + (hr * nr).toFixed(1) + '\n'
 			x += wc
 		}
 		line += '"/>\n'
