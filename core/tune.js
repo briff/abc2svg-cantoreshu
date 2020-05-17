@@ -599,7 +599,7 @@ function get_map(text) {
 		return
 
     var	i, note, notes, map, tmp, ns, ty,
-	a = info_split(text)
+	a = text.split(/\s+/)
 
 	if (a.length < 3) {
 		syntax(1, not_enough_p)
@@ -614,11 +614,11 @@ function get_map(text) {
 			ty = ns[0]
 			ns = ns.split(',')[1]
 			ns = ns.replace(/[,']*/, '').toUpperCase(); //'
-		} else {
-			ty = ''
+//		} else {
+//			ty = ''
 		}
 		if (ty == 'k') {
-			ns = 'k' + ntb.indexOf(ns)
+			ns = ty + ntb.indexOf(ns)
 		} else {
 			tmp = new scanBuf;
 			tmp.buffer = ns
@@ -627,7 +627,11 @@ function get_map(text) {
 				syntax(1, "Bad note in %%map")
 				return
 			}
-			ns = ty + abc2svg.pab40(note.pit, note.acc).toString()
+			if (ty == 'o')
+				ns = ty + (abc2svg.pab40(note.pit,
+						 note.acc) % 40).toString()
+			else
+				ns = abc2svg.pab40(note.pit, note.acc).toString()
 		}
 	}
 
@@ -639,20 +643,23 @@ function get_map(text) {
 		notes[ns] = map = []
 
 	// try the optional 'print' and 'heads' parameters
-	if (!a[2])
+	a.shift()
+	a.shift()
+	if (!a.length)
 		return
-	i = 2
-	if (a[2].indexOf('=') < 0) {
-		if (a[2][0] != '*') {
+	a = info_split(a.join(' '))
+	i = 0
+	if (a[0].indexOf('=') < 0) {
+		if (a[0][0] != '*') {
 			tmp = new scanBuf;		// print
-			tmp.buffer = a[2];
+			tmp.buffer = a[0];
 			map[1] = parse_acc_pit(tmp)
 		}
-		if (!a[3])
+		if (!a[1])
 			return
 		i++
-		if (a[3].indexOf('=') < 0) {
-			map[0] = a[3].split(',')	// heads
+		if (a[1].indexOf('=') < 0) {
+			map[0] = a[1].split(',')	// heads
 			i++
 		}
 	}
