@@ -233,18 +233,6 @@ function dom_loaded() {
 			return
 		}
 
-		// if first time, get the tunes references
-		// and generate the play data of all tunes
-		if (tunes.length) {
-			tune_lst = tunes.slice(0)	// (array copy)
-			while (1) {
-				e = tunes.shift()
-				if (!e)
-					break
-				abcplay.add(e[0], e[1])
-			}
-		}
-
 		// search if click in a SVG image
 		e = svg				// keep the clicked element
 		while (svg.tagName != 'svg') {
@@ -259,10 +247,22 @@ function dom_loaded() {
 		if (!i)
 			return
 		i = i[1]			// tune number
-		s = tune_lst[i][0]		// first symbol of the tune
+
+		// if first time, get the tunes references
+		// and generate the play data of all tunes
+		if (tunes.length) {
+			tune_lst = tunes.slice(0)	// (array copy)
+			while (1) {
+				e = tunes.shift()
+				if (!e)
+					break
+				abcplay.add(e[0], e[1])
+			}
+		}
 
 		// check if click on a music symbol
 		// (this works when 'follow' is active)
+		s = tune_lst[i][0]		// first symbol of the tune
 		i = e.getAttribute('class')
 		if (i)
 			i = i.match(/abcr _(\d+)_/)
