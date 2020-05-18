@@ -1680,15 +1680,6 @@ function set_map(note) {
 		}
 	}
 	note.map = map[nn]
-	if (note.map[1]) {				// if print map
-		note.pit = note.map[1].pit
-		note.acc = note.map[1].acc
-	}
-	if (note.map[2])				// if color
-		note.color = note.map[2]
-	nn = note.map[3]
-	if (nn)						// if play map
-		note.b40 = nn
 }
 
 /* -- parse note or rest with pitch and length -- */
