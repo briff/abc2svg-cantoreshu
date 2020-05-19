@@ -1,6 +1,6 @@
 // grid.js - module to insert a chord grid before or after a tune
 //
-// Copyright (C) 2018-2019 Jean-Francois Moine - GPL3+
+// Copyright (C) 2018-2020 Jean-Francois Moine - GPL3+
 //
 // This module is loaded when "%%grid" appears in a ABC source.
 //
@@ -16,13 +16,19 @@
 
 abc2svg.grid = {
 
-// function called before tune generation
-    do_grid: function() {
+// generate the grid
+    block_gen: function(of, s) {
+	if (s.subtype != "grid") {
+		of(s)
+		return
+	}
+
     var	C = abc2svg.C,
-	tsfirst = this.get_tsfirst(),
-	voice_tb = this.get_voice_tb(),
+	abc = this,
+	tsfirst = abc.get_tsfirst(),
+	voice_tb = abc.get_voice_tb(),
 	img, font_cl, cls,
-	cfmt = this.cfmt(),
+	cfmt = abc.cfmt(),
 	grid = cfmt.grid
 
 function get_beat(s) {
@@ -183,7 +189,7 @@ function build_grid(chords, bars, font, wmx) {
 	yl = 1
 	y = 1 - hr / 2 + font.size * .3
 	nr = 0
-	x0 = (img.width - w) / 2
+	x0 = (img.width / cfmt.scale - w) / 2
 	for (i = 0; i < cells.length; i++) {
 		if (i == 0
 		 || (grid.repbrk
@@ -199,23 +205,6 @@ function build_grid(chords, bars, font, wmx) {
 		lc += build_cell(cells[i], x, y, yl, hr)
 		x += wmx
 	}
-
-	// build the SVG image
-	line = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"\n\
-	xmlns:xlink="http://www.w3.org/1999/xlink"\n\
-	color="black" width="' + img.width.toFixed(0) +
-			'px" height="' + (hr * nr + 6).toFixed(0) + 'px"';
-	i = cfmt.bgcolor
-	if (i)
-		line += ' style="background-color: ' + i + '"';
-	line += '>\n<style>\n\
-.mid {text-anchor:middle}\n'
-
-	if (cfmt.fullsvg || grid.nomusic)
-		line += '\
-.stroke {stroke: currentColor; fill: none}\n\
-.' + font_cl + ' {' + this.style_font(font) +  '}\n';
-	line += '</style>\n'
 
 	// draw the lines
 	line += '<path class="stroke" d="\n';
@@ -264,15 +253,17 @@ function build_grid(chords, bars, font, wmx) {
 		x += wmx
 	}
 
-	return line + '</svg>'
+	abc.out_svg(line)
+	abc.vskip(hr * nr + 6)
 } // build_grid()
 
+	// ----- block_gen() -----
     var	s, beat, cur_beat, i, beat_i, p_voice, n, font, wm, bt, w, wmx, rep,
 	bars = [],
 	chords = [],
 	chord = [];
 
-	img = this.get_img();
+	img = abc.get_img()
 
 	// get the beat
 	beat = get_beat(voice_tb[0].meter);
@@ -280,11 +271,12 @@ function build_grid(chords, bars, font, wmx) {
 
 	// set the text style
 	if (!cfmt.gridfont)
-		this.param_set_font("gridfont", "serif 16");
-	font = this.get_font('grid');
-	font_cl = this.font_class(font)
+		abc.param_set_font("gridfont", "serif 16")
+	font = abc.get_font('grid')
+	font_cl = abc.font_class(font)
 	cls = font_cl + " mid";
-	this.set_font('grid');		// (for strwh())
+	abc.add_style("\n.mid {text-anchor:middle}")
+	abc.set_font('grid')		// (for strwh())
 
 	// scan the first voice of the tune
 	cur_beat = beat_i = n = wmx = 0;
@@ -303,7 +295,7 @@ function build_grid(chords, bars, font, wmx) {
 					if (s.a_gch[i].type == 'g') {
 						if (!chord[beat_i]) {
 							chord[beat_i] = s.a_gch[i].text;
-							w = this.strwh(chord[beat_i])[0]
+							w = abc.strwh(chord[beat_i])[0]
 							if (w > wmx)
 								wmx = w;
 							n++
@@ -351,49 +343,65 @@ function build_grid(chords, bars, font, wmx) {
 	}
 
 	// create the grid
-	wmx += this.strwh(rep ? '    ' : '  ')[0];
-	p_voice = voice_tb[this.get_top_v()]
-	s = {
-		type: C.BLOCK,
-		subtype: 'ml',
-		dur: 0,
-		time: 0,
-		p_v: p_voice,
-		v: p_voice.v,
-		st: p_voice.st,
-		text: build_grid.call(this, chords, bars, font, wmx)
-	}
-
-	if (grid.nomusic) {		// if no music
-		this.set_tsfirst(s)
-		return
-	}
-
-	// and insert it in the tune
-	if (cfmt.grid.n < 0) {		// below
-		for (var s2 = tsfirst; s2.ts_next; s2 = s2.ts_next)
-			;
-		s.time = s2.time;
-		s.prev = p_voice.last_sym;
-		s.ts_prev = s2;
-		p_voice.last_sym.next = s;
-		s2.ts_next = s
-	} else {			// above
-		s.time = 0;
-		s.next = p_voice.sym;
-		s.ts_next = tsfirst;
-		tsfirst.ts_prev = s;
-		this.set_tsfirst(s);
-		p_voice.sym.prev = s;
-		p_voice.sym = s
-	}
-    }, // do_grid()
+	wmx += abc.strwh(rep ? '    ' : '  ')[0]
+	abc.blk_flush()
+	build_grid(chords, bars, font, wmx)
+	abc.blk_flush()
+    }, // block_gen()
 
     output_music: function(of) {
-	if (this.cfmt().grid)
-		abc2svg.grid.do_grid.call(this);
+    var	grid = this.cfmt().grid
+
+	// create a specific block
+	if (grid) {
+	    var	C = abc2svg.C,
+		tsfirst = abc.get_tsfirst(),
+		voice_tb = abc.get_voice_tb(),
+		p_v = voice_tb[this.get_top_v()],
+		s = {
+			type: C.BLOCK,
+			subtype: 'grid',
+			dur: 0,
+			time: 0,
+			p_v: p_v,
+			v: p_v.v,
+			st: p_v.st
+		}
+
+		if (grid.nomusic) {		// if no music
+			this.set_tsfirst(s)
+			return
+		}
+
+		// and insert it in the tune
+		if (grid.n < 0) {		// below
+			for (var s2 = tsfirst; s2.ts_next; s2 = s2.ts_next)
+				;
+			s.time = s2.time
+			s.prev = p_v.last_sym.prev // before the last symbol
+			s.prev.next = s
+			s.next = p_v.last_sym
+			p_v.last_sym.prev = s
+
+			s.ts_prev = s2.ts_prev
+			s.ts_prev.ts_next = s
+			s.ts_next = s2
+			s2.ts_prev = s
+			if (s2.seqst) {
+				s.seqst = true
+				s2.seqst = false
+			}
+		} else {			// above
+			s.next = p_v.sym
+			s.ts_next = tsfirst
+			tsfirst.ts_prev = s
+			this.set_tsfirst(s)
+			p_v.sym.prev = s
+			p_v.sym = s
+		}
+	}
 	of()
-    },
+    }, // output_music()
 
     set_fmt: function(of, cmd, parm) {
 	if (cmd == "grid") {
@@ -426,6 +434,7 @@ function build_grid(chords, bars, font, wmx) {
     },
 
     set_hooks: function(abc) {
+	abc.block_gen = abc2svg.grid.block_gen.bind(abc, abc.block_gen)
 	abc.output_music = abc2svg.grid.output_music.bind(abc, abc.output_music);
 	abc.set_format = abc2svg.grid.set_fmt.bind(abc, abc.set_format)
     }
