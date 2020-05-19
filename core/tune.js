@@ -1449,7 +1449,8 @@ function generate(in_mc) {
 	if (user.img_out)		// if SVG generation
 		self.output_music()
 
-	tunes.push([tsfirst, voice_tb, info])	// keep tune data for upper layers
+	if (tsfirst)		// if non void, keep tune data for upper layers
+		tunes.push([tsfirst, voice_tb, info])
 
 	// if inside multicol, reset the parser
 	if (!in_mc)
