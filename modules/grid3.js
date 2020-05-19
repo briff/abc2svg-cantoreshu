@@ -99,7 +99,7 @@ abc2svg.grid3 = {
 		// generate the cells
 		yl = 3
 		y = 3 - font.size * .7
-		x0 = (img.width - w) / 2
+		x0 = (img.width / cfmt.scale - w) / 2
 		while (1) {
 			cl = cells.shift()
 			if (!cl)
