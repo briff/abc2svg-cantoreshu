@@ -518,9 +518,8 @@ function put_words(words) {
 
 	w = get_lwidth() / 2		// half line width
 	lw = maxn * cwidf('a')		// max line width
+	i1 = i2 = 0
 	if (lw < w) {			// if 2 columns
-		x1 = (w - lw) / 2 + 10
-		x2 = x1 + w
 		j = n >> 1
 		for (i = 0; i < nw; i++) {
 			p = words[i]
@@ -536,9 +535,12 @@ function put_words(words) {
 			}
 		}
 		n >>= 1
+	}
+	if (i2) {
+		x1 = (w - lw) / 2 + 10
+		x2 = x1 + w
 	} else {				// one column
 		x2 = w - lw / 2 + 10
-		i1 = i2 = 0
 	}
 
 	do_flush = true
