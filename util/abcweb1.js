@@ -253,10 +253,10 @@ function dom_loaded() {
 		if (tunes.length) {
 			tune_lst = tunes.slice(0)	// (array copy)
 			while (1) {
-				e = tunes.shift()
-				if (!e)
+				s = tunes.shift()
+				if (!s)
 					break
-				abcplay.add(e[0], e[1])
+				abcplay.add(s[0], s[1])
 			}
 		}
 
