@@ -182,7 +182,8 @@ following a bit the ABC standard 2.3, searches the music
 only in the elements of the class `abc`.
 As you may see in the source of [this psaume][9],
 the ABC code is contained in a `<script>` element, so that it is
-not changed by the web browser.
+not changed by the web browser. This is explained in section 4.3
+following the description of **abcweb2-1.js**.
 
 [9]: http://dz.tugdual.free.fr/psaumes/psaume-32.html "Psaume 32"
 
@@ -451,7 +452,7 @@ Here are the scripts which are used in a web context:
 
 - `abcweb1-1.js`  
   This script replaces all the page body by music as SVG images.  
-  As with abcweb1-1.js, the music sequences start on `X:` or `%abc`
+  As with abcweb-1.js, the music sequences start on `X:` or `%abc`
   at start of line, stop on any ML tag, a XML comment must be used
   when there are special XML characters, and playing is possible.  
   When there are many tunes in the file, the script displays a list
@@ -464,20 +465,25 @@ Here are the scripts which are used in a web context:
   offers to go back to the tune list or to modify the ABC source.
   
 - `abcweb2-1.js`  
-  This script replaces the ABC sequences defined in the elements
-  with the class `abc` by music as SVG images.
-  It keeps the other elements as they are.  
-  When a ABC sequence contains the characters '<', '>' or '&',
-  this sequence may be defined in a &lt;script&gt; tag
-  (with type="text/vnd.abc" and class="abc"), but also
-  enclosed in a XML comment (%&lt;![CDATA[ .. %]]&gt;)
-  if the file is a XHTML file.
-  An other possibility is to replace the characters
-  by their XML counterparts ('&amp;lt;', '&amp;gt;' or '&amp;amp;').  
+  With this script, the ABC sequences are searched in the HTML elements
+  that have a class `abc`. The other HTML elements are rendered normally.  
+  Compared with the previous script abcweb1-1.js,
+  the special XML characters can be replaced by
+  their XML counterparts ('&amp;lt;', '&amp;gt;' or '&amp;amp;').  
+  When the element with the class `abc` is a &lt;script&gt;
+  and when the file is a HTML file (not XHTML),
+  the characters '<', '>' or '&', as well as '--', can be kept as they are
+  in the ABC sequence.
+  The type of the &lt;script&gt; element should be
+  ["text/vnd.abc"](https://www.iana.org/assignments/media-types/text/vnd.abc)
+  so that the ABC sequence could also be automatically
+  handled by some extension in the web browsers (but no one is known yet!).  
+  Otherwise, as previously, when the file is a XHTML file, the ABC sequence
+  must be enclosed in XML comments (%&lt;![CDATA[ .. %]]&gt;).  
   Tune selection and playing work like with the previous script.  
   See [this file](http://moinejf.free.fr/abcm2ps-doc/multicol.xhtml)
-  for an example.  
-  
+  for an example.
+
 - `snd-1.js`  
   This script may be used with `abcweb{,1,2}-1.js` to play the rendered
   ABC music.  
