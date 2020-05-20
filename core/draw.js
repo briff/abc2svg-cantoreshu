@@ -2191,15 +2191,17 @@ function draw_tuplet(s1) {
 		if (s2.tpe)
 			break
 	}
+
+	if (s2)
+		s2.tpe--
+
+	if (tp.f[0] == 1)		// if 'when' == never
+		return			// accept tuplets on many lines
+
 	if (!s2) {
 		error(1, s1, "No end of tuplet in this music line")
 		return
 	}
-
-	s2.tpe--
-
-	if (tp.f[0] == 1)			/* if 'when' == never */
-		return
 
 	dir = tp.f[3]				// 'where'
 	if (!dir) {				// if auto
