@@ -1,6 +1,7 @@
 // follow-1.js - file to include in html pages after
-//	abc2svg-1.js, abcweb{1,2}-1.js and snd-1.js.
+//	abcweb{,1,2}-1.js and snd-1.js.
 //	This script permits to follow the notes while playing.
+// Scrolling the music may be disabled setting 'no_scroll' in the window object.
 //
 // Copyright (C) 2015-2020 Jean-Francois Moine
 //
@@ -41,8 +42,21 @@ user.anno_stop = function(type, start, stop, x, y, w, h) {
 
 	playconf.onnote = function(i, on) {
 		var elts = document.getElementsByClassName('_' + i + '_')
-		if (elts && elts[0])
+		if (elts && elts[0]) {
 			elts[0].style.fillOpacity = on ? 0.4 : 0
+
+			// scroll for the element to be in the screen
+			if (on && !window.no_scroll) {
+			    var	b = elts[0].getBoundingClientRect()
+				if (b.top < 0)
+					window.scrollTo(0, window.scrollY +
+								b.top - 40)
+				else if (b.bottom > window.innerHeight)
+					window.scrollTo(0, window.scrollY +
+								b.bottom -
+							window.innerHeight + 40)
+			}
+		}
 	}
 
 	// create the style of the rectangles
