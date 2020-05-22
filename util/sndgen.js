@@ -369,18 +369,19 @@ function ToAudio() {
 					s.rep_v = rsk // for knowing the number of variants
 			}
 
-			// left repeat
-			if (s.bar_type.slice(-1) == ':') {
-				rst = s
-				rst_fac = play_fac
-				rsk = null
-
 			// 1st time repeat
-			} else if (s.text && s.text[0] == '1'
+			if (s.text && s.text[0] == '1'
 				&& !rsk) {		// error if |1 already
 				s.rep_s = rsk = [null]	// repeat skip
 				set_variant(rsk, s.text, s)
 				rst_fac = play_fac
+
+			// left repeat
+//			} else if (s.bar_type.slice(-1) == ':') {
+			} else if (s.bar_type.length > 1) {
+				rst = s
+				rst_fac = play_fac
+				rsk = null
 			}
 			while (s.ts_next && !s.ts_next.seqst) {
 				s = s.ts_next
