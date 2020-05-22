@@ -172,10 +172,7 @@ abc2svg.MIDI = {
     set_vp: function(of, a) {
     var	i, item,
 	curvoice = this.get_curvoice()
-	if (curvoice.chn == undefined)
-		curvoice.chn = curvoice.v < 9 ?
-				curvoice.v :
-				curvoice.v + 1
+
 	for (i = 0; i < a.length; i++) {
 		switch (a[i]) {
 		case "channel=":		// %%MIDI channel

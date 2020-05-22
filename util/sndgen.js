@@ -31,6 +31,9 @@
 // - in the notes[] of NOTE
 //	s.notes[i].midi
 
+if (!abc2svg)
+    var	abc2svg = {}
+
 function ToAudio() {
  return {
 
@@ -50,7 +53,7 @@ function ToAudio() {
 	chn = []		// [voice] MIDI channel
 
 	// adjust the MIDI pitches according to the transpositions
-	function midi_transp(s, voice_tb) {
+	function midi_transp() {
 	    var p_v, s,
 		temper = voice_tb[0].temper,	// (set by the module temper.js)
 		v = voice_tb.length
@@ -189,6 +192,41 @@ function ToAudio() {
 		}
 	} // build_parts()
 
+	// set the starting MIDI instruments and channels
+	function midi_start() {
+	    var	v, p_v, c, i, ii
+
+		for (v = 0; v < voice_tb.length; v++) {
+			p_v = voice_tb[v]
+			ii = p_v.instr || 0		// instrument
+			c = p_v.chn			// channel
+			if (c == undefined)
+				c = p_v.v < 9 ? p_v.v : p_v.v + 1
+			else if (c == 9)		// percussion
+				ii = (ii & ~0x7f) | 16384
+
+			if (p_v.midictl) {		// if MIDI controls
+				for (i in p_v.midictl) {
+					switch (Number(i)) {
+					case 0:		// MSB bank
+						ii = (ii & 0x3fff) |
+							(p_v.midictl[i] << 14)
+						break
+					case 32:	// LSB bank
+						ii = (ii & 0x1fc07f) |
+							(p_v.midictl[i] << 7)
+						break
+					}
+				}
+			}
+
+			if ((ii & ~0x7f) == 16384) // if bank 128 (percussion)
+				c = 9			// channel '10'
+			chn[v] = c
+			instr[c] = ii
+		}
+	} // midi_start()
+
 	// handle a block symbol
 	function do_block(s) {
 	    var	v = s.v,
@@ -293,10 +331,13 @@ function ToAudio() {
 	// add() main
 
 	// transpose the MIDI pitches
-	midi_transp(s, voice_tb)
+	midi_transp()
 
 	if (s.parts)
 		build_parts(s)
+
+	// get the starting MIDI parameters
+	midi_start()
 
 	// set the time parameters
 	rst = s
@@ -313,18 +354,6 @@ function ToAudio() {
 			abc_time = s.time
 		}
 		s.ptim = p_time
-		v = s.v
-		c = chn[v]			// channel
-
-		if (c == undefined) {
-			if ((instr[v] & ~0x7f) == 16384) // if bank 128 (percussion)
-				c = 9			// channel '10'
-			else
-				c = v < 9 ? v : v + 1
-			chn[v] = c
-		}
-		if (instr[c] == undefined)
-			instr[c] = voice_tb[v].instr || 0
 
 		switch (s.type) {
 		case C.BAR:
@@ -387,6 +416,8 @@ function ToAudio() {
 			}
 			d /= play_fac
 			s.pdur = d
+			v = s.v
+			c = chn[v]			// channel
 			s.chn = c
 			s.instr = instr[c]
 			break
@@ -434,8 +465,6 @@ function ToAudio() {
 //  - onnote: (optional)
 //  - note_run: start playing a note
 //  - get_time: return the time of the underlaying sound system
-if (!abc2svg)
-    var	abc2svg = {}
 abc2svg.play_next = function(po) {
 
 	// handle a tie
@@ -498,7 +527,7 @@ abc2svg.play_next = function(po) {
 		}
 
 		for (i in p_v.midictl) { // MIDI controls at voice start time
-			s.ctrl = i
+			s.ctrl = Number(i)
 			s.val = p_v.midictl[i]
 			po.midi_ctrl(po, s, t)
 		}

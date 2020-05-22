@@ -266,7 +266,6 @@ var prn = {
     var	i, item,
 	curvoice = this.get_curvoice()
 
-	curvoice.chn = 9				// percussion channel
 	for (i = 0; i < a.length; i++) {
 		switch (a[i]) {
 		case "perc=":				// %%percmap
