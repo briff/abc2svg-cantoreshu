@@ -377,8 +377,6 @@ break
 	function lyric_dump() {
 	    var	v, s, i, ly, nly, t, w
 
-		font_def("vocal", "")
-
 		for (v = 0; v < nv; v++) {
 			nly = 0;
 			w = []
