@@ -2806,6 +2806,7 @@ function parse_music_line() {
 
 	if (parse.tp) {
 		tp = parse.tp
+		tpn = parse.tpn
 		tps = parse.tps
 		parse.tp = null
 	}
@@ -2815,6 +2816,7 @@ function parse_music_line() {
 	if (tp.length) {
 		parse.tp = tp
 		parse.tps = tps
+		parse.tpn = tpn
 	}
 	if (grace) {
 		syntax(1, "No end of grace note sequence");
