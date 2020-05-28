@@ -985,13 +985,9 @@ function do_info(info_type, text) {
 			if (!d1 || (d1 & (d1 - 1)) != 0)
 				break
 			d1 = C.BLEN / d1
-			if (a[2]) {
+			if (a[2]) {		// if '='
 				d2 = Number(a[4])
-				if (!d2 || (d2 & (d2 - 1)) != 0) {
-					d2 = 0
-					break
-				}
-				d2 = Number(a[3]) / d2 * C.BLEN
+				d2 = d2 ? Number(a[3]) / d2 * C.BLEN : 0
 			} else {
 				d2 = d1
 			}
