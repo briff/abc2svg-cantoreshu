@@ -25,7 +25,7 @@ fi
 
 out=abc2svg-$MAJOR.js
 VERSION=`grep '"version"' package.json|cut -d'"' -f4`
-DATE=`date '+%Y-%m-%d' -r package.json`
+DATE=`date -r package.json '+%Y-%m-%d'`
 cp core/license $out
 gen core/abc2svg.js core/deco.js core/draw.js\
  font.js core/format.js core/front.js core/music.js core/parse.js core/subs.js\

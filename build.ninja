@@ -32,7 +32,7 @@ rule jsc
 	fi;$
 	DATE=`echo $$c | cut -d' ' -f3`;$
    else $
-	DATE=`date '+%Y-%m-%d' -r package.json`;$
+	DATE=`date -r package.json '+%Y-%m-%d'`;$
    fi;$
    cp core/license $out;$
    if [ "x$$NOMIN" = "x" ]; then $
