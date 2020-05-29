@@ -1130,49 +1130,21 @@ function set_space(s, ptime) {
 	return space
 }
 
-// set a fixed spacing inside tuplets
+// set a fixed spacing inside tuplets or L: factor
 function set_sp_tup(s, s_et) {
-    var	s2,
-	tim = s.time,
-	endtime = s_et.time + s_et.dur,
-	ttim = endtime - tim,
-	space = time2space(s, ttim / s.tp[0].q) * s.tp[0].q / ttim
+	s = s.ts_prev			// previous normal time
+    var	tim = s.time,
+	ttim = s_et.time - tim,
+	sp = time2space(s, ttim) / ttim	// space factor
 
-	// start on the second note/rest
-	do {
-		s = s.ts_next
-	} while (!s.seqst)
-//fixme: problem when BAR inside the tuplet sequence (in case user error)
-//	while (!s.dur)
-//		s = s.ts_next
-//	while (!s.seqst)
-//		s = s.ts_prev
-
-	// stop outside the tuplet sequence
-	do {
-		s_et = s_et.ts_next
-	} while (!s_et.seqst)
-
-	// check the minimum spacing
-	s2 = s
 	while (1) {
-		if (s2.dur
-		 && s2.dur * space < s2.shrink)
-			space = s2.shrink / s2.dur
-		if (s2 == s_et)
-			break
-		s2 = s2.ts_next
-	}
-
-	// set the space values
-	while (1) {
-		if (s.seqst) {
-			s.space = (s.time - tim) * space;
-			tim = s.time
-		}
+		do {
+			s = s.ts_next
+		} while (!s.seqst)
+		s.space = sp * (s.time - tim)
 		if (s == s_et)
 			break
-		s = s.ts_next
+		tim = s.time
 	}
 }
 
@@ -1215,13 +1187,12 @@ function add_end_bar(s) {
 /* -- set the width and space of all symbols -- */
 // this function is called once for the whole tune
 function set_allsymwidth() {
-    var	maxx, new_val, s_tupc, s_tupn, st, s_chs, tim,
+    var	maxx, new_val, st, s_chs, tim, stup,
 	s = tsfirst,
 	s2 = s,
 	xa = 0,
 	xl = [],
-	wr = [],
-	ntup = 0
+	wr = []
 
 	/* loop on all symbols */
 	maxx = xa
@@ -1244,10 +1215,17 @@ function set_allsymwidth() {
 
 		// set the spaces of the time sequence
 		s2.shrink = maxx - xa
-		if (!ntup)			// if not inside a tuplet sequence
+		if (!Number.isInteger(s2.time / 12)) {	// tuplet or L: factor
+			if (!stup)
+				stup = s2
+		} else if (stup) {
+			set_sp_tup(stup, s2)
+			stup = null
+		} else {
 			s2.space = s2.ts_prev ?
 				set_space(s2, tim) :
 				0
+		}
 
 		if (!s2.shrink && !s2.space && s2.type == C.CLEF) {
 			delete s2.seqst;		/* no space */
@@ -1266,14 +1244,6 @@ function set_allsymwidth() {
 			xl[st] = xa
 			if (s2.wr > wr[st])
 				wr[st] = s2.wr
-			if (s2.tp) {		// start of tuplet
-				if (!ntup
-				 && !s_tupc)
-					s_tupc = s2 // keep the first tuplet address
-				ntup += s2.tp.length
-			}
-			if (s2.tpe)		// end of tuplet
-				ntup -= s2.tpe;
 			s2 = s2.ts_next
 		} while (!s2.seqst)
 	}
@@ -1281,30 +1251,6 @@ function set_allsymwidth() {
 	// let the chord symbols at the same offset
 	if (s_chs)
 		set_w_chs(s_chs)
-
-	// adjust the spacing inside the tuplets
-	s = s_tupc
-	if (!s)
-		return
-	do {
-		s2 = s;			// start of tuplet
-		ntup = 0
-		while (1) {		// search the end of the tuplet sequence
-			if (s.tp)
-				ntup += s.tp.length
-			if (s.tpe)
-				ntup -= s.tpe
-			if (!ntup)
-				break
-			s = s.ts_next
-		}
-
-		set_sp_tup(s2, s)
-
-		do {			// search next tuplet
-			s = s.ts_next
-		} while (s && !s.tp)
-	} while (s)
 }
 
 // insert a rest, this one replacing a sequence or a measure

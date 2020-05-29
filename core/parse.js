@@ -2233,7 +2233,7 @@ function tp_adj(s, fact) {
 		if (!s.grace) {
 			s.time = tim
 			if (s.dur) {
-				s.dur = Math.round(s.dur * fact)
+				s.dur *= fact
 				tim += s.dur
 			}
 		}
