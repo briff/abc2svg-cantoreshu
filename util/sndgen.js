@@ -378,7 +378,7 @@ function ToAudio() {
 
 			// left repeat
 //			} else if (s.bar_type.slice(-1) == ':') {
-			} else if (s.bar_type.length > 1) {
+			} else if (s.rbstop) {
 				rst = s
 				rst_fac = play_fac
 				rsk = null
