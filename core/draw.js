@@ -2994,12 +2994,12 @@ function draw_sym_near() {
 }
 
 /* -- draw the name/subname of the voices -- */
-function draw_vname(indent) {
+function draw_vname(indent, stl) {
     var	p_voice, n, st, v, a_p, p, y, name_type, h, h2,
 	staff_d = []
 
-	for (st = cur_sy.nstaff; st >= 0; st--) {
-		if (cur_sy.st_print[st])
+	for (st = stl.length; st >= 0; st--) {
+		if (stl[st])
 			break
 	}
 	if (st < 0)
@@ -3011,7 +3011,7 @@ function draw_vname(indent) {
 		if (!p_voice.sym || !cur_sy.voices[v])
 			continue
 		st = cur_sy.voices[v].st
-		if (!cur_sy.st_print[st])
+		if (!stl[st])
 			continue
 		if (p_voice.new_name) {
 			name_type = 2
@@ -3027,7 +3027,7 @@ function draw_vname(indent) {
 		if (!p_voice.sym || !cur_sy.voices[v])
 			continue
 		st = cur_sy.voices[v].st
-		if (!cur_sy.st_print[st])
+		if (!stl[st])
 			continue
 		if (p_voice.new_name)
 			delete p_voice.new_name;
@@ -3207,6 +3207,7 @@ function draw_systems(indent) {
 	var	s, s2, st, x, x2, res, sy,
 		staves_bar, bar_force,
 		xstaff = [],
+		stl = [],		// all staves in the line
 		bar_bot = [],
 		bar_height = [],
 		ba = [],		// bars [symbol, bottom, height]
@@ -3421,12 +3422,13 @@ function draw_systems(indent) {
 		}
 	} // out_bars()
 
-	// draw_systems()
-	draw_vname(indent)
+	// ---- draw_systems() ----
 
 	/* draw the staff, skipping the staff breaks */
-	for (st = 0; st <= nstaff; st++)
+	for (st = 0; st <= nstaff; st++) {
 		xstaff[st] = !cur_sy.st_print[st] ? -1 : 0;
+		stl[st] = true			// staff in the line
+	}
 	bar_set();
 	draw_lstaff(0)
 	for (s = tsfirst; s; s = s.ts_next) {
@@ -3462,9 +3464,11 @@ function draw_systems(indent) {
 			for (st = 0; st <= nstaff; st++) {
 				x = xstaff[st]
 				if (x < 0) {		// no staff yet
-					if (sy.st_print[st])
+					if (sy.st_print[st]) {
 						xstaff[st] = staves_bar ?
 							staves_bar : (s.x - s.wl - 2)
+						stl[st] = true
+					}
 					continue
 				}
 				if (sy.st_print[st]	// if not staff stop
@@ -3547,6 +3551,9 @@ function draw_systems(indent) {
 
 	// and the bars
 	out_bars()
+
+	draw_vname(indent, stl)
+
 //	set_sscale(-1)
 }
 
