@@ -1187,7 +1187,7 @@ function add_end_bar(s) {
 /* -- set the width and space of all symbols -- */
 // this function is called once for the whole tune
 function set_allsymwidth() {
-    var	maxx, new_val, st, s_chs, tim, stup,
+    var	maxx, val, st, s_chs, tim, stup,
 	s = tsfirst,
 	s2 = s,
 	xa = 0,
@@ -1207,15 +1207,16 @@ function set_allsymwidth() {
 				xl[st] = 0
 			if (wr[st] == undefined)
 				wr[st] = 0;
-			new_val = xl[st] + wr[st] + s.wl
-			if (new_val > maxx)
-				maxx = new_val;
+			val = xl[st] + wr[st] + s.wl
+			if (val > maxx)
+				maxx = val
 			s = s.ts_next
 		} while (s && !s.seqst);
 
 		// set the spaces of the time sequence
 		s2.shrink = maxx - xa
-		if (!Number.isInteger(s2.time / 12)) {	// tuplet or L: factor
+		val = s2.time / 12		// check if time is integer
+		if (val != (val | 0)) {		// no => tuplet or L: factor
 			if (!stup)
 				stup = s2
 		} else if (stup) {
