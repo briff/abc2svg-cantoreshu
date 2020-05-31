@@ -1148,9 +1148,9 @@ function set_sp_tup(s, s_et) {
 	}
 }
 
-// create an invisible bar for end of music lines
-function add_end_bar(s) {
-    var bar = {
+// return an empty bar
+function _bar(s) {
+	return {
 		type: C.BAR,
 		bar_type: "|",
 		fname: s.fname,
@@ -1160,28 +1160,33 @@ function add_end_bar(s) {
 		p_v: s.p_v,
 		st: s.st,
 		dur: 0,
-		seqst: true,
-		invis: true,
-		time: s.time + s.dur / 2,
 		nhd: 0,
-		notes: [{
-			pit: s.notes[0].pit
-		}],
-		wl: 0,
-		wr: 0,
-		prev: s,
-		ts_prev: s,
-		next: s.next,
-		ts_next: s.ts_next,
-		shrink: s.wr + 3
+		notes: s.notes,
+		prev: s
 	}
+} // _bar()
+
+// create an invisible bar for end of music lines
+function add_end_bar(s) {
+    var b = _bar(s)
+
+	b.seqst = true
+	b.invis = true
+	b.time = s.time + s.dur / 2
+	b.wl = 0
+	b.wr = 0
+	b.ts_prev = s
+	b.next = s.next
+	b.ts_next = s.ts_next
+	b.shrink = s.wr + 3
+
 	if (s.next)
-		s.next.prev = bar
+		s.next.prev = b
 	if (s.ts_next)
-		s.ts_next.ts_prev = bar
-	s.next = s.ts_next = bar
-	bar.space = set_space(bar, s.time)
-	return bar
+		s.ts_next.ts_prev = b
+	s.next = s.ts_next = b
+	b.space = set_space(b, s.time)
+	return b
 }
 
 /* -- set the width and space of all symbols -- */
@@ -2138,22 +2143,7 @@ function mrest_expand() {
 				delete s2.sol
 				lkvsym(s2, next)
 			} else {
-				s2 = {			// end of tune
-					type: C.BAR,
-					bar_type: "|",
-					fname: s.fname,
-					istart: s.istart,
-					iend: s.iend,
-					v: s.v,
-					p_v: s.p_v,
-					st: s.st,
-					dur: 0,
-					nhd: 0,
-					notes: [{
-						pit: s.notes[0].pit
-					}],
-					prev: s
-				}
+				s2 = _bar(s)		// end of tune
 				s.next = s2
 			}
 			s2.time = tim
@@ -3292,24 +3282,12 @@ function check_end_bar() {
 	while (s.ts_next)
 		s = s.ts_next
 	if (s.type != C.BAR) {
-		s2 = {
-			type: C.BAR,
-			bar_type: "|",
-			fname: s.fname,
-			istart: s.istart,
-			iend: s.iend,
-			v: s.v,
-			p_v: s.p_v,
-			st: s.st,
-			dur: 0,
-			seqst: true,
-			invis: true,
-			time: s.time + (s.dur || 0),
-			nhd: 0,
-			notes: s.notes,
-			prev: s,
-			ts_prev: s
-		}
+		s2 = _bar(s)
+		s2.seqst = true
+		s2.invis = true
+		s2.time = s.time + (s.dur || 0)
+		s2.ts_prev = s
+
 		s.next = s.ts_next = s2
 	}
 } // check_end_bar()
