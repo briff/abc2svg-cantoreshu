@@ -281,4 +281,4 @@ function render() {
 } // dom_loaded()
 
 // wait for the scripts to be loaded
-window.addEventListener("load", function() {setTimeout(dom_loaded, 500)})
+window.addEventListener("load", dom_loaded)
