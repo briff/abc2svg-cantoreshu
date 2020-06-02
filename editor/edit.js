@@ -1,6 +1,6 @@
 // edit.js - file used in the abc2svg editor
 //
-// Copyright (C) 2014-2019 Jean-Francois Moine
+// Copyright (C) 2014-2020 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -856,4 +856,4 @@ function src_change() {
 }
 
 // wait for scripts to be loaded
-setTimeout(edit_init, 500)
+window.addEventListener("load", edit_init)
