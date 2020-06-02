@@ -1575,6 +1575,8 @@ function set_nl(s) {			// s = start of line
 				// put the warning symbol at end of line
 				s3 = clone(s2)		// duplicate the K:/M:/clef
 				lktsym(s3, s.ts_next)	// link in time at eol
+				if (s3.ts_next == s2)
+					s2.seqst = true	// keep new line here
 				if (!s3.prev)		// if start of voice
 					continue
 				s = s3			// new last symbol
