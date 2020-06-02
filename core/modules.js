@@ -39,6 +39,7 @@ abc2svg.modules = {
 		grid: { fn: 'grid-1.js' },
 		grid2: { fn: 'grid2-1.js' },
 	jianpu: { fn: 'jianpu-1.js' },
+	mdnn: { fn: 'mdnn-1.js' },
 		MIDI: { fn: 'MIDI-1.js' },
 	pageheight: { fn: 'page-1.js' },
 		percmap: { fn: 'perc-1.js' },
