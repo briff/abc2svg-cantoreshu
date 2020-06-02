@@ -43,6 +43,36 @@ abc2svg.jianpu = {
 		return
 	}
 
+	// output the key and time signatures
+	function set_head() {
+	    var	tsfirst = abc.get_tsfirst(),
+		mt = voice_tb[0].meter.a_meter[0],
+		sk = voice_tb[0].key,
+		s = {
+			type: C.BLOCK,
+			subtype: "text",
+			dur: 0,
+			v: 0,
+			p_v: voice_tb[0],
+			st: 0,
+			seqst: true,
+			text: (sk.k_mode + 1) + "=" +
+				(abc2svg.jianpu.k_tb[sf + 7 +
+					abc2svg.jianpu.cde2fcg[sk.k_mode]])
+		},
+		s2 = voice_tb[0].sym
+
+		if (mt)
+			s.text += ' ' + (mt.bot ? (mt.top + '/' + mt.bot) : mt.top)
+
+		s2.prev = s
+		s.next = s2
+		voice_tb[0].sym = s
+		tsfirst.ts_prev = s
+		s.ts_next = tsfirst
+		abc.set_tsfirst(s)
+	} // set head()
+
 	// expand a long note/rest
 	function slice(s) {
 	    var	n, s2, s3
@@ -125,6 +155,16 @@ abc2svg.jianpu = {
 				continue
 			case C.KEY:
 				delta = abc2svg.jianpu.cgd2cde[s.k_sf + 7] - 2
+				s.a_gch = [{
+					type: '@',
+					font: abc.get_font("annotation"),
+					wh: [10, 10],
+					x: -5,
+					y: 30,
+					text: (s.k_mode + 1) + "=" +
+						(abc2svg.jianpu.k_tb[s.k_sf + 7 +
+							abc2svg.jianpu.cde2fcg[s.k_mode]])
+				}]
 				continue
 			case C.REST:
 				if (s.notes[0].jn)
@@ -183,6 +223,8 @@ abc2svg.jianpu = {
 	} // set_sym()
 
 	// -- output_music --
+
+	set_head()
 
 	for (v = 0; v < voice_tb.length; v++)
 		set_sym(voice_tb[v])
@@ -274,24 +316,6 @@ abc2svg.jianpu = {
 		if (s.invis)
 			continue
 		switch (s.type) {
-		case C.KEY:
-			if (s.time != 0) {
-				s2 = s.p_v.ckey
-				s.p_v.ckey = s
-				if (s.st != 0
-				 || s2.k_sf == s.k_sf)
-					break
-			}
-			nl = (s.k_mode + 1) + "=" +
-				(abc2svg.jianpu.k_tb[s.k_sf + 7 +
-					abc2svg.jianpu.cde2fcg[s.k_mode]])
-			s2 = s.next
-			if (s.time == 0 && s2 && s2.type == C.METER) {
-				m = s2.a_meter[0]
-				nl += ' ' + (m.bot ? (m.top + '/' + m.bot) : m.top)
-			}
-			out_txt(s.x, -12, nl)
-			break
 		case C.NOTE:
 		case C.REST:
 			x = s.x
@@ -342,15 +366,13 @@ abc2svg.jianpu = {
 // set vertical room for key changes
     set_pitch: function(of, last_s) {
 	of(last_s)
-	if (last_s)
-		return				// not the first time
+	if (!last_s)
+		return			// first time
 
     var	C = abc2svg.C,
-	s
-	for (s = abc.get_tsfirst(); s; s = s.ts_next) {
-		if (s.type == C.KEY)
-			s.ymx = 50
-	}
+	s = abc.get_tsfirst()
+	if (s && s.next && s.next.type == C.KEY)
+		s.next.a_gch = null
     }, // set_pitch()
 
 // set the width of some symbols
