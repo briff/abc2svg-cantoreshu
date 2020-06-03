@@ -2154,6 +2154,10 @@ function mrest_expand() {
 			while (s3 && s3.v < s.v && s3.type == C.BAR)
 				s3 = s3.ts_next	// keep in order
 			lktsym(s2, s3)
+			if (s2.seqst)
+				s2.bar_type = s2.ts_next.bar_type
+			else
+				s2.bar_type = s2.ts_prev.bar_type
 
 			// add the rest
 			s4 = clone(s)
