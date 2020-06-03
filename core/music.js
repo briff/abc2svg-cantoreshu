@@ -346,10 +346,13 @@ function lktsym(s, next) {	// time linkage
 	} else {
 		s.ts_next = s.ts_prev = null
 	}
-	s.seqst = !s.ts_prev || w_tb[s.ts_prev.type] != w_tb[s.type]
+	s.seqst = !s.ts_prev ||
+			s.time != s.ts_prev.time ||
+			w_tb[s.ts_prev.type] != w_tb[s.type]
 	s = s.ts_next
 	if (s)
-		s.seqst = w_tb[s.ts_prev.type] != w_tb[s.type]
+		s.seqst = s.time != s.ts_prev.time ||
+			w_tb[s.ts_prev.type] != w_tb[s.type]
 }
 
 /* -- unlink a symbol -- */
