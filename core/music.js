@@ -2159,8 +2159,8 @@ function mrest_expand() {
 				s3 = s
 				while (s3.ts_next)
 					s3 = s3.ts_next
-				s2.ts_next = s3
-				s3.ts_prev = s2
+				s3.ts_next = s2
+				s2.ts_prev = s3
 				s2.ts_next = null
 			}
 			if (s2.seqst)
