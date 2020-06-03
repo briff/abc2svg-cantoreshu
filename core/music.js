@@ -2153,7 +2153,16 @@ function mrest_expand() {
 				s3 = s3.ts_next	// bar at end of measure
 			while (s3 && s3.v < s.v && s3.type == C.BAR)
 				s3 = s3.ts_next	// keep in order
-			lktsym(s2, s3)
+			if (s3) {
+				lktsym(s2, s3)
+			} else {
+				s3 = s
+				while (s3.ts_next)
+					s3 = s3.ts_next
+				s2.ts_next = s3
+				s3.ts_prev = s2
+				s2.ts_next = null
+			}
 			if (s2.seqst)
 				s2.bar_type = s2.ts_next.bar_type
 			else
@@ -2172,14 +2181,23 @@ function mrest_expand() {
 			s4.prev = s2
 			s4.time = tim
 
-			while (s3 && s3.type == C.BAR)
+			while (s3 && s3.type == C.BAR && s3.time == tim)
 				s3 = s3.ts_next
 			while (s3 && s3.v < s.v) {
 				s3 = s3.ts_next	// keep in order
-				if (s3.seqst)
+				if (s3 && s3.seqst)
 					break
 			}
-			lktsym(s4, s3)
+			if (s3) {
+				lktsym(s4, s3)
+			} else {
+				s3 = s
+				while (s3.ts_next)
+					s3 = s3.ts_next
+				s3.ts_next = s4
+				s4.ts_prev = s3
+				s4.ts_next = null
+			}
 
 			tim += dur
 			s = s3 = s4
