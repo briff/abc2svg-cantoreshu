@@ -344,6 +344,8 @@ function lktsym(s, next) {	// time linkage
 			s.ts_prev.ts_next = s;
 		next.ts_prev = s
 	} else {
+//fixme
+error(2, s, "Bad linkage")
 		s.ts_next = s.ts_prev = null
 	}
 	s.seqst = !s.ts_prev ||
@@ -2145,7 +2147,7 @@ function mrest_expand() {
 			// add the bar
 			if (next) {
 				s2 = clone(next)
-				delete s2.sol
+				delete s2.soln
 				lkvsym(s2, next)
 			} else {
 				s2 = _bar(s)		// end of tune
@@ -2174,6 +2176,7 @@ function mrest_expand() {
 			// add the rest
 			s4 = clone(s)
 			delete s4.a_dd
+			delete s4.soln
 			if (s2.next) {
 				s4.next = s2.next
 				s4.next.prev = s4
