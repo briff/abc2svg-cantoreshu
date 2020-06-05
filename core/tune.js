@@ -960,12 +960,23 @@ function get_transp(param) {
 Abc.prototype.do_pscom = function(text) {
     var	h1, val, s, cmd, param, n, k, b
 
-	if (curvoice && curvoice.ignore)
-		return
 	cmd = text.match(/(\w|-)+/)
 	if (!cmd)
 		return
 	cmd = cmd[0];
+
+	// ignore the command if the voice is ignored,
+	// but not if %%score/%%staves!
+	if (curvoice && curvoice.ignore) {
+		switch (cmd) {
+		case "staves":
+		case "score":
+			break
+		default:
+			return
+		}
+	}
+
 	param = text.replace(cmd, '').trim()
 
 	if (param.slice(-5) == ' lock') {
