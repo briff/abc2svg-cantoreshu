@@ -1935,6 +1935,8 @@ function cut_tune(lwidth, indent) {
 			 || !s2.bar_num
 			 || --i > 0)
 				continue
+			while (s2.ts_next && s2.ts_next.type == C.BAR)
+				s2 = s2.ts_next
 			if (s2.ts_next)
 				s2.ts_next.soln = true
 			i = cfmt.barsperstaff
