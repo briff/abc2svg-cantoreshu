@@ -3427,7 +3427,7 @@ function draw_systems(indent) {
 	/* draw the staff, skipping the staff breaks */
 	for (st = 0; st <= nstaff; st++) {
 		xstaff[st] = !cur_sy.st_print[st] ? -1 : 0;
-		stl[st] = true			// staff in the line
+		stl[st] = cur_sy.st_print[st]	// staff in the line
 	}
 	bar_set();
 	draw_lstaff(0)
