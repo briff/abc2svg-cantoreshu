@@ -254,8 +254,9 @@ abc2svg.mdnn = {
 // don't display the key signature at start of staff
     set_pitch: function(of, last_s) {
 	of(last_s)
-	if (!last_s)
-		return				// first time
+	if (!last_s				// first time
+	 || !this.cfmt().mdnn)
+		return
 
     var	C = abc2svg.C,
 	s = abc.get_tsfirst()
