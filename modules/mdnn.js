@@ -221,11 +221,11 @@ abc2svg.mdnn = {
 			note.acc = 0
 			if (!note.a_dcn)
 				note.a_dcn = []
-			nn = _cde2fcg[(p + 5 + 16 * 7) % 7] - sf
+			nn = abc2svg.mdnn.cde2fcg[(p + 5 + 16 * 7) % 7] - sf
 			if (a != 3)
 				nn += a * 7
 			nn = ((((nn + 1 + 21) / 7) | 0) + 2 - 3 + 32 * 5) % 5
-			note.a_dcn.push(acc_tb[n])
+			note.a_dcn.push(abc2svg.mdnn.acc_tb[nn])
 		}
 
 		// set the slurs and ties up
