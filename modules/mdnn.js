@@ -259,7 +259,8 @@ abc2svg.mdnn = {
 		return
 
     var	C = abc2svg.C,
-	s = abc.get_tsfirst()
+	s = this.get_tsfirst()
+
 	if (s && s.next && s.next.type == C.KEY)
 //fixme:nsk
 		s.next.k_a_acc = []
