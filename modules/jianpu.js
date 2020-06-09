@@ -299,6 +299,10 @@ abc2svg.jianpu = {
 					abc2svg.jianpu.acc_tb[note.acc + 2])
 			if (note.jo > 2) {
 				out_mus(x - 1, y + 22, dot)
+				if (note.jo > 3) {
+					y += 3
+					out_mus(x - 1, y + 22, dot)
+				}
 			} else if (note.jo < 2) {
 				ym = y + 4
 				if (m == 0 && s.nflags > 0)
