@@ -252,7 +252,7 @@ In addition, you have to set the correct location of the abc2svg scripts
 in your pages. As a trick, I put the abc2svg scripts in a folder
 at the same level as the HTML files:
 
-`        <script>../js/abcweb-1.js</script>`
+`        <script src="../js/abcweb-1.js"</script>`
 
 This allows the generation of the music to run either locally
 or remotely.
