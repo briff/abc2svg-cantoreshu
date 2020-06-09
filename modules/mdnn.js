@@ -121,10 +121,11 @@ abc2svg.mdnn = {
 			sf = s.k_sf
 			delta = abc2svg.mdnn.cgd2cde[sf + 7] - 2
 			nn = sf - s.k_old_sf	// delta accidentals
-			if (!nn) {
-				s.k_a_acc = []	// don't display the accidentals
-				continue
-			}
+//fixme:nsk
+//			if (!nn) {
+//				s.k_old_sf = s.k_sf = 0 // don't display the accidentals
+//				continue
+//			}
 
 //fixme:comment if nsk
 			// display normal accidentals
