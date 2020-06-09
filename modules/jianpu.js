@@ -34,9 +34,7 @@ abc2svg.jianpu = {
     var	C = abc2svg.C,
 	abc = this,
 	cur_sy = abc.get_cur_sy(),
-	voice_tb = abc.get_voice_tb(),
-	sf = voice_tb[0].key.k_sf,
-	delta = abc2svg.jianpu.cgd2cde[sf + 7] - 2
+	voice_tb = abc.get_voice_tb()
 
 	if (!abc.cfmt().jianpu) {
 		of()
@@ -46,18 +44,19 @@ abc2svg.jianpu = {
 	// output the key and time signatures
 	function set_head() {
 	    var	tsfirst = abc.get_tsfirst(),
-		mt = voice_tb[0].meter.a_meter[0],
-		sk = voice_tb[0].key,
+		p_v = voice_tb[0],
+		mt = p_v.meter.a_meter[0],
+		sk = p_v.key,
 		s = {
 			type: C.BLOCK,
 			subtype: "text",
 			dur: 0,
 			v: 0,
-			p_v: voice_tb[0],
+			p_v: p_v,
 			st: 0,
 			seqst: true,
 			text: (sk.k_mode + 1) + "=" +
-				(abc2svg.jianpu.k_tb[sf + 7 +
+				(abc2svg.jianpu.k_tb[sk.k_sf + 7 +
 					abc2svg.jianpu.cde2fcg[sk.k_mode]])
 		},
 		s2 = voice_tb[0].sym
@@ -136,9 +135,10 @@ abc2svg.jianpu = {
 	} // slice()
 
 	function set_sym(p_v) {
-	    var s, s2, note, pit, nn, p, a, m, i
+	    var s, s2, note, pit, nn, p, a, m, i,
+		sf = p_v.key.k_sf
+		delta = abc2svg.jianpu.cgd2cde[sf + 7] - 2
 
-//fixme: must shift
 		p_v.key.k_a_acc = []	// no accidental
 
 		// no (visible) clef
