@@ -372,13 +372,19 @@ abc2svg.jianpu = {
 // set vertical room for key changes
     set_pitch: function(of, last_s) {
 	of(last_s)
-	if (!last_s)
+	if (!last_s
+	 || !this.cfmt().jianpu)
 		return			// first time
 
-    var	C = abc2svg.C,
-	s = abc.get_tsfirst()
-	if (s && s.next && s.next.type == C.KEY)
-		s.next.a_gch = null
+    var	C = abc2svg.C
+	
+	for (var s = abc.get_tsfirst(); s; s = s.ts_next) {
+		if (s.type == C.KEY) {
+			if (s.prev.type == C.CLEF
+			 || s.v != 0)
+				s.a_gch = null
+		}
+	}
     }, // set_pitch()
 
 // set the width of some symbols
