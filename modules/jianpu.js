@@ -258,21 +258,19 @@ abc2svg.jianpu = {
 			while (1) {
 				if (s.nflags && s.nflags >= n) {
 					s3 = s
-					while (s != s2
-					    && (!s.nflags || s.nflags >= n)) {
-						if (s.beam_br1
-						 || (s.beam_br2 && n > 2))
+					while (s != s2) {
+						if (s.next.beam_br1
+						 || (s.next.beam_br2 && n > 2)
+						 || (s.next.nflags
+						  && s.next.nflags < n))
 							break
 						s = s.next
 					}
 					draw_dur(s3, y, s, n, nl)
-					if (s == s2)
-						break
-				} else {
-					if (s == s2)
-						break
-					s = s.next
 				}
+				if (s == s2)
+					break
+				s = s.next
 			}
 		}
 	} // draw_dur()
