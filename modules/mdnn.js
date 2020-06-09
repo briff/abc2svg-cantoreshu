@@ -59,7 +59,7 @@ abc2svg.mdnn = {
 	n7: '<text id="n7" class="bn" x="-1.5" y="16">7</text>',
 	nq: '<text id="nq" class="bn" x="8" y="16">\'</text>',
 	nc: '<text id="nc" class="bn" x="8" y="16">,</text>',
-	nh: '<path id="nh" class="stroke" d="m3.5 -1l-7.2 0 0 -6.2 7.2 0"/>',
+	nh: '<path id="nh" class="stroke" d="m3.5 0l-7.2 0 0 -6.2 7.2 0"/>',
 	nw: '<path id="nw" class="stroke" d="m6 -5l-7.2 0 0 -6.2 7.2 0 0 6.2"/>',
 	aff: '<text id="aff" class="music" x="-8" y="11">&#xe264;</text>',
 	af: '<text id="af" class="music" x="-8" y="11">&#xe260;</text>',
