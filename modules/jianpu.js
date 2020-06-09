@@ -219,6 +219,16 @@ abc2svg.jianpu = {
 				if (s.dur >= C.BLEN / 2)
 					slice(s)
 			}
+
+			// replace the staccato dot
+			if (s.a_dd) {
+				for (i = 0; i < s.a_dd.length; i++) {
+					if (s.a_dd[i].glyph == "stc") {
+						abc.deco_cnv(["gstc"], s)
+						s.a_dd[i] = s.a_dd.pop()
+					}
+				}
+			}
 		}
 	} // set_sym()
 
@@ -430,6 +440,10 @@ abc2svg.jianpu = {
 	abc.set_format = abc2svg.jianpu.set_fmt.bind(abc, abc.set_format)
 	abc.set_pitch = abc2svg.jianpu.set_pitch.bind(abc, abc.set_pitch)
 	abc.set_width = abc2svg.jianpu.set_width.bind(abc, abc.set_width)
+
+	// big staccato dot
+	abc.get_glyphs().gstc = '<circle id="gstc" cx="0" cy="-3" r="2"/>'
+	abc.get_decos().gstc = "0 gstc 5 1 1"
 
 	abc.add_style("\n.bn {font-family:sans-serif; font-size:15px}")
     } // set_hooks()
