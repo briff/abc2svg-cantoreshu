@@ -691,10 +691,10 @@ function draw_lstaff(x) {
 }
 
 /* -- draw the time signature -- */
-function draw_meter(x, s) {
+function draw_meter(s) {
 	if (!s.a_meter)
 		return
-    var	dx, i, j, meter,
+    var	dx, i, j, meter, x,
 		st = s.st,
 		p_staff = staff_tb[st],
 		y = p_staff.y;
@@ -3640,7 +3640,7 @@ Abc.prototype.draw_symbols = function(p_voice) {
 			set_color();
 			set_sscale(s.st);
 			anno_start(s);
-			draw_meter(x, s);
+			draw_meter(s);
 			anno_stop(s)
 			break
 		case C.KEY:
