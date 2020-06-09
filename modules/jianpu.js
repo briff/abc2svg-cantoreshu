@@ -235,13 +235,14 @@ abc2svg.jianpu = {
   draw_symbols: function(of, p_voice) {
     var	i, m, nl, note, s, s2, x, y,
 	C = abc2svg.C,
+	abc = this,
 	dot = "\ue1e7",
-	staff_tb = this.get_staff_tb(),
-	out_svg = this.out_svg,
-	out_sxsy = this.out_sxsy,
-	xypath = this.xypath
+	staff_tb = abc.get_staff_tb(),
+	out_svg = abc.out_svg,
+	out_sxsy = abc.out_sxsy,
+	xypath = abc.xypath
 
-	if (!this.cfmt().jianpu) {
+	if (!abc.cfmt().jianpu) {
 		of(p_voice)
 		return
 	}
@@ -314,6 +315,9 @@ abc2svg.jianpu = {
 		if (s.invis)
 			continue
 		switch (s.type) {
+		case C.METER:
+			abc.draw_meter(s)
+			break
 		case C.NOTE:
 		case C.REST:
 			x = s.x
@@ -385,7 +389,7 @@ abc2svg.jianpu = {
 	switch (s.type) {
 	case C.CLEF:
 	case C.KEY:
-	case C.METER:
+//	case C.METER:
 		s.wl = s.wr = 0
 		break
 	case C.NOTE:

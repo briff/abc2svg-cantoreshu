@@ -25,6 +25,7 @@ Abc.prototype.add_style = function(s) { style += s };
 Abc.prototype.cfmt = function() { return cfmt };
 Abc.prototype.clone = clone;
 Abc.prototype.deco_cnv = deco_cnv;
+Abc.prototype.draw_meter = draw_meter
 Abc.prototype.draw_note = draw_note;
 Abc.prototype.errs = errs;
 Abc.prototype.font_class = font_class;
