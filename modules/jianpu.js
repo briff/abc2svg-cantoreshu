@@ -369,7 +369,7 @@ abc2svg.jianpu = {
 	of(cmd, param)
     }, // set_fmt()
 
-// set vertical room for key changes
+// adjust some values
     set_pitch: function(of, last_s) {
 	of(last_s)
 	if (!last_s
@@ -379,10 +379,21 @@ abc2svg.jianpu = {
     var	C = abc2svg.C
 	
 	for (var s = abc.get_tsfirst(); s; s = s.ts_next) {
-		if (s.type == C.KEY) {
+		switch (s.type) {
+
+		// draw the key signature only in the first voice
+		// and not at start of the staff
+		case C.KEY:
 			if (s.prev.type == C.CLEF
 			 || s.v != 0)
 				s.a_gch = null
+			break
+
+		// shift the decorations when there are 2 octave dots
+		case C.NOTE:
+			if (s.notes[s.nhd].jo > 3)
+				s.ymx += 3
+			break
 		}
 	}
     }, // set_pitch()
