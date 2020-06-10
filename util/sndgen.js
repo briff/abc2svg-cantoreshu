@@ -66,9 +66,13 @@ function ToAudio() {
 			function set_note(note) {
 			    var m = abc2svg.b40m(note.b40 + transp)
 				if (temper		// if not equal temperament
-				 && (!note.acc
-				  || note.acc | 0 == note.acc)) // and not micro-tone
+				 && !note.acc)		// and no accidental
 					m += temper[m % 12]
+				else if (note.micro_n)	// if micro-tone
+					if (note.acc > 0)
+						m += note.micro_n / note.micro_d - 1
+					else
+						m -= note.micro_n / note.micro_d - 1
 				note.midi = m
 			} // set_note()
 
