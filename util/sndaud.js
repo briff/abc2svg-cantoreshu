@@ -259,7 +259,8 @@ function Audio5(i_conf) {
 	function note_run(po, s, key, t, d) {
 	    var	g, st,
 		instr = s.instr,
-		parm = po.params[instr][key | 0],
+		k = key | 0
+		parm = po.params[instr][k],
 		o = po.ac.createBufferSource(),
 		v = s.p_v.vol == undefined ? 1 : s.p_v.vol	// volume (gain)
 
@@ -278,7 +279,7 @@ function Audio5(i_conf) {
 				 o.detune.value = dt
 		}
 //		o.playbackRate.setValueAtTime(parm.rate, ac.currentTime)
-		o.playbackRate.value = po.rates[instr][key]
+		o.playbackRate.value = po.rates[instr][k]
 
 		g = po.ac.createGain()
 		if (parm.hold < 0.002) {
