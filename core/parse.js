@@ -1607,9 +1607,7 @@ function parse_acc_pit(line) {
 		micro_n = nd[0];
 		micro_d = nd[1]
 		if (micro_d == 1)
-			micro_d = curvoice ? curvoice.uscale : 1
-		else
-			micro_d *= 2;	// 1/2 tone fraction -> tone fraction
+			micro_d = curvoice ? (curvoice.uscale >> 1) : 1
 		c = line.char()
 	}
 
