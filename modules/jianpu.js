@@ -399,10 +399,14 @@ abc2svg.jianpu = {
 				s.a_gch = null
 			break
 
-		// shift the decorations when there are 2 octave dots
+		// adjust the vertical spacing above the note heads
 		case C.NOTE:
-			if (s.notes[s.nhd].jo > 3)
+			s.ymx = 20 * s.nhd + 22
+			if (s.notes[s.nhd].jo > 2) {
 				s.ymx += 3
+				if (s.notes[s.nhd].jo > 3)
+					s.ymx += 2
+			}
 			break
 		}
 	}
