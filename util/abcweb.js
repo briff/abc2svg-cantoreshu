@@ -253,6 +253,9 @@ function render() {
 		alert("abc2svg bad generated SVG: " + e.message +
 			"\nStack:\n" + e.stack)
 	}
+
+	// prepare for play on click
+	window.onclick = abc2svg.playseq
 } // render()
 
 	// --- dom_loaded() main code ---
@@ -271,9 +274,6 @@ function render() {
 
 	// accept page formatting
 	abc2svg.abc_end = function() {}
-
-	// prepare for play on click
-	window.onclick = abc2svg.playseq
 
 	// load the required modules, then render the music
 	if (abc2svg.modules.load(page, render))

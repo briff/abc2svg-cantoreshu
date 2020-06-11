@@ -223,6 +223,9 @@ function dom_loaded() {
 
 			i++
 		}
+
+		// prepare for play on click
+		window.onclick = abc2svg.playseq
 	} // render()
 
 	// convert HTML to ABC
@@ -260,9 +263,6 @@ function dom_loaded() {
 
 	// accept page formatting
 	abc2svg.abc_end = function() {}
-
-	// prepare for play on click
-	window.onclick = abc2svg.playseq
 
 	// extract the ABC source
 	elts = document.getElementsByClassName('abc')
