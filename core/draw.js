@@ -726,10 +726,10 @@ function draw_acc(x, y, acc,
 			micro_n,
 			micro_d) {
 	if (micro_n) {
-		if (micro_n == micro_d) {
+		if (micro_n == micro_d * 2) {
 			acc = acc == -1 ?	// flat
 				-2 : 2		// double flat : sharp
-		} else if (micro_n * 2 != micro_d) {
+		} else if (micro_n != micro_d) {
 			xygl(x, y, "acc" + acc + '_' + micro_n + '_' + micro_d)
 			return
 		}
