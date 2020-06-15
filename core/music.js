@@ -1135,18 +1135,33 @@ function set_space(s, ptime) {
 	return space
 }
 
-// set a fixed spacing inside tuplets or L: factor
+// set the spacing inside tuplets or L: factor
 function set_sp_tup(s, s_et) {
 	s = s.ts_prev			// previous normal time
     var	tim = s.time,
 	ttim = s_et.time - tim,
-	sp = time2space(s, ttim) / ttim	// space factor
+	s2 = s,
+	wsp = 0,
+	f
+
+	// compute the whole spacing
+	while (1) {
+		do {
+			s2 = s2.ts_next
+		} while (!s2.seqst)
+		wsp += s2.space
+		if (s2 == s_et)
+			break
+	}
+
+	// spacing factor: for mean of total and sum of individual spacing
+	f = (time2space(s, ttim) + wsp) / 2 / wsp
 
 	while (1) {
 		do {
 			s = s.ts_next
 		} while (!s.seqst)
-		s.space = sp * (s.time - tim)
+		s.space *= f
 		if (s == s_et)
 			break
 		tim = s.time
@@ -1225,6 +1240,7 @@ function set_allsymwidth() {
 
 		// set the spaces of the time sequence
 		s2.shrink = maxx - xa
+		s2.space = s2.ts_prev ? set_space(s2, tim) : 0
 		val = s2.time / 12		// check if time is integer
 		if (val != (val | 0)) {		// no => tuplet or L: factor
 			if (!stup)
@@ -1232,10 +1248,6 @@ function set_allsymwidth() {
 		} else if (stup) {
 			set_sp_tup(stup, s2)
 			stup = null
-		} else {
-			s2.space = s2.ts_prev ?
-				set_space(s2, tim) :
-				0
 		}
 
 		if (!s2.shrink && !s2.space && s2.type == C.CLEF) {
