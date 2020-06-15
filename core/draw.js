@@ -2276,7 +2276,7 @@ function draw_tuplet(s1) {
 		if (dir == C.SL_ABOVE)
 			ym = y_get(upstaff, 1, xm - a / 2, a)
 		else
-			ym = y_get(upstaff, 0, xm - a / 2, a) - 6
+			ym = y_get(upstaff, 0, xm - a / 2, a) - 8
 
 		if (s1.stem * s2.stem > 0) {
 			if (s1.stem > 0)
