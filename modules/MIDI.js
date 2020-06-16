@@ -9,6 +9,7 @@
 //	%%MIDI program [channel] n
 //	%%MIDI control k v
 //	%%MIDI drummap ABC_note MIDI_pitch
+//	%%MIDI tuningsystem comma53
 
 // Using %%MIDI drummap creates a voicemap named "MIDIdrum".
 // This name must be used if some print map is required:
@@ -164,6 +165,45 @@ abc2svg.MIDI = {
 		} else {
 			this.set_v_param("midictl", a[2] + ' ' + a[3])
 		}
+		break
+	case "tuningsystem":
+		// Turkish scale
+//		if (a[2] != "comma53")
+//			error(...)
+		s = this.get_glyphs()
+		s.acc1_4 = '<text id="acc1_4" x="-1">&#xe282;</text>'
+//		s.acc1_2 = '<text id="acc1_2" x="-1" y="0">&#xe282;\
+//	<tspan x="4" y="-6.5" style="font-size:8">2</tspan></text>'
+//		s.acc3_4 = '<text id="acc3_4" x="-1" y="0">&#xe262;\
+//	<tspan x="4" y="-6.5" style="font-size:8">3</tspan></text>'
+//Arel - Ezgel
+		s.acc3_4 = '<text id="acc3_4" x="-1" y="0">&#xe262;</text>'
+		s.acc9_8 = '<g id="acc9_8">\n\
+	<text x="-1">&#xe282;</text>\n\
+	<path class="stroke" d="M-2 1l6 -1.5"/>\n\
+</g>'
+		s["acc-7_8"] = '<g id="acc-7_8">\n\
+	<text x="-1">&#xe282;</text>\n\
+	<path class="stroke" d="M-2 1l6 -1.5"/>\n\
+</g>'
+//		s["acc-3_4"] = '<g id="acc-3_4">\n\
+//	<text x="-1" y="0">&#xe260;\
+//		<tspan x="4" y="-6.5" style="font-size:8">3</tspan></text>\n\
+//	<path class="stroke" d="M-2 -4l4 -4.5"/>\n\
+//</g>'
+//		s["acc-1_2"] = '<text id="acc-1_2" x="-1" y="0">&#xe280;\
+//	<tspan x="6" y="-6.5" style="font-size:8">2</tspan></text>'
+//Arel - Ezgel
+		s["acc-3_4"] = '<g id="acc-3_4">\n\
+	<text x="-1" y="0">&#xe260;</text>\n\
+	<path class="stroke" d="M-2 -4l4 -4.5"/>\n\
+</g>'
+		s["acc-1_4"] = '<text id="acc-1_4" x="-1">&#xe280;</text>'
+
+		this.cfmt().temper = new Float32Array([
+//			+00, -09, +04, -06, +08, -02, +11, +02, -08, +06, -04, +09
+		    0, -9.4, 3.8, -5.7, 7.5, -1.9, -11.3, 1.9, -7.5, 5.7, -3.8, 9.4
+		])
 		break
 	}
     }, // do_midi()
