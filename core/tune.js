@@ -786,49 +786,9 @@ function note_transp(s, sk, note) {
 		ak = sk.k_map[(note.pit + 19) % 7]
 		if (ak)
 			an = 3		// natural
-	} else {
-		return			// same accidental (in the key)
+//	} else {
+//		return			// same accidental (in the key)
 	}
-
-	d = note.micro_d
-	if (d				/* microtone */
-	 && a != an) {			/* different accidental type */
-		n = note.micro_n
-//fixme: double sharps/flats ?*/
-//fixme: does not work in all cases (tied notes, previous accidental)
-		switch (an) {
-		case 3:			// natural
-			if (n > d / 2) {
-				n -= d / 2;
-				note.micro_n = n;
-				an = a
-			} else {
-				an = -a
-			}
-			break
-		case 2:			// double sharp
-			if (n > d / 2) {
-				note.pit += 1;
-				n -= d / 2
-			} else {
-				n += d / 2
-			}
-			an = a
-			note.micro_n = n
-			break
-		case -2:		// double flat
-			if (n >= d / 2) {
-				note.pit -= 1;
-				n -= d / 2
-			} else {
-				n += d / 2
-			}
-			an = a
-			note.micro_n = n
-			break
-		}
-	}
-	note.acc = an
 }
 
 // adjust the pitches according to the transposition(s)

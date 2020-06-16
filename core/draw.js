@@ -722,18 +722,22 @@ function draw_meter(s) {
 }
 
 /* -- draw an accidental -- */
-function draw_acc(x, y, acc,
-			micro_n,
-			micro_d) {
-	if (micro_n) {
-		if (micro_n == micro_d * 2) {
-			acc = acc == -1 ?	// flat
-				-2 : 2		// double flat : sharp
-		} else if (micro_n != micro_d) {
-			xygl(x, y, "acc" + acc + '_' + micro_n + '_' + micro_d)
-			return
+function draw_acc(x, y, acc) {
+    var	i, j
+
+	if (acc != (acc | 0)) {			// if microtone
+		for (i = 2; i < glovar.udiv.length; i++) {
+			if (!glovar.udiv[i])
+				continue
+			j = acc * i
+			if (j == (j | 0)) {
+				xygl(x, y, 'acc' + j + '_' + i)
+				return
+			}
 		}
+		acc |= 0
 	}
+
 	xygl(x, y, "acc" + acc)
 }
 
@@ -960,8 +964,7 @@ Abc.prototype.draw_keysig = function(x, s) {
 			s2.notes[0].pit = shift / 3 + 18;
 			self.draw_hl(s2)
 			last_shift = shift;
-			draw_acc(x, staffb + shift,
-				 acc.acc, acc.micro_n, acc.micro_d);
+			draw_acc(x, staffb + shift, acc.acc)
 			x += 5.5
 		}
 	}
@@ -1427,11 +1430,10 @@ function draw_basic_note(x, s, m, y_tb) {
 	if (note.acc) {
 		x -= note.shac * stv_g.scale
 		if (!s.grace) {
-			draw_acc(x, y + staffb,
-				 note.acc, note.micro_n, note.micro_d)
+			draw_acc(x, y + staffb, note.acc)
 		} else {
 			g_open(x, y + staffb, 0, .75);
-			draw_acc(0, 0, note.acc, note.micro_n, note.micro_d);
+			draw_acc(0, 0, note.acc)
 			g_close()
 		}
 	}

@@ -694,9 +694,10 @@ Abc.prototype.set_width = function(s) {
 				if (wlnote < -xx + 5)
 					wlnote = -xx + 5
 			}
-			if (s.notes[m].acc) {
+			acc = s.notes[m].acc
+			if (acc) {
 				tmp = s.notes[m].shac +
-					(s.notes[m].micro ? 5.5 : 3.5)
+					(acc != (acc | 0) ? 5.5 : 3.5)
 				if (wlnote < tmp)
 					wlnote = tmp
 			}
@@ -3854,11 +3855,13 @@ function same_head(s1, s2) {
 
 /* handle unison with different accidentals */
 function unison_acc(s1, s2, i1, i2) {
-	var m, d
+    var	m, d, acc
 
-	if (!s2.notes[i2].acc) {
+	acc = s2.notes[i2].acc
+	if (!acc) {
 		d = w_note[s2.head] * 2 + s2.xmx + s1.notes[i1].shac + 2
-		if (s1.notes[i1].micro)
+		acc = s1.notes[i1].acc
+		if (acc != (acc | 0))		// microtone
 			d += 2
 		if (s2.dots)
 			d += 6
@@ -3869,7 +3872,7 @@ function unison_acc(s1, s2, i1, i2) {
 		s1.xmx += d
 	} else {
 		d = w_note[s1.head] * 2 + s1.xmx + s2.notes[i2].shac + 2
-		if (s2.notes[i2].micro)
+		if (acc != (acc | 0))		// microtone
 			d += 2
 		if (s1.dots)
 			d += 6

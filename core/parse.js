@@ -502,9 +502,7 @@ function new_key(param) {
 	function set_k_acc(s, sf) {
 	    var i, j, n, nacc, p_acc,
 		accs = [],
-		pits = [],
-		m_n = [],
-		m_d = []
+		pits = []
 
 		if (sf > 0) {
 			for (nacc = 0; nacc < sf; nacc++) {
@@ -523,20 +521,12 @@ function new_key(param) {
 			for (j = 0; j < nacc; j++) {
 				if (pits[j] == p_acc.pit) {
 					accs[j] = p_acc.acc
-					if (p_acc.micro_n) {
-						m_n[j] = p_acc.micro_n;
-						m_d[j] = p_acc.micro_d
-					}
 					break
 				}
 			}
 			if (j == nacc) {
 				accs[j] = p_acc.acc;
 				pits[j] = p_acc.pit
-				if (p_acc.micro_n) {
-					m_n[j] = p_acc.micro_n;
-					m_d[j] = p_acc.micro_d
-				}
 				nacc++
 			}
 		}
@@ -546,13 +536,6 @@ function new_key(param) {
 				p_acc = s.k_a_acc[i] = {}
 			p_acc.acc = accs[i];
 			p_acc.pit = pits[i]
-			if (m_n[i]) {
-				p_acc.micro_n = m_n[i];
-				p_acc.micro_d = m_d[i]
-			} else {
-				delete p_acc.micro_n
-				delete p_acc.micro_d
-				}
 		}
 	} // set_k_acc()
 
@@ -1571,8 +1554,8 @@ function parse_dur(line) {
 
 // parse the note accidental and pitch
 function parse_acc_pit(line) {
-	var	note, acc, micro_n, micro_d, pit, nd,
-		c = line.char()
+    var	note, acc, pit, d, nd,
+	c = line.char()
 
 	// optional accidental
 	switch (c) {
@@ -1604,10 +1587,12 @@ function parse_acc_pit(line) {
 	if (acc && acc != 3 && (c >= '1' && c <= '9')
 	 || c == '/') {				// compatibility
 		nd = parse_dur(line);
-		micro_n = nd[0];
-		micro_d = nd[1]
-		if (micro_d == 1)
-			micro_d = curvoice ? (curvoice.uscale >> 1) : 1
+		d = nd[1]
+		if (d == 1 && curvoice)
+			d = curvoice.uscale >> 1
+		if (!glovar.udiv[d])
+			glovar.udiv[d] = true	// for conversion float -> n/d
+		acc = acc * nd[0] / d
 		c = line.char()
 	}
 
@@ -1633,13 +1618,8 @@ function parse_acc_pit(line) {
 		shhd: 0,
 		shac: 0
 	}
-	if (acc) {
+	if (acc)
 		note.acc = acc
-		if (micro_n) {
-			note.micro_n = micro_n;
-			note.micro_d = micro_d
-		}
-	}
 	return note
 }
 

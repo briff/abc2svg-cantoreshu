@@ -139,13 +139,15 @@ abc2svg.pab40 = function(p, a) {
 	return b40
 } // pit2b40()
 abc2svg.b40p = function(b) {
-	return ((b / 40) | 0) * 7 + abc2svg.b40_p[b % 40] - 19
+	return ((b / 40) | 0) * 7 + abc2svg.b40_p[(b | 0) % 40] - 19
 } // b40p()
 abc2svg.b40a = function(b) {
-	return abc2svg.b40_a[b % 40]
+    var	b0 = b | 0
+	return abc2svg.b40_a[b0 % 40] + b - b0
 } // b40a()
 abc2svg.b40m = function(b) {
-	return ((b / 40) | 0) * 12 + abc2svg.b40_m[b % 40]
+    var	b0 = b | 0
+	return ((b / 40) | 0) * 12 + abc2svg.b40_m[b0 % 40] + b - b0
 } // b40m()
 
 // compare pitches
@@ -211,7 +213,8 @@ var errs = {
 			type: C.METER,		// meter in tune header
 			wmeasure: 1,		// no M:
 			a_meter: []		// default: none
-		}
+		},
+		udiv: [,,true]		// list of microtone dividers with 2
 	},
 	info = {},			// information fields
 	parse = {

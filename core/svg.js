@@ -121,10 +121,10 @@ var tgls = {
   acc1: {x:-2, y:0, c:"\ue262"},	// sharp
   acc2: {x:-3, y:0, c:"\ue263"},	// double sharp
  "acc-2": {x:-3, y:0, c:"\ue264"},	// double flat
- "acc-1_1_2": {x:-2, y:0, c:"\ue280"},	// quarter-tone flat
- "acc-1_3_2": {x:-3, y:0, c:"\ue281"},	// three-quarter-tones flat
-  acc1_1_2: {x:-1, y:0, c:"\ue282"},	// quarter-tone sharp
-  acc1_3_2: {x:-3, y:0, c:"\ue283"},	// three-quarter-tones sharp
+ "acc-1_2": {x:-2, y:0, c:"\ue280"},	// quarter-tone flat
+ "acc-3_2": {x:-3, y:0, c:"\ue281"},	// three-quarter-tones flat
+  acc1_2: {x:-1, y:0, c:"\ue282"},	// quarter-tone sharp
+  acc3_2: {x:-3, y:0, c:"\ue283"},	// three-quarter-tones sharp
   accent: {x:-3, y:0, c:"\ue4a0"},
   stc: {x:-1, y:-2, c:"\ue4a2"},	// staccato
   emb: {x:-4, y:-2, c:"\ue4a4"},
