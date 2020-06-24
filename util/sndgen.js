@@ -343,7 +343,6 @@ function ToAudio() {
 	midi_start()
 
 	// set the time parameters
-	rst = s
 	rst_fac = play_fac
 	while (s) {
 		if (s.noplay) {			// in display macro sequence
@@ -363,28 +362,35 @@ function ToAudio() {
 			if (s.text && rsk) {		// if new variant
 				set_variant(rsk, s.text, s)
 				play_fac = rst_fac
+				rst = rsk[0]		// reinit the restart
 			}
 
 			// right repeat
 			if (s.bar_type[0] == ':') {
 				s.rep_p = rst		// :| to |:
-				if (rsk)
-					s.rep_v = rsk // for knowing the number of variants
+				if (rsk) {
+					if (rst == rsk[0])
+						s.rep_v = rsk
+							// to know the number of variants
+					else
+						rsk = null	// no explicit |:
+				}
 			}
 
 			// 1st time repeat
-			if (s.text && s.text[0] == '1'
-				&& !rsk) {		// error if |1 already
-				s.rep_s = rsk = [null]	// repeat skip
+			if (s.text && s.text[0] == '1') {
+//			&& !rsk) {			// error if |1 already
+				s.rep_s = rsk = [rst]	// repeat skip
+							// and memorize the restart
 				set_variant(rsk, s.text, s)
 				rst_fac = play_fac
 
 			// left repeat
 //			} else if (s.bar_type.slice(-1) == ':') {
 			} else if (s.rbstop) {
-				rst = s
+				rst = s			// new possible restart
 				rst_fac = play_fac
-				rsk = null
+//				rsk = null
 			}
 			while (s.ts_next && !s.ts_next.seqst) {
 				s = s.ts_next
