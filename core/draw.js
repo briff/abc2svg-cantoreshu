@@ -723,19 +723,12 @@ function draw_meter(s) {
 
 /* -- draw an accidental -- */
 function draw_acc(x, y, acc) {
-    var	i, j
-
-	if (acc != (acc | 0)) {			// if microtone
-		for (i = 2; i < glovar.udiv.length; i++) {
-			if (!glovar.udiv[i])
-				continue
-			j = acc * i
-			if (j == (j | 0)) {
-				xygl(x, y, 'acc' + j + '_' + i)
-				return
-			}
-		}
-		acc |= 0
+	if (typeof acc != "number") {		// if microtone
+	    var	d = acc[1]
+		if (cfmt.nedo)
+			d *= cfmt.nedo
+		xygl(x, y, 'acc' + (acc[0] * 12) + '_' + d)
+		return
 	}
 
 	xygl(x, y, "acc" + acc)

@@ -77,6 +77,7 @@ abc2svg.MIDI = {
 
     // do_midi()
     var	n, v, s, maps,
+	o, q, n, qs,
 	a = parm.split(/\s+/),
 	curvoice = this.get_curvoice()
 
@@ -136,7 +137,7 @@ abc2svg.MIDI = {
 		v = parseInt(v)
 		if (isNaN(v) || v < 0 || v > 127) {
 			this.syntax(1, this.errs.bad_val, "%%MIDI program")
-			return
+			break
 		}
 		if (this.parse.state == 3) {
 			s = this.new_block("midiprog");
@@ -150,12 +151,12 @@ abc2svg.MIDI = {
 		n = parseInt(a[2])
 		if (isNaN(n) || n < 0 || n > 127) {
 			this.syntax(1, "Bad controller number in %%MIDI")
-			return
+			break
 		}
 		v = parseInt(a[3])
 		if (isNaN(v) || v < 0 || v > 127) {
 			this.syntax(1, "Bad controller value in %%MIDI")
-			return
+			break
 		}
 		if (this.parse.state == 3) {
 			s = this.new_block("midictl");
@@ -166,44 +167,77 @@ abc2svg.MIDI = {
 			this.set_v_param("midictl", a[2] + ' ' + a[3])
 		}
 		break
-	case "tuningsystem":
-		// Turkish scale
-//		if (a[2] != "comma53")
-//			error(...)
-		s = this.get_glyphs()
-		s.acc1_4 = '<text id="acc1_4" x="-1">&#xe282;</text>'
-//		s.acc1_2 = '<text id="acc1_2" x="-1" y="0">&#xe282;\
-//	<tspan x="4" y="-6.5" style="font-size:8">2</tspan></text>'
-//		s.acc3_4 = '<text id="acc3_4" x="-1" y="0">&#xe262;\
-//	<tspan x="4" y="-6.5" style="font-size:8">3</tspan></text>'
-//Arel - Ezgel
-		s.acc3_4 = '<text id="acc3_4" x="-1" y="0">&#xe262;</text>'
-		s.acc9_8 = '<g id="acc9_8">\n\
-	<text x="-1">&#xe282;</text>\n\
-	<path class="stroke" d="M-2 1l6 -1.5"/>\n\
-</g>'
-		s["acc-7_8"] = '<g id="acc-7_8">\n\
-	<text x="-1">&#xe282;</text>\n\
-	<path class="stroke" d="M-2 1l6 -1.5"/>\n\
-</g>'
-//		s["acc-3_4"] = '<g id="acc-3_4">\n\
-//	<text x="-1" y="0">&#xe260;\
-//		<tspan x="4" y="-6.5" style="font-size:8">3</tspan></text>\n\
-//	<path class="stroke" d="M-2 -4l4 -4.5"/>\n\
-//</g>'
-//		s["acc-1_2"] = '<text id="acc-1_2" x="-1" y="0">&#xe280;\
-//	<tspan x="6" y="-6.5" style="font-size:8">2</tspan></text>'
-//Arel - Ezgel
-		s["acc-3_4"] = '<g id="acc-3_4">\n\
-	<text x="-1" y="0">&#xe260;</text>\n\
-	<path class="stroke" d="M-2 -4l4 -4.5"/>\n\
-</g>'
-		s["acc-1_4"] = '<text id="acc-1_4" x="-1">&#xe280;</text>'
+	case "temperamentequal":
+		n = parseInt(a[2])
+		if (isNaN(n) || n < 7 || n > 127) {
+			this.syntax(1, errs.bad_val, "%%MIDI " + a[2])
+			return
+		}
 
-		this.cfmt().temper = new Float32Array([
-//			+00, -09, +04, -06, +08, -02, +11, +02, -08, +06, -04, +09
-		    0, -9.4, 3.8, -5.7, 7.5, -1.9, -11.3, 1.9, -7.5, 5.7, -3.8, 9.4
-		])
+		// define the Turkish accidentals (53-TET)
+		if (n == 53) {
+			s = this.get_glyphs()
+
+// #1
+			s.acc12_53 = '<text id="acc12_53" x="-1">&#xe282;</text>'
+
+// #2
+			s.acc24_53 = '<text id="acc24_53" x="-1">&#xe282;\
+	<tspan x="0" y="-10" style="font-size:8">2</tspan></text>'
+
+// #3
+			s.acc36_53 = '<text id="acc36_53" x="-1">&#xe262;\
+	<tspan x="0" y="-10" style="font-size:8">3</tspan></text>'
+
+// #4
+			s.acc48_53 = '<text id="acc48_53" x="-1">&#xe262;</text>'
+
+// #5
+			s.acc60_53 = '<g id="acc60_53">\n\
+	<text style="font-size:1.2em" x="-1">&#xe282;</text>\n\
+	<path class="stroke" stroke-width="1.6" d="M-2 1.5l7 -3"/>\n\
+</g>'
+
+// b5
+			s["acc-60_53"] = '<text id="acc-60_53" x="-1">&#xe260;</text>'
+
+// b4
+			s["acc-48_53"] = '<g id="acc-48_53">\n\
+	<text x="-1">&#xe260;</text>\n\
+	<path class="stroke" stroke-width="1" d="M-3 -5.5l5 -2"/>\n\
+</g>'
+
+// b3
+			s["acc-36_53"] = '<g id="acc-36_53">\n\
+	<text x="-1">&#xe260;\
+		<tspan x="0" y="-10" style="font-size:8">3</tspan></text>\n\
+	<path class="stroke" stroke-width="1" d="M-3 -5.5l5 -2"/>\n\
+</g>'
+
+// b2
+			s["acc-24_53"] = '<text id="acc-24_53" x="-2">&#xe280;\
+	<tspan x="0" y="-10" style="font-size:8">2</tspan></text>'
+
+// b1
+			s["acc-12_53"] = '<text id="acc-12_53" x="-2">&#xe280;</text>'
+		}
+
+		// define the detune values
+		q = 701.9550008653874	// Math.log(3/2)/Math.log(2) * 1200
+					// = just intonation fifth
+		o = 1200		// octave
+		this.cfmt().nedo = n	// octave divider
+		qs = ((n * q / o + .5) | 0) * o / n	// new fifth
+
+		s = new Float32Array(12)
+		this.cfmt().temper = s	// detune in cents / 12-TET
+		s[0] = 0			// C
+		s[2] = 2 * qs - o - 200		// D
+		s[4] = 4 * qs - 2 * o - 400	// E
+		s[5] = -qs + o - 500		// F
+		s[7] = qs - 700			// G
+		s[9] = 3 * qs - o - 900		// A
+		s[11] = 5 * qs - 2 * o - 1100	// B
 		break
 	}
     }, // do_midi()

@@ -162,15 +162,8 @@ var prn = {
 	return abc2svg.pab40(pit, acc)
     } // abc_b40()
 
-    // convert a MIDI pitch to b40
-    function mid_b40(pit) {
-    var	o = (pit / 12) | 0		// octave
-	pit = pit % 12;			// in octave
-	return o * 40 + abc2svg.isb40[pit] + 2
-    } // mid_b40()
-
-    // convert a drum instrument to b40
-    function tob40(p) {
+    // convert a drum instrument to a pitch
+    function topit(p) {
     var	i, j, s,
 	pit = Number(p)
 
@@ -219,7 +212,7 @@ var prn = {
 				return
 		}
 	}
-	return mid_b40(pit)
+	return pit
     } // tob40()
 
     // do_perc()
@@ -238,8 +231,11 @@ var prn = {
 		acc: 0
 	}
 
-	vpl = tob40(a[2])			// play
-	if (!vpl) {
+	vpl = {					// play
+		pit: topit(a[2]),
+		acc: 0
+	}
+	if (!vpl.pit) {
 		this.syntax(1, this.errs.bad_val, "%%percmap")
 		return
 	}

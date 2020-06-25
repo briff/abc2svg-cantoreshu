@@ -1,7 +1,7 @@
 //#javascript
 // Set the MIDI pitches in the notes
 //
-// Copyright (C) 2015-2019 Jean-Francois Moine
+// Copyright (C) 2015-2020 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -73,39 +73,40 @@ function AbcMIDI() {
 		}
 
 	    function vloop(s, sndtran, ctrans) {
-		var	i, g, note,
-			transp = sndtran + ctrans
+		var	i, g, note, dm
 
-		function midi_set(note) {
-		    var m = abc2svg.b40m(note.b40 + transp)
-			if (temper		// if not equal temperament
-			 && (!note.acc
-			  || note.acc | 0 == note.acc)) // and not micro-tone
-				m += temper[m % 12]
-			note.midi = m
+		function dm_set() {
+			dm = abc2svg.b40m(sndtran + ctrans + 122) - 36
 		}
 
+		function midi_set(note) {
+			note.midi += dm
+		}
+
+		dt_set()
 		while (s) {
 			switch (s.type) {
 			case C.CLEF:
 				ctrans = (s.clef_octave && !s.clef_oct_transp) ?
 						(s.clef_octave / 7 * 40) : 0
-				transp = ctrans + sndtran
+				dm_set()
 				break
 			case C.KEY:
 				if (s.k_sndtran != undefined) {
 					sndtran = s.k_sndtran
-					transp = ctrans + sndtran
+					dm_set()
 				}
 				break
 			case C.GRACE:
-				for (g = s.extra; g; g = g.next) {
+				if (dm)
+				    for (g = s.extra; g; g = g.next) {
 					for (i = 0; i <= g.nhd; i++)
 						midi_set(g.notes[i])
-				}
+				    }
 				break
 			case C.NOTE:
-				for (i = 0; i <= s.nhd; i++)
+				if (dm)
+				    for (i = 0; i <= s.nhd; i++)
 					midi_set(s.notes[i])
 				break
 			}

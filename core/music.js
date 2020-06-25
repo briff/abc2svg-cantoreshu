@@ -697,7 +697,7 @@ Abc.prototype.set_width = function(s) {
 			acc = s.notes[m].acc
 			if (acc) {
 				tmp = s.notes[m].shac +
-					(acc != (acc | 0) ? 5.5 : 3.5)
+					(typeof acc != "number" ? 5.5 : 3.5)
 				if (wlnote < tmp)
 					wlnote = tmp
 			}
@@ -3861,7 +3861,7 @@ function unison_acc(s1, s2, i1, i2) {
 	if (!acc) {
 		d = w_note[s2.head] * 2 + s2.xmx + s1.notes[i1].shac + 2
 		acc = s1.notes[i1].acc
-		if (acc != (acc | 0))		// microtone
+		if (typeof acc != "number")	// microtone
 			d += 2
 		if (s2.dots)
 			d += 6
@@ -3872,7 +3872,7 @@ function unison_acc(s1, s2, i1, i2) {
 		s1.xmx += d
 	} else {
 		d = w_note[s1.head] * 2 + s1.xmx + s2.notes[i2].shac + 2
-		if (acc != (acc | 0))		// microtone
+		if (typeof acc != "number")	// microtone
 			d += 2
 		if (s1.dots)
 			d += 6

@@ -404,14 +404,6 @@ Abc.prototype.set_format = function(cmd, param) {
 		}
 		cfmt[cmd] = v
 		break
-	case "microscale":
-		f = parseInt(param)
-		if (isNaN(f) || f < 4 || f > 256 || f % 1) {
-			syntax(1, errs.bad_val, "%%" + cmd)
-			break
-		}
-		set_v_param("uscale", f)
-		break
 	case "bgcolor":
 	case "fgcolor":
 	case "dblrepbar":

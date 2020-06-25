@@ -306,7 +306,6 @@ Abc.prototype.set_vp = function(a) {
 			syntax(1, errs.bad_val, item)
 			break
 		case "octave=":
-		case "uscale=":			// %%microscale
 			val = parseInt(a.shift())
 			if (isNaN(val))
 				syntax(1, errs.bad_val, item)
@@ -365,6 +364,10 @@ Abc.prototype.set_vp = function(a) {
 				curvoice.scale = val
 			break
 		case "score=":
+			if (cfmt.nedo) {
+				syntax(1, errs.notransp)
+				break
+			}
 			// score=MN
 			// (score=M == score=Mc)
 			item = a.shift()
@@ -373,9 +376,17 @@ Abc.prototype.set_vp = function(a) {
 			curvoice.transp = get_interval(item, true)
 			break
 		case "shift=":
+			if (cfmt.nedo) {
+				syntax(1, errs.notransp)
+				break
+			}
 			curvoice.shift = curvoice.sndsh = get_interval(a.shift())
 			break
 		case "sound=":
+			if (cfmt.nedo) {
+				syntax(1, errs.notransp)
+				break
+			}
 // concert-score display: apply sound=
 // sounding-score display: apply sound= only if M != c/C
 // sound: apply sound=
@@ -414,6 +425,10 @@ Abc.prototype.set_vp = function(a) {
 				curvoice.staffscale = val
 			break
 		case "transpose=":		// (abcMIDI compatibility)
+			if (cfmt.nedo) {
+				syntax(1, errs.notransp)
+				break
+			}
 			val = get_transp(a.shift())
 			if (val == undefined) {
 				syntax(1, errs.bad_transp)
@@ -1584,16 +1599,19 @@ function parse_acc_pit(line) {
 	}
 
 	/* look for microtone value */
-	if (acc && acc != 3 && (c >= '1' && c <= '9')
-	 || c == '/') {				// compatibility
+	if (acc && acc != 3) {
+	    if ((c >= '1' && c <= '9')
+	     || c == '/') {			// compatibility
 		nd = parse_dur(line);
-		d = nd[1]
-		if (d == 1 && curvoice)
-			d = curvoice.uscale >> 1
-		if (!glovar.udiv[d])
-			glovar.udiv[d] = true	// for conversion float -> n/d
-		acc = acc * nd[0] / d
+		if (acc < 0)
+			nd[0] = -nd[0]
+		acc = nd
 		c = line.char()
+	    } else if (cfmt.nedo) {
+		line.next_char()
+		syntax(1, "Bad microtonal accidental")
+		return //undefined
+	    }
 	}
 
 	/* get the pitch */
@@ -1635,10 +1653,10 @@ function parse_acc_pit(line) {
 //	[0] array of heads (glyph names)
 //	[1] print (note)
 //	[2] color
-//	[3] play (b40)
+//	[3] play (note)
 function set_map(note) {
     var	map = maps[curvoice.map],	// never null
-	n = note.b40,
+	n = abc2svg.pab40(note.pit, note.acc),
 	nn = n.toString()
 
 	if (!map[nn]) {
@@ -1754,6 +1772,35 @@ function slur_add(enote, e_is_note) {
 	syntax(1, "End of slur without start")
 }
 
+// convert a diatonic pitch and accidental to a MIDI pitch with cents
+function pit2mid(pit, acc) {
+    var	p = [0, 2, 4, 5, 7, 9, 11][pit % 7],	// chromatic pitch
+	o = (pit / 7) | 0			// octave
+
+	if (acc == 3)				// if natural accidental
+		acc = 0
+	if (!cfmt.nedo) {				// non equal temperament
+		if (!cfmt.temper)
+			p += o * 12			// standard temperament
+		else if (cfmt.temper.length == 12)
+			p = cfmt.temper[p] + o * 12	// temperament by octave
+		else
+			p = cfmt.temper[p + o * 12]	// full temperament table
+
+		if (acc) {
+			if (typeof acc != "number")
+				p += acc[0] / acc[1]	// microtonal accidental
+			else
+				p += acc		// simple accidental
+		}
+	} else {				// equal temperament
+		p += cfmt.temper[p] / 100 + o * 12
+		if (acc)
+			p += acc[0] * 12 / cfmt.nedo
+	}
+	return p
+} // pit2mid()
+
 // (possible hook)
 Abc.prototype.new_note = function(grace, sls) {
     var	note, s, in_chord, c, dcn, type, tie_s, acc_tie,
@@ -1770,18 +1817,18 @@ Abc.prototype.new_note = function(grace, sls) {
 
 	// handle the ties
 	function do_ties(s, tie_s) {
-	    var	m, note, n
+	    var	m, note, mid
 
 		for (m = 0; m <= s.nhd; m++) {
 			note = s.notes[m]
-			n = abc2svg.b40m(note.b40)
+			mid = note.mid
 			if (tie_s.type != C.GRACE) {
 				for (i = 0; i <= tie_s.nhd; i++) {
 					if (!tie_s.notes[i].tie_ty)
 						continue
 					// (tie_s.notes[i].tie_n may exist
 					//  on repeat restart)
-					if (abc2svg.b40m(tie_s.notes[i].b40) == n) {
+					if (tie_s.notes[i].mid == mid) {
 						tie_s.notes[i].tie_n = note
 						note.s = s
 						tie_s.tie_s = s
@@ -1792,7 +1839,7 @@ Abc.prototype.new_note = function(grace, sls) {
 				for (s2 = tie_s.extra; s2; s2 = s2.next) {
 					if (!s2.notes[0].tie_ty)
 						continue
-					if (abc2svg.b40m(s2.notes[0].b40) == n) {
+					if (s2.notes[0].mid == mid) {
 						s2.tie_s = s
 						s2.notes[0].tie_n = note
 						note.s = s
@@ -1896,8 +1943,6 @@ Abc.prototype.new_note = function(grace, sls) {
 			acc_tie = curvoice.acc_tie
 			curvoice.acc_tie = null
 		}
-		if (curvoice.uscale)
-			s.uscale = curvoice.uscale;
 		s.notes = []
 
 		// loop on the chord
@@ -1958,7 +2003,7 @@ Abc.prototype.new_note = function(grace, sls) {
 			apit = note.pit + 19		// pitch from C-1
 
 			// get the explicit or implicit accidental
-			// and keep the absolute pitch in base-40
+			// and keep the absolute pitch in (MIDI + cents) format
 			i = note.acc
 			if (i) {
 				curvoice.acc[apit] = i
@@ -1969,7 +2014,7 @@ Abc.prototype.new_note = function(grace, sls) {
 				if (!i)
 					i = curvoice.ckey.k_map[apit % 7] || 0
 			}
-			note.b40 = abc2svg.pab40(note.pit, i)
+			note.midi = pit2mid(apit, i)
 
 			if (curvoice.map
 			 && maps[curvoice.map])

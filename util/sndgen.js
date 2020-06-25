@@ -60,42 +60,40 @@ function ToAudio() {
 
 		// loop on the voice symbols
 		function vloop(s, sndtran, ctrans) {
-		    var	i, g, note,
-			transp = sndtran + ctrans
+		    var	i, g, note, dm
+
+			function dm_set() {
+				dm = abc2svg.b40m(sndtran + ctrans + 122) - 36
+			} // dm_set()
 
 			function set_note(note) {
-			    var m = abc2svg.b40m(note.b40 + transp)
-
-				if (temper) {		// if not equal temperament
-					if (note.acc < 0)
-						m += temper[((m + 1) | 0) % 12]
-					else
-						m += temper[(m | 0) % 12]
-				}
-				note.midi = m
+				note.midi += dm
 			} // set_note()
 
+			dm_set()
 			while (s) {
 				switch (s.type) {
 				case C.CLEF:
 					ctrans = (s.clef_octave && !s.clef_oct_transp) ?
 							(s.clef_octave / 7 * 40) : 0
-					transp = ctrans + sndtran
+					dm_set()
 					break
 				case C.KEY:
 					if (s.k_sndtran != undefined) {
 						sndtran = s.k_sndtran
-						transp = ctrans + sndtran
+						dm_set()
 					}
 					break
 				case C.GRACE:
-					for (g = s.extra; g; g = g.next) {
+					if (dm)
+					   for (g = s.extra; g; g = g.next) {
 						for (i = 0; i <= g.nhd; i++)
 							set_note(g.notes[i])
-					}
+					    }
 					break
 				case C.NOTE:
-					for (i = 0; i <= s.nhd; i++)
+					if (dm)
+					    for (i = 0; i <= s.nhd; i++)
 						set_note(s.notes[i])
 					break
 				}

@@ -139,15 +139,13 @@ abc2svg.pab40 = function(p, a) {
 	return b40
 } // pit2b40()
 abc2svg.b40p = function(b) {
-	return ((b / 40) | 0) * 7 + abc2svg.b40_p[(b | 0) % 40] - 19
+	return ((b / 40) | 0) * 7 + abc2svg.b40_p[b % 40] - 19
 } // b40p()
 abc2svg.b40a = function(b) {
-    var	b0 = b | 0
-	return abc2svg.b40_a[b0 % 40] + b - b0
+	return abc2svg.b40_a[b % 40]
 } // b40a()
 abc2svg.b40m = function(b) {
-    var	b0 = b | 0
-	return ((b / 40) | 0) * 12 + abc2svg.b40_m[b0 % 40] + b - b0
+	return ((b / 40) | 0) * 12 + abc2svg.b40_m[b % 40]
 } // b40m()
 
 // compare pitches
@@ -204,7 +202,8 @@ var errs = {
 	not_enough_n: 'Not enough notes/rests for %%repeat',
 	not_enough_m: 'Not enough measures for %%repeat',
 	not_enough_p: "Not enough parameters in %%map",
-	not_in_tune: "Cannot have '$1' inside a tune"
+	not_in_tune: "Cannot have '$1' inside a tune",
+	notransp: "Cannot transpose with a temperament"
 }
 
     var	self = this,				// needed for modules
@@ -214,7 +213,6 @@ var errs = {
 			wmeasure: 1,		// no M:
 			a_meter: []		// default: none
 		},
-		udiv: [,,true]		// list of microtone dividers with 2
 	},
 	info = {},			// information fields
 	parse = {
@@ -234,7 +232,7 @@ function clone(obj, lvl) {
 	var tmp = new obj.constructor
 	for (var k in obj)
 	    if (obj.hasOwnProperty(k)) {
-		if (lvl && typeof obj[k] == 'object')
+		if (lvl && typeof obj[k] != "number")
 			tmp[k] = clone(obj[k], lvl - 1)
 		else
 			tmp[k] = obj[k]

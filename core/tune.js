@@ -685,7 +685,7 @@ function get_map(text) {
 			if (a[i - 1][1] == 'r')
 				map[1] = note
 			else
-				map[3] = abc2svg.pab40(note.pit, note.acc)
+				map[3] = note
 			break
 		case "color=":
 			if (!a[++i]) {
@@ -790,6 +790,7 @@ function note_transp(s, sk, note) {
 		return			// same accidental (in the key)
 	}
 	note.acc = an
+	note.midi = pit2mid(note.pit, an)
 }
 
 // adjust the pitches according to the transposition(s)
@@ -802,7 +803,7 @@ function pit_adj() {
 	//	[0] array of heads (glyph names)
 	//	[1] print (note)
 	//	[2] color
-	//	[3] play (b40)
+	//	[3] play (note)
 	function note_map(note) {
 	    var nn,
 		map = note.map
@@ -817,7 +818,7 @@ function pit_adj() {
 			note.color = map[2]
 		nn = map[3]
 		if (nn)				// if play map
-			note.b40 = nn
+			note.midi = pit2mid(nn.pit, nn.acc)
 	} // note_map()
 
 	while (--nv >= 0) {
@@ -1818,8 +1819,6 @@ function get_vover(type) {
 	}
 	p_voice2.ulen = curvoice.ulen
 	p_voice2.dur_fact = curvoice.dur_fact
-	if (curvoice.uscale)
-		p_voice2.uscale = curvoice.uscale
 
 	if (!vover) {				/* first '&' in a measure */
 		vover = {
