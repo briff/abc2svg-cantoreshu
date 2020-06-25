@@ -790,7 +790,6 @@ function note_transp(s, sk, note) {
 		return			// same accidental (in the key)
 	}
 	note.acc = an
-	note.midi = pit2mid(note.pit, an)
 }
 
 // adjust the pitches according to the transposition(s)
