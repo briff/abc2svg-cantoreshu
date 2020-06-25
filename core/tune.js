@@ -786,9 +786,10 @@ function note_transp(s, sk, note) {
 		ak = sk.k_map[(note.pit + 19) % 7]
 		if (ak)
 			an = 3		// natural
-//	} else {
-//		return			// same accidental (in the key)
+	} else {
+		return			// same accidental (in the key)
 	}
+	note.acc = an
 }
 
 // adjust the pitches according to the transposition(s)
