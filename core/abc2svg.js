@@ -148,6 +148,30 @@ abc2svg.b40m = function(b) {
 	return ((b / 40) | 0) * 12 + abc2svg.b40_m[b % 40]
 } // b40m()
 
+// simplify a rational number n/d
+abc2svg.rat = function(n, d) {
+    var	a, t,
+	n0 = 0,
+	d1 = 0,
+	n1 = 1,
+	d0 = 1
+	while (1) {
+		if (d == 0)
+			break
+		t = d
+		a = (n / d) | 0
+		d = n % d
+		n = t
+		t = n0 + a * n1
+		n0 = n1
+		n1 = t
+		t = d0 + a * d1
+		d0 = d1
+		d1 = t
+	}
+	return [n1, d1]
+} // rat()
+
 // compare pitches
 // This function is used to sort the note pitches
 abc2svg.pitcmp = function(n1, n2) { return n1.pit - n2.pit }

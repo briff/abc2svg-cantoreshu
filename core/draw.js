@@ -721,17 +721,31 @@ function draw_meter(s) {
 	}
 }
 
-/* -- draw an accidental -- */
-function draw_acc(x, y, acc) {
-	if (typeof acc != "number") {		// if microtone
-	    var	d = acc[1]
-		if (cfmt.nedo)
-			d *= cfmt.nedo
-		xygl(x, y, 'acc' + (acc[0] * 12) + '_' + d)
-		return
-	}
+    var	acc_nd = {}		// cache of the microtonal accidentals
 
-	xygl(x, y, "acc" + acc)
+/* -- draw an accidental -- */
+function draw_acc(x, y, a) {
+	if (typeof a != "number") {		// if microtone
+	    var	c,
+		n = a[0],
+		d = a[1]
+
+		if (cfmt.nedo) {
+			n *= 12
+			d *= cfmt.nedo
+		}
+		c = Math.abs(n) + '_' + d
+		a = acc_nd[c]
+		if (!a) {
+			a = abc2svg.rat(Math.abs(n), d)
+			d = a[1]
+			a = (n < 0 ? -a[0] : a[0]).toString()
+			if (d != 1)
+				a += '_' + d
+			acc_nd[c] = a
+		}
+	}
+	xygl(x, y, "acc" + a)
 }
 
 // memorize the helper/ledger lines
