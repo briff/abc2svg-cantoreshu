@@ -357,7 +357,8 @@ function ToAudio() {
 
 		switch (s.type) {
 		case C.BAR:
-			if (s.text && rsk) {		// if new variant
+			if (s.text && rsk		// if new variant
+			 && s.text[0] != '1') {
 				set_variant(rsk, s.text, s)
 				play_fac = rst_fac
 				rst = rsk[0]		// reinit the restart
@@ -370,8 +371,8 @@ function ToAudio() {
 					if (rst == rsk[0])
 						s.rep_v = rsk
 							// to know the number of variants
-					else
-						rsk = null	// no explicit |:
+//					else
+//						rsk = null	// no explicit |:
 				}
 			}
 
@@ -380,6 +381,8 @@ function ToAudio() {
 //			&& !rsk) {			// error if |1 already
 				s.rep_s = rsk = [rst]	// repeat skip
 							// and memorize the restart
+				if (rst.bar_type.slice(-1) != ':')
+					rst.bar_type += ':' // restart confirmed
 				set_variant(rsk, s.text, s)
 				rst_fac = play_fac
 
@@ -388,7 +391,6 @@ function ToAudio() {
 			} else if (s.rbstop) {
 				rst = s			// new possible restart
 				rst_fac = play_fac
-//				rsk = null
 			}
 			while (s.ts_next && !s.ts_next.seqst) {
 				s = s.ts_next
