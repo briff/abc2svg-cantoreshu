@@ -1796,7 +1796,7 @@ function pit2mid(pit, acc) {
 	} else {				// equal temperament
 		p += cfmt.temper[p] / 100 + o * 12
 		if (acc)
-			p += acc[0] * 12 / cfmt.nedo
+			p += acc[0] / acc[1] * 12 / cfmt.nedo 
 	}
 	return p
 } // pit2mid()
