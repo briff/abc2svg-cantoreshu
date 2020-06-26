@@ -817,7 +817,7 @@ function pit_adj() {
 			note.color = map[2]
 		nn = map[3]
 		if (nn)				// if play map
-			note.midi = pit2mid(nn.pit, nn.acc)
+			note.midi = pit2mid(nn.pit + 19, nn.acc)
 	} // note_map()
 
 	while (--nv >= 0) {

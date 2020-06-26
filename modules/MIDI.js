@@ -65,15 +65,17 @@ abc2svg.MIDI = {
 	return abc2svg.pab40(pit, acc).toString()
     } // abc_b40()
 
-    // convert a MIDI pitch to b40
-    function mid_b40(p) {
-    var	pit = Number(p)
-	if (isNaN(pit))
-		return
-	p = (pit / 12) | 0		// octave
-	pit = pit % 12;			// in octave
-	return p * 40 + abc2svg.isb40[pit] + 2
-    } // mid_b40()
+	function mid_pit(p) {
+	    var	b40,
+		pit = p
+		p = (pit / 12) | 0		// octave
+		pit = pit % 12;			// in octave
+		b40 = p * 40 + abc2svg.isb40[pit] + 2
+		return {
+			pit: abc2svg.b40p(b40),
+			acc: abc2svg.b40a(b40)
+		}
+	}
 
     // do_midi()
     var	n, v, s, maps,
@@ -114,7 +116,7 @@ abc2svg.MIDI = {
 	case "drummap":
 //fixme: should have a 'MIDIdrum' per voice?
 		n = abc_b40(a[2])
-		v = mid_b40(a[3])
+		v = Number(a[3])
 		if (!n || !v) {
 			this.syntax(1, this.errs.bad_val, "%%MIDI drummap")
 			break
@@ -124,7 +126,7 @@ abc2svg.MIDI = {
 			maps.MIDIdrum = {}
 		if (!maps.MIDIdrum[n])
 			maps.MIDIdrum[n] = []
-		maps.MIDIdrum[n][3] = v
+		maps.MIDIdrum[n][3] = mid_pit(v)
 		this.set_v_param("mididrum", "MIDIdrum")
 		break
 	case "program":

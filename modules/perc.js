@@ -164,13 +164,12 @@ var prn = {
 
     // convert a drum instrument to a pitch
     function topit(p) {
-    var	i, j, s,
+    var	i, j, s, b40,
 	pit = Number(p)
 
 	if (isNaN(pit)) {		// not a MIDI pitch
-		s = abc_b40(p)		// try a ABC note
-		if (s)
-			return s
+	    b40 = abc_b40(p)		// try a ABC note
+	    if (!b40) {
 
 		// try a drum instrument name
 		p = p.toLowerCase(p);
@@ -211,8 +210,17 @@ var prn = {
 			if (!pit)
 				return
 		}
+	    }
 	}
-	return pit
+	if (!b40) {
+		p = (pit / 12) | 0		// octave
+		pit = pit % 12;			// in octave
+		b40 = p * 40 + abc2svg.isb40[pit] + 2
+	}
+	return {
+		pit: abc2svg.b40p(b40),
+		acc: abc2svg.b40a(b40)
+	}
     } // tob40()
 
     // do_perc()
@@ -231,10 +239,8 @@ var prn = {
 		acc: 0
 	}
 
-	vpl = {					// play
-		pit: topit(a[2]),
-		acc: 0
-	}
+	vpl = topit(a[2])				// play
+
 	if (!vpl.pit) {
 		this.syntax(1, this.errs.bad_val, "%%percmap")
 		return
