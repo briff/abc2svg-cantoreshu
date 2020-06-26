@@ -47,8 +47,9 @@ abc2svg.temper = {
 
 		if (i == 12) {
 			while (--i >= 0) {
-				if (isNaN(parseInt(ls[i])))
+				if (isNaN(ls[i]))
 					break
+				ls[i] = i + ls[i] / 100	// delta -> MIDI/octave
 			}
 			if (i < 0) {
 				this.cfmt().temper = ls

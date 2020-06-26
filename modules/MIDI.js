@@ -232,12 +232,12 @@ abc2svg.MIDI = {
 		s = new Float32Array(12)
 		this.cfmt().temper = s	// detune in cents / 12-TET
 		s[0] = 0			// C
-		s[2] = 2 * qs - o - 200		// D
-		s[4] = 4 * qs - 2 * o - 400	// E
-		s[5] = -qs + o - 500		// F
-		s[7] = qs - 700			// G
-		s[9] = 3 * qs - o - 900		// A
-		s[11] = 5 * qs - 2 * o - 1100	// B
+		s[2] = 2 * qs - o		// D
+		s[4] = 4 * qs - 2 * o		// E
+		s[5] = -qs + o			// F
+		s[7] = qs			// G
+		s[9] = 3 * qs - o		// A
+		s[11] = 5 * qs - 2 * o		// B
 		break
 	}
     }, // do_midi()

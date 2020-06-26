@@ -565,15 +565,30 @@ function new_key(param) {
 		switch (param[1]) {
 		case 'P':
 		case 'p':
-			s.k_bagpipe = param[1];
-			sf = param[1] == 'P' ? 0 : 2;
-			i++
 			break
 		default:
 			syntax(1, "Unknown bagpipe-like key")
 			key_end = true
 			break
 		}
+		s.k_bagpipe = param[1];
+		sf = param[1] == 'P' ? 0 : 2;
+		i++
+
+		// initialize the temperament if not done yet
+		if (!cfmt.temper)
+	// detune in cents for just intonation in A
+	//  C    ^C     D    _E     E     F    ^F     G    _A     A    _B     B
+	// 15.3 -14.0  -2.0 -10.0   1.9  13.3 -16.0 -31.8 -12.0   0.0  11.4   3.8
+	// (C is ^C,			F is ^F and G is =G)
+	// 86				 84
+	// temp = [100-14, -14, -2, -10, 2, 100-16, -16, -32, -12, 0, 11, 4]
+	// but 'A' bagpipe = 480Hz => raise Math.log2(480/440)*1200 = 151
+			cfmt.temper = new Float32Array([
+//	2.37, 1.37, 1.49, 1.41, 1.53, 2.35, 1.35, 1.19, 1.39, 1.51, 1.62, 1.55
+   //   C    ^C     D    _E     E     F    ^F     G    _A      A     _B      B
+	2.37, 2.37, 3.49, 4.41, 5.53, 7.35, 7.35, 8.19, 9.39, 10.51, 11.62, 12.55
+			])
 		break
 	case 'P':
 		syntax(1, "K:P is deprecated");
@@ -1775,28 +1790,47 @@ function slur_add(enote, e_is_note) {
 // convert a diatonic pitch and accidental to a MIDI pitch with cents
 function pit2mid(pit, acc) {
     var	p = [0, 2, 4, 5, 7, 9, 11][pit % 7],	// chromatic pitch
-	o = (pit / 7) | 0			// octave
+	o = (pit / 7) | 0,			// octave
+	s					// semitones
 
 	if (acc == 3)				// if natural accidental
 		acc = 0
-	if (!cfmt.nedo) {				// non equal temperament
-		if (!cfmt.temper)
-			p += o * 12			// standard temperament
-		else if (cfmt.temper.length == 12)
-			p = cfmt.temper[p] + o * 12	// temperament by octave
+	if (acc) {
+		if (typeof acc != "number")
+			s = acc[0] / acc[1]	// microtonal accidental
 		else
-			p = cfmt.temper[p + o * 12]	// full temperament table
-
-		if (acc) {
-			if (typeof acc != "number")
-				p += acc[0] / acc[1]	// microtonal accidental
-			else
-				p += acc		// simple accidental
+			s = acc			// simple accidental
+	} else {
+		s = 0
+	}
+	if (!cfmt.nedo) {			// non equal temperament
+		if (!cfmt.temper) {
+			p += o * 12 + s		// standard temperament
+		} else {
+			if (s) {	// ajust the pitch to the lower semitone
+				while (s >= 1) {
+					p++
+					s -= 1
+				}
+				while (s < 0) {
+					p--
+					s += 1
+				}
+			}
+			if (cfmt.temper.length == 12) {
+				s = (cfmt.temper[(p + 13) % 12] -
+						cfmt.temper[(p + 12) % 12]) * s
+				p = cfmt.temper[p] + o * 12 + s
+			} else {		// full temperament table
+				s = (cfmt.temper[p + 1] -
+						cfmt.temper[p]) * s
+				p = cfmt.temper[p + o * 12] + s
+			}
 		}
 	} else {				// equal temperament
-		p += cfmt.temper[p] / 100 + o * 12
-		if (acc)
-			p += acc[0] / acc[1] * 12 / cfmt.nedo 
+		p = cfmt.temper[p] + o * 12
+		if (s)
+			p += s * 12 / cfmt.nedo 
 	}
 	return p
 } // pit2mid()
