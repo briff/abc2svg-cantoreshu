@@ -185,11 +185,11 @@ abc2svg.MIDI = {
 
 // #2
 			s.acc24_53 = '<text id="acc24_53" x="-1">&#xe282;\
-	<tspan x="0" y="-10" style="font-size:8">2</tspan></text>'
+	<tspan x="0" y="-10" style="font-size:8px">2</tspan></text>'
 
 // #3
 			s.acc36_53 = '<text id="acc36_53" x="-1">&#xe262;\
-	<tspan x="0" y="-10" style="font-size:8">3</tspan></text>'
+	<tspan x="0" y="-10" style="font-size:8px">3</tspan></text>'
 
 // #4
 			s.acc48_53 = '<text id="acc48_53" x="-1">&#xe262;</text>'
@@ -212,13 +212,13 @@ abc2svg.MIDI = {
 // b3
 			s["acc-36_53"] = '<g id="acc-36_53">\n\
 	<text x="-1">&#xe260;\
-		<tspan x="0" y="-10" style="font-size:8">3</tspan></text>\n\
+		<tspan x="0" y="-10" style="font-size:8px">3</tspan></text>\n\
 	<path class="stroke" stroke-width="1" d="M-3 -5.5l5 -2"/>\n\
 </g>'
 
 // b2
 			s["acc-24_53"] = '<text id="acc-24_53" x="-2">&#xe280;\
-	<tspan x="0" y="-10" style="font-size:8">2</tspan></text>'
+	<tspan x="0" y="-10" style="font-size:8px">2</tspan></text>'
 
 // b1
 			s["acc-12_53"] = '<text id="acc-12_53" x="-2">&#xe280;</text>'
