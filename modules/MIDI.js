@@ -225,7 +225,8 @@ abc2svg.MIDI = {
 		}
 
 		// define the detune values
-		q = 7			// fifth
+		q = 7.019550008653874,	//  Math.log(3/2)/Math.log(2) * 12
+					// = just intonation fifth
 		o = 12			// octave
 		this.cfmt().nedo = n	// octave divider
 		qs = ((n * q / o + .5) | 0) * o / n	// new fifth
