@@ -309,6 +309,7 @@ function voice_adj(sys_chg) {
 
 	for (v = 0; v < voice_tb.length; v++) {
 		p_voice = voice_tb[v]
+		delete p_voice.eoln
 		if (!sys_chg			// if not %%score
 		 && p_voice.sls.length) {	// and no end of slur
 			while (1) {
