@@ -1022,18 +1022,14 @@ function draw_rest(s) {
 
 		/* don't use next/prev: there is no bar in voice overlay */
 		s2 = s.ts_next
-//fix: there is a bar at end of line
-//		while (s2 && s2.time != s.time + s.dur)
-//			s2 = s2.ts_next;
-//		x = s2 ? s2.x : realwidth;
 		while (s2.time != s.time + s.dur)
 			s2 = s2.ts_next
-		x = s2.x
+		x = s2.x - s2.wl
 		s2 = s
 		while (!s2.seqst)
 			s2 = s2.ts_prev;
 		s2 = s2.ts_prev;
-		x = (x + s2.x) / 2
+		x = (x + s2.x + s2.wr) / 2
 
 		/* center the associated decorations */
 		if (s.a_dd)
