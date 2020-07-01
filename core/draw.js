@@ -817,7 +817,8 @@ Abc.prototype.draw_hl = function(s) {
 		dx1 = (hla[i][1] < shhd ? hla[i][1] : shhd) - dx
 		dx2 = (hla[i][1] > shhd ? hla[i][1] : shhd) + dx
 		if (hlp < bot * 2) {
-			yl = ++hlp >> 1
+			if (hlp < yl * 2)
+				yl = ++hlp >> 1
 			n--
 		} else if (hlp > top * 2) {
 			yu = hlp >> 1
