@@ -207,7 +207,8 @@ function dom_loaded() {
 			}
 			abc2svg.abc_end()	// close the page if %%pageheight
 			if (errtxt) {
-				new_page += '<pre style="background:#ff8080">' +
+				new_page += 
+					'<pre class="nop" style="background:#ff8080">' +
 						errtxt + "</pre>\n"
 				errtxt = ""
 			}

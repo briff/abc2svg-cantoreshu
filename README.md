@@ -53,7 +53,7 @@ representation or a list of the contents of the ABC file. Here
 are two bookmarklets that you can try.
 
 This
-<a href="javascript:(function(){var%20s,n=3,d=document,b=d.body;d.head.innerHTML='&lt;style&gt;\nsvg{display:block};@media print{body{margin:0;padding:0;border:0}}\n&lt;/style&gt;\n';b.innerHTML='\n%25abc-2.2\n%25%3c!--\n'+b.textContent+'%25--%3e\n';function%20f(u){s=d.createElement('script');s.src='http://moinejf.free.fr/js/'+u;s.onload=function(){if(--n==0)dom_loaded()};d.head.appendChild(s)};f('abcweb-1.js');f('snd-1.js');f('follow-1.js')})()"
+<a href="javascript:(function(){var%20s,n=3,d=document,b=d.body;d.head.innerHTML='&lt;style&gt;\nsvg{display:block};@media print{body{margin:0;padding:0;border:0}.nop{display:none}}\n&lt;/style&gt;\n';b.innerHTML='\n%25abc-2.2\n%25%3c!--\n'+b.textContent+'%25--%3e\n';function%20f(u){s=d.createElement('script');s.src='http://moinejf.free.fr/js/'+u;s.onload=function(){if(--n==0)dom_loaded()};d.head.appendChild(s)};f('abcweb-1.js');f('snd-1.js');f('follow-1.js')})()"
 title="Copy me">first abc2svg bookmarklet</a>
 renders all the music it finds in the page currently displayed.  
 Once the music is displayed, clicking inside a tune starts playing it
@@ -66,7 +66,7 @@ try right clicking on the web page.)
 
 Alternatively, if your source contains many tunes, you can
 use this
-<a href="javascript:(function(){var%20s,n=3,d=document,b=d.body;d.head.innerHTML='&lt;style&gt;\nsvg{display:block};@media print{body{margin:0;padding:0;border:0}}\n&lt;/style&gt\n';b.innerHTML='\n%25abc-2.2\n%25%3c!--\n'+b.textContent+'%25--%3e\n';function%20f(u){s=d.createElement('script');s.src='http://moinejf.free.fr/js/'+u;s.onload=function(){if(--n==0)dom_loaded()};d.head.appendChild(s)};f('abcweb1-1.js');f('snd-1.js');f('follow-1.js')})()"
+<a href="javascript:(function(){var%20s,n=3,d=document,b=d.body;d.head.innerHTML='&lt;style&gt;\nsvg{display:block};@media print{body{margin:0;padding:0;border:0}.nop{display:none}}\n&lt;/style&gt;\n';b.innerHTML='\n%25abc-2.2\n%25%3c!--\n'+b.textContent+'%25--%3e\n';function%20f(u){s=d.createElement('script');s.src='http://moinejf.free.fr/js/'+u;s.onload=function(){if(--n==0)dom_loaded()};d.head.appendChild(s)};f('abcweb1-1.js');f('snd-1.js');f('follow-1.js')})()"
 title="Copy me">second bookmarklet</a>.
 The browser will list the titles of the tunes. Click on one of the titles
 to view the music representation.
@@ -186,6 +186,13 @@ not changed by the web browser. This is explained in section 4.3
 following the description of **abcweb2-1.js**.
 
 [9]: http://dz.tugdual.free.fr/psaumes/psaume-32.html "Psaume 32"
+
+With any of the above scripts the music may be printed using
+the 'Print' button of the browser. You should add a style as:  
+`       @media print{body{margin:0;padding:0;border:0}.nop{display:none}}`  
+
+to remove the margins, the error messages and the menus from the
+printed pages.
 
 #### 1.4 Installing abc2svg on your system or on your server
 

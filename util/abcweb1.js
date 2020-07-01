@@ -395,14 +395,14 @@ onclick="abc2svg.do_render(\'.*\')">' + tt + '</li>\n\
 		}
 		abc2svg.abc_end()	// close the page if %%pageheight
 		if (errtxt) {
-			new_page += '<pre style="background:#ff8080">' +
+			new_page += '<pre class="nop" style="background:#ff8080">' +
 					errtxt + "</pre>\n"
 			errtxt = ""
 		}
 
 		// add the menu
 		new_page += '\
-<div id="dd" class="dd">\
+<div id="dd" class="dd nop">\
 <label class="db">|||</label>\
 <div id="dc" class="dc">\
 <label id="edit" onclick="abc2svg.src_edit()">Source edit</label>\
@@ -410,7 +410,7 @@ onclick="abc2svg.do_render(\'.*\')">' + tt + '</li>\n\
 <label id="play" onclick="abc2svg.st_scroll()">Scroll</label>\
 </div>\
 </div>\
-<label id="ss" class="dd" onclick="abc2svg.st_scroll()">Scroll<br/>stop</label>'
+<label id="ss" class="dd nop" onclick="abc2svg.st_scroll()">Scroll<br/>stop</label>'
 
 		// change the page
 		try {
