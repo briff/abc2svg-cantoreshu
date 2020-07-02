@@ -3261,17 +3261,28 @@ function init_music_line() {
 		}
 	}
 
-	/* add bar if needed (for repeat bracket) */
+	// add a bar for the continuation of repeat brackets
 	for (v = 0; v < nv; v++) {
 		p_voice = voice_tb[v];
 		s2 = p_voice.bar_start;
 		p_voice.bar_start = null
 
 		// if bar already, keep it in sequence
-		if (last_s && last_s.v == v && last_s.type == C.BAR) {
-			p_voice.last_sym = last_s;
-			last_s = last_s.ts_next
-			continue
+		if (last_s && last_s.v == v) {
+			for (s3 = last_s; s3; s3 = s3.ts_next) {
+				if (s3.v != v)
+					break
+				switch (s3.type) {
+				case C.PART:
+				case C.TEMPO:
+					continue
+				case C.BAR:
+					p_voice.last_sym = s3
+					last_s = s3.ts_next
+					break
+				}
+				break
+			}
 		}
 
 		if (!s2)
@@ -3280,7 +3291,12 @@ function init_music_line() {
 		 || !cur_sy.st_print[cur_sy.voices[v].st])
 			continue
 
-		new_sym(s2, p_voice, last_s)
+		if (p_voice.last_sym.type == C.BAR) {
+			if (!p_voice.last_sym.rbstop)
+				p_voice.last_sym.rbstart = 1
+		} else {
+			new_sym(s2, p_voice, last_s)
+		}
 	}
 
 	// compute the spacing of the added symbols
