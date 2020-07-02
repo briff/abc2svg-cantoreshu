@@ -75,22 +75,22 @@ var w_note = new Float32Array([
 ])
 
 // get head type, dots, flags of note/rest for a duration
-function identify_note(s, dur_o, noerr) {
+function identify_note(s, dur_o) {
     var	head, flags,
 	dots = 0,
 	dur = dur_o
 
-	if (dur % 12 != 0 && !noerr)
+	if (dur % 12 != 0)
 		error(1, s, "Invalid note duration $1", dur);
 	dur /= 12			/* see C.BLEN for values */
-	if (!dur && !noerr)
+	if (!dur)
 		error(1, s, "Note too short")
 	for (flags = 5; dur != 0; dur >>= 1, flags--) {
 		if (dur & 1)
 			break
 	}
 	dur >>= 1
-	if (((dur + 1) & dur) && !noerr)
+	if ((dur + 1) & dur)
 		error(0, s, "Non standard note duration $1", dur_o)
 	while (dur >> dots > 0)
 		dots++
@@ -100,8 +100,7 @@ function identify_note(s, dur_o, noerr) {
 		head = C.FULL
 	} else switch (flags) {
 	default:
-		if (!noerr)
-			error(1, s, "Note too long")
+		error(1, s, "Note too long")
 		flags = -4
 		/* fall thru */
 	case -4:

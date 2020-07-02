@@ -1342,7 +1342,7 @@ function draw_basic_note(x, s, m, y_tb) {
 //	 && m >= s.nohdi1 && m < s.nohdi2)
 //		return
 
-    var	elts = identify_note(s, note.dur, true),
+    var	elts = identify_note(s, note.dur),
 		head = elts[0],
 		dots = elts[1],
 		nflags = elts[2]
