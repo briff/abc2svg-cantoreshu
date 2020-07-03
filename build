@@ -41,6 +41,7 @@ gen modules/clip.js > clip-$MAJOR.js
 gen modules/combine.js > combine-$MAJOR.js
 gen modules/diag.js > diag-$MAJOR.js
 gen modules/equalbars.js > equalbars-$MAJOR.js
+gen modules/gamelan.js > gamelan-$MAJOR.js
 gen modules/grid.js > grid-$MAJOR.js
 gen modules/grid2.js > grid2-$MAJOR.js
 gen modules/grid3.js > grid3-$MAJOR.js
