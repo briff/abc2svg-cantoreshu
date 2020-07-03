@@ -3425,7 +3425,8 @@ function set_words(p_voice) {
 
 			if (s.ntrem)
 				nflags += s.ntrem
-			if (s.type == C.REST && s.beam_end) {
+			if (s.type == C.REST && s.beam_end
+			 && !s.beam_on) {
 				s.beam_end = false;
 				start_flag = true
 			}
@@ -3438,14 +3439,14 @@ function set_words(p_voice) {
 				if (nflags <= 0) {
 					s.beam_st = true;
 					s.beam_end = true
-				} else if (s.type == C.NOTE) {
+				} else if (s.type == C.NOTE || s.beam_on) {
 					s.beam_st = true;
 					start_flag = false
 				}
 			}
 			if (s.beam_end)
 				start_flag = true
-			if (s.type == C.NOTE)
+			if (s.type == C.NOTE || s.beam_on)
 				lastnote = s
 			break
 		}
