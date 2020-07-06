@@ -1614,12 +1614,15 @@ function parse_acc_pit(line) {
 	}
 
 	/* look for microtone value */
-	if (acc && acc != 3) {
-	    if ((c >= '1' && c <= '9')
-	     || c == '/') {			// compatibility
+	if (acc == 1 || acc == -1) {
+	    if (c >= '1' && c <= '9') {
 		nd = parse_dur(line);
 		if (acc < 0)
 			nd[0] = -nd[0]
+		if (cfmt.nedo && nd[1] == 1) {
+			nd[0] *= 12
+			nd[1] *= cfmt.nedo
+		}
 		acc = nd
 		c = line.char()
 	    }
@@ -1786,7 +1789,7 @@ function slur_add(enote, e_is_note) {
 // convert a diatonic pitch and accidental to a MIDI pitch with cents
 function pit2mid(pit, acc) {
     var	p = [0, 2, 4, 5, 7, 9, 11][pit % 7],	// chromatic pitch
-	o = (pit / 7) | 0,			// octave
+	o = ((pit / 7) | 0) * 12,		// octave
 	s					// semitones
 
 	if (acc == 3)				// if natural accidental
@@ -1801,7 +1804,7 @@ function pit2mid(pit, acc) {
 	}
 	if (!cfmt.nedo) {			// non equal temperament
 		if (!cfmt.temper) {
-			p += o * 12 + s		// standard temperament
+			p += o + s		// standard temperament
 		} else {
 			if (s) {	// ajust the pitch to the lower semitone
 				while (s >= 1) {
@@ -1816,21 +1819,16 @@ function pit2mid(pit, acc) {
 			if (cfmt.temper.length == 12) {
 				s = (cfmt.temper[(p + 13) % 12] -
 						cfmt.temper[(p + 12) % 12]) * s
-				p = cfmt.temper[p] + o * 12 + s
+				p = cfmt.temper[p] + o + s
 			} else {		// full temperament table
 				s = (cfmt.temper[p + 1] -
 						cfmt.temper[p]) * s
-				p = cfmt.temper[p + o * 12] + s
+				p = cfmt.temper[p + o] + s
 			}
 		}
 	} else {				// equal temperament
-		p = cfmt.temper[p] + o * 12
-		if (s) {
-			if (typeof acc != "number")
-				p += s * 12 / cfmt.nedo
-			else
-				p += (cfmt.temper[1] - cfmt.temper[0]) * acc
-		}
+		p = cfmt.temper[p] + o +
+				(cfmt.temper[1] - cfmt.temper[0]) * s
 	}
 	return p
 } // pit2mid()

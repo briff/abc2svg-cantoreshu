@@ -730,10 +730,6 @@ function draw_acc(x, y, a) {
 		n = a[0],
 		d = a[1]
 
-		if (cfmt.nedo) {
-			n *= 12
-			d *= cfmt.nedo
-		}
 		c = n + '_' + d
 		a = acc_nd[c]
 		if (!a) {
