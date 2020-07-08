@@ -627,7 +627,7 @@ function draw_beams(bm) {
 function draw_lstaff(x) {
 //	if (cfmt.alignbars)
 //		return
-	var	i, j, yb, h,
+    var	i, j, yb, h, fl,
 		nst = cur_sy.nstaff,
 		l = 0
 
@@ -659,11 +659,12 @@ function draw_lstaff(x) {
 	}
 
 	for (i = 0; ; i++) {
-		if (cur_sy.staves[i].flags & (OPEN_BRACE | OPEN_BRACKET))
+		fl = cur_sy.staves[i].flags
+		if (fl & (OPEN_BRACE | OPEN_BRACKET))
 			l++
 		if (cur_sy.st_print[i])
 			break
-		if (cur_sy.staves[i].flags & (CLOSE_BRACE | CLOSE_BRACKET))
+		if (fl & (CLOSE_BRACE | CLOSE_BRACKET))
 			l--
 		if (i == nst)
 			break
@@ -679,13 +680,14 @@ function draw_lstaff(x) {
 	xypath(x, yb);
 	output += "v" + (-h).toFixed(1) + '"/>\n'
 	for (i = 0; i <= nst; i++) {
-		if (cur_sy.staves[i].flags & OPEN_BRACE)
+		fl = cur_sy.staves[i].flags
+		if (fl & OPEN_BRACE)
 			draw_sysbra(x, i, CLOSE_BRACE)
-		if (cur_sy.staves[i].flags & OPEN_BRACKET)
+		if (fl & OPEN_BRACKET)
 			draw_sysbra(x, i, CLOSE_BRACKET)
-		if (cur_sy.staves[i].flags & OPEN_BRACE2)
+		if (fl & OPEN_BRACE2)
 			draw_sysbra(x - 6, i, CLOSE_BRACE2)
-		if (cur_sy.staves[i].flags & OPEN_BRACKET2)
+		if (fl & OPEN_BRACKET2)
 			draw_sysbra(x - 6, i, CLOSE_BRACKET2)
 	}
 }
@@ -2175,14 +2177,18 @@ function draw_tuplet(s1) {
 	upstaff = s1.st
 	set_dscale(s1.st)
 	for (s2 = s1; s2; s2 = s2.next) {
-		if (s2.type != C.NOTE && s2.type != C.REST) {
-			if (s2.type == C.GRACE) {
-				for (g = s2.extra; g; g = g.next) {
-					if (g.sls || g.sl1)
-						draw_slurs(g)
-				}
+		switch (s2.type) {
+		case C.GRACE:
+			for (g = s2.extra; g; g = g.next) {
+				if (g.sls || g.sl1)
+					draw_slurs(g)
 			}
+			// fall thru
+		default:
 			continue
+		case C.NOTE:
+		case C.REST:
+			break
 		}
 		if (s2.sls || s2.sl1)
 			draw_slurs(s2)
