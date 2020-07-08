@@ -562,11 +562,7 @@ function new_key(param) {
     if (sf < -1) {
 	switch (param[0]) {
 	case 'H':				// bagpipe
-		switch (param[1]) {
-		case 'P':
-		case 'p':
-			break
-		default:
+		if (param[1].toLowerCase() != 'p') {
 			syntax(1, "Unknown bagpipe-like key")
 			key_end = true
 			break
@@ -1806,7 +1802,7 @@ function pit2mid(pit, acc) {
 		if (!cfmt.temper) {
 			p += o + s		// standard temperament
 		} else {
-			if (s) {	// ajust the pitch to the lower semitone
+			if (s) {	// adjust the pitch to the lower semitone
 				while (s >= 1) {
 					p++
 					s -= 1
