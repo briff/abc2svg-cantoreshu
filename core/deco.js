@@ -829,7 +829,7 @@ function deco_cnv(a_dcn, s, prev) {
 			continue
 		case 35:		/* xstem */
 			if (s.type != C.NOTE) {
-				error(1, s, "!xstem! must be on a note")
+				error(1, s, errs.must_note, dd.name)
 				continue
 			}
 			s.xstem = true;

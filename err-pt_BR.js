@@ -22,7 +22,6 @@ user.textrans = {
 	"!$1! must be on the last of a couple of notes":
 				"!$1! deveria estar na segunda nota de um par de notas",
 	"!beamon! must be on a bar": "!beamon! deveria estar em uma barra de compasso",
-	"!xstem! must be on a note": "!xstem! deveria estar em uma nota",
 	"%%deco: abnormal h/wl/wr value '$1'":
 				"%%deco: '$1' é um valor anormal para h/wl/wr",
 	"%%deco: bad C function index '$1'":

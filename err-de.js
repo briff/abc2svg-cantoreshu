@@ -25,7 +25,6 @@ user.textrans = {
     "!$1! must be on a note or a rest": "!$1! muss an einer Note oder Pause stehen",
     "!$1! must be on the last of a couple of notes": "!$1! muss an der letzten Notengruppe stehen",
     "!beamon! must be on a bar": "!beamon! muss an einem Taktstrich stehen",
-    "!xstem! must be on a note": "!xstem! muss an einer Note stehen",
 	"%%deco: abnormal h/wl/wr value '$1'": "%%deco: falscher Wert '$1' für h/wl/wr",
     "%%deco: bad C function index '$1'": "%%deco: falscher C Funktionsindex '$1'",
     "%%deco: bad C function value '$1'": "%%deco: falscher C Funtionswert '$1'",
