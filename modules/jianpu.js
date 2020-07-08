@@ -180,6 +180,11 @@ abc2svg.jianpu = {
 			s.stem = -1
 			s.stemless = true
 
+			if (s.sls) {
+				for (i = 0; i < s.sls.length; i++)
+					s.sls[i].ty = C.SL_ABOVE
+			}
+
 			for (m = 0; m <= s.nhd; m++) {
 				note = s.notes[m]
 
@@ -204,21 +209,17 @@ abc2svg.jianpu = {
 				}
 
 				// set the slurs and ties up
-				if (s.sls) {
-					for (i = 0; i < s.sls.length; i++)
-						s.sls[i].ty = C.SL_ABOVE
-				}
 				if (note.sls) {
 					for (i = 0; i < note.sls.length; i++)
 						note.sls[i].ty = C.SL_ABOVE
 				}
 				if (note.tie_ty)
 					note.tie_ty = C.SL_ABOVE
-
-				// change the long notes
-				if (s.dur >= C.BLEN / 2)
-					slice(s)
 			}
+
+			// change the long notes
+			if (s.dur >= C.BLEN / 2)
+				slice(s)
 
 			// replace the staccato dot
 			if (s.a_dd) {
