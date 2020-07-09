@@ -171,7 +171,7 @@ abc2svg.MIDI = {
 		break
 	case "temperamentequal":
 		n = parseInt(a[2])
-		if (isNaN(n) || n < 7 || n > 127) {
+		if (isNaN(n) || n < 5 || n > 255) {
 			this.syntax(1, this.errs.bad_val, "%%MIDI " + a[1])
 			return
 		}
