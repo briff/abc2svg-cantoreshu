@@ -307,9 +307,11 @@ function error(sev, s, msg, a1, a2, a3, a4) {
 
 	if (!sev && cfmt.quiet)
 		return
-	if (s && s.err)			// only one error message per symbol
-		return
-	s.err = true
+	if (s) {
+		if (s.err)		// only one error message per symbol
+			return
+		s.err = true
+	}
 	if (user.textrans) {
 		tmp = user.textrans[msg]
 		if (tmp)
