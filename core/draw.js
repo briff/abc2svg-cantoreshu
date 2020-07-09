@@ -2960,6 +2960,8 @@ function draw_sym_near() {
 
 		// draw the slurs and tuplets
 		for ( ; s; s = s.next) {
+			if (s.play)
+				continue
 			if (s.tp)
 				draw_tuplet(s)
 			if (s.sls || s.sl1)
