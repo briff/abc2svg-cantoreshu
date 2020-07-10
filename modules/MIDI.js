@@ -9,7 +9,7 @@
 //	%%MIDI program [channel] n
 //	%%MIDI control k v
 //	%%MIDI drummap ABC_note MIDI_pitch
-//	%%MIDI tuningsystem comma53
+//	%%MIDI temperamentequal nedo
 
 // Using %%MIDI drummap creates a voicemap named "MIDIdrum".
 // This name must be used if some print map is required:
@@ -232,15 +232,19 @@ abc2svg.MIDI = {
 		qs = ((n * q / o + .5) | 0) * o / n	// new fifth
 
 		s = new Float32Array(12)
-		this.cfmt().temper = s	// detune in cents / 12-TET
+		this.cfmt().temper = s		// pitches / A in 100th of cents
 		s[0] = 2 * o - 3 * qs - 3	// C
-		s[1] = 4 * qs - 2 * o - 3	// ^C
+//		s[1] = 4 * qs - 2 * o - 3	// ^C
 		s[2] = o - qs - 3		// D
+//		s[3] = 4 * o - 6 * qs - 3	// _E
 		s[4] = qs - 3			// E
 		s[5] = 3 * o - 4 * qs - 3	// F
+//		s[6] = 3 * qs - o - 3		// ^F
 		s[7] = 2 * o - 2 * qs - 3	// G
+//		s[8] = 5 * qs - 2 * o - 3	// ^G
 		s[9] = 9			// A
-		s[11] = 2 * qs - o + 9	// B
+//		s[10] = 3 * o - 5 * qs + 9	// _B
+		s[11] = 2 * qs - o + 9		// B
 		break
 	}
     }, // do_midi()
