@@ -1786,7 +1786,7 @@ function slur_add(enote, e_is_note) {
 function pit2mid(pit, acc) {
     var	p = [0, 2, 4, 5, 7, 9, 11][pit % 7],	// chromatic pitch
 	o = ((pit / 7) | 0) * 12,		// octave
-	s					// semitones
+	p0, p1, s
 
 	if (acc == 3)				// if natural accidental
 		acc = 0
@@ -1796,35 +1796,34 @@ function pit2mid(pit, acc) {
 		else
 			s = acc			// simple accidental
 	} else {
-		s = 0
+		if (cfmt.temper)
+			return cfmt.temper[p] + o
+		return p + o
 	}
 	if (!cfmt.nedo) {			// non equal temperament
 		if (!cfmt.temper) {
 			p += o + s		// standard temperament
 		} else {
-			if (s) {	// adjust the pitch to the lower semitone
-				while (s >= 1) {
-					p++
-					s -= 1
-				}
-				while (s < 0) {
-					p--
-					s += 1
-				}
+			p += o
+			p0 = cfmt.temper[p % cfmt.temper.length]
+			if (s > 0) {
+				p1 = cfmt.temper[(p + 1) % cfmt.temper.length]
+				if (p1 < p0)
+					p1 += 12
+			} else {
+				p1 = cfmt.temper[(p - 1) % cfmt.temper.length]
+				if (p1 > p0)
+					p1 -= 12
+				s = -s
 			}
-			if (cfmt.temper.length == 12) {
-				s = (cfmt.temper[(p + 13) % 12] -
-						cfmt.temper[(p + 12) % 12]) * s
-				p = cfmt.temper[p] + o + s
-			} else {		// full temperament table
-				s = (cfmt.temper[p + 1] -
-						cfmt.temper[p]) * s
-				p = cfmt.temper[p + o] + s
-			}
+			p = p0 + o + (p1 - p0) * s
 		}
 	} else {				// equal temperament
-		p = cfmt.temper[p] + o +
-				(cfmt.temper[1] - cfmt.temper[0]) * s
+		if (typeof acc != "number"	// if fraction
+		 && acc[1] == cfmt.nedo)	// of the edo divider
+			return cfmt.temper[p] + o + s
+		p = cfmt.temper[p] + o +	// fraction of semitone
+			(cfmt.temper[2] - cfmt.temper[0]) * s * .5
 	}
 	return p
 } // pit2mid()
