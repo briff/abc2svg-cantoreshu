@@ -1611,7 +1611,8 @@ function parse_acc_pit(line) {
 
 	/* look for microtone value */
 	if (acc == 1 || acc == -1) {
-	    if (c >= '1' && c <= '9') {
+	    if ((c >= '1' && c <= '9')
+	     || c == '/') {			// shortcut
 		nd = parse_dur(line);
 		if (acc < 0)
 			nd[0] = -nd[0]
