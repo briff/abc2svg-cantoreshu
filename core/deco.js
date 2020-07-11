@@ -983,7 +983,8 @@ function draw_all_deco() {
 		// update the coordinates if head decoration
 		if (de.m != undefined) {
 			note = s.notes[de.m];
-			x += note.shhd * stv_g.scale;
+			if (note.shhd)
+				x += note.shhd * stv_g.scale;
 
 		/* center the dynamic marks between two staves */
 /*fixme: KO when deco on other voice and same direction*/
