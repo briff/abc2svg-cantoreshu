@@ -1085,7 +1085,8 @@ function draw_rest(s) {
 		y -= 6				/* semibreve a bit lower */
 
 	// draw the rest
-	xygl(x, y + yb, s.notes[0].head || rest_tb[i])
+	if (!s.notes[0].invis)		// if not head replacement
+		xygl(x, y + yb, rest_tb[i])
 
 	/* output ledger line(s) when greater than minim */
 	if (i >= 6) {
