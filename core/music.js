@@ -1182,7 +1182,9 @@ function _bar(s) {
 		st: s.st,
 		dur: 0,
 		nhd: 0,
-		notes: s.notes,
+		notes: [{
+			pit: s.notes[0].pit
+		}],
 		prev: s
 	}
 } // _bar()
