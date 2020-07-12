@@ -49,6 +49,8 @@ function ToAudio() {
 	rst = s,		// left repeat (repeat restart)
 	rst_fac,		// play factor on repeat restart
 	rsk,			// repeat variant array (repeat skip)
+	b_tim,			// time of last measure bar
+	b_typ,			// type of last measure bar
 	instr = [],		// [voice] bank + instrument
 	chn = []		// [voice] MIDI channel
 
@@ -344,8 +346,15 @@ function ToAudio() {
 
 		switch (s.type) {
 		case C.BAR:
+			if (s.time != b_tim) {
+				b_tim = s.time
+				b_typ = 0
+			}
 			if (s.text && rsk		// if new variant
 			 && s.text[0] != '1') {
+				if (b_typ & 1)
+					break
+				b_typ |= 1
 				set_variant(rsk, s.text, s)
 				play_fac = rst_fac
 				rst = rsk[0]		// reinit the restart
@@ -353,19 +362,19 @@ function ToAudio() {
 
 			// right repeat
 			if (s.bar_type[0] == ':') {
+				if (b_typ & 2)
+					break
+				b_typ |= 2
 				s.rep_p = rst		// :| to |:
-				if (rsk) {
-					if (rst == rsk[0])
-						s.rep_v = rsk
-							// to know the number of variants
-//					else
-//						rsk = null	// no explicit |:
-				}
+				if (rsk && rst == rsk[0])
+					s.rep_v = rsk	// to know the number of variants
 			}
 
 			// 1st time repeat
 			if (s.text && s.text[0] == '1') {
-//			&& !rsk) {			// error if |1 already
+				if (b_typ & 1)
+					break
+				b_typ |= 1
 				s.rep_s = rsk = [rst]	// repeat skip
 							// and memorize the restart
 				if (rst.bar_type
@@ -375,22 +384,18 @@ function ToAudio() {
 				rst_fac = play_fac
 
 			// left repeat
-//			} else if (s.bar_type.slice(-1) == ':') {
 			} else if (s.rbstop) {
+				if (s.bar_type.slice(-1) == ':') {
+					if (b_typ & 4)
+						break
+					b_typ |= 4
+				} else {
+					if (b_typ & 8)
+						break
+					b_typ |= 8
+				}
 				rst = s			// new possible restart
 				rst_fac = play_fac
-			}
-			while (1) {
-				while (s.ts_next && !s.ts_next.seqst) {
-					s = s.ts_next
-					s.ptim = p_time
-				}
-				if (!s.ts_next
-				 || s.ts_next.type != C.BAR
-				 || s.ts_next.bar_type.slice(-1) == ':')
-					break
-				s = s.ts_next
-				s.ptim = p_time
 			}
 			break
 		case C.BLOCK:
