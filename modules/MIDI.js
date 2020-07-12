@@ -231,6 +231,10 @@ abc2svg.MIDI = {
 		this.cfmt().nedo = n	// octave divider
 		qs = ((n * q / o + .5) | 0) * o / n	// new fifth
 
+		// warn on bad fifth values
+		if (qs < 6.92 || qs > 7.12)
+			this.syntax(0, this.errs.bad_val, "%%MIDI " + a[1])
+
 		s = new Float32Array(12)
 		this.cfmt().temper = s		// pitches / A in 100th of cents
 		s[0] = 2 * o - 3 * qs - 3	// C
