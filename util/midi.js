@@ -83,7 +83,7 @@ function AbcMIDI() {
 			note.midi += dm
 		}
 
-		dt_set()
+		dm_set()
 		while (s) {
 			switch (s.type) {
 			case C.CLEF:
