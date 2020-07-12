@@ -355,8 +355,8 @@ function build_grid(chords, bars, font, wmx) {
 	// create a specific block
 	if (grid) {
 	    var	C = abc2svg.C,
-		tsfirst = abc.get_tsfirst(),
-		voice_tb = abc.get_voice_tb(),
+		tsfirst = this.get_tsfirst(),
+		voice_tb = this.get_voice_tb(),
 		p_v = voice_tb[this.get_top_v()],
 		s = {
 			type: C.BLOCK,
