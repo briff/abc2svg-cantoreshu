@@ -1183,7 +1183,7 @@ function _bar(s) {
 		dur: 0,
 		nhd: 0,
 		notes: [{
-			pit: s.notes[0].pit
+			pit: s.notes ? s.notes[0].pit : 22
 		}],
 		prev: s
 	}
