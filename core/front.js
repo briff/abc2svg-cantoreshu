@@ -575,7 +575,7 @@ function tosvg(in_fname,		// file name
 			last_info = undefined;
 			if (parse.state < 2)
 				continue
-			parse.line.buffer = uncomment(file.slice(bol, eol), true);
+			parse.line.buffer = uncomment(file.slice(bol, eol))
 			if (parse.line.buffer)
 				parse_music_line()
 			continue

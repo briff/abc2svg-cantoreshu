@@ -1,6 +1,6 @@
 // abc2svg - gchord.js - chord symbols
 //
-// Copyright (C) 2014-2019 Jean-Francois Moine
+// Copyright (C) 2014-2020 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -21,8 +21,8 @@
 // the result is added in the global variable a_gch
 // 'type' may be a single '"' or a string '"xxx"' created by U:
 function parse_gchord(type) {
-	var	c, text, gch, x_abs, y_abs, type,
-		i, istart, iend,
+    var	c, text, gch, x_abs, y_abs, type,
+	i, j, istart, iend,
 		ann_font = get_font("annotation"),
 		h_ann = ann_font.size,
 		line = parse.line
@@ -43,21 +43,19 @@ function parse_gchord(type) {
 		text = type.slice(1, -1);
 		iend = istart + 1
 	} else {
-		text = ""
+		i = ++line.index		// search the ending double quote
 		while (1) {
-			c = line.next_char()
-			if (!c) {
+			j = line.buffer.indexOf('"', i)
+			if (j < 0) {
 				syntax(1, "No end of guitar chord")
 				return
 			}
-			if (c == '"')
+			if (line.buffer[j - 1] != '\\')
 				break
-			if (c == '\\') {
-				text += c;
-				c = line.next_char()
-			}
-			text += c
+			i = j + 1
 		}
+		text = cnv_escape(line.buffer.slice(line.index, j)).replace('\\','')
+		line.index = j
 		iend = parse.bol + line.index + 1
 	}
 
