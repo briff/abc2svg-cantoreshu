@@ -602,14 +602,17 @@ function set_w_chs(s) {
 			ch = s.a_gch[i]
 			if (ch.type != 'g' || ch.y < 0) // upper chord symbol only
 				continue
-			if (w0) {
+			if (w0) {		// width of the previous chord symbol
 				if (w0 > x + ch.x) {
+					if (s.prev.type == C.BAR) // don't move away
+						n--		// the symbol from a bar
 					dw = (w0 - x - ch.x) / n
 					while (1) {
 						s0 = s0.ts_next
 						if (s0.shrink)
 							s0.shrink += dw
-						if (s0 == s)
+						if (s0 == s
+						 || s0.type == C.BAR)
 							break
 					}
 				}
