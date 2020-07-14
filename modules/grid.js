@@ -23,25 +23,10 @@ abc2svg.grid = {
 		return
 	}
 
-    var	C = abc2svg.C,
-	abc = this,
-	tsfirst = abc.get_tsfirst(),
-	voice_tb = abc.get_voice_tb(),
+    var	abc = this,
 	img, font_cl, cls,
 	cfmt = abc.cfmt(),
 	grid = cfmt.grid
-
-function get_beat(s) {
-    var	beat = C.BLEN / 4
-
-	if (!s.a_meter[0] || s.a_meter[0].top[0] == 'C' || !s.a_meter[0].bot)
-		return beat;
-	beat = C.BLEN / s.a_meter[0].bot[0] |0
-	if (s.a_meter[0].bot[0] == 8
-	 && s.a_meter[0].top[0] % 3 == 0)
-		beat = C.BLEN / 8 * 3
-	return beat
-} // get_beat()
 
 // generate the grid
 function build_grid(chords, bars, font, wmx) {
@@ -141,7 +126,7 @@ function build_grid(chords, bars, font, wmx) {
 		return line
 	} // build_cell()
 
-	// build_grid()
+	// ------- build_grid() -------
 
 	// set some chords in each cell
 	set_chords()
@@ -258,16 +243,9 @@ function build_grid(chords, bars, font, wmx) {
 } // build_grid()
 
 	// ----- block_gen() -----
-    var	s, beat, cur_beat, i, beat_i, p_voice, n, font, wm, bt, w, wmx, rep,
-	bars = [],
-	chords = [],
-	chord = [];
+    var	p_voice, n, font
 
 	img = abc.get_img()
-
-	// get the beat
-	beat = get_beat(voice_tb[0].meter);
-	wm = voice_tb[0].meter.wmeasure;
 
 	// set the text style
 	if (!cfmt.gridfont)
@@ -278,79 +256,116 @@ function build_grid(chords, bars, font, wmx) {
 	abc.add_style("\n.mid {text-anchor:middle}")
 	abc.set_font('grid')		// (for strwh())
 
-	// scan the first voice of the tune
-	cur_beat = beat_i = n = wmx = 0;
-	bars.push('|')
-	for (s = tsfirst; s; s = s.ts_next) {
-		while (s.time > cur_beat) {
-			if (beat_i < 3)		// only 2, 3 or 4 beats / measure...
-				beat_i++;
-			cur_beat += beat
-		}
-		switch (s.type) {
-		case C.NOTE:
-		case C.REST:
-			if (s.a_gch) {		// search a chord symbol
-				for (i = 0; i < s.a_gch.length; i++) {
-					if (s.a_gch[i].type == 'g') {
-						if (!chord[beat_i]) {
-							chord[beat_i] = s.a_gch[i].text;
-							w = abc.strwh(chord[beat_i])[0]
-							if (w > wmx)
-								wmx = w;
-							n++
-						}
-						break
-					}
-				}
-			}
-			break
-		case C.BAR:
-			bt = grid.norep ? '|' : s.bar_type
-			if (s.time < wm) {		// if anacrusis
-				if (chord.length) {
-					chords.push(chord);
-					bars.push(bt)
-				} else {
-					bars[0] = bt
-				}
-			} else {
-				if (!s.bar_num)		// if not normal measure bar
-					break
-				chords.push(chord);
-				bars.push(bt)
-			}
-			chord = [];
-			cur_beat = s.time;	// synchronize in case of error
-			beat_i = 0
-			if (bt.indexOf(':') >= 0)
-				rep = true	// some repeat
-			while (s.ts_next && s.ts_next.type == C.BAR)
-				s = s.ts_next
-			break
-		case C.METER:
-			beat = get_beat(s)
-			wm = s.wmeasure
-			break
-		}
-	}
-	if (n == 0)				// no chord in this tune
-		return
-
-	if (chord.length != 0) {
-		bars.push('')
-		chords.push(chord)
-	}
-
 	// create the grid
-	wmx += abc.strwh(rep ? '    ' : '  ')[0]
 	abc.blk_flush()
-	build_grid(chords, bars, font, wmx)
+	build_grid(s.chords, s.bars, font, s.wmx)
 	abc.blk_flush()
     }, // block_gen()
 
     output_music: function(of) {
-    var	grid = this.cfmt().grid
+    var	C = abc2svg.C,
+	abc = this,
+	tsfirst = abc.get_tsfirst(),
+	voice_tb = abc.get_voice_tb(),
+	grid = abc.cfmt().grid
+
+	function get_beat(s) {
+	    var	beat = C.BLEN / 4
+
+		if (!s.a_meter[0] || s.a_meter[0].top[0] == 'C'
+		 || !s.a_meter[0].bot)
+			return beat
+		beat = C.BLEN / s.a_meter[0].bot[0] |0
+		if (s.a_meter[0].bot[0] == 8
+		 && s.a_meter[0].top[0] % 3 == 0)
+			beat = C.BLEN / 8 * 3
+		return beat
+	} // get_beat()
+
+	// build the arrays of chords and bars
+	function build_chords(sb) {		// block 'grid'
+	    var	s, i, w, bt, rep,
+		bars = [],
+		chords = [],
+		chord = [],
+		beat = get_beat(voice_tb[0].meter),
+		wm = voice_tb[0].meter.wmeasure,
+		cur_beat = 0,
+		beat_i = 0,
+		wmx = 0
+
+		// scan the first voice of the tune
+		bars.push('|')
+		for (s = tsfirst; s; s = s.ts_next) {
+			while (s.time > cur_beat) {
+				if (beat_i < 3)	// only 2, 3 or 4 beats / measure...
+					beat_i++
+				cur_beat += beat
+			}
+			switch (s.type) {
+			case C.NOTE:
+			case C.REST:
+				if (!s.a_gch)
+					break
+
+				// search a chord symbol
+				for (i = 0; i < s.a_gch.length; i++) {
+					if (s.a_gch[i].type == 'g') {
+						if (!chord[beat_i]) {
+							chord[beat_i] = s.a_gch[i].text
+							w = abc.strwh(chord[beat_i])[0]
+							if (w > wmx)
+								wmx = w
+						}
+						break
+					}
+				}
+				break
+			case C.BAR:
+				bt = grid.norep ? '|' : s.bar_type
+				if (s.time < wm) {		// if anacrusis
+					if (chord.length) {
+						chords.push(chord)
+						bars.push(bt)
+					} else {
+						bars[0] = bt
+					}
+				} else {
+					if (!s.bar_num)		// if not normal measure bar
+						break
+					chords.push(chord)
+					bars.push(bt)
+				}
+				chord = []
+				cur_beat = s.time	// synchronize in case of error
+				beat_i = 0
+				if (bt.indexOf(':') >= 0)
+					rep = true	// some repeat
+				while (s.ts_next && s.ts_next.type == C.BAR)
+					s = s.ts_next
+				break
+			case C.METER:
+				beat = get_beat(s)
+				wm = s.wmeasure
+				break
+			}
+		}
+
+		if (chord.length) {
+			bars.push('')
+			chords.push(chord)
+		}
+		if (!chords.length)
+			return			// no chord in this tune
+
+		wmx += abc.strwh(rep ? '    ' : '  ')[0]
+
+		sb.chords = chords
+		sb.bars = bars
+		sb.wmx = wmx
+	} // build_chords
+
+	// -------- output_music --------
 
 	// create a specific block
 	if (grid) {
@@ -368,13 +383,14 @@ function build_grid(chords, bars, font, wmx) {
 			st: p_v.st
 		}
 
-		if (grid.nomusic) {		// if no music
-			this.set_tsfirst(s)
-			return
-		}
+		build_chords(s)			// build the array of the chords
 
 		// and insert it in the tune
-		if (grid.n < 0) {		// below
+		if (!s.chords) {		// if no chord
+			;
+		} else if (grid.nomusic) {	// if just the grid
+			this.set_tsfirst(s)
+		} else if (grid.n < 0) {	// below
 			for (var s2 = tsfirst; s2.ts_next; s2 = s2.ts_next)
 				;
 			s.time = s2.time
