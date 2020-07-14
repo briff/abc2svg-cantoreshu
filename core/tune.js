@@ -309,9 +309,9 @@ function voice_adj(sys_chg) {
 
 	for (v = 0; v < voice_tb.length; v++) {
 		p_voice = voice_tb[v]
-		delete p_voice.eoln
-		if (!sys_chg			// if not %%score
-		 && p_voice.sls.length) {	// and no end of slur
+		if (!sys_chg) {			// if not %%score
+		    delete p_voice.eoln
+		    if (p_voice.sls.length) {	// and no end of slur
 			while (1) {
 			    var	sl = p_voice.sls.shift()
 
@@ -333,6 +333,7 @@ function voice_adj(sys_chg) {
 					syntax(1, "Lack of ending slur(s)")
 				}
 			}
+		    } // not %%score
 		}
 		for (s = p_voice.sym; s; s = s.next) {
 			if (s.time >= staves_found)
@@ -1371,9 +1372,6 @@ Abc.prototype.do_begin_end = function(type,
 		action = get_textopt(opt);
 		if (!action)
 			action = cfmt.textoption
-		if (text.indexOf('\\') >= 0)	// convert the escape sequences
-			text = cnv_escape(text)
-
 		if (parse.state >= 2) {
 			s = new_block(type);
 			s.text = text
