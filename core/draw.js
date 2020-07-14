@@ -1124,8 +1124,10 @@ function draw_rest(s) {
 	if (s.dots) {
 		x += 8;
 		y += yb + 3
-		for (i = 0; i < s.dots; i++) {
-			xygl(x, y, "dot");
+		j = s.dots
+		i = (s.dur_orig / 12) >> ((5 - s.nflags) - j)
+		while (j-- > 0) {
+			xygl(x, y, (i & (1 << j)) ? "dot" : "dot+")
 			x += 3.5
 		}
 	}
