@@ -1415,7 +1415,8 @@ function new_bar(dotted) {
 // parse %%staves / %%score
 // return an array of [vid, flags] / null
 function parse_staves(p) {
-	var	v, vid,
+    var	v, vid,
+	vids = {},
 		a_vf = [],
 		err = false,
 		flags = 0,
@@ -1529,7 +1530,13 @@ function parse_staves(p) {
 				}
 				break
 			}
-			a_vf.push([vid, flags]);
+			if (vids[vid]) {
+				syntax(1, "Double voice in %%score")
+//				err = true
+			} else {
+				vids[vid] = true
+				a_vf.push([vid, flags])
+			}
 			flags = 0
 			if (!e)
 				break

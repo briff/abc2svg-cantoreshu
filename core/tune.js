@@ -372,71 +372,6 @@ function voice_adj(sys_chg) {
 	}
 }
 
-/* -- duplicate the voices as required -- */
-function dupl_voice() {
-	var	p_voice, p_voice2, s, s2, g, g2, v, i,
-		nv = voice_tb.length
-
-	for (v = 0; v < nv; v++) {
-		p_voice = voice_tb[v];
-		p_voice2 = p_voice.clone
-		if (!p_voice2)
-			continue
-		p_voice.clone = null
-		for (s = p_voice.sym; s; s = s.next) {
-//fixme: there may be other symbols before the %%staves at this same time
-			if (s.time >= staves_found)
-				break
-		}
-		p_voice2.clef = clone(p_voice.clef);
-		curvoice = p_voice2
-		for ( ; s; s = s.next) {
-			if (s.type == C.STAVES)
-				continue
-			s2 = clone(s)
-			if (s.notes) {
-				s2.notes = []
-				for (i = 0; i <= s.nhd; i++)
-					s2.notes.push(clone(s.notes[i]))
-			}
-			sym_link(s2)
-//			s2.time = s.time
-			if (p_voice2.second)
-				s2.second = true
-			else
-				delete s2.second
-			if (p_voice2.floating)
-				s2.floating = true
-			else
-				delete s2.floating
-			delete s2.a_ly;
-			g = s2.extra
-			if (!g)
-				continue
-			g2 = clone(g);
-			s2.extra = g2;
-			s2 = g2;
-			s2.v = p_voice2.v;
-			s2.p_v = p_voice2;
-			s2.st = p_voice2.st
-			for (g = g.next; g; g = g.next) {
-				g2 = clone(g)
-				if (g.notes) {
-					g2.notes = []
-					for (i = 0; i <= g.nhd; i++)
-						g2.notes.push(clone(g.notes[i]))
-				}
-				s2.next = g2;
-				g2.prev = s2;
-				s2 = g2;
-				s2.v = p_voice2.v;
-				s2.p_v = p_voice2;
-				s2.st = p_voice2.st
-			}
-		}
-	}
-}
-
 /* -- create a new staff system -- */
 function new_syst(init) {
 	var	st, v,
@@ -1403,7 +1338,6 @@ function generate(in_mc) {
 	if (!voice_tb.length)
 		return
 	voice_adj();
-	dupl_voice();
 	sort_all()			/* define the time / vertical sequences */
 	if (!tsfirst)
 		return
@@ -1518,10 +1452,8 @@ function get_staves(cmd, parm) {
 	if (!a_vf)
 		return
 
-	if (voice_tb.length) {
+	if (voice_tb.length)
 		voice_adj(true);
-		dupl_voice()
-	}
 
 	/* create a new staff system */
 	var	maxtime = 0,
@@ -1578,30 +1510,13 @@ function get_staves(cmd, parm) {
 		p_voice = new_voice(vid);
 		p_voice.time = maxtime;
 		v = p_voice.v
-		if (i == 0)
-			par_sy.top_voice = p_voice.v
 
-		// if the voice is already here, clone it
-		if (par_sy.voices[v]) {
-			p_voice2 = clone(p_voice);
-//			p_voice2.id += "_c"		// for tests
-			par_sy.voices[voice_tb.length] = clone(par_sy.voices[v]);
-			v = voice_tb.length;
-			p_voice2.v = v;
-			p_voice2.sym = p_voice2.last_sym = null;
-			p_voice2.time = maxtime;
-			voice_tb.push(p_voice2)
-			delete p_voice2.clone
-			while (p_voice.clone)
-				p_voice = p_voice.clone;
-			p_voice.clone = p_voice2;
-			p_voice = p_voice2
-		} else {
-			par_sy.voices[v] = {}
-		}
+		par_sy.voices[v] = {}
+
 		a_vf[i][0] = p_voice;
 		par_sy.voices[v].range = range++
 	}
+	par_sy.top_voice = a_vf[0][0].v
 
 	/* change the behavior from %%staves to %%score */
 	if (cmd[1] == 't') {				/* if %%staves */
@@ -1797,24 +1712,13 @@ function get_vover(type) {
 			st: curvoice.st,
 			second: true
 		}
-		var f_clone = curvoice.clone != undefined ? 1 : 0;
 		range = par_sy.voices[curvoice.v].range
 		for (v = 0; v < par_sy.voices.length; v++) {
 			if (par_sy.voices[v]
 			 && par_sy.voices[v].range > range)
-				par_sy.voices[v].range += f_clone + 1
+				par_sy.voices[v].range++
 		}
 		par_sy.voices[v2].range = range + 1
-		if (f_clone) {
-			p_voice3 = clone_voice(p_voice2.id + 'c');
-			p_voice3.second = true;
-			v3 = p_voice3.v;
-			par_sy.voices[v3] = {
-				second: true,
-				range: range + 2
-			}
-			p_voice2.clone = p_voice3
-		}
 	}
 	p_voice2.ulen = curvoice.ulen
 	p_voice2.dur_fact = curvoice.dur_fact
