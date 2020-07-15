@@ -180,7 +180,7 @@ function set_linebreak(param) {
 // set a new user character (U: or %%user)
 function set_user(parm) {
     var	k, c, v,
-	a = parm.match(/(.)[= ]*(\[I:.+\]|".+"|!.+!)$/)
+	a = parm.match(/(.)[=\s]*(\[I:.+\]|".+"|!.+!)$/)
 
 	if (!a) {
 		syntax(1, 'Lack of starting [, ! or " in U: / %%user')
@@ -1849,14 +1849,14 @@ Abc.prototype.new_note = function(grace, sls) {
 
 		for (m = 0; m <= s.nhd; m++) {
 			note = s.notes[m]
-			mid = note.mid
+			mid = note.midi
 			if (tie_s.type != C.GRACE) {
 				for (i = 0; i <= tie_s.nhd; i++) {
 					if (!tie_s.notes[i].tie_ty)
 						continue
 					// (tie_s.notes[i].tie_n may exist
 					//  on repeat restart)
-					if (tie_s.notes[i].mid == mid) {
+					if (tie_s.notes[i].midi == mid) {
 						tie_s.notes[i].tie_n = note
 						note.s = s
 						tie_s.tie_s = s
@@ -1867,7 +1867,7 @@ Abc.prototype.new_note = function(grace, sls) {
 				for (s2 = tie_s.extra; s2; s2 = s2.next) {
 					if (!s2.notes[0].tie_ty)
 						continue
-					if (s2.notes[0].mid == mid) {
+					if (s2.notes[0].midi == mid) {
 						s2.tie_s = s
 						s2.notes[0].tie_n = note
 						note.s = s
