@@ -48,7 +48,8 @@ var abc2svg = {
 			if (onerror)
 				onerror()
 			else
-				abc2svg.printErr("Cannot read file " + fn)
+				abc2svg.printErr("Cannot read file " + fn +
+					"\n  " + e.name + ": " + e.message)
 		}
 	} // loadjs()
 } // abc2svg
