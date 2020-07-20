@@ -283,6 +283,12 @@ function voice_adj(sys_chg) {
 		s.time = t
 	} // end set_feathered_beam()
 
+	// terminate voice cloning
+	if (curvoice && curvoice.clone) {
+		parse.istart = parse.eol
+		do_cloning()
+	}
+
 	// if Q: from tune header, put it at start of the music
 	// (after the staff system)
 	s = glovar.tempo
@@ -1967,32 +1973,27 @@ function init_tune() {
 }
 
 // treat V: with many voices
-function do_cloning(vs) {
+function do_cloning() {
     var	i, eol,
-	file = parse.file,
-	start = parse.eol + 1,		// next line after V:
-	bol = start
+	clone = curvoice.clone,
+	vs = clone.vs,
+	a = clone.a,
+	bol = clone.bol,
+	eol = parse.istart,
+	parse_sav = parse,
+	file = parse.file
 
-	// search the end of the music to be cloned
-	while (1) {
-		eol = file.indexOf('\n', bol)
-		if (eol < 0) {
-			eol = 0
-			break
-		}
+	delete curvoice.clone
 
-		// stop on comment, or information field
-		if (/%.*|\n.*|.:.|\[.:/.test(file.slice(eol + 1, eol + 4)))
-			break
-		bol = eol + 1
-	}
+	if (file[eol - 1] == '[')	// if stop on [V:xx]
+		eol--
 
 	// insert the music sequence in each voice
 	include++;
-	tosvg(parse.fname, file, start, eol)	// first voice
 	for (i = 0; i < vs.length; i++) {
-		get_voice(vs[i]);
-		tosvg(parse.fname, file, start, eol)
+		get_voice(vs[i], a)
+		tosvg(parse.fname, file, bol, eol)
+		parse = Object.create(parse_sav) // restore the parse context
 	}
 	include--
 }
@@ -2006,16 +2007,25 @@ function get_voice(parm) {
 	if (!vid)
 		return				// empty V:
 
-	if (vid.indexOf(',') > 0) {		// if many voices
-		vs = vid.split(',');
-		vid = vs.shift()
-	}
+	// if end of sequence with many voices, load the other voices
+	if (curvoice && curvoice.clone)
+		do_cloning()
 
-	if (parse.state < 2) {
-		if (a.length)
-			memo_kv_parm(vid, a)
-		if (vid != '*' && parse.state == 1)
-			curvoice = new_voice(vid)
+	if (vid.indexOf(',') > 0)		// if many voices
+		vs = vid.split(',')
+	else
+		vs = [vid]
+
+	if (parse.state < 2) {			// memorize the voice parameters
+		while (1) {
+			vid = vs.shift()
+			if (!vid)
+				break
+			if (a.length)
+				memo_kv_parm(vid, a)
+			if (vid != '*' && parse.state == 1)
+				curvoice = new_voice(vid)
+		}
 		return
 	}
 
@@ -2023,7 +2033,21 @@ function get_voice(parm) {
 		syntax(1, "Cannot have V:* in tune body")
 		return
 	}
-	curvoice = new_voice(vid);
+
+	curvoice = new_voice(vs[0])
+
+	// if many voice, memorize the start of sequence
+	if (vs.length > 1) {
+		vs.shift()
+		curvoice.clone = {
+			vs: vs,
+			a: a,
+			bol: parse.iend
+		}
+		if (parse.file[curvoice.clone.bol - 1] != ']')
+			curvoice.clone.bol++	// start of new line
+	}
+
 	set_kv_parm(a)
 	if (parse.state == 2)			// if first voice
 		goto_tune();
@@ -2053,9 +2077,6 @@ function get_voice(parm) {
 		curvoice.filtered = true;
 		voice_filter()
 	}
-
-	if (vs)
-		do_cloning(vs)
 }
 
 // change state from 'tune header after K:' to 'in tune body'
