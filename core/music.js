@@ -90,8 +90,10 @@ function identify_note(s, dur_o) {
 			break
 	}
 	dur >>= 1
-	if ((dur + 1) & dur)
-		error(0, s, "Non standard note duration $1", dur_o)
+	if ((dur + 1) & dur) {
+		if (s.type != C.REST || dur_o != s.p_v.wmeasure)
+			error(0, s, "Non standard note duration $1", dur_o)
+	}
 	while (dur >> dots > 0)
 		dots++
 
