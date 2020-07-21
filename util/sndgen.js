@@ -371,7 +371,8 @@ function ToAudio() {
 			}
 
 			// 1st time repeat
-			if (s.text && s.text[0] == '1') {
+			if (s.text) {
+			    if (s.text[0] == '1') {
 				if (b_typ & 1)
 					break
 				b_typ |= 1
@@ -382,6 +383,7 @@ function ToAudio() {
 					rst.bar_type += ':' // restart confirmed
 				set_variant(rsk, s.text, s)
 				rst_fac = play_fac
+			    }
 
 			// left repeat
 			} else if (s.rbstop) {
