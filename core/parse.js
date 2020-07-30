@@ -310,7 +310,7 @@ Abc.prototype.set_vp = function(a) {
 			if (isNaN(val))
 				syntax(1, errs.bad_val, item)
 			else
-				curvoice[item.slice(0, -1)] = val
+				curvoice.octave = val
 			break
 		case "cue=":
 			curvoice.scale = a.shift() == 'on' ? .7 : 1
@@ -583,7 +583,15 @@ function new_key(param) {
 			cfmt.temper = new Float32Array([
 //	2.37, 1.37, 1.49, 1.41, 1.53, 2.35, 1.35, 1.19, 1.39, 1.51, 1.62, 1.55
    //   C    ^C     D    _E     E     F    ^F     G    _A      A     _B      B
-	2.37, 2.37, 3.49, 4.41, 5.53, 7.35, 7.35, 8.19, 9.39, 10.51, 11.62, 12.55
+11.62, 12.55,
+     2.37, 2.37, 3.49, 0,
+     2.37, 2.37, 3.49, 4.41, 5.53, 0,
+		 3.49, 4.41, 5.53, 7.35, 7.35,
+		       4.41, 5.53, 7.35, 7.35, 8.19, 0,
+				   7.35, 7.35, 8.19, 9.39, 10.51, 0,
+					       8.19, 9.39, 10.51, 11.62, 12.55, 0,
+							   10.51, 11.62, 12.55,
+									     2.37, 2.37
 			])
 		break
 	case 'P':
@@ -1794,46 +1802,52 @@ function slur_add(enote, e_is_note) {
 function pit2mid(pit, acc) {
     var	p = [0, 2, 4, 5, 7, 9, 11][pit % 7],	// chromatic pitch
 	o = ((pit / 7) | 0) * 12,		// octave
-	p0, p1, s
+	p0, p1, s, b40
 
 	if (acc == 3)				// if natural accidental
 		acc = 0
 	if (acc) {
-		if (typeof acc != "number")
+		if (typeof acc != "number") {
 			s = acc[0] / acc[1]	// microtonal accidental
-		else
+			if (acc[1] == 100)	// in cents
+				return p + o + s
+		} else {
 			s = acc			// simple accidental
+		}
 	} else {
 		if (cfmt.temper)
-			return cfmt.temper[p] + o
+			return cfmt.temper[abc2svg.p_b40[pit % 7]] + o
 		return p + o
 	}
 	if (!cfmt.nedo) {			// non equal temperament
 		if (!cfmt.temper) {
 			p += o + s		// standard temperament
-		} else {
-			p += o
-			p0 = cfmt.temper[p % cfmt.temper.length]
-			if (s > 0) {
-				p1 = cfmt.temper[(p + 1) % cfmt.temper.length]
-				if (p1 < p0)
-					p1 += 12
-			} else {
-				p1 = cfmt.temper[(p - 1) % cfmt.temper.length]
-				if (p1 > p0)
-					p1 -= 12
-				s = -s
-			}
-			p = p0 + o + (p1 - p0) * s
+			return p
 		}
 	} else {				// equal temperament
-		if (typeof acc != "number"	// if fraction
-		 && acc[1] == cfmt.nedo)	// of the edo divider
-			return cfmt.temper[p] + o + s
-		p = cfmt.temper[p] + o +	// fraction of semitone
-			(cfmt.temper[2] - cfmt.temper[0]) * s * .5
+		if (typeof acc == "number") {	// if not a fraction
+			b40 = abc2svg.p_b40[pit % 7] + acc
+			return cfmt.temper[b40] + o
+		}
+
+		if (acc[1] == cfmt.nedo) { // fraction of the edo divider
+			b40 = abc2svg.p_b40[pit % 7]
+			return cfmt.temper[b40] + o + s
+		}
 	}
-	return p
+
+	p0 = cfmt.temper[abc2svg.p_b40[pit % 7]]	// main note
+	if (s > 0) {					// sharp
+		p1 = cfmt.temper[(abc2svg.p_b40[pit % 7] + 1) % 40]
+		if (p1 < p0)
+			p1 += 12
+	} else {					// flat
+		p1 = cfmt.temper[(abc2svg.p_b40[pit % 7] + 39) % 40]
+		if (p1 > p0)
+			p1 -= 12
+		s = -s
+	}
+	return p0 + o + (p1 - p0) * s
 } // pit2mid()
 
 // (possible hook)

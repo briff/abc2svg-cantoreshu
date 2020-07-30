@@ -77,6 +77,25 @@ abc2svg.MIDI = {
 		}
 	}
 
+    // build the equal temperament as a b40 float array
+    function tb40(qs) {
+// b40	  C  D   E   F   G   A   B
+//	[ 2, 8, 14, 19, 25, 31, 37 ]
+    var	i,
+//	      C  G  D  A  E  B ^F ^C ^G ^D ^A ^E ^B^^F^^C^^G^^D^^A^^E^^B
+	n1 = [2,25, 8,31,14,37,20, 3,26, 9,32,15,38,21, 4,27,10,33,16,39],
+//	      C  F _B _E _A _D _G _C _F__B__E__A__D__G__C__F
+	n2 = [0,19,36,13,30, 7,24, 1,18,35,12,29, 6,23, 0,17],
+	da = 21 - 3 * qs		// 21 = 12 (octave) + 9 (A)
+	b = new Float32Array(40)
+
+	for (i = 0; i < n1.length; i++)
+		b[n1[i]] = (qs * i + da) % 12
+	for (i = 1; i <= n2.length; i++)
+		b[n2[i]] = 12 - (qs * i - da) % 12
+	return b
+    } // tb40()
+
     // do_midi()
     var	n, v, s, maps,
 	o, q, n, qs,
@@ -232,23 +251,11 @@ abc2svg.MIDI = {
 		qs = ((n * q / o + .5) | 0) * o / n	// new fifth
 
 		// warn on bad fifth values
-		if (qs < 6.92 || qs > 7.12)
+		if (qs < 6.85 || qs > 7.2)
 			this.syntax(0, this.errs.bad_val, "%%MIDI " + a[1])
 
-		s = new Float32Array(12)
-		this.cfmt().temper = s		// pitches / A in 100th of cents
-		s[0] = 2 * o - 3 * qs - 3	// C
-//		s[1] = 4 * qs - 2 * o - 3	// ^C
-		s[2] = o - qs - 3		// D
-//		s[3] = 4 * o - 6 * qs - 3	// _E
-		s[4] = qs - 3			// E
-		s[5] = 3 * o - 4 * qs - 3	// F
-//		s[6] = 3 * qs - o - 3		// ^F
-		s[7] = 2 * o - 2 * qs - 3	// G
-//		s[8] = 5 * qs - 2 * o - 3	// ^G
-		s[9] = 9			// A
-//		s[10] = 3 * o - 5 * qs + 9	// _B
-		s[11] = 2 * qs - o + 9		// B
+		this.cfmt().temper = tb40(qs)	// pitches / A in 100th of cents
+
 		break
 	}
     }, // do_midi()

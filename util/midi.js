@@ -53,18 +53,6 @@ function AbcMIDI() {
 			p_v = voice_tb[v]
 			if (!p_v.sym)
 				continue
-			if (p_v.key.k_bagpipe)
-	// detune in cents for just intonation in A
-	//  C    ^C     D    _E     E     F    ^F     G    _A     A    _B     B
-	// 15.3 -14.0  -2.0 -10.0   1.9  13.3 -16.0 -31.8 -12.0   0.0  11.4   3.8
-	// (C is ^C,			F is ^F and G is =G)
-	// 86				 84
-	// temp = [100-14, -14, -2, -10, 2, 100-16, -16, -32, -12, 0, 11, 4]
-	// but 'A' bagpipe = 480Hz => raise Math.log2(480/440)*1200 = 151
-				temper = new Float32Array([
-	2.37, 1.37, 1.49, 1.41, 1.53, 2.35, 1.35, 1.19, 1.39, 1.51, 1.62, 1.55
-				])
-
 			s = p_v.clef
 			vloop(p_v.sym,
 				p_v.key.k_sndtran || 0,
