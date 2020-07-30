@@ -93,6 +93,12 @@ function do_file(fn) {
 function abc_cmd(cmd, args, interp_name) {
 	var	arg, parm, fn;
 
+	abc2svg.abort = function(e) {
+		abc2svg.printErr('javascript error: ' + e.message +
+			'\nStack:\n'  + e.stack)
+		abc2svg.quit()
+	} // abort()
+
 	// put the last options before the last file
 	function arg_reorder(a) {
 	    var	f,
