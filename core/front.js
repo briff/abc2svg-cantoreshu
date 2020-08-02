@@ -63,7 +63,7 @@ var oct_acc = {
 }
 
 // convert the escape sequences to utf-8
-function cnv_escape(src) {
+function cnv_escape(src, flag) {
 	var	c, c2,
 		dst = "",
 		i, j = 0
@@ -95,7 +95,12 @@ function cnv_escape(src) {
 				j = i + 1
 				continue
 			}
-			dst += String.fromCharCode(j);
+			c = String.fromCharCode(j)
+			if (c == '\\') {
+				i += 4
+				break
+			}
+			dst += c
 			j = i + 5
 			continue
 		case 't':			// TAB
@@ -174,7 +179,9 @@ function cnv_escape(src) {
 			}
 			break
 		}
-		dst += '\\' + c;
+		if (flag == 'w')
+			dst += '\\'
+		dst += c
 		j = i + 1
 	}
 	return dst + src.slice(j)
@@ -241,15 +248,17 @@ function tosvg(in_fname,		// file name
 	} // tune_selected()
 
 	// remove the comment at end of text
-	function uncomment(src, do_escape) {
+	// if flag, handle the escape sequences
+	// if flag is 'w' (lyrics), keep the '\'s
+	function uncomment(src, flag) {
 		if (!src)
 			return src
 		if (src.indexOf('%') >= 0)
 			src = src.replace(/([^\\])%.*/, '$1')
 				 .replace(/\\%/g, '%');
 		src = src.replace(/\s+$/, '')
-		if (do_escape && src.indexOf('\\') >= 0)
-			return cnv_escape(src)
+		if (flag && src.indexOf('\\') >= 0)
+			return cnv_escape(src, flag)
 		return src
 	} // uncomment()
 
@@ -592,7 +601,6 @@ function tosvg(in_fname,		// file name
 			}
 			break
 		}
-		text = uncomment(file.slice(bol, eol), true)
 		if (line0 == '+') {
 			if (!last_info) {
 				syntax(1, "+: without previous info field")
@@ -601,6 +609,7 @@ function tosvg(in_fname,		// file name
 			txt_add = ' ';		// concatenate
 			line0 = last_info
 		}
+		text = uncomment(file.slice(bol, eol), line0)
 
 		switch (line0) {
 		case 'X':			// start of tune

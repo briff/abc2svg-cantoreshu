@@ -54,7 +54,7 @@ function parse_gchord(type) {
 				break
 			i = j + 1
 		}
-		text = cnv_escape(line.buffer.slice(line.index, j)).replace('\\','')
+		text = cnv_escape(line.buffer.slice(line.index, j))
 		line.index = j
 		iend = parse.bol + line.index + 1
 	}
