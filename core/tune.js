@@ -1203,6 +1203,7 @@ Abc.prototype.do_pscom = function(text) {
 			break
 		}
 		curvoice.transp = val
+		set_transp()
 		return
 	case "tune":
 //fixme: to do
