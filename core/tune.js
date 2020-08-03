@@ -1172,24 +1172,21 @@ Abc.prototype.do_pscom = function(text) {
 		if (cfmt.sound)
 			return
 		val = get_transp(param)
-		switch (parse.state) {
-		case 0:
-			cfmt.transp = 0
-			// fall thru
-		case 1:
-		case 2:
-			if (val == undefined)
-				syntax(1, errs.bad_transp)
-			else
-				cfmt.transp = (cfmt.transp || 0) + val
-			return
-		}
 		if (val == undefined) {		// accept note interval
 			val = get_interval(param)
 			if (val == undefined) {
 				syntax(1, errs.bad_transp)
 				return
 			}
+		}
+		switch (parse.state) {
+		case 0:
+			cfmt.transp = 0
+			// fall thru
+		case 1:
+		case 2:
+			cfmt.transp = (cfmt.transp || 0) + val
+			return
 		}
 		for (s = curvoice.last_sym; s; s = s.prev) {
 			switch (s.type) {
