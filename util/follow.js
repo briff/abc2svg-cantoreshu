@@ -41,20 +41,32 @@ user.anno_stop = function(type, start, stop, x, y, w, h) {
 }
 
 	playconf.onnote = function(i, on) {
-		var elts = document.getElementsByClassName('_' + i + '_')
+	    var	b, x, y,
+		elts = document.getElementsByClassName('_' + i + '_')
 		if (elts && elts[0]) {
 			elts[0].style.fillOpacity = on ? 0.4 : 0
 
 			// scroll for the element to be in the screen
-			if (on && !window.no_scroll) {
-			    var	b = elts[0].getBoundingClientRect()
+			if (on && !window.no_scroll) {	
+				b = elts[0].getBoundingClientRect()
+
+				// normal
 				if (b.top < 0)
-					window.scrollTo(0, window.scrollY +
-								b.top - 40)
+					y = window.scrollY + b.top -
+							window.innerHeight / 2
 				else if (b.bottom > window.innerHeight)
-					window.scrollTo(0, window.scrollY +
-								b.bottom -
-							window.innerHeight + 40)
+					y = window.scrollY + b.bottom +
+							window.innerHeight / 2
+
+				// single line
+				if (b.left < 0)
+					x = window.scrollX + b.left -
+							window.innerWidth / 2
+				else if (b.right > window.innerWidth)
+					x = window.scrollX + b.right +
+							window.innerWidth / 2
+				if (x != undefined || y != undefined)
+					window.scrollTo(x || 0, y || 0)
 			}
 		}
 	}
