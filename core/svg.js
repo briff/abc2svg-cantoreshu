@@ -55,8 +55,8 @@ var	output = "",		// output buffer
 var tgls = {
  "mtr ": {x:0, y:0, c:"\u0020"},	// space
   brace: {x:0, y:0, c:"\ue000"},
-  hl: {x:-4, y:0, c:"\ue022"},
-  hl1: {x:-6, y:0, c:"\ue023"},
+//  hl: {x:-4, y:0, c:"\ue022"},	// removed
+  hl1: {x:-6, y:0, c:"\ue023"},		// still used for rests
 //  hl2: {x:-6, y:0, c:"\ue023"},		// (unused)
   ghl: {x:-4, y:0, c:"\ue024"},
   lphr: {x:0, y:24, c:"\ue030"},
@@ -117,8 +117,11 @@ var tgls = {
   flu5: {x:-.3, y:12.5, c:"\ue248"},
   fld5: {x:-.3, y:-14, c:"\ue249"},
  "acc-1": {x:-1, y:0, c:"\ue260"},	// flat
+ "sacc-1": {x:-1, y:0, sc:.7, c:"\ue260"},	// small flat (editorial)
   acc3: {x:-1, y:0, c:"\ue261"},	// natural
+  sacc3: {x:-1, y:0, sc:.7, c:"\ue261"},	// small natural (editorial)
   acc1: {x:-2, y:0, c:"\ue262"},	// sharp
+  sacc1: {x:-2, y:0, sc: .7, c:"\ue262"},	// small sharp (editorial)
   acc2: {x:-3, y:0, c:"\ue263"},	// double sharp
  "acc-2": {x:-3, y:0, c:"\ue264"},	// double flat
  "acc-1_2": {x:-2, y:0, c:"\ue280"},	// quarter-tone flat

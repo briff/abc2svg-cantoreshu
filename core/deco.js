@@ -128,7 +128,11 @@ var decos = {
 	"beam-accel": "39 0 0 0 0",
 	"beam-rall": "39 0 0 0 0",
 	stemless: "40 0 0 0 0",
-	rbend: "41 0 0 0 0"},
+	rbend: "41 0 0 0 0",
+	editorial: "42 0 0 0 0",
+	"sacc-1": "3 sacc-1 8 2 2",
+	sacc3: "3 sacc3 8 2 2",
+	sacc1: "3 sacc1 8 2 2"},
 
 	// types of decoration per function
 	f_near = [true, true, true],
@@ -661,7 +665,7 @@ function deco_def(nm) {
 		return //undefined
 	}
 	if ((c_func < 0 || c_func > 10)
-	 && (c_func < 32 || c_func > 41)) {
+	 && (c_func < 32 || c_func > 42)) {
 		error(1, null, "%%deco: bad C function index '$1'", c_func)
 		return //undefined
 	}
@@ -868,6 +872,21 @@ function deco_cnv(a_dcn, s, prev) {
 		case 41:		/* rbend */
 			s.rbstop = 2	// with end
 			continue
+		case 42:		// editorial
+			if (!s.notes[0].acc)
+				continue
+			dcn = "sacc" + s.notes[0].acc.toString() // small accidental
+			dd = dd_tb[dcn]
+			if (!dd) {
+				dd = deco_def(dcn)
+				if (!dd) {
+					error(1, s, errs.bad_val, "!editorial!")
+					continue
+				}
+			}
+			delete s.notes[0].acc
+			curvoice.acc[s.notes[0].pit + 19] = 0	// ignore the accidental
+			break
 		}
 
 		// add the decoration in the symbol
