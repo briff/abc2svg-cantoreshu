@@ -112,11 +112,14 @@ var tgls = {
   fld4: {x:-.3, y:-9, c:"\ue247"},
   flu5: {x:-.3, y:12.5, c:"\ue248"},
   fld5: {x:-.3, y:-14, c:"\ue249"},
- "acc-1": {x:-1, y:0, c:"\ue260"},	// flat
+ "acc-1": {x:-1, y:0, c:"\ue260"},		// flat
+ "cacc-1": {x:-18, y:0, c:"\ue26a\ue260\ue26b"}, // courtesy flat (note deco)
  "sacc-1": {x:-1, y:0, sc:.7, c:"\ue260"},	// small flat (editorial)
-  acc3: {x:-1, y:0, c:"\ue261"},	// natural
+  acc3: {x:-1, y:0, c:"\ue261"},		// natural
+ "cacc3": {x:-18, y:0, c:"\ue26a\ue261\ue26b"},	// courtesy natural (note deco)
   sacc3: {x:-1, y:0, sc:.7, c:"\ue261"},	// small natural (editorial)
-  acc1: {x:-2, y:0, c:"\ue262"},	// sharp
+  acc1: {x:-2, y:0, c:"\ue262"},		// sharp
+ "cacc1": {x:-18, y:0, c:"\ue26a\ue262\ue26b"},	// courtesy sharp (note deco)
   sacc1: {x:-2, y:0, sc: .7, c:"\ue262"},	// small sharp (editorial)
   acc2: {x:-3, y:0, c:"\ue263"},	// double sharp
  "acc-2": {x:-3, y:0, c:"\ue264"},	// double flat

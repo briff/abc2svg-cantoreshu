@@ -132,7 +132,11 @@ var decos = {
 	editorial: "42 0 0 0 0",
 	"sacc-1": "3 sacc-1 8 2 2",
 	sacc3: "3 sacc3 8 2 2",
-	sacc1: "3 sacc1 8 2 2"},
+	sacc1: "3 sacc1 8 2 2",
+	courtesy: "43 0 0 0 0",
+	"cacc-1": "3 cacc-1 0 0 0",
+	cacc3: "3 cacc3 0 0 0",
+	cacc1: "3 cacc1 0 0 0"},
 
 	// types of decoration per function
 	f_near = [true, true, true],
@@ -665,7 +669,7 @@ function deco_def(nm) {
 		return //undefined
 	}
 	if ((c_func < 0 || c_func > 10)
-	 && (c_func < 32 || c_func > 42)) {
+	 && (c_func < 32 || c_func > 43)) {
 		error(1, null, "%%deco: bad C function index '$1'", c_func)
 		return //undefined
 	}
@@ -887,6 +891,14 @@ function deco_cnv(a_dcn, s, prev) {
 			delete s.notes[0].acc
 			curvoice.acc[s.notes[0].pit + 19] = 0	// ignore the accidental
 			break
+		case 43:		// courtesy
+			j = curvoice.acc[s.notes[0].pit + 19]
+			if (s.notes[0].acc || !j)
+				continue
+			if (!s.notes[0].a_dcn)
+				s.notes[0].a_dcn = []
+			s.notes[0].a_dcn.push("cacc" + j)
+			continue
 		}
 
 		// add the decoration in the symbol
