@@ -1098,7 +1098,7 @@ function draw_rest(s) {
 			case '[':
 				break
 			default:
-				xygl(x, y + 6 + yb, "hl1")
+				set_hl(p_staff, j + 1, x, -7, 7)
 				break
 			}
 			if (i == 9) {			/* longa */
@@ -1117,7 +1117,7 @@ function draw_rest(s) {
 		case '[':
 			break
 		default:
-			xygl(x, y + yb, "hl1")
+			set_hl(p_staff, j, x, -7, 7)
 			break
 		}
 	}

@@ -55,10 +55,6 @@ var	output = "",		// output buffer
 var tgls = {
  "mtr ": {x:0, y:0, c:"\u0020"},	// space
   brace: {x:0, y:0, c:"\ue000"},
-//  hl: {x:-4, y:0, c:"\ue022"},	// removed
-  hl1: {x:-6, y:0, c:"\ue023"},		// still used for rests
-//  hl2: {x:-6, y:0, c:"\ue023"},		// (unused)
-  ghl: {x:-4, y:0, c:"\ue024"},
   lphr: {x:0, y:24, c:"\ue030"},
   mphr: {x:0, y:24, c:"\ue038"},
   sphr: {x:0, y:27, c:"\ue039"},
