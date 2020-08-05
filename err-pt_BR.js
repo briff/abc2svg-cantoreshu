@@ -28,8 +28,6 @@ user.textrans = {
 				"%%deco: índice de função '$1' incorreto",
 	"%%deco: bad C function value '$1'":
 				"%%deco: valor de função '$1' incorreto",
-	"%%deco: cannot have a negative value '$1'":
-				"%%deco: valor '$1' não pode ser negativo",
 	"%%multicol end without start": "%%multicol end sem 'start'",
 	"%%multicol new without start": "%%multicol new sem 'start'",
 	"%%repeat cannot start a tune": "%%repeat não pode estar no início de uma música",

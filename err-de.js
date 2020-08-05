@@ -28,7 +28,6 @@ user.textrans = {
 	"%%deco: abnormal h/wl/wr value '$1'": "%%deco: falscher Wert '$1' für h/wl/wr",
     "%%deco: bad C function index '$1'": "%%deco: falscher C Funktionsindex '$1'",
     "%%deco: bad C function value '$1'": "%%deco: falscher C Funtionswert '$1'",
-    "%%deco: cannot have a negative value '$1'": "%%deco: '$1' kann keinen negativen Wert haben",
     "%%multicol end without start": "%%multicol end ohne start",
 	"%%multicol new without start": "%%multicol new ohne start",
     "%%repeat cannot start a tune": "%%repeat kann nicht am Anfang einer Stimme stehen",

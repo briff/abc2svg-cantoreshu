@@ -17,6 +17,40 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with abc2svg-core.  If not, see <http://www.gnu.org/licenses/>.
 
+// Decoration objects
+// dd {			// decoration definition (static)
+//	dd_en,			// definition of the ending decoration
+//	dd_st,			// definition of the starting decoration
+//	func,			// function
+//	glyph,			// glyph
+//	h,			// height / ascent
+//	hd,			// descent
+//	inv,			// inverted glyph
+//	name,			// name
+//	str,			// string
+//	wl,			// left width
+//	wr,			// right width
+// }
+// de {			// decoration elements (in an array - one list per music line)
+//	dd,			// definition of the decoration
+//	defl {			// flags
+//		noen,			// no end of this decoration
+//		nost,			// no start of this decoration
+//	},
+//	has_val,		// defined value
+//	ix,			// index of the decoration in the 'de' list
+//	lden,			// end of a long decoration
+//	ldst,			// start of a long decoration if true
+//	m,			// note index when note decoration
+//	prev,			// previous decoration (hack for 'tr~~~~~')
+//	s,			// symbol
+//	start,			// start of the decoration (in the ending element)
+//	up,			// above the symbol
+//	val,			// value
+//	x,			// x offset
+//	y,			// y offset
+// }
+
 var	dd_tb = {},		// definition of the decorations
 	a_de			// array of the decoration elements
 
@@ -130,9 +164,9 @@ var decos = {
 	stemless: "40 0 0 0 0",
 	rbend: "41 0 0 0 0",
 	editorial: "42 0 0 0 0",
-	"sacc-1": "3 sacc-1 8 2 2",
-	sacc3: "3 sacc3 8 2 2",
-	sacc1: "3 sacc1 8 2 2",
+	"sacc-1": "3 sacc-1 6,4 4 4",
+	sacc3: "3 sacc3 6,5 4 4",
+	sacc1: "3 sacc1 6,4 4 4",
 	courtesy: "43 0 0 0 0",
 	"cacc-1": "3 cacc-1 0 0 0",
 	cacc3: "3 cacc3 0 0 0",
@@ -595,17 +629,17 @@ function d_upstaff(de) {
 		if (dd.name != "invertedfermata"
 		 && (up > 0
 		  || (up < 0 && s.multi >= 0))) {
-			yc = y_get(s.st, true, s.x - dd.wl, w) + 2
+			yc = y_get(s.st, true, s.x - dd.wl, w) + 2 + dd.hd
 			if (yc < stafft)
 				yc = stafft;
 			y_set(s.st, true, s.x - dd.wl, w, yc + dd.h);
 			s.ymx = yc + dd.h
 		} else {
-			yc = y_get(s.st, false, s.x - dd.wl, w) - 2
+			yc = y_get(s.st, false, s.x - dd.wl, w) - 3 + dd.hd
 			if (yc > staffb)
 				yc = staffb;
 			yc -= dd.h;
-			y_set(s.st, false, s.x - dd.wl, w, yc)
+			y_set(s.st, false, s.x - dd.wl, w, yc - dd.hd)
 			if (dd.name == "fermata")
 				inv = true;
 			s.ymn = yc
@@ -635,6 +669,7 @@ var func_tb = [
 // add a decoration
 /* syntax:
  *	%%deco <name> <c_func> <glyph> <h> <wl> <wr> [<str>]
+ * "<h>" may be followed by ",<hd>" (descent)
  */
 function deco_add(param) {
 	var dv = param.match(/(\S*)\s+(.*)/);
@@ -643,7 +678,7 @@ function deco_add(param) {
 
 // define a decoration
 function deco_def(nm) {
-    var a, dd, dd2, name2, c, i, elts, str,
+    var a, dd, dd2, name2, c, i, elts, str, hd,
 	text = decos[nm]
 
 	if (!text) {
@@ -653,14 +688,14 @@ function deco_def(nm) {
 	}
 
 	// extract the values
-	a = text.match(/(\d+)\s+(.+?)\s+([0-9.]+)\s+([0-9.]+)\s+([0-9.]+)/)
+	a = text.match(/(\d+)\s+(.+?)\s+([0-9.,]+)\s+([0-9.]+)\s+([0-9.]+)/)
 	if (!a) {
 		error(1, null, "Invalid decoration '$1'", nm)
 		return //undefined
 	}
 	var	c_func = Number(a[1]),
 //		glyph = a[2],
-		h = parseFloat(a[3]),
+		h = a[3],
 		wl = parseFloat(a[4]),
 		wr = parseFloat(a[5])
 
@@ -668,7 +703,7 @@ function deco_def(nm) {
 		error(1, null, "%%deco: bad C function value '$1'", a[1])
 		return //undefined
 	}
-	if ((c_func < 0 || c_func > 10)
+	if (c_func > 10
 	 && (c_func < 32 || c_func > 43)) {
 		error(1, null, "%%deco: bad C function index '$1'", c_func)
 		return //undefined
@@ -678,9 +713,12 @@ function deco_def(nm) {
 	if (c_func == 7)			// old !cresc(!
 		c_func = 6
 
-	if (h < 0 || wl < 0 || wr < 0) {
-		error(1, null, "%%deco: cannot have a negative value '$1'", text)
-		return //undefined
+	if (h.indexOf(',') > 0) {
+		h = h.split(',')
+		hd = h[1]
+		h = h[0]
+	} else {
+		hd = 0
 	}
 	if (h > 50 || wl > 80 || wr > 80) {
 		error(1, null, "%%deco: abnormal h/wl/wr value '$1'", text)
@@ -699,7 +737,8 @@ function deco_def(nm) {
 	/* set the values */
 	dd.func = dd.name.indexOf("head-") == 0 ? 9 : c_func;
 	dd.glyph = a[2];
-	dd.h = h;
+	dd.h = Number(h)
+	dd.hd = Number(hd)
 	dd.wl = wl;
 	dd.wr = wr;
 	str = text.replace(a[0], '').trim()
@@ -1246,12 +1285,10 @@ function draw_deco_near() {
 
 	// create all decorations of a note (chord and heads)
 	function create_all(s) {
-		var m
-
 		if (s.a_dd)
 			create_deco(s)
 		if (s.notes) {
-			for (m = 0; m < s.notes.length; m++) {
+			for (var m = 0; m < s.notes.length; m++) {
 				if (s.notes[m].a_dcn)
 					create_dh(s, m)
 			}
