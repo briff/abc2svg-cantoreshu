@@ -103,10 +103,9 @@ function identify_note(s, dur_o) {
 	} else switch (flags) {
 	default:
 		error(1, s, "Note too long")
-		flags = -5
+		flags = -4
 		/* fall thru */
-	case -5:				// longa
-	case -4:				// breve
+	case -4:
 		head = C.SQUARE
 		break
 	case -3:
