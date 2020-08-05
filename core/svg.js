@@ -182,7 +182,7 @@ var tgls = {
 // "mtrc|": {x:0, y:0, c:"\ue918"},	// (unused)
  "mtr.":  {x:0, y:0, c:"\ue920"},	// prolatione perfecta
  "mtr|":  {x:0, y:0, c:"\ue925"},	// (twice as fast)
-  longa: {x:-3.7, y:0, c:"\ue95d"},
+  longa: {x:-4.7, y:0, c:"\ue95d"},
   custos: {x:-4, y:3, c:"\uea02"},
   ltr: {x:2, y:6, c:"\ueaa4"}		// long trill element
 }
