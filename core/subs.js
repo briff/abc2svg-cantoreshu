@@ -790,6 +790,9 @@ function write_headform(lwidth) {
 					writempo(glovar.tempo, x, -y)
 				}
 			} else if (str) {
+				if (c == 'T')
+					str = trim_title(str,
+							 info_font.T[0] == 's')
 				xy_str(x, -y, str, align)
 			}
 
