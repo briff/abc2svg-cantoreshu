@@ -1515,10 +1515,17 @@ function get_staves(cmd, parm) {
 		p_voice.time = maxtime;
 		v = p_voice.v
 
-		par_sy.voices[v] = {}
-
 		a_vf[i][0] = p_voice;
-		par_sy.voices[v].range = range++
+
+		// set the range and add the overlay voices
+		while (1) {
+			par_sy.voices[v] = {}
+			par_sy.voices[v].range = range++
+			p_voice = p_voice.voice_down
+			if (!p_voice)
+				break
+			v = p_voice.v
+		}
 	}
 	par_sy.top_voice = a_vf[0][0].v
 
@@ -1616,6 +1623,16 @@ function get_staves(cmd, parm) {
 		p_voice = voice_tb[v]
 		if (!par_sy.voices[v])
 			continue
+
+		// set the staff of the overlay voices
+		p_voice2 = p_voice.voice_down
+		while (p_voice2) {
+			i = p_voice2.v
+			p_voice2.st = p_voice2.cst =
+					par_sy.voices[i].st = st
+			p_voice2 = p_voice2.voice_down
+		}
+
 		par_sy.voices[v].second = p_voice.second;
 		st = p_voice.st
 		if (st > 0 && !p_voice.norepbra
