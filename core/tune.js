@@ -316,9 +316,8 @@ function voice_adj(sys_chg) {
 	for (v = 0; v < voice_tb.length; v++) {
 		p_voice = voice_tb[v]
 		if (!sys_chg) {			// if not %%score
-		    delete p_voice.eoln
-		    if (p_voice.sls.length) {	// and no end of slur
-			while (1) {
+			delete p_voice.eoln
+			while (1) {		// set the end of slurs
 			    var	sl = p_voice.sls.shift()
 
 				if (!sl)
@@ -339,8 +338,7 @@ function voice_adj(sys_chg) {
 					syntax(1, "Lack of ending slur(s)")
 				}
 			}
-		    } // not %%score
-		}
+		} // not %%score
 		for (s = p_voice.sym; s; s = s.next) {
 			if (s.time >= staves_found)
 				break
@@ -1658,6 +1656,7 @@ function get_staves(cmd, parm) {
 		p_voice.sym = p_voice.last_sym = null;
 
 		p_voice.key = clone(curvoice.key)
+		p_voice.sls = []
 
 		delete p_voice.nm
 		delete p_voice.snm
