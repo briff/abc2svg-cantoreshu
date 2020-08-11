@@ -81,6 +81,7 @@ user.textrans = {
     "Invalid decoration '$1'": "fehlerhafte Dekoration '$1'",
     "Invalid note duration $1": "Fehlerhafte Notendekoration '$1'",
     "Lack of ']'": "']' fehlt",
+	"Lack of ending slur(s)": "Lack of ending slur(s)",
 	"Lack of starting [, ! or \" in U: / %%user":
 				"[, ! or \" fehlt in U: / %%user",
 	"Line split problem - adjust maxshrink and/or breaklimit":
