@@ -2285,7 +2285,10 @@ Abc.prototype.new_note = function(grace, sls) {
 	if (a_dcn_sav)
 		deco_cnv(a_dcn_sav, s, s.prev)
 	if (parse.ottava.length) {
-		s.ottava = parse.ottava
+		if (grace)
+			grace.ottava = parse.ottava
+		else
+			s.ottava = parse.ottava
 		parse.ottava = []
 	}
 	if (parse.stemless)

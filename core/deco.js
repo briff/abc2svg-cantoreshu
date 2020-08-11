@@ -395,7 +395,7 @@ function d_near(de) {
 	}
 	if (up)
 		s.ymx = y + dd.h
-	else if (dd.name[0] == 'w')
+	else if (dd.name[0] == 'w')		// wedge
 		s.ymn = y - dd.h
 	else
 		s.ymn = y
@@ -1400,6 +1400,7 @@ function draw_deco_near() {
 		case C.GRACE:
 			for (g = s.extra; g; g = g.next)
 				create_all(g)
+			break
 		default:
 			continue
 		}
