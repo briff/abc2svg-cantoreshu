@@ -98,7 +98,7 @@ build mei2svg-$MAJOR.js: jsc core/abc2svg.js core/deco.js core/draw.js $
 build ambitus-$MAJOR.js: jscu modules/ambitus.js
 build break-$MAJOR.js: jscu modules/break.js
 build capo-$MAJOR.js: jscu modules/capo.js
-build clair-$MAJOR.js: jscu util/midi.js modules/clair.js
+build clair-$MAJOR.js: jscu modules/clair.js
 build clip-$MAJOR.js: jscu modules/clip.js
 build combine-$MAJOR.js: jscu modules/combine.js
 build diag-$MAJOR.js: jscu modules/diag.js
@@ -128,10 +128,9 @@ build abcweb1-$MAJOR.js: jscu util/abcweb1.js
 build abcweb2-$MAJOR.js: jscu util/abcweb2.js
 build follow-$MAJOR.js: jscu util/follow.js
 build json-$MAJOR.js: jscu util/json.js
-build setmidi-$MAJOR.js: jscu util/midi.js
 build toaudio-$MAJOR.js: jscu util/toaudio.js
 build play-$MAJOR.js: jscu util/play.js util/toaudio.js $
- util/toaudio5.js util/midi.js util/sf2-parser.js util/tomidi5.js
+ util/toaudio5.js util/sf2-parser.js util/tomidi5.js
 build snd-$MAJOR.js: jscu util/play.js util/sndgen.js $
  util/sndaud.js util/sf2-parser.js util/sndmid.js
 

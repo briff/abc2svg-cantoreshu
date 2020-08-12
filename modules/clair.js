@@ -1,6 +1,6 @@
 // clair.js - module to output Clairnote sheets (https:clairnote.org)
 //
-// Copyright (C) 2019 Jean-Francois Moine - GPL3+
+// Copyright (C) 2019-2020 Jean-Francois Moine - GPL3+
 //
 // This module is loaded when "%%clairnote" appears in a ABC source.
 //
@@ -185,10 +185,7 @@ abc2svg.clair = {
     var	s, m, mp, p_v, v,
 	cfmt = this.cfmt(),
 	tsfirst = this.get_tsfirst(),
-	voice_tb = this.get_voice_tb(),
-	abcmidi = new AbcMIDI();
-
-	abcmidi.add(tsfirst, voice_tb);		// get the MIDI pitches
+	voice_tb = this.get_voice_tb()
 
 	// define the new clefs and key signatures
 	// (clefs converted from clairnote.ly)

@@ -36,7 +36,7 @@ gen core/abc2svg.js core/deco.js core/draw.js\
 gen modules/ambitus.js > ambitus-$MAJOR.js
 gen modules/break.js > break-$MAJOR.js
 gen modules/capo.js > capo-$MAJOR.js
-gen util/midi.js modules/clair.js > clair-$MAJOR.js
+gen modules/clair.js > clair-$MAJOR.js
 gen modules/clip.js > clip-$MAJOR.js
 gen modules/combine.js > combine-$MAJOR.js
 gen modules/diag.js > diag-$MAJOR.js
@@ -66,9 +66,8 @@ gen util/abcweb1.js > abcweb1-$MAJOR.js
 gen util/abcweb2.js > abcweb2-$MAJOR.js
 gen util/follow.js > follow-$MAJOR.js
 gen util/json.js > json-$MAJOR.js
-gen util/midi.js > setmidi-$MAJOR.js
 gen util/toaudio.js > toaudio-$MAJOR.js
-gen util/play.js util/toaudio.js util/toaudio5.js util/midi.js\
+gen util/play.js util/toaudio.js util/toaudio5.js\
  util/sf2-parser.js util/tomidi5.js > play-$MAJOR.js
 gen util/play.js util/sndgen.js util/sndaud.js\
  util/sf2-parser.js util/sndmid.js > snd-$MAJOR.js

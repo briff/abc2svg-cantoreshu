@@ -112,11 +112,15 @@ function new_clef(clef_def) {
 		s.clef_oct_transp = true
 	case '+':
 		s.clef_octave = 7
+		if (!s.clef_oct_transp)
+			curvoice.snd_oct = 12	// MIDI higher octave
 		break
 	case '_':
 		s.clef_oct_transp = true
 	case '-':
 		s.clef_octave = -7
+		if (!s.clef_oct_transp)
+			curvoice.snd_oct = -12	// MIDI lower octave
 		break
 	}
 	return s
@@ -1804,6 +1808,8 @@ function pit2mid(pit, acc) {
 	o = ((pit / 7) | 0) * 12,		// octave
 	p0, p1, s, b40
 
+	if (curvoice.snd_oct)
+		o += curvoice.snd_oct
 	if (acc == 3)				// if natural accidental
 		acc = 0
 	if (acc) {
@@ -2064,6 +2070,9 @@ Abc.prototype.new_note = function(grace, sls) {
 					i = curvoice.ckey.k_map[apit % 7] || 0
 			}
 			note.midi = pit2mid(apit, i)
+			if (curvoice.ckey.k_sndtran)
+				note.midi += abc2svg.b40m(curvoice.ckey.k_sndtran +
+						122) - 36
 
 			if (curvoice.map
 			 && maps[curvoice.map])

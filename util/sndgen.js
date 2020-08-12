@@ -55,67 +55,6 @@ function ToAudio() {
 	chn = []		// [voice] MIDI channel
 
 	// adjust the MIDI pitches according to the transpositions
-	function midi_transp() {
-	    var p_v, s,
-		temper = voice_tb[0].temper,	// (set by the module temper.js)
-		v = voice_tb.length
-
-		// loop on the voice symbols
-		function vloop(s, sndtran, ctrans) {
-		    var	i, g, note, dm
-
-			function dm_set() {
-				dm = abc2svg.b40m(sndtran + ctrans + 122) - 36
-			} // dm_set()
-
-			function set_note(note) {
-				note.midi += dm
-			} // set_note()
-
-			dm_set()
-			while (s) {
-				switch (s.type) {
-				case C.CLEF:
-					ctrans = (s.clef_octave && !s.clef_oct_transp) ?
-							(s.clef_octave / 7 * 40) : 0
-					dm_set()
-					break
-				case C.KEY:
-					if (s.k_sndtran != undefined) {
-						sndtran = s.k_sndtran
-						dm_set()
-					}
-					break
-				case C.GRACE:
-					if (dm)
-					   for (g = s.extra; g; g = g.next) {
-						for (i = 0; i <= g.nhd; i++)
-							set_note(g.notes[i])
-					    }
-					break
-				case C.NOTE:
-					if (dm)
-					    for (i = 0; i <= s.nhd; i++)
-						set_note(s.notes[i])
-					break
-				}
-				s = s.next
-			}
-		} // vloop()
-
-		// initialize the clefs and keys
-		while (--v >= 0) {
-			p_v = voice_tb[v]
-			if (!p_v.sym)
-				continue
-			s = p_v.clef
-			vloop(p_v.sym,
-				p_v.key.k_sndtran || 0,
-				s.clef_octave && !s.clef_oct_transp ?
-					(s.clef_octave / 7 * 40) : 0)
-		}
-	} // midi_transp()
-
 	// build the information about the parts
 	function build_parts(first) {
 	    var	i, j, c, n, v,
@@ -319,9 +258,6 @@ function ToAudio() {
 	} // set_variant()
 
 	// add() main
-
-	// transpose the MIDI pitches
-	midi_transp()
 
 	if (s.parts)
 		build_parts(s)
