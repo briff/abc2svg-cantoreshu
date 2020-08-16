@@ -707,11 +707,15 @@ function get_font(fn) {
 			if (font.style)
 				font2.style = font.style
 		}
-		if (font.class)
-			font2.class = font.class
+//		if (font.class)
+//			font2.class = font.class
 		if (font.size)
 			font2.size = font.size
 		st = st_font(font2)
+		if (font.class) {
+			font2.class = font.class
+			st += ' '+font.class
+		}
 		fid = font_st[st]
 		if (fid != undefined)
 			return font_tb[fid]
