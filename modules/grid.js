@@ -15,6 +15,7 @@
 //	%%gridfont font_name size (default: 'serif 16')
 
 abc2svg.grid = {
+    pl: '<path class="stroke" stroke-width="1" d="M',
 
 // generate the grid
     block_gen: function(of, s) {
@@ -24,18 +25,16 @@ abc2svg.grid = {
 	}
 
     var	abc = this,
-	img, font_cl, cls,
+	img, cls,
 	cfmt = abc.cfmt(),
 	grid = cfmt.grid
 
 // generate the grid
 function build_grid(chords, bars, font, wmx) {
-    var	i, k, l, nr, line, bar, w, hr, x0, x, y, yl,
+    var	i, k, l, nr, bar, w, hr, x0, x, y, yl,
 	lc = '',
 	cells = [],
-	nc = grid.n,
-	sf = '" style="font-size:' + (font.size * .72).toFixed(1) + 'px'
-						// small font
+	nc = grid.n
 
 	// set some chord(s) in each cell
 	function set_chords() {
@@ -69,61 +68,44 @@ function build_grid(chords, bars, font, wmx) {
 	} // set_chords()
 
 	function build_cell(cell, x, y, yl, hr) {
-	    var	line = ''
 		if (cell.length > 1) {
-			line += '<path class="stroke" stroke-width="1" d="M' +
-				(x - wmx / 2).toFixed(1) + ' ' +
-				yl.toFixed(1) + 'l' +
+			abc.out_svg(abc2svg.grid.pl)		// / line
+			abc.out_sxsy(x - wmx / 2, ' ', yl)
+			abc.out_svg('l' +
 				wmx.toFixed(1) + ' -' + hr.toFixed(1) +
-				'"/>\n'
+				'"/>\n')
 			if (cell[1]) {
-			    line += '<path class="stroke" stroke-width="1" d="M' +
-				(x - wmx / 2).toFixed(1) + ' ' +
-				(yl - hr).toFixed(1) + 'l' +
+			    abc.out_svg(abc2svg.grid.pl)	// \ left line
+			    abc.out_sxsy(x - wmx / 2, ' ', yl + hr)
+			    abc.out_svg('l' +
 				(wmx / 2).toFixed(1) + ' ' + (hr / 2).toFixed(1) +
-				'"/>\n'
-			    line += '<text class="' + cls + sf + '" x="' +
-				(x - wmx / 3).toFixed(1) + '" y="' +
-				y.toFixed(1) + '">' +
-				cell[0] + '</text>\n'
-			    line += '<text class="' + cls + sf + '" x="' +
-				x.toFixed(1) + '" y="' +
-				(y - hr / 3).toFixed(1) + '">' +
-				cell[1] + '</text>\n'
+				'"/>\n')
+			    abc.set_font('gs')			// small font
+			    abc.xy_str(x - wmx / 3, y, cell[0])
+			    abc.xy_str(x, y + hr / 3, cell[1])
 			} else {
-			    line += '<text class="' + cls + sf + '" x="' +
-				(x - wmx * .2).toFixed(1) + '" y="' +
-				(y - hr / 4).toFixed(1) + '">' +
-				cell[0] + '</text>\n'
+			    abc.set_font('gs')
+			    abc.xy_str(x - wmx * .2, y + hr / 4, cell[0])
 			}
 			if (cell.length >= 3) {
 			  if (cell[3]) {
-			    line += '<path class="stroke" stroke-width="1" d="M' +
-				x.toFixed(1) + ' ' +
-				(yl - hr / 2).toFixed(1) + 'l' +
+			    abc.out_svg(abc2svg.grid.pl)	// \ right line
+			    abc.out_sxsy(x, ' ', yl + hr / 2)
+			    abc.out_svg('l' +
 				(wmx / 2).toFixed(1) + ' ' + (hr / 2).toFixed(1) +
-				'"/>\n'
-			    line += '<text class="' + cls + sf + '" x="' +
-				x.toFixed(1) + '" y="' +
-				(y + hr / 3).toFixed(1) + '">' +
-				cell[2] + '</text>\n'
-			    line += '<text class="' + cls + sf + '" x="' +
-				(x + wmx / 3).toFixed(1) + '" y="' +
-				y.toFixed(1) + '">' +
-				cell[3] + '</text>\n'
+				'"/>\n')
+			    abc.set_font('gs')
+			    abc.xy_str(x, y - hr / 3, cell[2])
+			    abc.xy_str(x + wmx / 3, y, cell[3])
 			  } else {
-			    line += '<text class="' + cls + sf + '" x="' +
-				(x + wmx * .2).toFixed(1) + '" y="' +
-				(y + hr / 4).toFixed(1) + '">' +
-				cell[2] + '</text>\n'
+			    abc.set_font('gs')
+			    abc.xy_str(x + wmx * .2, y - hr / 4, cell[2])
 			  }
 			}
 		} else {
-			line += '<text class="' + cls + '" x="' +
-				x.toFixed(1) + '" y="' + y.toFixed(1) + '">' +
-				cell[0] + '</text>\n'
+			abc.set_font('grid')
+			abc.xy_str(x, y, cell[0])
 		}
-		return line
 	} // build_cell()
 
 	// ------- build_grid() -------
@@ -161,84 +143,83 @@ function build_grid(chords, bars, font, wmx) {
 		nc = cells.length;
 
 	hr = font.size * 2
-	if (wmx < hr * 1.4)
-		wmx = hr * 1.4;				// cell width
+	if (wmx < hr * 1.5)
+		wmx = hr * 1.5				// cell width
 
+	x0 = img.width - img.lm - img.rm		// staff width
 	w = wmx * nc
-	if (w > img.width) {
+	if (w > x0) {
 		nc /= 2;
 		w /= 2
 	}
 
 	// generate the cells
-	yl = 1
-	y = 1 - hr / 2 + font.size * .3
+	yl = -1
+	y = -1 + font.size * .6
 	nr = 0
-	x0 = (img.width / cfmt.scale - w) / 2
+	x0 = (x0 / cfmt.scale - w) / 2
 	for (i = 0; i < cells.length; i++) {
 		if (i == 0
 		 || (grid.repbrk
 		  && (bars[i].slice(-1) == ':' || bars[i][0] == ':'))
 		 || k >= nc) {
-			y += hr			// new row
-			yl += hr
+			y -= hr			// new row
+			yl -= hr
 			x = x0 + wmx / 2
 			k = 0
 			nr++
 		}
 		k++
-		lc += build_cell(cells[i], x, y, yl, hr)
+		build_cell(cells[i], x, y, yl, hr)
 		x += wmx
 	}
 
 	// draw the lines
-	line += '<path class="stroke" d="\n';
-	y = 1
+	abc.out_svg('<path class="stroke" stroke-width="1" d="\n')
+	y = -1
 	for (i = 0; i <= nr; i++) {
-		line += 'M' + x0.toFixed(1) + ' ' + y.toFixed(1) +
-			'h' + w.toFixed(1)+ '\n';
-		y += hr
+		abc.out_svg('M')
+		abc.out_sxsy(x0, ' ', y)
+		abc.out_svg('h' + w.toFixed(1)+ '\n')
+		y -= hr
 	}
 	x = x0
 	for (i = 0; i <= nc; i++) {
-		line += 'M' + x.toFixed(1) + ' 1v' + (hr * nr).toFixed(1) + '\n';
+		abc.out_svg('M')
+		abc.out_sxsy(x, ' ', -1)
+		abc.out_svg('v' + (hr * nr).toFixed(1) + '\n')
 		x += wmx
 	}
-	line += '"/>\n';
-
-	// insert the cells
-	line += lc
+	abc.out_svg('"/>\n')
 
 	// show the repeat signs
-	y = 1 - hr / 2 + font.size * .3;
+	y = -1 + font.size * .7
 	x = x0
 	for (i = 0; i < bars.length; i++) {
 		bar = bars[i]
-		if (bar[0] == ':')
-			line += '<text class="' + cls + '" x="' +
-				(x - 5).toFixed(1) +
-				'" y="' + y.toFixed(1) +
-				'" style="font-weight:bold;font-size:' +
-			(font.size + 2).toFixed(1) + 'px">:</text>\n'
+		if (bar[0] == ':') {
+			abc.out_svg('<text class="' + cls + '" x="')
+			abc.out_sxsy(x - 5, '" y="', y)
+			abc.out_svg('" style="font-weight:bold;font-size:' +
+				(font.size * 1.5).toFixed(1) + 'px">:</text>\n')
+		}
 		if (i == 0
 		 || (grid.repbrk
 		  && (bars[i].slice(-1) == ':' || bars[i][0] == ':'))
 		 || k >= nc) {
-			y += hr;			// new row
+			y -= hr;			// new row
 			x = x0
 			k = 0
 		}
 		k++
-		if (bar.slice(-1) == ':')
-			line += '<text class="' + cls + '" x="' +
-				(x + 5).toFixed(1) +
-				'" y="' + y.toFixed(1) +
-				'" style="font-weight:bold;font-size:' +
-			(font.size + 2).toFixed(1) + 'px">:</text>\n'
+		if (bar.slice(-1) == ':') {
+			abc.out_svg('<text class="' + cls + '" x="')
+			abc.out_sxsy(x + 5, '" y="', y)
+			abc.out_svg('" style="font-weight:bold;font-size:' +
+				(font.size * 1.5).toFixed(1) + 'px">:</text>\n')
+		}
 		x += wmx
 	}
-
-	abc.out_svg(line)
 	abc.vskip(hr * nr + 6)
 } // build_grid()
 
@@ -250,11 +231,17 @@ function build_grid(chords, bars, font, wmx) {
 	// set the text style
 	if (!cfmt.gridfont)
 		abc.param_set_font("gridfont", "serif 16")
+	abc.param_set_font("gridfont", "* * class=mid")
 	font = abc.get_font('grid')
-	font_cl = abc.font_class(font)
-	cls = font_cl + " mid";
+	cls = abc.font_class(font)
+	n = font.name
+	if (font.weight)
+		n += font.weight
+	if (font.style)
+		n += font.style
+	abc.param_set_font("gsfont",
+		n + ' ' + (font.size * .7).toFixed(1) + " class=mid")
 	abc.add_style("\n.mid {text-anchor:middle}")
-	abc.set_font('grid')		// (for strwh())
 
 	// create the grid
 	abc.blk_flush()
