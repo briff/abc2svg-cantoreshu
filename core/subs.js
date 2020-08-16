@@ -193,6 +193,22 @@ function out_str(str) {
 		o_font = gene.curfont,
 		c_font = o_font;
 
+	// build the '<tspan>' element
+	function tspan(nf, of) {
+	    var	cl
+
+		if (nf.class
+		 && nf.name == of.name
+		 && nf.size == of.size
+		 && nf.weight == of.weight
+		 && nf.style == of.style)
+			cl = nf.class		// change only the class
+		 else
+			cl = font_class(nf)
+
+		return '<tspan\n\tclass="' + cl + '">'
+	}
+
 	output += str.replace(/<|>|&[^&]*?;|&|  |\$./g, function(c){
 			switch (c) {
 			case '<': return "&lt;"
@@ -218,8 +234,7 @@ function out_str(str) {
 				c_font = n_font
 				if (c_font == o_font)
 					return c
-				return c + '<tspan\n\tclass="' +
-						font_class(n_font) + '">'
+				return c + tspan(c_font, o_font)
 			}
 			return c		// &xxx;
 		})
