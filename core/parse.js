@@ -1864,12 +1864,6 @@ Abc.prototype.new_note = function(grace, sls) {
 	line = parse.line,
 	a_dcn_sav = a_dcn		// save parsed decoration names
 
-	if (!grace
-	 && curvoice.tie_s) {		// if tie from previous note / grace note
-		tie_s = curvoice.tie_s
-		curvoice.tie_s = null
-	}
-
 	// handle the ties
 	function do_ties(s, tie_s) {
 	    var	m, note, mid
@@ -1923,6 +1917,10 @@ Abc.prototype.new_note = function(grace, sls) {
 	if (curvoice.color)
 		s.color = curvoice.color
 
+	if (curvoice.tie_s) {		// if tie from previous note / grace note
+		tie_s = curvoice.tie_s
+		curvoice.tie_s = null
+	}
 	if (grace) {
 		s.grace = true
 	} else {
@@ -1971,8 +1969,10 @@ Abc.prototype.new_note = function(grace, sls) {
 			s.width = line.get_int()
 		else
 			s.width = 10
-		if (tie_s)
+		if (tie_s) {
 			curvoice.tie_s = tie_s
+			tie_s = null
+		}
 		break
 	case 'x':
 		s.invis = true
@@ -2174,6 +2174,10 @@ Abc.prototype.new_note = function(grace, sls) {
 	if (s.grace && s.type != C.NOTE) {
 		syntax(1, errs.bad_grace)
 		return //null
+	}
+	if (tie_s && s.type != C.NOTE) {
+		syntax(1, "Bad tie")
+		tie_s = null
 	}
 
 	if (s.notes) {				// if note or rest
