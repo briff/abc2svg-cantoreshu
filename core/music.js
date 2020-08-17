@@ -4429,8 +4429,6 @@ Abc.prototype.set_stems = function() {
 				s.ys = ymn;
 				s.y = ymx
 			}
-//			if (nflags == -4)		/* if longa */
-//				ymn -= 6;
 			s.ymx = ymx + 4;
 			s.ymn = ymn - 4
 		} else if (s.stem >= 0) {

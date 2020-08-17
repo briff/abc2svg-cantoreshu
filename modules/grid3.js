@@ -208,7 +208,7 @@ abc2svg.grid3 = {
 			}
 		}
 		if (cells[nr][i].length)
-			bars[nr][++i] = '|'	// mussing ending bar
+			bars[nr][++i] = '|'	// missing ending bar
 		else
 			cells[nr][i] = null	// keep just the measure bar
 
