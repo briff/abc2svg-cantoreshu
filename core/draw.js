@@ -1021,7 +1021,8 @@ function draw_rest(s) {
 
 		/* don't use next/prev: there is no bar in voice overlay */
 		s2 = s.ts_next
-		while (s2.time != s.time + s.dur)
+		while (s2.time != s.time + s.dur
+		    && s2.ts_next)
 			s2 = s2.ts_next
 		x = s2.x - s2.wl
 		s2 = s
