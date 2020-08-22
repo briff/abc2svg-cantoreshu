@@ -2511,17 +2511,14 @@ function parse_music_line() {
 			// skip definitions if the current voice is ignored
 			if (curvoice.ignore) {
 				while (1) {
-					while (c && c != '[')
-						c = line.next_char()
-					if (!c)
-						break
-					if (c == 'V'
-					 && line.buffer[line.index + 1] == ':')
-						break	// [V:nn] found
+					if (c == '['
+					 && line.buffer[line.index + 1] == 'V'
+					 && line.buffer[line.index + 2] == ':')
+						break		// [V:nn] found
 					c = line.next_char()
+					if (!c)
+						return
 				}
-				if (!c)
-					break
 			}
 
 			// special case for '.' (dot)
