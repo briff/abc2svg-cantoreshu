@@ -990,6 +990,11 @@ function new_tempo(text) {
 function do_info(info_type, text) {
 	var s, d1, d2, a, vid
 
+	// skip this line if the current voice is ignored
+	if (curvoice && curvoice.ignore
+	 && info_type != 'V')
+		return
+
 	switch (info_type) {
 
 	// info fields in any state
