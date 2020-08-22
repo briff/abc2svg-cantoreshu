@@ -224,23 +224,29 @@ function build_grid(chords, bars, font, wmx) {
 } // build_grid()
 
 	// ----- block_gen() -----
-    var	p_voice, n, font
+    var	p_voice, n, font, f2
 
 	img = abc.get_img()
 
 	// set the text style
 	if (!cfmt.gridfont)
 		abc.param_set_font("gridfont", "serif 16")
-	abc.param_set_font("gridfont", "* * class=mid")
 	font = abc.get_font('grid')
+	if (font.class)
+		font.class += ' mid'
+	else
+		font.class = 'mid'
 	cls = abc.font_class(font)
-	n = font.name
-	if (font.weight)
-		n += font.weight
-	if (font.style)
-		n += font.style
+
+	// define a smaller font
 	abc.param_set_font("gsfont",
-		n + ' ' + (font.size * .7).toFixed(1) + " class=mid")
+		font.name + ' ' + (font.size * .7).toFixed(1))
+	f2 = cfmt.gsfont
+	if (font.weight)
+		f2.weight = font.weight
+	if (font.style)
+		f2.style = font.style
+	f2.class = font.class
 	abc.add_style("\n.mid {text-anchor:middle}")
 
 	// create the grid
