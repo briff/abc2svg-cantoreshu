@@ -223,7 +223,7 @@ abc2svg.abc_init = function() {
 		abc2svg.print('<!DOCTYPE html>\n\
 <html>\n\
 <head>\n\
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>\n\
+<meta charset="utf-8"/>\n\
 <meta name="generator" content="abc2svg-' + abc2svg.version + '"/>\n\
 <!-- CreationDate: ' + get_date() + '-->\n\
 <style>\n\
