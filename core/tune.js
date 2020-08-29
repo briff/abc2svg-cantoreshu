@@ -1988,7 +1988,7 @@ function init_tune() {
 
 // treat V: with many voices
 function do_cloning() {
-    var	i, eol,
+    var	i,
 	clone = curvoice.clone,
 	vs = clone.vs,
 	a = clone.a,
@@ -2005,11 +2005,13 @@ function do_cloning() {
 	// insert the music sequence in each voice
 	include++;
 	for (i = 0; i < vs.length; i++) {
+		parse = Object.create(parse_sav) // create a new parse context
+		parse.line = Object.create(parse_sav.line)
 		get_voice(vs[i], a)
 		tosvg(parse.fname, file, bol, eol)
-		parse = Object.create(parse_sav) // restore the parse context
 	}
 	include--
+	parse = parse_sav	// restore the parse context
 }
 
 // treat a 'V:' info
