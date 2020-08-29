@@ -1715,13 +1715,13 @@ function draw_measnb() {
 		     if (s.type != C.BAR || !s.bar_num) {
 			if (s.prev)
 				s = s.prev;
-			x = s.x + s.wr;
 			any_nb = true;
 			w = w0
 			if (bar_num >= 10)
 				w *= bar_num >= 100 ? 3 : 2
 			if (gene.curfont.box)
 				w += 4;
+			x = s.x + s.wr + 1	// if clef, shift a bit
 			y = y_get(st, true, x, w)
 			if (y < staff_tb[st].topbar + 6)
 				y = staff_tb[st].topbar + 6;
@@ -1733,7 +1733,7 @@ function draw_measnb() {
 			}
 			y += gene.curfont.size;
 			y_set(st, true, x, w, y);
-			s.ymx = y
+//			s.ymx = y
 		     }
 		}
 	}
@@ -1790,7 +1790,7 @@ function draw_measnb() {
 		if (gene.curfont.box)
 			y += 2;
 		y_set(st, true, x, w, y);
-		s.ymx = y
+//		s.ymx = y
 	}
 	gene.nbar = bar_num
 
