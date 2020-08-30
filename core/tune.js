@@ -1577,7 +1577,7 @@ function get_staves(cmd, parm) {
 			st++;
 			if (!par_sy.staves[st]) {
 				par_sy.staves[st] = {
-					stafflines: '|||||',
+					stafflines: p_voice.stafflines || "|||||",
 					staffscale: 1
 				}
 			}
