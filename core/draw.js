@@ -2307,7 +2307,7 @@ function draw_tuplet(s1) {
 				break
 		}
 		if (dir == C.SL_ABOVE) {
-			ym += 12
+			ym += 8
 			if (s3.ymx < ym)
 				s3.ymx = ym;
 			y_set(upstaff, true, xm - 3, 6, ym)
@@ -2420,7 +2420,7 @@ function draw_tuplet(s1) {
 	y2 = ym + a * (x2 - xm);
 
 	/* shift the slurs / decorations */
-	ym += 8
+	ym += 6
 	for (s3 = s1; ; s3 = s3.next) {
 		if (s3.st == upstaff) {
 			yy = ym + (s3.x - xm) * a
