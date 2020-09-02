@@ -561,12 +561,6 @@ function out_acciac(x, y, dx, dy, up) {
 	out_XYAB('<path class="stroke" d="mX YlF G"/>\n',
 		x, y, dx, -dy)
 }
-// tuplet value - the staves are not defined
-function out_bnum(x, y, str) {
-	out_XYAB('<text style="font:italic 12px serif"\n\
-	x="X" y="Y" text-anchor="middle">A</text>\n',
-		x, y, str.toString())
-}
 // staff system brace
 function out_brace(x, y, h) {
 //fixme: '-6' depends on the scale
@@ -718,10 +712,10 @@ function out_tubrn(x, y, dx, dy, up, str) {
     var	sw = str.length * 10,
 	h = up ? -3 : 3;
 
-	out_XYAB('<text style="font:italic 12px serif"\n\
-	x="X" y="Y" text-anchor="middle">A</text>\n',
-		x + dx / 2, y + dy / 2, str);
-	dx /= stv_g.scale
+	set_font("tuplet")
+	xy_str(x + dx / 2, y + dy / 2 - gene.curfont.size * .5 + 2,
+		str, 'c')
+		dx /= stv_g.scale
 	if (!up)
 		y += 6;
 	output += '<path class="stroke" d="m';

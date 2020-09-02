@@ -2282,12 +2282,14 @@ function draw_tuplet(s1) {
 	if (nb_only) {
 		if (tp.f[2] == 1)		/* if 'which' == none */
 			return
+		set_font("tuplet")
 		xm = (s2.x + s1.x) / 2
 		a = s2.x - s1.x			// width around the middle
 		if (dir == C.SL_ABOVE)
 			ym = y_get(upstaff, 1, xm - a / 2, a)
 		else
-			ym = y_get(upstaff, 0, xm - a / 2, a) - 8
+			ym = y_get(upstaff, 0, xm - a / 2, a) -
+					gene.curfont.size - 2
 
 		if (s1.stem * s2.stem > 0) {
 			if (s1.stem > 0)
@@ -2296,10 +2298,10 @@ function draw_tuplet(s1) {
 				xm -= 1.5
 		}
 
-		if (tp.f[2] == 0)		/* if 'which' == number */
-			out_bnum(xm, ym, tp.p)
+		if (tp.f[2] == 0)		// if 'which' == number
+			xy_str(xm, ym, tp.p.toString(), 'c')
 		else
-			out_bnum(xm, ym, tp.p + ':' + tp.q)
+			xy_str(xm, ym, tp.p+':'+tp.q, 'c')
 
 		for (s3 = s1; ; s3 = s3.next) {
 			if (s3.x >= xm)
