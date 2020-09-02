@@ -2190,10 +2190,8 @@ function mrest_expand() {
 				s2.ts_prev = s3
 				s2.ts_next = null
 			}
-			if (s2.seqst)
-				s2.bar_type = s2.ts_next.bar_type
-			else
-				s2.bar_type = s2.ts_prev.bar_type
+			s4 = s2.seqst ? s2.ts_next : s2.ts_prev
+			s2.bar_type = s4.bar_type || "|"
 
 			// add the rest
 			s4 = clone(s)
