@@ -362,7 +362,7 @@ Abc.prototype.set_vp = function(a) {
 			break
 		case "scale=":			// %%voicescale
 			val = parseFloat(a.shift())
-			if (isNaN(val) || val < .6 || val > 1.5)
+			if (isNaN(val) || val < .5 || val > 2)
 				syntax(1, errs.bad_val, "%%voicescale")
 			else
 				curvoice.scale = val
