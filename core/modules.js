@@ -46,6 +46,7 @@ abc2svg.modules = {
 		percmap: { fn: 'perc-1.js' },
 	soloffs: { fn: 'soloffs-1.js' },
 	sth: { fn: 'sth-1.js' },
+	strtab: { fn: 'strtab-1.js' },
 	temperament: { fn: 'temper-1.js' },
 
 	nreq: 0,
