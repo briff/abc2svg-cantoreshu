@@ -3381,8 +3381,7 @@ function set_words(p_voice) {
 			if (!s.beam_on)
 				start_flag = true
 			if (!s.next && s.prev
-//			 && s.prev.type == C.NOTE
-//			 && s.prev.dur >= C.BLEN * 2)
+			 && !s.invis
 			 && s.prev.head == C.OVALBARS)
 				s.prev.head = C.SQUARE
 			break
