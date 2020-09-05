@@ -2284,12 +2284,11 @@ function draw_tuplet(s1) {
 			return
 		set_font("tuplet")
 		xm = (s2.x + s1.x) / 2
-		a = 10				// width around the middle
-		if (dir == C.SL_ABOVE)
-			ym = y_get(upstaff, 1, xm - a / 2, a)
+		if (dir == C.SL_ABOVE)		// 8 = width around the middle
+			ym = y_get(upstaff, 1, xm - 4, 8)
 		else
-			ym = y_get(upstaff, 0, xm - a / 2, a) -
-					gene.curfont.size - 2
+			ym = y_get(upstaff, 0, xm - 4, 8) -
+					gene.curfont.size
 
 		if (s1.stem * s2.stem > 0) {
 			if (s1.stem > 0)
@@ -2308,7 +2307,7 @@ function draw_tuplet(s1) {
 				break
 		}
 		if (dir == C.SL_ABOVE) {
-			ym += 8
+			ym += gene.curfont.size
 			if (s3.ymx < ym)
 				s3.ymx = ym;
 			y_set(upstaff, true, xm - 3, 6, ym)
