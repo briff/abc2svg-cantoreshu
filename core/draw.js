@@ -1383,7 +1383,7 @@ function draw_basic_note(x, s, m, y_tb) {
 			if (nflags > -4) {
 				p = "breve"
 			} else {
-				p =  "longa"
+				p = "longa"
 				inv = s.stem > 0
 			}
 
@@ -2284,7 +2284,7 @@ function draw_tuplet(s1) {
 			return
 		set_font("tuplet")
 		xm = (s2.x + s1.x) / 2
-		a = s2.x - s1.x			// width around the middle
+		a = 10				// width around the middle
 		if (dir == C.SL_ABOVE)
 			ym = y_get(upstaff, 1, xm - a / 2, a)
 		else
