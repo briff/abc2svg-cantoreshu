@@ -1146,30 +1146,28 @@ function set_sp_tup(s, s_et) {
 	s = s.ts_prev			// previous normal time
     var	tim = s.time,
 	ttim = s_et.time - tim,
+	sp = time2space(s, ttim) / ttim,	// space factor
 	s2 = s,
-	wsp = 0,
-	f
+	wsp = 0
 
 	// compute the whole spacing
 	while (1) {
 		do {
 			s2 = s2.ts_next
 		} while (!s2.seqst)
-		wsp += s2.space
 		if (s2 == s_et)
 			break
+		wsp += s2.space
 	}
-
-	// spacing factor: for mean of total and sum of individual spacing
-	f = (time2space(s, ttim) + wsp) / 2 / wsp
+	sp = (sp + wsp / ttim) / 2
 
 	while (1) {
 		do {
 			s = s.ts_next
 		} while (!s.seqst)
-		s.space *= f
 		if (s == s_et)
 			break
+		s.space = sp * (s.time - tim)
 		tim = s.time
 	}
 }
@@ -1249,7 +1247,8 @@ function set_allsymwidth() {
 		// set the spaces of the time sequence
 		s2.shrink = maxx - xa
 		s2.space = s2.ts_prev ? set_space(s2, tim) : 0
-		val = s2.time / 12		// check if time is integer
+
+		val = (s2.time - tim) / 96	// check if delta time is integer
 		if (val != (val | 0)) {		// no => tuplet or L: factor
 			if (!stup)
 				stup = s2
