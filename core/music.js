@@ -606,7 +606,8 @@ function set_w_chs(s) {
 				continue
 			if (w0) {		// width of the previous chord symbol
 				if (w0 > x + ch.x) {
-					if (s.prev.type == C.BAR) // don't move away
+					if (s.prev // (if not at start of a secondary voice)
+					 && s.prev.type == C.BAR) // don't move away
 						n--		// the symbol from a bar
 					dw = (w0 - x - ch.x) / n
 					while (1) {
