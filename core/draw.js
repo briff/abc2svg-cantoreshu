@@ -2831,7 +2831,50 @@ function draw_sym_near() {
     var	p_voice, p_st, s, v, st, y, g, w, i, st, dx, top, bot,
 	output_sav = output;
 
+	// set the staff offsets of a beam
+	function set_yab(s1, s2) {
+	    var y,
+		k = realwidth / YSTEP,
+		i = (s1.x / k) | 0,
+		j = (s2.x / k) | 0,
+		a = (s1.ys - s2.ys) / (s1.xs - s2.xs),
+		b = s1.ys - s1.xs * a,
+		p_st = staff_tb[s1.st]
+
+		k *= a
+		if (s1.stem > 0) {
+			while (i <= j) {
+				y = k * i + b
+				if (p_st.top[i] < y)
+					p_st.top[i] = y
+				i++
+			}
+		} else {
+			while (i <= j) {
+				y = k * i + b
+				if (p_st.bot[i] > y)
+					p_st.bot[i] = y
+				i++
+			}
+		}
+	} // set_yab()
+
 	output = ""
+
+	// initialize the min/max vertical offsets in the staves
+	for (st = 0; st <= nstaff; st++) {
+		p_st = staff_tb[st]
+		if (!p_st.top) {
+			p_st.top = new Float32Array(YSTEP)
+			p_st.bot = new Float32Array(YSTEP)
+		}
+		for (i = 0; i < YSTEP; i++) {
+			p_st.top[i] = 0
+			p_st.bot[i] = 24
+		}
+//		p_st.top.fill(0.)
+//		p_st.bot.fill(24.)
+	}
 
 	/* calculate the beams but don't draw them (the staves are not yet defined) */
 	for (v = 0; v < voice_tb.length; v++) {
@@ -2843,8 +2886,11 @@ function draw_sym_near() {
 			switch (s.type) {
 			case C.GRACE:
 				for (g = s.extra; g; g = g.next) {
-					if (g.beam_st && !g.beam_end)
+					if (g.beam_st && !g.beam_end) {
 						self.calculate_beam(bm, g)
+						if (bm.s2)
+							set_yab(g, bm.s2)
+					}
 				}
 				break
 			case C.NOTE:
@@ -2852,25 +2898,14 @@ function draw_sym_near() {
 				 || (first_note && !s.beam_st)) {
 					first_note = false;
 					self.calculate_beam(bm, s)
+						if (bm.s2) {
+							set_yab(s, bm.s2)
+							s = bm.s2
+						}
 				}
 				break
 			}
 		}
-	}
-
-	/* initialize the min/max vertical offsets */
-	for (st = 0; st <= nstaff; st++) {
-		p_st = staff_tb[st]
-		if (!p_st.top) {
-			p_st.top = new Float32Array(YSTEP);
-			p_st.bot = new Float32Array(YSTEP)
-		}
-		for (i = 0; i < YSTEP; i++) {
-			p_st.top[i] = 0;
-			p_st.bot[i] = 24
-		}
-//		p_st.top.fill(0.);
-//		p_st.bot.fill(24.)
 	}
 
 	set_tie_room();
