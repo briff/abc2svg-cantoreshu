@@ -3588,7 +3588,7 @@ function set_indent(first) {
 		}
 		i = 0
 		while (1) {
-			j = p.indexOf("\\n", i)
+			j = p.indexOf("\n", i)
 			if (j < 0)
 				w = strwh(p.slice(i))
 			else

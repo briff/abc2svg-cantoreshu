@@ -107,6 +107,10 @@ function cnv_escape(src, flag) {
 			dst += ' ';
 			j = i + 1
 			continue
+		case 'n':			// new line (voice name)
+			dst += '\n';
+			j = i + 1
+			continue
 		default:
 			c2 = abc_utf[src.slice(i, i + 2)]
 			if (c2) {

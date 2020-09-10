@@ -3086,9 +3086,9 @@ function draw_vname(indent, stl) {
 		if (!staff_d[st])
 			staff_d[st] = p
 		else
-			staff_d[st] += "\\n" + p
+			staff_d[st] += "\n" + p
 	}
-	if (staff_d.length == 0)
+	if (!staff_d.length)
 		return
 	set_font("voice");
 	h = gene.curfont.size
@@ -3097,7 +3097,7 @@ function draw_vname(indent, stl) {
 	for (st = 0; st < staff_d.length; st++) {
 		if (!staff_d[st])
 			continue
-		a_p = staff_d[st].split('\\n');
+		a_p = staff_d[st].split("\n");
 		y = staff_tb[st].y
 			+ staff_tb[st].topbar * .5
 				* staff_tb[st].staffscale

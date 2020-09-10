@@ -345,8 +345,8 @@ Abc.prototype.set_vp = function(a) {
 				curvoice.nm = curvoice.nm.slice(1, -1);
 			curvoice.new_name = true
 			break
-		case "stem=":
-		case "pos=":
+		case "stem=":			// compatibility
+		case "pos=":			// from %%pos only
 			if (item == "pos=")
 				item = a.shift().split(' ')
 			else
@@ -1574,7 +1574,7 @@ function parse_staves(p) {
 function info_split(text) {
 	if (!text)
 		return []
-    var	a = text.match(/=?[^\s"=]+=?|".+?"/g)	// "
+    var	a = text.match(/[^\s"=]+=?|"[^"]+"/g)	// "
 	if (!a) {
 //fixme: bad error text
 		syntax(1, "Unterminated string")
