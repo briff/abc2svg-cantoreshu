@@ -2919,7 +2919,7 @@ if (st > nst) {
 				 * have stems down for the middle voice */
 				if (i != 0 && i + 2 == st_v.length) {
 					if (st_v[i].ymn - cfmt.stemheight
-							> st_v[i + 1].ymx)
+							>= st_v[i + 1].ymx)
 						s.multi = -1;
 
 					/* special case for unison */
@@ -4135,14 +4135,15 @@ function set_overlap() {
 			if (left2[i] + right1[i] > d)
 				d = left2[i] + right1[i]
 		}
-		if (d < -3) {			// no clash if no dots clash
-			if (!s1.dots || !s2.dots
-			 || !s2.dot_low
-			 || s1.stem > 0 || s2.stem < 0
-			 || s1.notes[s1.nhd].pit + 2 != s2.notes[0].pit
-			 || (s2.notes[0].pit & 1))
-				continue
-		}
+
+		if (d < -3			// no clash if no dots clash
+		 && ((s2.notes[0].pit & 1)
+		  || !(s1.dots || s2.dots)
+		  || (!(s1.notes[s1.nhd].pit == s2.notes[0].pit + 2
+		    && s1.dot_low)
+		   && !(s1.notes[s1.nhd].pit + 2 == s2.notes[0].pit
+		    && s2.dot_low))))
+			continue
 
 		right2 = set_right(s2);
 		left1 = set_left(s1)
@@ -4171,6 +4172,16 @@ function set_overlap() {
 		while (1) {
 			dp = s1.notes[i1].pit - s2.notes[i2].pit
 			switch (dp) {
+			case 2:
+				if (!(s1.notes[i1].pit & 1))
+					s1.dot_low = false
+				break
+			case 1:
+				if (s1.notes[i1].pit & 1)
+					s2.dot_low = true
+				else
+					s1.dot_low = false
+				break
 			case 0:
 				if (s1.notes[i1].acc != s2.notes[i2].acc
 				 && !s1.notes[i1].acc && !s2.notes[i2].acc) {
@@ -4187,23 +4198,14 @@ function set_overlap() {
 					t = 1
 				break
 			case -1:
-				if (s1.dots && s2.dots) {
-					if (s1.notes[i1].pit & 1) {
-						s1.dot_low = false;
-						s2.dot_low = false
-					} else {
-						s1.dot_low = true;
-						s2.dot_low = true
-					}
-				}
+				if (s1.notes[i1].pit & 1)
+					s2.dot_low = false
+				else
+					s1.dot_low = true
 				break
 			case -2:
-				if (s1.dots && s2.dots
-				 && !(s1.notes[i1].pit & 1)) {
-					s1.dot_low = false;
+				if (!(s1.notes[i1].pit & 1))
 					s2.dot_low = false
-					break
-				}
 				break
 			}
 			if (t < 0)
