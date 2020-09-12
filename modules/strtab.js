@@ -7,7 +7,7 @@
 // The command %%strtab changes the display of the voice to a tablature.
 // Syntax:
 //	%%strtab <string list> [diafret]
-// <string list> is the list of the strings as ABC notes and in reverse order
+// <string list> is the list of the strings as ABC notes
 // diafret indicates the instrument has diatonic frets
 // The fret may be forced by a decoration format
 //	"!" digit "s!"
@@ -108,9 +108,12 @@ abc2svg.strtab = {
 	lstr = []			// lowest string per staff - index staff
 
 	// set a string (pitch) and a fret number
-	function set_pit(s, nt, i, n) {
-	    var	st = s.st
+	function set_pit(p_v, s, nt, i) {
+	    var	st = s.st,
+		n = (p_v.diafret ? nt.pit : nt.midi) - p_v.tab[i]
 
+		if (p_v.diafret && nt.acc)
+			n += '+'
 		nt.acc = 0
 		nt.invis = true
 		nt.pit = i * 2 + 18
@@ -172,10 +175,7 @@ abc2svg.strtab = {
 				bi = strnum(s.a_dd[i].name)
 				if (bi >= 0) {
 					nt = s.notes[0]
-					set_pit(s, nt, bi,
-						(p_v.diafret ?
-						 nt.pit : nt.midi) -
-							p_v.tab[bi])
+					set_pit(p_v, s, nt, bi)
 					break
 				}
 			}
@@ -191,10 +191,7 @@ abc2svg.strtab = {
 				while (--i >= 0) {
 					bi = strnum(nt.a_dcn[i])
 					if (bi >= 0) {
-						set_pit(s, nt, bi,
-							(p_v.diafret ?
-							 nt.pit : nt.midi) -
-								p_v.tab[bi])
+						set_pit(p_v, s, nt, bi)
 						delete nt.a_dcn
 						continue ls
 					}
@@ -216,7 +213,7 @@ abc2svg.strtab = {
 					bn = n
 				}
 			}
-			set_pit(s, nt, bi, bn)
+			set_pit(p_v, s, nt, bi)
 		}
 
 		// put the stems on the lowest strings
