@@ -18,16 +18,24 @@
 // You should have received a copy of the GNU General Public License
 // along with abc2svg.  If not, see <http://www.gnu.org/licenses/>.
 //
-// This script replaces the ABC sequences defined in the HTML elements
-// with the class "abc" by music as SVG images.
-// It keeps the other elements as they are.
-// It must be declared after the core abc2sg-1,js.
-// If a ABC sequence contains the characters '<', '>' or '&',
-// - either this sequence must be defined in a <script> tag
-//   (with type="text/vnd.abc" and class="abc") and also
-//   enclosed in a XML comment (%<![CDATA[ .. %]]>) if in a XHTML file,
-// - or the characters must be replaced by their XML counterparts
-//   ('&lt;', '&gt;' or '&amp;').
+// This script is used in HTML or XHTML files.
+// It replaces the ABC sequences defined
+// - in <script> elements with the type "text/vnd.abc" or
+// - in the HTML elements with the class "abc"
+// by music as SVG images.
+// The other elements stay in place.
+// The script abc2svg-1.js may be loaded before this script.
+// It is automatically loaded when not present.
+//
+// When the file is .html, if the ABC sequence is defined inside
+// elements <script type="text/vnd.abc">, there is no constraint
+// about the ABC characters. Outside a script vnd.abc, the characters
+// '<', '>' and '&' must be replaced by their XML counterparts
+// ('&lt;', '&gt;' and '&amp;').
+// When the file is .xhtml, if the ABC sequence contains the characters
+// '<', '>' or '&', this sequence must be enclosed in a XML comment
+// (%<!-- .. %-->) or in a CDATA (%<![CDATA[ .. %]]>).
+//
 // Tune selection may be done by a 'hash' value in the URL of the page.
 
 window.onerror = function(msg, url, line) {
@@ -52,6 +60,7 @@ function dom_loaded() {
 	errtxt = '',
 	app = "abcweb2",
 	elts,				// ABC HTML elements
+	a,
 	abcsrc = "",			// ABC source
 	indx = [],			// indexes of the tunes in abcsrc
 	select,
@@ -213,10 +222,7 @@ function dom_loaded() {
 				errtxt = ""
 			}
 			try {
-				elt.outerHTML =
-					elt.tagName.toLowerCase() == "script" ?
-						'<div>' + new_page + '</div>' :
-						new_page
+				elt.outerHTML = new_page
 			} catch (e) {
 				alert("abc2svg bad generated SVG: " + e.message +
 					"\nStack:\n" + e.stack)
@@ -234,8 +240,7 @@ function dom_loaded() {
 		return s.replace(/&gt;/g, '>')
 			.replace(/&lt;/g, '<')
 			.replace(/&amp;/g, '&')
-			.replace(/[ \t]+(%%)/g, '$1')
-			.replace(/[ \t]+(.:)/g, '$1')
+			.replace(/[ \t]+(%%|.:)/g, '$1')
 	} // toabc()
 
 	// function to load javascript files
@@ -266,6 +271,18 @@ function dom_loaded() {
 	abc2svg.abc_end = function() {}
 
 	// extract the ABC source
+	elts = document.getElementsByTagName('script')
+	for (i = 0; i < elts.length; i++) {
+		if (elts[i].type != "text/vnd.abc")
+			continue
+		a = elts[i].getAttribute('class')
+		if (a) {
+			if (a.indexOf('abc') < 0)
+				elts[i].setAttribute('class', a + ' abc')
+		} else {
+			elts[i].setAttribute('class', 'abc')
+		}
+	}
 	elts = document.getElementsByClassName('abc')
 	for (i = 0; i < elts.length; i++) {
 		indx[i] = abcsrc.length
