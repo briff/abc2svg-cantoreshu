@@ -1228,18 +1228,14 @@ function new_bar(dotted) {
 
 	/* if the last element is '[', it may start
 	 * a chord or an embedded header */
-	switch (bar_type.slice(-1)) {
-	case '[':
-		if (/[0-9" ]/.test(c))		// "
-			break
+	if (bar_type.slice(-1) == '['
+	 && !(/[0-9" ]/.test(c))) {		// "
 		bar_type = bar_type.slice(0, -1);
 		line.index--;
 		c = '['
-		break
-	case ':':				// left repeat
-		s.rbstop = 2			// with bracket end
-		break
 	}
+	if (bar_type.slice(-1) == ':')		// left repeat
+		s.rbstop = 2			// with bracket end
 
 	// check if repeat bar
 	if (c > '0' && c <= '9') {
