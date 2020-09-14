@@ -279,6 +279,8 @@ function set_g() {
 	// close the previous sequence
 	if (stv_g.started) {
 		stv_g.started = false;
+		if (gla[0].length)
+			glout()
 		output += "</g>\n"
 	}
 
@@ -287,6 +289,8 @@ function set_g() {
 		return
 
 	// open the new sequence
+	if (gla[0].length)
+		glout()
 	output += '<g '
 	if (stv_g.scale != 1) {
 		if (stv_g.st < 0)
@@ -453,6 +457,8 @@ function out_XYAB(str, x, y, a, b) {
 
 // open / close containers
 function g_open(x, y, rot, sx, sy) {
+	if (gla[0].length)
+		glout()
 	out_XYAB('<g transform="translate(X,Y', x, y);
 	if (rot)
 		output += ') rotate(' + rot.toFixed(2)
@@ -467,6 +473,8 @@ function g_open(x, y, rot, sx, sy) {
 	stv_g.g++
 }
 function g_close() {
+	if (gla[0].length)
+		glout()
 	stv_g.g--;
 	output += '</g>\n'
 }
@@ -525,6 +533,52 @@ function xypath(x, y, fill) {
 }
 Abc.prototype.xypath = xypath
 
+// output the list of glyphs and the stems
+// [0] = x glyph
+// [1] = y glyph
+// [2] = glyph code
+// [3] = x, y, h of stem (3 values per stem)
+var gla = [[], [], "", [], [], []]
+function glout() {
+    var	e,
+	v = []
+
+	// glyphs (notes, accidentals...)
+	while (1) {
+		e = gla[0].shift()
+		if (e == undefined)
+			break
+		v.push(e.toFixed(1))
+	}
+	output += '<text x="' + v.join(',')
+
+	v = []
+	while (1) {
+		e = gla[1].shift()
+		if (e == undefined)
+			break
+		v.push(e.toFixed(1))
+	}
+	output += '"\ny="' + v.join(',')
+
+	output += '"\n>' + gla[2] + '</text>\n'
+	gla[2] = ""
+
+	// stems
+	if (!gla[3].length)
+		return
+	output += '<path class="sW" d="'
+	while (1) {
+		e = gla[3].shift()
+		if (e == undefined)
+			break
+		output += 'M' + e.toFixed(1) +
+			' ' + gla[3].shift().toFixed(1) +
+			'v' + gla[3].shift().toFixed(1)
+	}
+	output += '"/>\n'
+} // glout()
+
 // output a glyph
 function xygl(x, y, gl) {
 // (avoid ps<->js loop)
@@ -538,11 +592,15 @@ function xygl(x, y, gl) {
 		if (tgl) {
 			x += tgl.x * stv_g.scale;
 			y -= tgl.y
-			if (tgl.sc)
+			if (tgl.sc) {
 				out_XYAB('<text transform="translate(X,Y) scale(A)">B</text>\n',
 					x, y, tgl.sc, tgl.c);
-			else
-				out_XYAB('<text x="X" y="Y">A</text>\n', x, y, tgl.c)
+			} else {
+//				out_XYAB('<text x="X" y="Y">A</text>\n', x, y, tgl.c)
+				gla[0].push(sx(x))
+				gla[1].push(sy(y))
+				gla[2] += tgl.c
+			}
 		} else {
 			error(1, null, 'no definition of $1', gl)
 		}
@@ -611,8 +669,9 @@ function out_stem(x, y, h, grace,
 	x += dx * stv_g.scale
 	if (stv_g.v >= 0)
 		slen /= voice_tb[stv_g.v].scale;
-	out_XYAB('<path class="sW" d="mX YvF"/>\n',	// stem
-		x, y, slen)
+	gla[3].push(sx(x))
+	gla[3].push(sy(y))
+	gla[3].push(slen)
 	if (!nflags)
 		return
 
@@ -1118,6 +1177,9 @@ function svg_flush() {
 	xmlns:xlink="http://www.w3.org/1999/xlink"\n\
 	color="',
 	g = ''
+
+	if (gla[0].length)
+		glout()
 
 	if (cfmt.fgcolor)
 		head += cfmt.fgcolor + '" fill="' + cfmt.fgcolor + '"'
