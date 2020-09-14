@@ -1144,32 +1144,33 @@ function set_space(s, ptime) {
 
 // set the spacing inside tuplets or L: factor
 function set_sp_tup(s, s_et) {
-	s = s.ts_prev			// previous normal time
     var	tim = s.time,
 	ttim = s_et.time - tim,
-	sp = time2space(s, ttim) / ttim,	// space factor
+	sp = time2space(s, ttim),	// whole time spacing
 	s2 = s,
 	wsp = 0
 
 	// compute the whole spacing
 	while (1) {
-		do {
-			s2 = s2.ts_next
-		} while (!s2.seqst)
+		s2 = s2.ts_next
+		if (s2.seqst) {
+			wsp += s2.space
+			if (s2.bar_type)
+				wsp += 10	// (fixme: not exact)
+		}
 		if (s2 == s_et)
 			break
-		wsp += s2.space
 	}
-	sp = (sp + wsp / ttim) / 2
+	sp = (sp + wsp) / 2 / ttim	// mean spacing per time unit
 
 	while (1) {
-		do {
-			s = s.ts_next
-		} while (!s.seqst)
+		s = s.ts_next
+		if (s.seqst) {
+			s.space = sp * (s.time - tim)
+			tim = s.time
+		}
 		if (s == s_et)
 			break
-		s.space = sp * (s.time - tim)
-		tim = s.time
 	}
 }
 
@@ -1249,11 +1250,17 @@ function set_allsymwidth() {
 		s2.shrink = maxx - xa
 		s2.space = s2.ts_prev ? set_space(s2, tim) : 0
 
-		val = (s2.time - tim) / 96	// check if delta time is integer
-		if (val != (val | 0)) {		// no => tuplet or L: factor
-			if (!stup)
+		if (s2.dur && s2.dur != s2.notes[0].dur) {
+			if (!stup) {
 				stup = s2
-		} else if (stup) {
+				while (stup.prev
+				 && stup.prev.dur
+				 && stup.prev.dur != stup.prev.notes[0].dur)
+					stup = stup.prev
+				while (!stup.seqst)
+					stup = stup.ts_prev
+			}
+		} else if (stup && stup.v == s2.v) {
 			set_sp_tup(stup, s2)
 			stup = null
 		}
