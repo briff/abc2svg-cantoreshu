@@ -471,7 +471,7 @@ M-10.2 -31h20.4"/>';
 			t = gch.otext || gch.text
 
 			// insert the diagram as a decoration
-			this.deco_cnv(t.split(/[ \t/]/, 1), s, null)
+			this.deco_cnv([t.replace(/\$\d|[ \t].*/g, "")], s, null)
 		}
 	}
     }, // do_diag()

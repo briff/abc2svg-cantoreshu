@@ -45,6 +45,7 @@ gen modules/gamelan.js > gamelan-$MAJOR.js
 gen modules/grid.js > grid-$MAJOR.js
 gen modules/grid2.js > grid2-$MAJOR.js
 gen modules/grid3.js > grid3-$MAJOR.js
+gen modules/jazzchord.js > jazzchord-$MAJOR.js
 gen modules/jianpu.js > jianpu-$MAJOR.js
 gen modules/mdnn.js > mdnn-$MAJOR.js
 gen modules/MIDI.js > MIDI-$MAJOR.js
