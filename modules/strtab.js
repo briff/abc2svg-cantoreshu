@@ -45,6 +45,8 @@ abc2svg.strtab = {
 	}
 	of(p_v)
 
+	abc.glout()			// output the stems
+
 	// draw the note heads
 	stb = abc.get_staff_tb()[p_v.st].y
 	abc.out_svg('<g class="bn">\n')

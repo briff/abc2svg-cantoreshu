@@ -54,6 +54,7 @@ Abc.prototype.get_top_v = function() { return par_sy.top_voice };
 Abc.prototype.get_tsfirst = function() { return tsfirst };
 Abc.prototype.get_unit = get_unit;
 Abc.prototype.get_voice_tb = function() { return voice_tb };
+Abc.prototype.glout = glout
 Abc.prototype.goto_tune = goto_tune;
 Abc.prototype.info = function() { return info };
 Abc.prototype.new_block = new_block;

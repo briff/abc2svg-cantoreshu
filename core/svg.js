@@ -279,8 +279,7 @@ function set_g() {
 	// close the previous sequence
 	if (stv_g.started) {
 		stv_g.started = false;
-		if (gla[0].length)
-			glout()
+		glout()
 		output += "</g>\n"
 	}
 
@@ -289,8 +288,7 @@ function set_g() {
 		return
 
 	// open the new sequence
-	if (gla[0].length)
-		glout()
+	glout()
 	output += '<g '
 	if (stv_g.scale != 1) {
 		if (stv_g.st < 0)
@@ -457,8 +455,7 @@ function out_XYAB(str, x, y, a, b) {
 
 // open / close containers
 function g_open(x, y, rot, sx, sy) {
-	if (gla[0].length)
-		glout()
+	glout()
 	out_XYAB('<g transform="translate(X,Y', x, y);
 	if (rot)
 		output += ') rotate(' + rot.toFixed(2)
@@ -473,8 +470,7 @@ function g_open(x, y, rot, sx, sy) {
 	stv_g.g++
 }
 function g_close() {
-	if (gla[0].length)
-		glout()
+	glout()
 	stv_g.g--;
 	output += '</g>\n'
 }
@@ -544,6 +540,7 @@ function glout() {
 	v = []
 
 	// glyphs (notes, accidentals...)
+    if (gla[0].length) {
 	while (1) {
 		e = gla[0].shift()
 		if (e == undefined)
@@ -563,6 +560,7 @@ function glout() {
 
 	output += '"\n>' + gla[2] + '</text>\n'
 	gla[2] = ""
+    }
 
 	// stems
 	if (!gla[3].length)
@@ -1178,8 +1176,7 @@ function svg_flush() {
 	color="',
 	g = ''
 
-	if (gla[0].length)
-		glout()
+	glout()
 
 	if (cfmt.fgcolor)
 		head += cfmt.fgcolor + '" fill="' + cfmt.fgcolor + '"'
