@@ -204,11 +204,11 @@ function gch_transp(s) {
 	}
 }
 
-// -- build the chord indications / annotations --
+// -- build the chord symbols / annotations --
 // (possible hook)
 Abc.prototype.gch_build = function(s) {
 
-	/* split the chord indications / annotations
+	/* split the chord symbols / annotations
 	 * and initialize their vertical offsets */
 	var	gch, wh, xspc, ix,
 		pos = curvoice.pos.gch == C.SL_BELOW ? -1 : 1,
@@ -335,25 +335,13 @@ Abc.prototype.gch_build = function(s) {
 // (unscaled delayed output)
 // (possible hook)
 Abc.prototype.draw_gchord = function(s, gchy_min, gchy_max) {
-    var	gch, text, ix, x, y, y2, hbox, h, y_above, y_below,
+    var	gch, text, ix, x, y, y2, hbox, h,
 
 	// adjust the vertical offset according to the chord symbols
 	w = 0,
 		yav = s.dur ?
 			(((s.notes[s.nhd].pit + s.notes[0].pit) >> 1) - 18) * 3 :
 			12		// fixed offset on measure bars
-
-	for (ix = 0; ix < s.a_gch.length; ix++) {
-		gch = s.a_gch[ix]
-		if (gch.wh[0] > w)
-			w = gch.wh[0]
-	}
-	y_above = y_get(s.st, 1, s.x - 3, w);
-	y_below = y_get(s.st, 0, s.x - 3, w)
-	if (y_above < gchy_max)
-		y_above = gchy_max
-	if (y_below > gchy_min)
-		y_below = gchy_min;
 
 	set_dscale(s.st);
 	for (ix = 0; ix < s.a_gch.length; ix++) {
@@ -364,14 +352,22 @@ Abc.prototype.draw_gchord = function(s, gchy_min, gchy_max) {
 		hbox = gch.font.box ? 2 : 0;
 		w = gch.wh[0];
 		x = s.x + gch.x;
+		if (w && x + w > realwidth)	// let the text inside the page
+			x = realwidth - w
 		text = gch.text
 		switch (gch.type) {
 		case '_':			/* below */
-			y = gch.y + y_below;
+			y2 = y_get(s.st, 0, x, w)
+			if (y2 > gchy_min)
+				y2 = gchy_min
+			y = gch.y + y2
 			y_set(s.st, 0, x, w, y - hbox)
 			break
 		case '^':			/* above */
-			y = gch.y + y_above + hbox;
+			y2 = y_get(s.st, 1, x, w)
+			if (y2 < gchy_max)
+				y2 = gchy_max
+			y = gch.y + y2 + hbox
 			y_set(s.st, 1, x, w, y + h + hbox)
 			break
 		case '<':			/* left */
@@ -389,11 +385,17 @@ Abc.prototype.draw_gchord = function(s, gchy_min, gchy_max) {
 			break
 		default:			// chord symbol
 			if (gch.y >= 0) {
-				y = gch.y + y_above + hbox;
-				y_set(s.st, true, x, w, y + h + hbox)
+				y2 = y_get(s.st, 1, x, w)
+				if (y2 < gchy_max)
+					y2 = gchy_max
+				y = gch.y + y2 + hbox
+				y_set(s.st, 1, x, w, y + h + hbox)
 			} else {
-				y = gch.y + y_below;
-				y_set(s.st, false, x, w, y - hbox)
+				y2 = y_get(s.st, 0, x, w)
+				if (y2 > gchy_min)
+					y2 = gchy_min
+				y = gch.y + y2
+				y_set(s.st, 0, x, w, y - hbox)
 			}
 			break
 		case '@':			/* absolute */
