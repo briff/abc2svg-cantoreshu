@@ -54,8 +54,7 @@ function ToAudio() {
 	instr = [],		// [voice] bank + instrument
 	chn = []		// [voice] MIDI channel
 
-	// adjust the MIDI pitches according to the transpositions
-	// build the information about the parts
+	// build the information about the parts (P:)
 	function build_parts(first) {
 	    var	i, j, c, n, v,
 		s = first,
