@@ -261,7 +261,7 @@ Abc.prototype.gch_build = function(s) {
 		wh = strwh(gch.text);
 		gch.wh = wh
 		if (gch.font.box)
-			wh[1] += 4
+			wh[1] += 2
 		switch (gch.type) {
 		case '@':
 			break
@@ -335,39 +335,44 @@ Abc.prototype.gch_build = function(s) {
 // (unscaled delayed output)
 // (possible hook)
 Abc.prototype.draw_gchord = function(s, gchy_min, gchy_max) {
-    var	gch, text, ix, x, y, y2, hbox, h,
+    var	ix
 
-	// adjust the vertical offset according to the chord symbols
-	w = 0,
+	// draw the upper or lower chord symbols and annotations
+	function draw1(gch, up) {
+	    var	y, y2,
+		h = gch.font.size,
+		hbox = gch.font.box ? 2 : 0,
+		w = gch.wh[0],
 		yav = s.dur ?
 			(((s.notes[s.nhd].pit + s.notes[0].pit) >> 1) - 18) * 3 :
-			12		// fixed offset on measure bars
+			12,		// fixed offset on measure bars
+		text = gch.text,
+		x = s.x + gch.x
 
-	set_dscale(s.st);
-	for (ix = 0; ix < s.a_gch.length; ix++) {
-		gch = s.a_gch[ix];
+		if ((gch.type == 'g' && gch.y < 0) || gch.type == '_') {
+			if (up)
+				return
+		} else if (!up) {
+			return
+		}
+
 		use_font(gch.font);
 		set_font(gch.font);
-		h = gch.font.size;
-		hbox = gch.font.box ? 2 : 0;
-		w = gch.wh[0];
-		x = s.x + gch.x;
 		if (w && x + w > realwidth)	// let the text inside the page
 			x = realwidth - w
-		text = gch.text
 		switch (gch.type) {
 		case '_':			/* below */
-			y2 = y_get(s.st, 0, x, w)
-			if (y2 > gchy_min)
-				y2 = gchy_min
-			y = gch.y + y2
+			y = y_get(s.st, 0, x, w)
+			if (y > gchy_min)
+				y = gchy_min
+			y -= h
 			y_set(s.st, 0, x, w, y - hbox)
 			break
 		case '^':			/* above */
-			y2 = y_get(s.st, 1, x, w)
-			if (y2 < gchy_max)
-				y2 = gchy_max
-			y = gch.y + y2 + hbox
+			y = y_get(s.st, 1, x, w)
+			if (y < gchy_max)
+				y = gchy_max
+			y += hbox
 			y_set(s.st, 1, x, w, y + h + hbox)
 			break
 		case '<':			/* left */
@@ -385,16 +390,16 @@ Abc.prototype.draw_gchord = function(s, gchy_min, gchy_max) {
 			break
 		default:			// chord symbol
 			if (gch.y >= 0) {
-				y2 = y_get(s.st, 1, x, w)
-				if (y2 < gchy_max)
-					y2 = gchy_max
-				y = gch.y + y2 + hbox
+				y = y_get(s.st, 1, x, w)
+				if (y < gchy_max)
+					y = gchy_max
+				y += hbox
 				y_set(s.st, 1, x, w, y + h + hbox)
 			} else {
-				y2 = y_get(s.st, 0, x, w)
-				if (y2 > gchy_min)
-					y2 = gchy_min
-				y = gch.y + y2
+				y = y_get(s.st, 0, x, w)
+				if (y > gchy_min)
+					y = gchy_min
+				y -= h
 				y_set(s.st, 0, x, w, y - hbox)
 			}
 			break
@@ -417,5 +422,13 @@ Abc.prototype.draw_gchord = function(s, gchy_min, gchy_max) {
 		if (user.anno_stop)
 			user.anno_stop("annot", gch.istart, gch.iend,
 				x - 2, y + h + 2, w + 4, h + 4, s)
-	}
-}
+	} // draw1()
+
+	// --- draw_gchord ---
+	set_dscale(s.st)
+	ix = s.a_gch.length
+	while (--ix >= 0)
+		draw1(s.a_gch[ix], 1)		// above
+	for (ix = 0; ix < s.a_gch.length; ix++)
+		draw1(s.a_gch[ix])		// below
+} // draw_gchord()
