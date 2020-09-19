@@ -2897,10 +2897,8 @@ function draw_sym_near() {
 				 || (first_note && !s.beam_st)) {
 					first_note = false;
 					self.calculate_beam(bm, s)
-						if (bm.s2) {
-							set_yab(s, bm.s2)
-							s = bm.s2
-						}
+					if (bm.s2)
+						set_yab(s, bm.s2)
 				}
 				break
 			}
