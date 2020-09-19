@@ -29,7 +29,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-    var	EOF = -1,
+    var	EOF = undefined,
 	theA, theB,
 	theLookahead = EOF,
 	theX = EOF,
@@ -56,15 +56,16 @@ function isAlphanum(c) {
 		linefeed.
 */
 
+    var	fb = std.in.readAsString(), // file buffer
+	fp = -1			// pointer to the file buffer
 function get() {
     var	c = theLookahead
 
 	theLookahead = EOF
 	if (c == EOF) {
-		c = std.in.getByte()
-		if (c < 0)
+		c = fb[++fp]
+		if (!c)
 			return EOF
-		c = String.fromCharCode(c)
 	}
 	if (c >= ' ' || c == '\n')
 		return c
@@ -110,6 +111,7 @@ function next() {
 					break
 				case EOF:
 					error("Unterminated comment.")
+					break
 				}
 			}
 			break
