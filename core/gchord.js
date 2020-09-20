@@ -232,7 +232,7 @@ Abc.prototype.gch_build = function(s) {
 		if (gch.type == 'g') {
 			if (cfmt.chordnames) {
 				gch.otext = gch.text;	// save for %%diagram
-				gch.text = gch.text.replace(/A|B|C|D|E|F|G/g,
+				gch.text = gch.text.replace(/[A-G]/g,
 					function(c){return cfmt.chordnames[c]})
 				if (cfmt.chordnames.B == 'H')
 					gch.text = gch.text.replace(/Hb/g, 'Bb')
@@ -432,3 +432,61 @@ Abc.prototype.draw_gchord = function(s, gchy_min, gchy_max) {
 	for (ix = 0; ix < s.a_gch.length; ix++)
 		draw1(s.a_gch[ix])		// below
 } // draw_gchord()
+
+// draw all chord symbols
+function draw_all_chsy() {
+    var	i, gch, gch2, s, chsy1, w, y, bot, top,
+	minmax = new Array(nstaff + 1)
+
+	// search the vertical offset for the chord symbols
+	for (i = 0; i <= nstaff; i++)
+		minmax[i] = {
+			ymin: 0,
+			ymax: 24
+		}
+	for (s = tsfirst; s; s = s.ts_next) {
+		if (!s.a_gch)
+			continue
+		if (!chsy1)
+			chsy1 = s	// first chord symbol
+		gch2 = null
+		for (i = 0; i < s.a_gch.length; i++) {
+			gch = s.a_gch[i]
+			if (gch.type != 'g')
+				continue
+			gch2 = gch	// chord closest to the staff
+			if (gch.y < 0)
+				break
+		}
+		if (gch2) {
+			w = gch2.wh[0]
+			if (gch2.y >= 0) {
+				y = y_get(s.st, true, s.x, w)
+				if (y > minmax[s.st].ymax)
+					minmax[s.st].ymax = y
+			} else {
+				y = y_get(s.st, false, s.x, w)
+				if (y < minmax[s.st].ymin)
+					minmax[s.st].ymin = y
+			}
+		}
+	}
+
+	// draw the chord symbols if any
+	if (chsy1) {
+		for (i = 0; i <= nstaff; i++) {
+			bot = staff_tb[i].botbar
+			if (minmax[i].ymin > bot - 4)
+				minmax[i].ymin = bot - 4
+			top = staff_tb[i].topbar
+			if (minmax[i].ymax < top + 4)
+				minmax[i].ymax = top + 4
+		}
+		set_dscale(-1)		/* restore the scale parameters */
+		for (s = chsy1; s; s = s.ts_next) {
+			if (!s.a_gch)
+				continue
+			self.draw_gchord(s, minmax[s.st].ymin, minmax[s.st].ymax)
+		}
+	}
+} // draw_all_chsy()

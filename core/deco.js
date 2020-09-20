@@ -1433,10 +1433,9 @@ function draw_deco_note() {
 /* (the staves are not yet defined) */
 /* (unscaled delayed output) */
 function draw_deco_staff() {
-	var	s, first_gchord, p_voice, x, y, w, i, v, de, dd,
-		gch, gch2, ix, top, bot,
-		minmax = new Array(nstaff + 1),
-		nd = a_de.length
+    var	s, p_voice, y, i, v, de, dd,
+	minmax = new Array(nstaff + 1),
+	nd = a_de.length
 
 	/* draw the repeat brackets */
 	function draw_repbra(p_voice) {
@@ -1603,57 +1602,7 @@ function draw_deco_staff() {
 		y_set(de.st, de.up, de.x, de.val, y)
 	}
 
-	// search the vertical offset for the chord symbols
-	for (i = 0; i <= nstaff; i++)
-		minmax[i] = {
-			ymin: 0,
-			ymax: 24
-		}
-	for (s = tsfirst; s; s = s.ts_next) {
-		if (!s.a_gch)
-			continue
-		if (!first_gchord)
-			first_gchord = s;
-		gch2 = null
-		for (ix = 0; ix < s.a_gch.length; ix++) {
-			gch = s.a_gch[ix]
-			if (gch.type != 'g')
-				continue
-			gch2 = gch	// chord closest to the staff
-			if (gch.y < 0)
-				break
-		}
-		if (gch2) {
-			w = gch2.wh[0]
-			if (gch2.y >= 0) {
-				y = y_get(s.st, true, s.x, w)
-				if (y > minmax[s.st].ymax)
-					minmax[s.st].ymax = y
-			} else {
-				y = y_get(s.st, false, s.x, w)
-				if (y < minmax[s.st].ymin)
-					minmax[s.st].ymin = y
-			}
-		}
-	}
-
-	// draw the chord symbols if any
-	if (first_gchord) {
-		for (i = 0; i <= nstaff; i++) {
-			bot = staff_tb[i].botbar;
-			if (minmax[i].ymin > bot - 4)
-				minmax[i].ymin = bot - 4
-			top = staff_tb[i].topbar;
-			if (minmax[i].ymax < top + 4)
-				minmax[i].ymax = top + 4
-		}
-		set_dscale(-1)		/* restore the scale parameters */
-		for (s = first_gchord; s; s = s.ts_next) {
-			if (!s.a_gch)
-				continue
-			self.draw_gchord(s, minmax[s.st].ymin, minmax[s.st].ymax)
-		}
-	}
+	draw_all_chsy()		// draw all chord symbols
 
 	/* draw the repeat brackets */
 	for (v = 0; v < voice_tb.length; v++) {
