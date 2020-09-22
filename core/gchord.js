@@ -211,7 +211,6 @@ Abc.prototype.gch_build = function(s) {
 	/* split the chord symbols / annotations
 	 * and initialize their vertical offsets */
 	var	gch, wh, xspc, ix,
-		pos = curvoice.pos.gch == C.SL_BELOW ? -1 : 1,
 		y_above = 0,
 		y_below = 0,
 		y_left = 0,
@@ -270,16 +269,12 @@ Abc.prototype.gch_build = function(s) {
 			if (xspc > 8)
 				xspc = 8;
 			gch.x = -xspc;
-			y_above -= wh[1];
-			gch.y = y_above
 			break
 		case '_':			/* below */
 			xspc = wh[0] * GCHPRE
 			if (xspc > 8)
 				xspc = 8;
 			gch.x = -xspc;
-			y_below -= wh[1];
-			gch.y = y_below
 			break
 		case '<':			/* left */
 			gch.x = -(wh[0] + 6);
@@ -296,13 +291,6 @@ Abc.prototype.gch_build = function(s) {
 			if (xspc > 8)
 				xspc = 8;
 			gch.x = -xspc;
-			if (pos < 0) {		/* below */
-				y_below -= wh[1];
-				gch.y = y_below
-			} else {
-				y_above -= wh[1];
-				gch.y = y_above
-			}
 			break
 		}
 	}
@@ -313,18 +301,11 @@ Abc.prototype.gch_build = function(s) {
 	for (ix = 0; ix < s.a_gch.length; ix++) {
 		gch = s.a_gch[ix]
 		switch (gch.type) {
-		case '^':			/* above */
-			gch.y -= y_above
-			break
 		case '<':			/* left */
 			gch.y -= y_left
 			break
 		case '>':			/* right */
 			gch.y -= y_right
-			break
-		case 'g':			// chord symbol
-			if (pos > 0)
-				gch.y -= y_above
 			break
 		}
 	}
@@ -334,159 +315,180 @@ Abc.prototype.gch_build = function(s) {
 // (the staves are not yet defined)
 // (unscaled delayed output)
 // (possible hook)
-Abc.prototype.draw_gchord = function(s, gchy_min, gchy_max) {
-    var	ix
+Abc.prototype.draw_gchord = function(i, s, x, y) {
+    var	i, an, h, hbox, w, y2
 
-	// draw the upper or lower chord symbols and annotations
-	function draw1(gch, up) {
-	    var	y, y2,
-		h = gch.font.size,
-		hbox = gch.font.box ? 2 : 0,
-		w = gch.wh[0],
-		yav = s.dur ?
-			(((s.notes[s.nhd].pit + s.notes[0].pit) >> 1) - 18) * 3 :
-			12,		// fixed offset on measure bars
-		text = gch.text,
-		x = s.x + gch.x
-
-		if ((gch.type == 'g' && gch.y < 0) || gch.type == '_') {
-			if (up)
-				return
-		} else if (!up) {
-			return
-		}
-
-		use_font(gch.font);
-		set_font(gch.font);
-		if (w && x + w > realwidth)	// let the text inside the page
-			x = realwidth - w
-		switch (gch.type) {
-		case '_':			/* below */
-			y = y_get(s.st, 0, x, w)
-			if (y > gchy_min)
-				y = gchy_min
-			y -= h
-			y_set(s.st, 0, x, w, y - hbox)
-			break
-		case '^':			/* above */
-			y = y_get(s.st, 1, x, w)
-			if (y < gchy_max)
-				y = gchy_max
-			y += hbox
-			y_set(s.st, 1, x, w, y + h + hbox)
-			break
-		case '<':			/* left */
+	an = s.a_gch[i]
+	h = an.font.size
+	hbox = an.font.box ? 2 : 0
+	w = an.wh[0]
+	switch (an.type) {
+	case '_':			// below
+		y -= h
+		y_set(s.st, 0, x, w, y - hbox)
+		break
+	case '^':			// above
+		y = y_get(s.st, 1, x, w)
+		y += hbox
+		y_set(s.st, 1, x, w, y + h + hbox)
+		break
+	case '<':			// left
+	case '>':			// right
+		if (an.type == '<') {
 /*fixme: what symbol space?*/
 			if (s.notes[0].acc)
-				x -= s.notes[0].shac;
-			y = gch.y + yav - h / 2
-			break
-		case '>':			/* right */
+				x -= s.notes[0].shac
+		} else {
 			if (s.xmx)
 				x += s.xmx
 			if (s.dots)
-				x += 1.5 + 3.5 * s.dots;
-			y = gch.y + yav - h / 2
-			break
-		default:			// chord symbol
-			if (gch.y >= 0) {
-				y = y_get(s.st, 1, x, w)
-				if (y < gchy_max)
-					y = gchy_max
-				y += hbox
-				y_set(s.st, 1, x, w, y + h + hbox)
-			} else {
-				y = y_get(s.st, 0, x, w)
-				if (y > gchy_min)
-					y = gchy_min
-				y -= h
-				y_set(s.st, 0, x, w, y - hbox)
-			}
-			break
-		case '@':			/* absolute */
-			y = gch.y + yav
-			if (y > 0) {
-				y2 = y + h
-				if (y2 > staff_tb[s.st].ann_top)
-					staff_tb[s.st].ann_top = y2
-			} else {
-				if (y < staff_tb[s.st].ann_bot)
-					staff_tb[s.st].ann_bot = y
-			}
-			break
+				x += 1.5 + 3.5 * s.dots
 		}
-		if (user.anno_start)
-			user.anno_start("annot", gch.istart, gch.iend,
-				x - 2, y + h + 2, w + 4, h + 4, s)
-		xy_str(x, y, text, null, null, gch.wh)
-		if (user.anno_stop)
-			user.anno_stop("annot", gch.istart, gch.iend,
-				x - 2, y + h + 2, w + 4, h + 4, s)
-	} // draw1()
-
-	// --- draw_gchord ---
+		y += (s.type == C.NOTE ?
+				(((s.notes[s.nhd].pit + s.notes[0].pit) >> 1) -
+						18) * 3 :
+				12)		// fixed offset on rests and bars
+			- h / 2
+		break
+	default:			// chord symbol
+		if (y >= 0) {
+			y += hbox
+			y_set(s.st, 1, x, w, y + h + hbox)
+		} else {
+			y -= h
+			y_set(s.st, 0, x, w, y - hbox)
+		}
+		break
+	case '@':			// absolute
+		y += (s.type == C.NOTE ?
+				(((s.notes[s.nhd].pit + s.notes[0].pit) >> 1) -
+						18) * 3 :
+				12)		// fixed offset on rests and bars
+		if (y > 0) {
+			y2 = y + h * .6
+			if (y2 > staff_tb[s.st].ann_top)
+				staff_tb[s.st].ann_top = y2
+		} else {
+			y2 = y - h * .3
+			if (y2 < staff_tb[s.st].ann_bot)
+				staff_tb[s.st].ann_bot = y2
+		}
+		break
+	}
+	use_font(an.font)
+	set_font(an.font)
 	set_dscale(s.st)
-	ix = s.a_gch.length
-	while (--ix >= 0)
-		draw1(s.a_gch[ix], 1)		// above
-	for (ix = 0; ix < s.a_gch.length; ix++)
-		draw1(s.a_gch[ix])		// below
+	if (user.anno_start)
+		user.anno_start("annot", an.istart, an.iend,
+			x - 2, y + h + 2, w + 4, h + 4, s)
+	xy_str(x, y, an.text, null, null, an.wh)
+	if (user.anno_stop)
+		user.anno_stop("annot", an.istart, an.iend,
+			x - 2, y + h + 2, w + 4, h + 4, s)
 } // draw_gchord()
 
 // draw all chord symbols
 function draw_all_chsy() {
-    var	i, gch, gch2, s, chsy1, w, y, bot, top,
+    var	s, san1, an, i, y, w,
+	pos = curvoice.pos.gch == C.SL_BELOW ? -1 : 1,
+	n_an = 0,		// max number of annotations
 	minmax = new Array(nstaff + 1)
 
-	// search the vertical offset for the chord symbols
+	// set a vertical offset to all the chord symbols/annotations
+	function set_an_yu(j) {
+	    var	an, i, s, x, y, w
+
+		for (s = san1 ; s; s = s.ts_next) {
+			an = s.a_gch
+			if (!an)
+				continue
+			i = an.length - j - 1
+			an = an[i]
+			if (!an)
+				continue
+			if ((an.type == 'g' && pos > 0)
+			 || an.type == '^') {
+				x = s.x + an.x
+				w = an.wh[0]
+				if (w && x + w > realwidth)
+					x = realwidth - w // let the text in the page
+				y = y_get(s.st, 1, x, w)	// y / staff
+				if (an.type == 'g' && y < minmax[s.st].yup)
+					y = minmax[s.st].yup
+			} else if ((an.type == 'g' && pos < 0)
+				|| an.type == '_') {
+				continue
+			} else {
+				x = s.x + an.x
+				y = an.y
+			}
+			self.draw_gchord(i, s, x, y)
+		}
+	} // set_an_yu()
+
+	function set_an_yl(i) {
+	    var	an, x, y, w
+
+		for (var s = san1 ; s; s = s.ts_next) {
+			an = s.a_gch
+			if (!an)
+				continue
+			an = an[i]
+			if (!an
+			 || !((an.type == 'g' && pos < 0)
+			   || an.type == '_'))
+				continue
+			x = s.x + an.x
+			w = an.wh[0]
+			if (w && x + w > realwidth)	// let the text inside the page
+				x = realwidth - w
+			y = y_get(s.st, 0, x, w)	// y / staff
+			if (an.type == 'g' && y > minmax[s.st].ydn)
+				y = minmax[s.st].ydn
+			self.draw_gchord(i, s, x, y)
+		}
+	} // set_an_yl()
+
+	// get the number of chord symbols / annotations
+	// and the vertical offset for the chord symbols
 	for (i = 0; i <= nstaff; i++)
 		minmax[i] = {
-			ymin: 0,
-			ymax: 24
+			ydn: staff_tb[i].botbar - 3,
+			yup: staff_tb[i].topbar + 4
 		}
 	for (s = tsfirst; s; s = s.ts_next) {
-		if (!s.a_gch)
+		an = s.a_gch
+		if (!an)
 			continue
-		if (!chsy1)
-			chsy1 = s	// first chord symbol
-		gch2 = null
-		for (i = 0; i < s.a_gch.length; i++) {
-			gch = s.a_gch[i]
-			if (gch.type != 'g')
-				continue
-			gch2 = gch	// chord closest to the staff
-			if (gch.y < 0)
+		if (!san1)
+			san1 = s	// first chord symbol / annotation
+		i = an.length
+		if (i > n_an)
+			n_an = i
+		while (--i >= 0) {
+			if (an[i].type == 'g') {
+				an = an[i]
+				w = an.wh[0]
+				if (pos > 0) {
+					y = y_get(s.st, true, s.x, w)
+					if (y > minmax[s.st].yup)
+						minmax[s.st].yup = y
+				} else {
+					y = y_get(s.st, false, s.x, w)
+					if (y < minmax[s.st].ydn)
+						minmax[s.st].ydn = y
+				}
 				break
-		}
-		if (gch2) {
-			w = gch2.wh[0]
-			if (gch2.y >= 0) {
-				y = y_get(s.st, true, s.x, w)
-				if (y > minmax[s.st].ymax)
-					minmax[s.st].ymax = y
-			} else {
-				y = y_get(s.st, false, s.x, w)
-				if (y < minmax[s.st].ymin)
-					minmax[s.st].ymin = y
 			}
 		}
 	}
+	if (!san1)
+		return			// no chord symbol nor annotation
 
-	// draw the chord symbols if any
-	if (chsy1) {
-		for (i = 0; i <= nstaff; i++) {
-			bot = staff_tb[i].botbar
-			if (minmax[i].ymin > bot - 4)
-				minmax[i].ymin = bot - 4
-			top = staff_tb[i].topbar
-			if (minmax[i].ymax < top + 4)
-				minmax[i].ymax = top + 4
-		}
-		set_dscale(-1)		/* restore the scale parameters */
-		for (s = chsy1; s; s = s.ts_next) {
-			if (!s.a_gch)
-				continue
-			self.draw_gchord(s, minmax[s.st].ymin, minmax[s.st].ymax)
-		}
+	// draw the elements
+	set_dscale(-1)			// restore the scale parameters
+	for (i = 0; i < n_an; i++) {
+		set_an_yu(i)		// upper offsets
+		set_an_yl(i)		// lower offsets
 	}
 } // draw_all_chsy()
