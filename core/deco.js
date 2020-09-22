@@ -1439,7 +1439,7 @@ function draw_deco_staff() {
 
 	/* draw the repeat brackets */
 	function draw_repbra(p_voice) {
-		var s, s1, y, y2, i, p, w, wh, first_repeat;
+		var s, s1, x, y, y2, i, p, w, wh, first_repeat;
 
 		/* search the max y offset */
 		y = staff_tb[p_voice.st].topbar + 25	// 20 (vert bar) + 5 (room)
