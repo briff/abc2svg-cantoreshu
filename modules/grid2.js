@@ -55,25 +55,20 @@ abc2svg.grid2 = {
     }, // do_grid()
 
     // draw the chord symbol in the middle of the staff
-    draw_chosym: function(s) {
-    var	ix, gch;
-
-	this.set_dscale(s.st)
-	for (ix = 0; ix < s.a_gch.length; ix++) {
-		gch = s.a_gch[ix]
-		if (gch.type != 'g')
-			continue
-		this.use_font(gch.font);
-		this.set_font(gch.font);
-		this.xy_str(s.x + gch.x, gch.y + 6, gch.text)
+    draw_gchord: function(of, i, s, x, y) {
+    var	an
+	if (s.p_v.grid2) {
+		this.set_dscale(s.st)
+		an = s.a_gch[i]
+		if (an.type == 'g') {
+			this.use_font(an.font)
+			this.set_font(an.font)
+			this.xy_str(s.x + an.x, 12 - an.font.size * .5,
+					an.text)
+		}
+	} else {
+		of(i, s, x, y)
 	}
-    }, // draw_chosym()
-
-    draw_gchord: function(of, s, gchy_min, gchy_max) {
-	if (s.p_v.grid2)
-		abc2svg.grid2.draw_chosym.call(this, s)
-	else
-		of(s, gchy_min, gchy_max)
     },
 
     output_music: function(of) {
