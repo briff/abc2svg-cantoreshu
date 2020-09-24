@@ -53,6 +53,7 @@ user.textrans = {
 	"Bad integer value": "Valore intero errato",
 	"Bad instr= value": "Valore errato di instr=",
 	"Bad L: value": "Valore errato per L:",
+	"Bad measure duration": "Bad measure duration",
 	"Bad note in %%map": "Nota errata in %%map",
 	"Bad page width": "Larghezza di pagina errata",
 	"Bad program in %%MIDI": "Numero di programma non valido in %%MIDI",

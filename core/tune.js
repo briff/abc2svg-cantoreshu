@@ -414,123 +414,100 @@ function new_syst(init) {
 /* -- set the bar numbers -- */
 // (possible hook)
 Abc.prototype.set_bar_num = function() {
-	var	s, s2, tim, bar_time, bar_num, rep_dtime,
-		v = cur_sy.top_voice,
-		wmeasure = voice_tb[v].meter.wmeasure,
-		bar_rep = gene.nbar
+    var	s, s2, tim, rep_tim, k, n,
+	bar_num = 1,
+	bar_tim = 0,
+	wmeasure = voice_tb[cur_sy.top_voice].meter.wmeasure
 
-	/* don't count a bar at start of line */
+	// don't count a bar at start of tune
 	for (s = tsfirst; ; s = s.ts_next) {
 		if (!s)
 			return
 		switch (s.type) {
 		case C.METER:
 			wmeasure = s.wmeasure
+			// fall thru
 		case C.CLEF:
 		case C.KEY:
 		case C.STBRK:
 			continue
 		case C.BAR:
-			if (s.bar_num) {
-				gene.nbar = s.bar_num	/* (%%setbarnb) */
-				break
-			}
-			if (s.text			// if repeat bar
-			 && !cfmt.contbarnb) {
-				if (s.text[0] == '1') {
-					bar_rep = gene.nbar
-				} else {
-					gene.nbar = bar_rep; /* restart bar numbering */
-					s.bar_num = gene.nbar
-				}
-			}
+			if (s.bar_num)
+				bar_num = s.bar_num	// %%setbarnb)
 			break
 		}
 		break
 	}
 
 	// at start of tune, check for an anacrusis
-	bar_time = s.time + wmeasure
-	if (s.time == 0) {
-		for (s2 = s.ts_next; s2; s2 = s2.ts_next) {
-			if (s2.type == C.BAR && s2.time) {
-				if (s2.time < bar_time) {	// if anacrusis
-					s = s2;
-					bar_time = s.time + wmeasure
-				}
-				break
+	for (s2 = s.ts_next; s2; s2 = s2.ts_next) {
+		if (s2.type == C.BAR && s2.time) {
+			if (s2.time < wmeasure) {	// if anacrusis
+				s = s2
+				bar_tim = s.time
 			}
+			break
 		}
 	}
 
 	// set the measure number on the top bars
-	bar_num = gene.nbar
-
 	for ( ; s; s = s.ts_next) {
+		if (!s.seqst)
+			continue
 		switch (s.type) {
 		case C.METER:
+			bar_num += (s.time - bar_tim) / wmeasure
+			bar_tim = s.time
 			wmeasure = s.wmeasure
-			if (s.time < bar_time)
-				bar_time = s.time + wmeasure
-			break
-		case C.MREST:
-			bar_num += s.nmes - 1
-			while (s.ts_next
-			    && s.ts_next.type != C.BAR)
-				s = s.ts_next
 			break
 		case C.BAR:
-			if (s.time < bar_time) {	// incomplete measure
-				if (s.text && s.text[0] == '1') {
-					bar_rep = bar_num;
-					rep_dtime = bar_time - s.time
-				}
+			if (s.invis)
 				break
-			}
-
-			/* check if any repeat bar at this time */
-			tim = s.time;
-			s2 = s
-			do {
-				if (s2.dur)
-					break
-				if (s2.type == C.BAR && s2.text)	// if repeat bar
-					break
-				s2 = s2.next
-			} while (s2 && s2.time == tim);
-
-			if (s.bar_num)
+			if (s.bar_num) {
 				bar_num = s.bar_num	// (%%setbarnb)
-			else
-				bar_num++
-
-			if (s2 && s2.type == C.BAR && s2.text) {
-				if (s2.text[0] == '1') {
-					rep_dtime = 0;
-					bar_rep = bar_num
-				} else {			// restart bar numbering
-					if (!cfmt.contbarnb)
-						bar_num = bar_rep
-					if (rep_dtime) {	// [1 inside measure
-						if (cfmt.contbarnb)
-							bar_num--;
-						bar_time = tim + rep_dtime
-						break
-					}
-				}
+				bar_tim = s.time
+				continue
 			}
-			s.bar_num = bar_num;
-			bar_time = tim + wmeasure
+			if (wmeasure == 1) {		// if M:none
+				if (!s.bar_dotted) {
+//fixme: should handle the repeat with no contbarnb
+					s.bar_num = ++bar_num
+					bar_tim = s.time
+				}
+				continue
+			}
 
-			// skip the bars of the other voices
-			while (s.ts_next
-			    && !s.ts_next.seqst)
-				s = s.ts_next
+			n = bar_num + (s.time - bar_tim) / wmeasure
+			k = n - (n | 0)
+			if (s.text) {
+				if (s.text[0] == '1') {
+					if (cfmt.contbarnb)
+						rep_tim = bar_tim + k * wmeasure
+					else
+						rep_tim = s.time
+					if (!k)
+						s.bar_num = n
+				} else {
+					if (cfmt.contbarnb)
+						bar_tim = rep_tim
+					else
+						bar_tim += s.time - rep_tim
+					n = bar_num + (s.time - bar_tim) / wmeasure
+					if (n == (n | 0))
+						s.bar_num = n
+				}
+			} else {
+				if (k) {
+					if (!s.bar_dotted)
+						error(0, s, "Bad measure duration")
+					bar_tim += k * wmeasure
+					n -= k
+				}
+				s.bar_num = n
+			}
 			break
 		}
 	}
-	if (cfmt.measurenb < 0)		/* if no display of measure bar */
-		gene.nbar = bar_num	/* update in case of more music to come */
 }
 
 // note mapping
