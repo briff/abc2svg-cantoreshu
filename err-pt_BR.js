@@ -86,6 +86,8 @@ user.textrans = {
 	"Invalid decoration '$1'": "Decoração '$1' inválida",
 	"Invalid note duration $1": "Duração de nota $1 inválida",
 	"Lack of ']'": "']' faltando",
+	"Lack of bar after multi-measure rest":
+				"Lack of bar after multi-measure rest",
 	"Lack of ending slur(s)": "Lack of ending slur(s)",
 	'Lack of starting [, ! or " in U: / %%user':
 				'U: / %%user não começou com [, ! ou "',
