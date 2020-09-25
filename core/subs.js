@@ -668,21 +668,46 @@ function write_headform(lwidth) {
 	while (1) {
 		while (p[i] == ' ')
 			i++
-		if (i >= p.length)
-			break
 		c = p[i++]
+		if (!c)
+			break
 		if (c < 'A' || c > 'Z') {
-			if (c == '+') {
-				if (fmt.length == 0
-				 || fmt.slice(-1) == '+')
-					continue
-				fmt = fmt.slice(0, -1) + '+'
-			} else if (c == ',') {
-				if (fmt.slice(-1) == '+')
-					fmt = fmt.slice(0, -1) + 'l'
+			switch (c) {
+			case '+':
+				align = '+'
+				c = p[i++]
+				break
+			case ',':
 				fmt += '\n'
+				// fall thru
+			default:
+				continue
+			case '<':
+				align = 'l'
+				c = p[i++]
+				break
+			case '>':
+				align = 'r'
+				c = p[i++]
+				break
 			}
-			continue
+		} else {
+			switch (p[i]) {		// old syntax
+			case '-':
+				align = 'l'
+				i++
+				break
+			case '1':
+				align = 'r'
+				i++
+				break
+			case '0':
+				i++
+				// fall thru
+			default:
+				align = 'c'
+				break
+			}
 		}
 		if (!info_val[c]) {
 			if (!info[c])
@@ -692,27 +717,8 @@ function write_headform(lwidth) {
 		} else {
 			info_nb[c]++
 		}
-		fmt += c
-		switch (p[i]) {
-		case '-':
-			fmt += 'l'
-			i++
-			break
-		case '0':
-			fmt += 'c'
-			i++
-			break
-		case '1':
-			fmt += 'r'
-			i++
-			break
-		default:
-			fmt += 'c'
-			break
-		}
+		fmt += align + c
 	}
-	if (fmt.slice(-1) == '+')
-		fmt = fmt.slice(0, -1) + 'l';
 	fmt += '\n'
 
 	// loop on the blocks
@@ -736,14 +742,13 @@ function write_headform(lwidth) {
 		yb.l = yb.c = yb.r = y = 0;
 		j = i
 		while (1) {
-			c = p[j++]
-			if (c == '\n')
-				break
 			align = p[j++]
-			if (align == '+')
-				align = p[j + 1]
-			else if (yb[align] != 0)
+			if (align == '\n')
+				break
+			c = p[j++]
+			if (align == '+' || yb[align])
 				continue
+
 			str = info_val[c]
 			if (!str)
 				continue
@@ -762,18 +767,18 @@ function write_headform(lwidth) {
 		ya.c += y - yb.c;
 		ya.r += y - yb.r
 		while (1) {
-			c = p[i++]
-			if (c == '\n')
-				break
 			align = p[i++]
-			if (info_val[c].length == 0)
+			if (align == '\n')
+				break
+			c = p[i++]
+			if (!info_val[c].length)
 				continue
 			str = info_val[c].shift()
-			if (align == '+') {
+			if (p[i] == '+') {
 				info_nb[c]--;
+				i++
 				c = p[i++];
-				align = p[i++]
-				if (info_val[c].length > 0) {
+				if (info_val[c].length) {
 					if (str)
 						str += ' ' + info_val[c].shift()
 					else
@@ -836,7 +841,7 @@ function write_headform(lwidth) {
 			ya.l = ya.c
 		if (ya.r > ya.l)
 			ya.l = ya.r
-		if (i >= fmt.length)
+		if (i >= p.length)
 			break
 		ya.c = ya.r = ya.l
 	}
