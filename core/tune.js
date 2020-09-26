@@ -512,7 +512,8 @@ Abc.prototype.set_bar_num = function() {
 				}
 			} else {
 				if (k) {
-					if (!s.bar_dotted)
+					if (cfmt.checkbars
+					 && !s.bar_dotted && s.next)
 						error(0, s, "Bad measure duration")
 					bar_tim += k * wmeasure
 					n -= k

@@ -447,6 +447,7 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "bstemdown":
 	case "breakoneoln":
 	case "cancelkey":
+	case "checkbars":
 	case "contbarnb":
 	case "custos":
 	case "decoerr":
