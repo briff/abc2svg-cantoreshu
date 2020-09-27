@@ -2155,13 +2155,11 @@ function mrest_expand() {
 
 	// expand a multi-rest into a set of rest + bar
 	function mexp(s) {
-	    var	s2, s3, s4, next, tim,
+	    var	s2, s3, s4, next, tim, nbar,
 		nb = s.nmes,
 		dur = s.dur / nb
-//		a_dd = s.a_dd
 
 		// change the multi-rest into a single rest
-//		s.a_dd = null
 		s.type = C.REST
 		s.dur = s.dur_orig = dur
 		s.nflags = -2
@@ -2169,7 +2167,11 @@ function mrest_expand() {
 
 		/* add the bar(s) and rest(s) */
 		tim = s.time + dur
-		next = s.next			// bar
+		s2 = next = s.next		// bar (always)
+		while (!s2.bar_num)		// get the bar number
+			s2 = s2.ts_prev
+		nbar = s2.bar_num - s.nmes
+
 		s3 = s2 = s
 		while (--nb > 0) {
 
@@ -2177,6 +2179,7 @@ function mrest_expand() {
 			if (next) {
 				s2 = clone(next)
 				delete s2.soln
+				delete s2.a_gch
 				lkvsym(s2, next)
 			} else {
 				s2 = _bar(s)		// end of tune
@@ -2189,6 +2192,8 @@ function mrest_expand() {
 				s3 = s3.ts_next	// keep in order
 			if (s3) {
 				lktsym(s2, s3)
+				if (s3.type == C.BAR)
+					delete s3.bar_num
 			} else {
 				s3 = s
 				while (s3.ts_next)
@@ -2197,8 +2202,17 @@ function mrest_expand() {
 				s2.ts_prev = s3
 				s2.ts_next = null
 			}
-			s4 = s2.seqst ? s2.ts_next : s2.ts_prev
+			nbar++
+			if (s2.seqst) {
+				s2.bar_num = nbar
+				s4 = s2.ts_next
+			} else {
+				delete s2.bar_num
+				s4 = s2.ts_prev
+			}
 			s2.bar_type = s4.bar_type || "|"
+			if (s4.bar_num && !s4.seqst)
+				delete s4.bar_num
 
 			// add the rest
 			s4 = clone(s)
@@ -2235,9 +2249,6 @@ function mrest_expand() {
 			tim += dur
 			s = s3 = s4
 		}
-
-//		// copy the mrest decorations to the last rest
-//		s2.a_dd = a_dd
 	} // mexp()
 
 	for (s = tsfirst; s; s = s.ts_next) {
@@ -2248,7 +2259,8 @@ function mrest_expand() {
 		} else {
 			s2 = s.ts_next
 			while (!s2.seqst) {
-				if (s2.type != C.MREST)
+				if (s2.type != C.MREST
+				 || s2.nmes != s.nmes)
 					break
 				s2 = s2.ts_next
 			}
