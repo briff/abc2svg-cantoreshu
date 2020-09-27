@@ -477,36 +477,44 @@ Abc.prototype.set_bar_num = function() {
 		case C.BAR:
 			if (s.invis)
 				break
+			tim = s.time
 			if (s.bar_num) {
 				bar_num = s.bar_num	// (%%setbarnb)
-				bar_tim = s.time
+				bar_tim = tim
 				continue
 			}
 			if (wmeasure == 1) {		// if M:none
-				if (!s.bar_dotted) {
-//fixme: should handle the repeat with no contbarnb
-					s.bar_num = ++bar_num
-					bar_tim = s.time
+				if (s.bar_dotted)
+					continue
+				if (s.text) {
+					if (s.text[0] == '1') {
+						if (!cfmt.contbarnb)
+							rep_tim = bar_num
+					} else {
+						if (!cfmt.contbarnb)
+							bar_num = rep_tim
+					}
 				}
+				s.bar_num = ++bar_num
 				continue
 			}
 
-			n = bar_num + (s.time - bar_tim) / wmeasure
+			n = bar_num + (tim - bar_tim) / wmeasure
 			k = n - (n | 0)
 			if (s.text) {
 				if (s.text[0] == '1') {
 					if (cfmt.contbarnb)
 						rep_tim = bar_tim + k * wmeasure
 					else
-						rep_tim = s.time
+						rep_tim = tim
 					if (!k)
 						s.bar_num = n
 				} else {
 					if (cfmt.contbarnb)
 						bar_tim = rep_tim
 					else
-						bar_tim += s.time - rep_tim
-					n = bar_num + (s.time - bar_tim) / wmeasure
+						bar_tim += tim - rep_tim
+					n = bar_num + (tim - bar_tim) / wmeasure
 					if (n == (n | 0))
 						s.bar_num = n
 				}
