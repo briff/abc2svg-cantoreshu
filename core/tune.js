@@ -411,8 +411,7 @@ function new_syst(init) {
 		var	sy_staff = par_sy.staves[st],
 			p_voice = voice_tb[v]
 
-		if (p_voice.staffnonote != undefined)
-			sy_staff.staffnonote = p_voice.staffnonote
+		sy_staff.staffnonote = p_voice.staffnonote
 		if (p_voice.staffscale)
 			sy_staff.staffscale = p_voice.staffscale;
 	    }
@@ -1955,6 +1954,7 @@ function new_voice(id) {
 		okey: clone(parse.ckey),	// key without transposition (parse)
 		meter: clone(glovar.meter),
 		wmeasure: glovar.meter.wmeasure,
+		staffnonote: 1,
 		clef: {
 			type: C.CLEF,
 			clef_auto: true,

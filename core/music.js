@@ -2449,8 +2449,7 @@ function set_clefs() {
 			continue
 		st = sy.voices[v].st
 		if (!sy.voices[v].second) {		// main voices
-			if (p_voice.staffnonote != undefined)
-				sy.staves[st].staffnonote = p_voice.staffnonote
+			sy.staves[st].staffnonote = p_voice.staffnonote
 			if (p_voice.staffscale)
 				sy.staves[st].staffscale = p_voice.staffscale
 			if (sy.voices[v].sep)
@@ -2495,8 +2494,7 @@ function set_clefs() {
 				p_voice = voice_tb[v];
 				st = sy.voices[v].st
 				if (!sy.voices[v].second) {
-					if (p_voice.staffnonote != undefined)
-						sy.staves[st].staffnonote = p_voice.staffnonote
+					sy.staves[st].staffnonote = p_voice.staffnonote
 					if (p_voice.staffscale)
 						sy.staves[st].staffscale = p_voice.staffscale
 					if (sy.voices[v].sep)
@@ -4873,7 +4871,7 @@ function set_piece() {
 				break
 			if (s.invis)
 				continue
-			if (sy.staves[st].staffnonote != 0
+			if (sy.staves[st].staffnonote
 			 || s.type == C.NOTE)
 				break
 			continue
