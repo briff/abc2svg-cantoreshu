@@ -4488,7 +4488,7 @@ Abc.prototype.set_stems = function() {
 /* -- split up unsuitable bars at end of staff -- */
 // return true if the bar type has changed
 function check_bar(s) {
-    var	bar_type, i, b1, b2, s_bs, s2,
+    var	bar_type, i, s_bs, s2, r,
 	p_voice = s.p_v
 
 	if (s.type == C.BAR && s.invis) {	// bar at end of line
@@ -4514,13 +4514,12 @@ function check_bar(s) {
 		return
 
 	// add a bar in the next music line
-	s2 = p_voice.s_next
-	while (1) {
-		if (w_tb[s2.type])
+	r = cur_sy.voices[s.v].range
+	for (s2 = tsnext; s2 && !s2.seqst; s2 = s2.ts_next) {
+		if (s2.v == s.v
+		 || s2.time > s.time
+		 || cur_sy.voices[s2.v].range > r)
 			break
-		s2 = s2.next
-		if (!s2)
-			return
 	}
 	if (s2.type == C.BAR) {
 		s_bs = s2		// bar start
