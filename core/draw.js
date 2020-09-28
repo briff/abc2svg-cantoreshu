@@ -76,6 +76,7 @@ function sym_dup(s) {
 	delete s.a_gch
 	delete s.a_ly
 	delete s.a_dd;
+	delete s.tp
 	s.notes = clone(s.notes)
 	for (m = 0; m <= s.nhd; m++) {
 		note = s.notes[m] = clone(s.notes[m])
