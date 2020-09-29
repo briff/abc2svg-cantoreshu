@@ -1900,9 +1900,12 @@ function set_lines(	s,		/* first symbol */
 				break
 			}
 		}
-		s = s3.ts_next
-		while (!s.seqst)
+		s = s3
+		while (s.ts_next) {
 			s = s.ts_next
+			if (s.seqst)
+				break
+		}
 
 		if (s.nl) {		/* already set here - advance */
 			error(0, s,
