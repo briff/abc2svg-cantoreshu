@@ -5,12 +5,15 @@
 // Code adapted from Chris Fargen.
 //	https://gist.github.com/chrisfargen/4324c6cf6fed2c8f9a6eae1680e53169
 //
-// This module is loaded by %%jazzchord (no parameter).
+// This module is loaded by %%jazzchord.
+//
+// Parameters
+//	%%jazzchord [ string '=' replacement-string ]*
 
 abc2svg.jazzchord = {
 
     gch_build: function(of, s) {
-    var	gch, i, ix, j, t
+    var	gch, i, ix, t
 
 	of(s)				// build the chord symbols
 
@@ -18,12 +21,21 @@ abc2svg.jazzchord = {
 		gch = s.a_gch[ix]
 		if (gch.type != 'g')
 			continue
-		switch (gch.text) {
+		t = gch.text
+		switch (t) {
 		case "/": gch.text = "&#x1d10d;"; continue
 		case "%": gch.text = "&#x1d10e;"; continue
 		case "%%": gch.text = "&#x1d10e;"; continue
 		}
-		t = gch.text.replace(/-|°|º|ᵒ|0|6\/9|\^/g, function(x) {
+
+		if (abc2svg.jazzchord.rep) {	// if replacement list
+			t = t.replace(abc2svg.jazzchord.reg, function(x) {
+				return abc2svg.jazzchord.rep[x]
+			})
+		}
+
+
+		t = t.replace(/-|°|º|ᵒ|0|6\/9|\^/g, function(x) {
 			switch (x) {
 			case '-': return "–"
 			case '6/9': return "⁶⁄₉"
@@ -59,8 +71,32 @@ abc2svg.jazzchord = {
 	}
     }, // gch_build()
 
+    set_fmt: function(of, cmd, parm) {
+    var	r, k
+
+	if (cmd == "jazzchord") {
+		if (parm) {
+			parm = parm.split(/[\s=]+/)
+			abc2svg.jazzchord.rep = {}
+			r = ""
+			for (cmd = 0; cmd < parm.length; cmd += 2) {
+				k = parm[cmd]
+				abc2svg.jazzchord.rep[k] = parm[cmd + 1]
+				if (!r)
+					r = k
+				else
+					r += '|' + k
+			}
+			abc2svg.jazzchord.reg = new RegExp(r)
+		}
+		return
+	}
+	of(cmd, parm)
+    }, // set_fmt()
+
     set_hooks: function(abc) {
 	abc.gch_build = abc2svg.jazzchord.gch_build.bind(abc, abc.gch_build)
+	abc.set_format = abc2svg.jazzchord.set_fmt.bind(abc, abc.set_format)
 
 	abc.add_style("\n.jc6{letter-spacing:-0.05em}\
 \n.jc7{baseline-shift:30%;font-size:75%}\
