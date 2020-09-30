@@ -2233,7 +2233,7 @@ function mrest_expand() {
 			s4.prev = s2
 			s4.time = tim
 
-			while (s3 && s3.type == C.BAR && s3.time == tim)
+			while (s3 && !s3.dur && s3.time == tim)
 				s3 = s3.ts_next
 			while (s3 && s3.v < s.v) {
 				s3 = s3.ts_next	// keep in order
