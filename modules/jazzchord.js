@@ -38,6 +38,7 @@ abc2svg.jazzchord = {
 		t = t.replace(/-|°|º|ᵒ|0|6\/9|\^/g, function(x) {
 			switch (x) {
 			case '-': return "–"
+			case '0': return "ø"
 			case '6/9': return "⁶⁄₉"
 			case '^': return "∆"
 			default: return "o"
