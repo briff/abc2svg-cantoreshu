@@ -109,10 +109,16 @@ function get_sym(p, cont) {
 			deco_cnv([d.slice(1, -1)], s, s.prev)
 			break
 		case '"':
-			a_gch = s.a_gch;
 			parse_gchord(d)
-			if (a_gch)
+			if (a_gch) {			// if no error
+				d = s.a_gch		// save the previous ch/an
 				self.gch_build(s)
+				if (d) {
+					for (j = 0; j < s.a_gch.length; j++)
+						d.push(s.a_gch[j])
+					s.a_gch = d
+				}
+			}
 			break
 		}
 		s = s.next;
