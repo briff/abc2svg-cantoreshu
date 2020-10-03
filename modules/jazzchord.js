@@ -21,9 +21,10 @@ abc2svg.jazzchord = {
 
 	for (ix = 0; ix < s.a_gch.length; ix++) {
 		gch = s.a_gch[ix]
-		if (gch.type != 'g')
-			continue
 		t = gch.text
+		if (gch.type != 'g'
+		 || t.indexOf('$') >= 0)	// if some formatting already
+			continue
 		switch (t) {
 		case "/": gch.text = "&#x1d10d;"; continue
 		case "%": gch.text = "&#x1d10e;"; continue
