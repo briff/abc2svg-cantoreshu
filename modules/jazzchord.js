@@ -16,6 +16,8 @@ abc2svg.jazzchord = {
     var	gch, i, ix, t
 
 	of(s)				// build the chord symbols
+	if (!this.cfmt().jazzchord)
+		return
 
 	for (ix = 0; ix < s.a_gch.length; ix++) {
 		gch = s.a_gch[ix]
@@ -76,19 +78,19 @@ abc2svg.jazzchord = {
     var	r, k
 
 	if (cmd == "jazzchord") {
-		if (parm) {
-			parm = parm.split(/[\s=]+/)
+		this.cfmt().jazzchord = this.get_bool(parm)
+		if (parm && parm.indexOf('=') > 0) {
+			parm = parm.split(/[\s]+/)
 			abc2svg.jazzchord.rep = {}
-			r = ""
-			for (cmd = 0; cmd < parm.length; cmd += 2) {
-				k = parm[cmd]
-				abc2svg.jazzchord.rep[k] = parm[cmd + 1]
-				if (!r)
-					r = k
-				else
-					r += '|' + k
+			r = []
+			for (cmd = 0; cmd < parm.length; cmd++) {
+				k = parm[cmd].split('=')
+				if (k.length == 2) {
+					abc2svg.jazzchord.rep[k[0]] = k[1]
+					r.push(k[0])
+				}
 			}
-			abc2svg.jazzchord.reg = new RegExp(r)
+			abc2svg.jazzchord.reg = new RegExp(r.join('|'))
 		}
 		return
 	}
