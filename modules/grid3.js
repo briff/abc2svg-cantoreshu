@@ -352,6 +352,7 @@ abc2svg.grid3 = {
 			ln = t.shift()		// line
 			if (!ln)
 				break
+			ln = ln.trimLeft()
 			if (ln[0] == '|')
 				ln = ln.slice(ln[1] == ':' ? 2 : 1)
 			if (ln[ln.length - 1] != '|')
