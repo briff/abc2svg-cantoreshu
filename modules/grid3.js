@@ -1,14 +1,20 @@
-// grid3.js - module to insert a manual chord grid
+// grid3.js - module to insert a manual chords
 //
 // Copyright (C) 2020 Jean-Francois Moine - GPL3+
 //
 // This module is loaded when "%%begingrid" appears in a ABC source.
 //
 // Parameters
-//	%%begingrid
-//		list of chords, measure bars ('|') and ':' for repeat
+//	%%begingrid [ chord-define [ noprint ] ]
+//		list of chords, '-', measure bars ('|') and ':' for repeat
 //	%%endgrid
+//
 //	%%gridfont font_name size (default: 'serif 16')
+//
+// When this command appears inside a tune and when 'chord-define' is present,
+// the chords are used to define the chord symbols that are displayed
+// above the staff system.
+// When 'noprint' is also present, the grid itself is not displayed.
 
 abc2svg.grid3 = {
 
@@ -240,11 +246,33 @@ abc2svg.grid3 = {
 
 // handle %%begingrid
     do_begin_end: function(of, type, opt, txt) {
+    var	vt = abc.get_voice_tb()
+
 	if (type != "grid") {
 		of(type, opt, txt)
-	} else if (this.parse.state >= 2) {
-		s = this.new_block(type)
-		s.text = txt
+		return
+	}
+	if (this.parse.state >= 2) {
+		if (opt.indexOf("noprint") < 0) {
+			s = this.new_block(type)
+			s.text = txt
+		}
+		if (opt.indexOf("chord-define") >= 0) {
+			if (!this.get_curvoice())
+				this.goto_tune()
+			vt.push({
+				id: "grid3",
+				v: vt.length,
+				time: 0,
+				pos: {
+					gst: 0
+				},
+				scale: 1,
+				st: 0,
+				sls: []
+			})
+			abc.cfmt().csdef = txt
+		}
 	} else {
 		abc2svg.grid3.block_gen.call(this, null, {
 						subtype: type,
@@ -253,9 +281,156 @@ abc2svg.grid3 = {
 	}
     }, // do_begin_end()
 
+    output_music: function(of) {
+    var	ln, i, dt, ss, ntim, p_vc, s3,
+	C = abc2svg.C,
+	abc = this,
+	s = abc.get_tsfirst(),
+	vt = abc.get_voice_tb(),
+	t = abc.cfmt().csdef,
+	cs = []
+
+	// add a chord symbol
+	function add_cs(ss, ch) {
+	    var	s = {			// invisible rest in the voice "grid3"
+			type: C.REST,
+			fname: ss.fname,
+			istart: ss.istart,
+			iend: ss.iend,
+			v: p_vc.v,
+			p_v: p_vc,
+			time: ntim,
+			st: 0,
+			dur: 0,
+			dur_orig: 0,
+			invis: true,
+			seqst: true,
+			nhd: 0,
+			notes: [{
+				pit: 18,
+				dur: dt
+			}]
+		}
+
+		if (ch != '-') {
+			abc.set_a_gch([{	// define the chord symbol
+				type: 'g',
+				text: ch,
+				istart: ss.istart,
+				iend: ss.iend,
+				font: abc.get_font("gchord")
+			}])
+			abc.gch_build(s)
+		}
+
+		// insert the rest
+		if (!p_vc.last_sym) {
+			p_vc.sym = s
+		} else {
+			s.prev = p_vc.last_sym
+			s.prev.next = s
+		}
+		p_vc.last_sym = s
+		s.ts_next = ss
+		s.ts_prev = ss.ts_prev
+		s.ts_prev.ts_next = s
+		ss.ts_prev = s
+		if (s.time == ss.time)
+			delete ss.seqst
+		return s
+	} // add_cs()
+
+	if (t) {				// if chord-define
+		for (i = 0; i < vt.length; i++) {
+			p_vc = vt[i]
+			if (p_vc.id == "grid3")
+				break
+		}
+
+		t = t.split('\n')
+		while (1) {			// scan the grid content
+			ln = t.shift()		// line
+			if (!ln)
+				break
+			if (ln[0] == '|')
+				ln = ln.slice(ln[1] == ':' ? 2 : 1)
+			if (ln[ln.length - 1] != '|')
+				ln = ln + '|'
+
+			// extract the bars and the chords
+			ln = ln.match(/[|:]+|[^|:\s]+/g)
+			while (1) {
+				cl = ln.shift()
+				if (!cl)
+					break
+				if (cl[0] == '|' || cl[0] == ':') {
+					while (s && !s.dur)
+						s = s.ts_next
+					ss = s			// first note/rest
+					while (s && !s.bar_type)
+						s = s.ts_next	// end of measure
+					if (!cs.length)
+						cs = ['-']
+					ntim = ss.time
+					dt = (s.time - ntim) / cs.length
+					s3 = null
+					for (i = 0; i < cs.length; i++) {
+						if (cs[i] != '-'
+						 || !s3) {
+							while (ss.time < ntim)
+								ss = ss.ts_next
+							s3 = add_cs(ss, cs[i])
+						}
+						s3.dur += dt
+						s3.dur_orig += dt
+						ntim += dt
+					}
+					while (s && s.type != C.BAR)
+						s = s.ts_next
+					ss = {
+						type: C.BAR,
+						bar_type: "|",
+						fname: s.fname,
+						istart: s.istart,
+						iend: s.iend,
+						v: p_vc.v,
+						p_v: p_vc,
+						st: 0,
+						time: s.time,
+						dur: 0,
+						nhd: 0,
+						notes: [{
+							pit: 18
+						}],
+						next: s,
+						ts_next: s,
+						prev: s.prev,
+						ts_prev: s.ts_prev
+					}
+					if (!s)
+						break
+					if (s.seqst) {
+						ss.seqst = true
+						delete s.seqst
+					}
+					ss.prev.next =
+						ss.ts_prev.ts_next =
+						s.prev =
+							s.ts_prev = ss
+					cs = []
+				} else {
+					cs.push(cl)
+				}
+			}
+		}
+	}
+	of()
+    }, // output_music()
+
     set_hooks: function(abc) {
 	abc.block_gen = abc2svg.grid3.block_gen.bind(abc, abc.block_gen)
 	abc.do_begin_end = abc2svg.grid3.do_begin_end.bind(abc, abc.do_begin_end)
+	abc.output_music = abc2svg.grid3.output_music.bind(abc, abc.output_music)
     }
 } // grid3
 
