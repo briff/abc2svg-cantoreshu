@@ -246,7 +246,7 @@ abc2svg.grid3 = {
 
 // handle %%begingrid
     do_begin_end: function(of, type, opt, txt) {
-    var	vt = abc.get_voice_tb()
+    var	vt = this.get_voice_tb()
 
 	if (type != "grid") {
 		of(type, opt, txt)
@@ -271,7 +271,7 @@ abc2svg.grid3 = {
 				st: 0,
 				sls: []
 			})
-			abc.cfmt().csdef = txt
+			this.cfmt().csdef = txt
 		}
 	} else {
 		abc2svg.grid3.block_gen.call(this, null, {
