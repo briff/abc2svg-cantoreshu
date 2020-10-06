@@ -887,6 +887,9 @@ Abc.prototype.do_pscom = function(text) {
 		return
 	}
 
+	if (cmd.slice(0, 5) == "title" && parse.state == 2)
+		goto_tune()
+
 	switch (cmd) {
 	case "center":
 		if (parse.state >= 2) {
