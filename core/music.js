@@ -859,6 +859,8 @@ Abc.prototype.set_width = function(s) {
 		 && s.next && s.next.a_gch) {
 			set_font("repeat");
 			s.wr += strwh(s.text)[0] + 2
+			if (s.bar_num)
+				s.wr += 4
 		}
 		return
 	case C.CLEF:

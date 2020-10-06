@@ -1470,8 +1470,8 @@ function draw_deco_staff() {
 			/* have room for the repeat numbers */
 			if (s1.text) {
 				wh = strwh(s1.text);
-				y2 = y_get(p_voice.st, true, s1.x + 4, wh[0]);
-				y2 += wh[1]
+				y2 = y_get(p_voice.st, true, s1.x + 4, wh[0]) +
+						wh[1]
 				if (y < y2)
 					y = y2
 			}
@@ -1499,8 +1499,8 @@ function draw_deco_staff() {
 			if (s1 == s)
 				break
 			x = s1.x
-//			if (s1.bar_type[0] == ":")
-//				x -= 4;
+			if (s.bar_num)
+				x += 6
 			if (s.type != C.BAR) {
 				w = s.rbstop ? 0 : s.x - realwidth + 4
 			} else if ((s.bar_type.length > 1	// if complex bar
@@ -1716,7 +1716,7 @@ function draw_measnb() {
 		w = w0
 		if (bar_num >= 10)
 			w *= bar_num >= 100 ? 3 : 2
-		x = s.x - w * .4;
+		x = s.x - w * (s.text ? .6 : .4)
 		y = y_get(st, true, x, w)
 		if (y < staff_tb[st].topbar + 3)
 			y = staff_tb[st].topbar + 3
