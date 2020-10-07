@@ -428,7 +428,7 @@ function new_syst(init) {
 // (possible hook)
 Abc.prototype.set_bar_num = function() {
     var	s, s2, tim, rep_tim, k, n,
-	bar_num = 1,
+	bar_num = gene.nbar,
 	bar_tim = 0,
 	wmeasure = voice_tb[cur_sy.top_voice].meter.wmeasure
 
