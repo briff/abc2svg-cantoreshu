@@ -54,16 +54,11 @@ abc2svg.strtab = {
 		if (s.type == C.NOTE) {
 			for (m = 0; m <= s.nhd; m++) {
 				not = s.notes[m]
-				x = s.x - 2.5
+				x = s.x - 3
 				if (not.nb >= 10)
 					x -= 3
 				y = 3 * (not.pit - 18)
-				abc.out_svg('<rect x="')
-				abc.out_sxsy(x - 1, '" y="', stb + y + 3)
-				abc.out_svg('" width="' +
-					(not.nb < 10 ? "5" : "10") +
-					'" height="6.5" fill="white"/>\n')
-				abc.out_svg('<text x="')
+				abc.out_svg('<text class="bg" x="')
 				abc.out_sxsy(x, '" y="', stb + y - 2.5)
 				abc.out_svg('">' + not.nb + '</text>\n')
 			}
@@ -90,14 +85,16 @@ abc2svg.strtab = {
 
     // adjust the horizontal offset of the stems
     set_width: function(of, s) {
-    var	s, i, m, not,
-	C = abc2svg.C,
+    var	m, not,
 	abc = this,
-	p_v = s.p_v
+	C = abc2svg.C,
+	o = s.stem < 0 ? 3.5 : -2.5
 
 	of(s)
-	if (p_v && p_v.tab && s.type == C.NOTE && !s.stemless)
-		s.notes[0].shhd = s.stem < 0 ? 3.5 : -2.5
+	if (s.p_v && s.p_v.tab && s.type == C.NOTE && !s.stemless) {
+		for (m = 0; m <= s.nhd; m++)
+			s.notes[m].shhd = o
+	}
     }, // set_width()
 
     // change the notes when the global generation settings are done
@@ -432,7 +429,13 @@ abc2svg.strtab = {
 	if (!user.nul)
 		user.nul = function() {}
 
-	abc.add_style("\n.bn {font:bold 7px sans-serif}")
+	abc.add_style("\n.bn{font:bold 8px sans-serif}\
+\n.bg{filter:url(#bg)}")
+    var	bg = abc.cfmt().bgcolor || "white"
+	abc.defs_add('<filter x="-0.1" y="0.2" width="1.2" height=".8" id="bg">\n\
+<feFlood flood-color="' + bg + '"/>\n\
+<feComposite in="SourceGraphic" operator="over"/>\n\
+</filter>')
     } // set_hooks()
 } // strtab
 
