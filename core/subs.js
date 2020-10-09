@@ -282,20 +282,6 @@ function xy_str(x, y, str,
 	}
 	out_str(str);
 	output += "</text>\n"
-
-	if (!w && gene.curfont.box) {
-// not in the SVG documentation,
-// but this works for almost all browsers but firefox
-//		output += '<g style="outline: solid black;\
-//			outline-width: 1px">\n';
-//	//	xy_str(x, y, str, action, w);
-//		output += '</g>\n'
-		output += '<rect class="stroke" x="';
-		out_sxsy(x - 2, '" y="', y + wh[1] + 1);
-		output += '" width="' + (wh[0] + 4).toFixed(1) +
-			'" height="' + (wh[1] + 2).toFixed(1) +
-			'"/>\n'
-	}
 }
 
 /* -- move trailing "The" to front, set to uppercase letters or add xref -- */
@@ -347,12 +333,14 @@ function write_title(title, is_subtitle) {
 		set_font("title");
 		h = cfmt.titlespace
 	}
-	wh = strwh(title);
-	vskip(wh[1] + h)
+	wh = strwh(title)
+	wh[1] += gene.curfont.pad
+	vskip(wh[1] + h + gene.curfont.pad)
+	h = gene.curfont.pad / 2
 	if (cfmt.titleleft)
-		xy_str(0, 0, title, null, null, wh)
+		xy_str(0, h, title, null, null, wh)
 	else
-		xy_str(get_lwidth() / 2, 0, title, "c", null, wh)
+		xy_str(get_lwidth() / 2, h, title, "c", null, wh)
 }
 
 /* -- output a header format '111 (222)' -- */

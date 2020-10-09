@@ -62,8 +62,8 @@ function parse_gchord(type) {
 	if (curvoice.pos.gch == C.SL_HIDDEN)
 		return
 
-	if (ann_font.box)
-		h_ann += 3;
+	if (ann_font.pad)
+		h_ann += ann_font.pad
 	i = 0;
 	type = 'g'
 	while (1) {
@@ -259,8 +259,7 @@ Abc.prototype.gch_build = function(s) {
 		set_font(gch.font);
 		wh = strwh(gch.text);
 		gch.wh = wh
-		if (gch.font.box)
-			wh[1] += 2
+		wh[1] += gch.font.pad
 		switch (gch.type) {
 		case '@':
 			break
@@ -320,7 +319,7 @@ Abc.prototype.draw_gchord = function(i, s, x, y) {
 
 	an = s.a_gch[i]
 	h = an.font.size
-	hbox = an.font.box ? 2 : 0
+	hbox = an.font.pad
 	w = an.wh[0]
 	switch (an.type) {
 	case '_':			// below

@@ -1668,17 +1668,17 @@ function draw_measnb() {
 			w = w0
 			if (bar_num >= 10)
 				w *= bar_num >= 100 ? 3 : 2
-			if (gene.curfont.box)
-				w += 4;
+			if (gene.curfont.pad)
+				w += gene.curfont.pad + 2
 			x = s.x + s.wr + 1	// if clef, shift a bit
 			y = y_get(st, true, x, w)
 			if (y < staff_tb[st].topbar + 6)
 				y = staff_tb[st].topbar + 6;
 			y += 2;
 			xy_str(x, y, bar_num.toString())
-			if (gene.curfont.box) {
-				y += 2;
-				w += 3
+			if (gene.curfont.pad) {
+				y += gene.curfont.pad
+				w += gene.curfont.pad + 1
 			}
 			y += gene.curfont.size;
 			y_set(st, true, x, w, y);
@@ -1730,14 +1730,12 @@ function draw_measnb() {
 			}
 		}
 		y += 2;
-		if (gene.curfont.box) {
-			y += 2;
-			w += 3
+		if (gene.curfont.pad) {
+			y += gene.curfont.pad
+			w += gene.curfont.pad + 1
 		}
 		xy_str(x, y, bar_num.toString())
-		y += gene.curfont.size;
-		if (gene.curfont.box)
-			y += 2;
+		y += gene.curfont.size + gene.curfont.pad
 		y_set(st, true, x, w, y);
 //		s.ymx = y
 	}
@@ -1826,8 +1824,7 @@ function draw_partempo(st, top) {
 	}
 	if (some_part) {
 		set_sscale(-1)
-		if (gene.curfont.box)
-			h += 2
+		h += gene.curfont.pad
 		if (top < ymin + h + ht)
 			dy = ymin + h + ht - top
 

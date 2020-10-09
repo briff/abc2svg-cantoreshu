@@ -1058,14 +1058,13 @@ function draw_rest(s) {
 			xygl(x, yb, "mrep")
 			if (s.rep_nb > 2 && s.v == cur_sy.top_voice) {
 				set_font("annotation");
-				if (gene.curfont.box) {
-					gene.curfont.box = false;
-					bx = true
-				}	
+				bx = gene.curfont.box
+				if (bx)
+					gene.curfont.box = 0
 				xy_str(x, yb + p_staff.topbar - 9,
 					s.rep_nb.toString(), "c")
 				if (bx)
-					gene.curfont.box = true
+					gene.curfont.box = bx
 			}
 		}
 		anno_stop(s)
@@ -3436,16 +3435,15 @@ function draw_systems(indent) {
 		l = ba.length
 
 		set_font("annotation");
-		if (gene.curfont.box) {
-			gene.curfont.box = false
-			bx = true
-		}
+		bx = gene.curfont.box
+		if (bx)
+			gene.curfont.box = 0
 		for (i = 0; i < l; i++) {
 			b = ba[i];		// symbol, bottom, height
 			draw_bar(b[0], b[1], b[2])
 		}
 		if (bx)
-			gene.curfont.box = true
+			gene.curfont.box = bx
 
 		set_sscale(-1)
 		l = sb.length

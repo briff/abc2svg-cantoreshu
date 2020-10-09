@@ -30,7 +30,7 @@ var	font_tb = [],
 	fmt_lock = {}
 
 var cfmt = {
-	annotationfont: {name: "sans-serif", size: 12 },
+	annotationfont: {name: "sans-serif", size: 12},
 	aligncomposer: 1,
 	beamslope: .4,			// max slope of a beam
 //	botmargin: .7 * IN,		// != 1.8 * CM,
@@ -160,12 +160,15 @@ function param_set_font(xxxfont, p) {
 	// create a new font
 	font = cfmt[xxxfont];
 	if (!font) {			// set-font-<n> or new element
-		font = {}
+		font = {
+			pad: 0
+		}
 	} else {
 		font = {
 			name: font.name,
 			size: font.size,
-			box: font.box
+			box: font.box,
+			pad: font.pad
 		}
 	}
 	cfmt[xxxfont] = font;
@@ -173,10 +176,18 @@ function param_set_font(xxxfont, p) {
 	// fill the values
 	a = p.match(/\s+(no)?box(\s|$)/)
 	if (a) {				// if box
-		if (a[1])
+		if (a[1]) {
 			font.box = false	// nobox
-		else
-			font.box = true;
+			font.pad = 0
+		} else {
+			font.box = true
+			font.pad = 3
+		}
+		p = p.replace(a[0], a[2])
+	}
+	a = p.match(/\s+padding=([\d.]+)(\s|$)/)
+	if (a) {				// if padding
+		font.pad = a[1] ? Number(a[1]) : 0
 		p = p.replace(a[0], a[2])
 	}
 
@@ -442,7 +453,7 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "measurebox":
 	case "partsbox":
 		cfmt[cmd.replace("box", "font")]	// font
-			.box = get_bool(param)
+			.box = get_bool(param) ? 2 : 0
 		break
 	case "bstemdown":
 	case "breakoneoln":
@@ -659,9 +670,12 @@ Abc.prototype.style_font = style_font
 
 // build a font class
 function font_class(font) {
+    var	f = 'f' + font.fid + cfmt.fullsvg
 	if (font.class)
-		return 'f' + font.fid + cfmt.fullsvg + ' ' + font.class
-	return 'f' + font.fid + cfmt.fullsvg
+		f += ' ' + font.class
+	if (font.box)
+		f += ' ' + 'box'
+	return f
 }
 
 // use the font
@@ -673,6 +687,8 @@ function use_font(font) {
 			font_tb.push(font)
 			if (!font.swfac)
 				set_font_fac(font)
+			if (!font.pad)
+				font.pad = 0
 		}
 		font_style += "\n.f" + font.fid + cfmt.fullsvg +
 			"{" + style_font(font) + "}"
