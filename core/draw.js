@@ -2014,19 +2014,6 @@ function draw_slurs(s, last) {
 		if (last && s2.time > last.time)
 			return			// will be drawn next time
 
-		// set the slur position
-		switch (sl.ty & 0x07) {
-		case C.SL_ABOVE: dir = 1; break
-		case C.SL_BELOW: dir = -1; break
-		default:
-			dir = s.v != s2.v ?
-				1 :		// always above ?
-				slur_direction(s, s2)
-			sl.ty &= ~0x07
-			sl.ty |= dir > 0 ? C.SL_ABOVE : C.SL_BELOW
-			break
-		}
-
 		// if the slur continues on the next music line,
 		// stop it on the invisible bar at end of current line
 		if (tsnext && s2.time >= tsnext.time) {
@@ -2038,6 +2025,19 @@ function draw_slurs(s, last) {
 			sl.note = {
 				s: s2
 			}
+		}
+
+		// set the slur position
+		switch (sl.ty & 0x07) {
+		case C.SL_ABOVE: dir = 1; break
+		case C.SL_BELOW: dir = -1; break
+		default:
+			dir = s.v != s2.v ?
+				1 :		// always above ?
+				slur_direction(s, s2)
+			sl.ty &= ~0x07
+			sl.ty |= dir > 0 ? C.SL_ABOVE : C.SL_BELOW
+			break
 		}
 
 		// build the path of the symbols under the slur
