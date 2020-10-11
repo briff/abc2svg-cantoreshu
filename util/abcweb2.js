@@ -63,7 +63,6 @@ function dom_loaded() {
 	a,
 	abcsrc = "",			// ABC source
 	indx = [],			// indexes of the tunes in abcsrc
-	select,
 	playing,
 	abcplay,
 	playconf = {
@@ -190,12 +189,12 @@ function dom_loaded() {
 		if (typeof follow == "function")
 			follow(abc, user, playconf)
 
-		// do the selection
+		// do the selection if the hash permits some generation
+		// (the hash may be used to identify an element in the HTML document)
 		sel = window.location.hash.slice(1)
-		if (sel) {
-			select = '%%select ' + decodeURIComponent(sel)
-			abc.tosvg(app, select)
-		}
+		if (sel
+		 && abcsrc.match(new RegExp(sel)))
+			abc.tosvg(app, '%%select ' + decodeURIComponent(sel))
 
 		// generate and replace
 		i = 0
@@ -250,7 +249,6 @@ function dom_loaded() {
 			s.src = fn		// absolute URL
 		else
 			s.src = jsdir + fn
-		s.type = 'text/javascript'
 		if (relay)
 			s.onload = relay
 		s.onerror = onerror || function() {
