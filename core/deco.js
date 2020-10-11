@@ -1650,10 +1650,9 @@ function draw_measnb() {
 		} else if (bar_num % cfmt.measurenb == 0) {
 			for ( ; ; s = s.ts_next) {
 				switch (s.type) {
-				case C.TIMESIG:
 				case C.CLEF:
-				case C.KEYSIG:
-				case C.FMTCHG:
+				case C.KEY:
+				case C.METER:
 				case C.STBRK:
 					continue
 				}
