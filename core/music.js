@@ -1560,6 +1560,71 @@ function custos_add(s) {
 function set_nl(s) {			// s = start of line
     var	p_voice, done, tim
 
+	// divide a left repeat bar (|:) or a variant bar (|1)
+	function bardiv(so) {
+	    var s0, s1, s2, t1, t2, i,
+		t = so.bar_type.match(/(:*)([^:]*)(:*)/)
+			// [1] = starting ':'s, [2] = middle, [3] = ending ':'s
+
+		if (!t[3]) {		// if start of variant
+			// |1 -> | [1
+			// :|]1 -> :|] [1
+			t1 = t[1] + t[2]
+			t2 = '['
+		} else if (!t[1]) {	// if left repeat only
+			// [|: -> | [|:
+			// [||: -> || [|:
+			t1 = t[2].slice(1)
+			t2 = '[|' + t[3]
+		} else {
+			// :][: -> :|] [|:
+			i = (t[2].length / 2) | 0
+			t1 = t[1] + '|' + t[2].slice(0, i)
+			t2 = t[2].slice(i) +'|' + t[3]
+		}
+
+		s1 = so				// top bar
+		while (s1.ts_prev.bar_type)
+			s1 = s1.ts_prev
+		s0 = so				// start of next line
+		while (s0.ts_next) {
+			switch (s0.ts_next.type) {
+			case C.KEY:
+			case C.METER:
+			case C.CLEF:
+				s0 = s0.ts_next
+				continue
+			}
+			break
+		}
+		while (1) {
+			s2 = clone(s1)
+			s1.bar_type = t1
+			s2.bar_type = t2
+			s2.next = s1.next	// voice
+			s2.prev = s1
+			s1.next = s2
+			s2.next.prev = s2
+			s2.ts_next = s0.ts_next	// time
+			s2.ts_prev = s0
+			s0.ts_next = s2
+			s2.ts_next.ts_prev = s2
+			if (s1.text) {
+				s2.invis = true
+				s2.rbstart = s1.rbstart
+				self.set_width(s2)
+				s2.shrink = s1.wr + s2.wl
+				s2.space = 0
+				delete s1.text
+				delete s1.rbstart
+			}
+			if (s1 == so)
+				break
+			s1 = s1.ts_next
+			s0 = s2
+		}
+	} // bardiv()
+
 	// set the end of line marker
 	function set_eol(s) {
 		if (cfmt.custos && voice_tb.length == 1)
@@ -1592,7 +1657,6 @@ function set_nl(s) {			// s = start of line
 		// advance in the next line
 		for (s2 = s.ts_next; s2; s2 = s2.ts_next) {
 			switch (s2.type) {
-//			case C.BAR:
 			case C.KEY:
 				if (!cfmt.keywarn
 				 || (!s2.k_a_acc && !s2.k_sf && !s2.k_old_sf)
@@ -1655,12 +1719,18 @@ function set_nl(s) {			// s = start of line
 		s = s.ts_prev
 	}
 
+	// if on a left repeat bar or on a variant bar, divide
+	if (s.bar_type
+	 && (s.bar_type.slice(-1) == ':'
+	  || s.text)
+	 && s.bar_type != ':')
+		bardiv(s)
+
 	// add the warning symbols at the end of the previous line
 	s = do_warn(s)
 
 	/* if normal symbol, cut here */
 	switch (s.type) {
-	case C.CLEF:
 	case C.BAR:
 	case C.STAVES:
 		break
@@ -4493,116 +4563,6 @@ Abc.prototype.set_stems = function() {
 	}
 }
 
-/* -- split up unsuitable bars at end of staff -- */
-// return true if the bar type has changed
-function check_bar(s) {
-    var	bar_type, i, s_bs, s2, r,
-	p_voice = s.p_v
-
-	if (s.type == C.BAR && s.invis) {	// bar at end of line
-		s = s.prev
-		if (!s)
-			return
-	}
-
-	/* search the last bar */
-	while (s.type == C.CLEF || s.type == C.KEY || s.type == C.METER) {
-		s = s.prev
-		if (!s)
-			return
-	}
-	if (s.type != C.BAR)
-		return
-
-	bar_type = s.bar_type
-	if (bar_type == ":")
-		return
-	if (bar_type.slice(-1) != ':'		// if not a left repeat bar
-	 && s.text == undefined)		// nor a variant
-		return
-
-	// add a bar in the next music line
-	r = cur_sy.voices[s.v].range
-	for (s2 = tsnext; s2 && !s2.seqst; s2 = s2.ts_next) {
-		if (s2.v == s.v
-		 || s2.time > s.time
-		 || cur_sy.voices[s2.v].range > r)
-			break
-	}
-	if (s2.type == C.BAR) {
-		s_bs = s2		// bar start
-	} else {
-		s_bs = clone(s)
-		s_bs.next = s2
-		s_bs.prev = s2.prev
-		if (s2 == p_voice.s_next)
-			p_voice.s_next = s_bs
-		else
-			s2.prev.next = s_bs
-		s2.prev = s_bs
-
-		while (!s2.seqst || s2.time > s_bs.time)
-			s2 = s2.ts_prev
-		s_bs.ts_next = s2
-		s_bs.ts_prev = s2.ts_prev
-		if (s2 == tsnext)
-			tsnext = s_bs
-		else
-			s2.ts_prev.ts_next = s_bs
-		delete s_bs.seqst
-		if (s_bs == tsnext || s2.ts_prev.type != C.BAR) {
-			if (s2.seqst) {
-				s_bs.seqst = true
-			} else {
-				s2.seqst = true
-				s2.shrink = s_bs.wr + s2.wl
-				s2.space = 0
-			}
-		}
-		s2.ts_prev = s_bs
-	}
-
-	if (s.text != undefined) {		// if a variant
-		s_bs.bar_type = ""
-		s_bs.text = s.text
-		s_bs.a_gch = s.a_gch
-		delete s.text
-		delete s.a_gch
-		return true
-	}
-
-	if (bar_type[0] != ':') {		// 'xx:' (not ':xx:')
-		if (bar_type == "||:") {
-			s_bs.bar_type = "[|:"
-			s.bar_type = "||"
-			return true
-		}
-		s_bs.bar_type = bar_type
-		if (s.prev && s.prev.type == C.BAR)
-			unlksym(s)
-		else
-			s.bar_type = "|"
-		return
-	}
-
-	// ':xx:' -> ':x|]' and '[|x:'
-	i = 0
-	while (bar_type[i] == ':')
-		i++
-	if (i < bar_type.length) {
-		s.bar_type = bar_type.slice(0, i) + '|]';
-		i = bar_type.length - 1
-		while (bar_type[i] == ':')
-			i--;
-		s_bs.bar_type = '[|' + bar_type.slice(i + 1)
-	} else {
-		i = (bar_type.length / 2) |0;			// '::::' !
-		s.bar_type = bar_type.slice(0, i) + '|]';
-		s_bs.bar_type = '[|' + bar_type.slice(i)
-	}
-	return true
-}
-
 /* -- move the symbols of an empty staff to the next one -- */
 function sym_staff_move(st) {
 	for (var s = tsfirst; s; s = s.ts_next) {
@@ -4928,11 +4888,6 @@ function set_piece() {
 					if (s.v == v) {
 						p_voice.s_next = s.next;
 						s.next = null;
-						if (check_bar(s)) {
-							tmp = s.wl;
-							self.set_width(s);
-							s.shrink += s.wl - tmp
-						}
 						break
 					}
 				}
