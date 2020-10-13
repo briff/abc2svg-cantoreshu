@@ -1499,7 +1499,8 @@ function draw_deco_staff() {
 			if (s1 == s)
 				break
 			x = s1.x
-			if (s.bar_num)
+			if (cfmt.measurenb > 0 & s.bar_num
+			 && s.bar_num % cfmt.measurenb)
 				x += 6
 			if (s.type != C.BAR) {
 				w = s.rbstop ? 0 : s.x - realwidth + 4
