@@ -271,6 +271,8 @@ function param_set_font(xxxfont, p) {
 // get a length with a unit - return the number of pixels
 function get_unit(param) {
     var	v = param.toLowerCase().match(/([\d.]+)(.*)/)
+	if (!v)
+		return NaN
 
 	v[1] = Number(v[1])
 	switch (v[2]) {
