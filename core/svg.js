@@ -268,7 +268,7 @@ function defs_add(text) {
 			ie += 3 + tag.length
 		}
 		if (text.substr(is, 7) == '<filter')
-			fulldefs += '\n' + text.slice(is, ie)
+			fulldefs += text.slice(is, ie) + '\n'
 		else
 			glyphs[gl] = text.slice(is, ie)
 	}
@@ -1202,6 +1202,8 @@ function svg_flush() {
 			'px" height="' + posy.toFixed(0) + 'px">\n'
 	}
 
+	head += fulldefs
+
 	if (style || font_style)
 		head += '<style>\n.' +
 				font_class(font) +	// for fill color
@@ -1209,7 +1211,6 @@ function svg_flush() {
 			font_style + style +
 			'\n</style>\n'
 
-	defs += fulldefs
 	if (defs)
 		head += '<defs>' + defs + '\n</defs>\n'
 
