@@ -454,8 +454,8 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "gchordbox":
 	case "measurebox":
 	case "partsbox":
-		cfmt[cmd.replace("box", "font")]	// font
-			.box = get_bool(param) ? 2 : 0
+		param_set_font(cmd.replace("box", "font"),	// font
+			"* * " + (get_bool(param) ? "box" : "nobox"))
 		break
 	case "bstemdown":
 	case "breakoneoln":
