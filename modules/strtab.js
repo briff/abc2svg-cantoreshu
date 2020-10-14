@@ -29,6 +29,22 @@ abc2svg.strtab = {
 		return
 	}
 
+	// define the 'bgx' filter if not done yet
+	m = abc.cfmt().bgcolor || "white"
+	if (abc.bgt != m) {
+		if (!abc.bgn)
+			abc.bgn = 1
+		else
+			abc.bgn++
+		abc.bgt = m
+		abc.defs_add('\
+<filter x="-0.1" y="0.2" width="1.2" height=".8" id="bg' + abc.bgn + '">\n\
+<feFlood flood-color="' + m + '"/>\n\
+<feComposite in="SourceGraphic" operator="over"/>\n\
+</filter>')
+		abc.add_style('\n.bg' + abc.bgn + '{filter:url(#bg' + abc.bgn + ')}')
+	}
+
 	// adjust the symbol before generation
 	for (s = p_v.sym; s; s = s.next) {
 		switch (s.type) {
@@ -58,7 +74,8 @@ abc2svg.strtab = {
 				if (not.nb >= 10)
 					x -= 3
 				y = 3 * (not.pit - 18)
-				abc.out_svg('<text class="bg" x="')
+				abc.out_svg('<text class="bg' + abc.bgn +
+					'" x="')
 				abc.out_sxsy(x, '" y="', stb + y - 2.5)
 				abc.out_svg('">' + not.nb + '</text>\n')
 			}
@@ -137,7 +154,7 @@ abc2svg.strtab = {
 	} // strnum()
 
 	// change the notes of the strings when a capo
-	p_v = this.get_voice_tb()
+	p_v = abc.get_voice_tb()
 	for (n = 0; n < p_v.length; n++) {
 		if (!p_v[n].tab)
 			continue
@@ -429,13 +446,7 @@ abc2svg.strtab = {
 	if (!user.nul)
 		user.nul = function() {}
 
-	abc.add_style("\n.bn{font:bold 8px sans-serif}\
-\n.bg{filter:url(#bg)}")
-    var	bg = abc.cfmt().bgcolor || "white"
-	abc.defs_add('<filter x="-0.1" y="0.2" width="1.2" height=".8" id="bg">\n\
-<feFlood flood-color="' + bg + '"/>\n\
-<feComposite in="SourceGraphic" operator="over"/>\n\
-</filter>')
+	abc.add_style("\n.bn{font:bold 8px sans-serif}")
     } // set_hooks()
 } // strtab
 
