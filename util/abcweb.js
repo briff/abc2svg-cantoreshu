@@ -37,6 +37,7 @@ if (typeof abc2svg == "undefined")
 // function called when abc2svg is fully loaded
 function dom_loaded() {
 var	abc,
+	a_inc = {},
 	errtxt = '',
 	app = "abcweb",
 	new_page = '',
@@ -51,7 +52,6 @@ var	abc,
 	a_src = [],			// index: #sequence,
 					//	value: [start_idx, end_idx]
 	glop,				// global sequence for play
-	old_gm,
 	tune_lst,		// array of [tsfirst, voice_tb] per tune
 	jsdir = document.currentScript ?
 		    document.currentScript.src.match(/.*\//) :
@@ -66,6 +66,9 @@ var	abc,
 
 // -- abc2svg init argument
     user = {
+	read_file: function(fn) {
+		return a_inc[fn]
+	}, // read_file()
 	errmsg: function(msg, l, c) {	// get the errors
 		errtxt += clean_txt(msg) + '\n'
 	},
@@ -161,7 +164,6 @@ function clean_txt(txt) {
 			s.src = fn		// absolute URL
 		else
 			s.src = jsdir + fn;
-		s.type = 'text/javascript'
 		if (relay)
 			s.onload = relay;
 		s.onerror = onerror || function() {
@@ -258,6 +260,45 @@ function render() {
 	window.onclick = abc2svg.playseq
 } // render()
 
+	// load the %%abc-include files
+	function include() {
+	    var	i, j, fn, r,
+		k = 0
+
+		while (1) {
+			i = page.indexOf('%%abc-include ', k)
+			if (i < 0) {
+				render()
+				return
+			}
+			i += 14
+			j = page.indexOf('\n', i)
+			fn = page.slice(i, j).trim()
+			if (!a_inc[fn])
+				break
+			k = j
+		}
+
+		// %%abc-include found: load the file
+		r = new XMLHttpRequest()
+		r.open('GET', fn, true)		// (async)
+		r.onload = function() {
+			if (r.status === 200) {
+				a_inc[fn] = r.responseText
+			} else {
+				a_inc[fn] = '%\n'
+				alert('Error getting ' + fn + '\n' + r.statusText)
+			}
+			include()
+		}
+		r.onerror = function () {
+			a_inc[fn] = '%\n'
+			alert('Error getting ' + fn + '\n' + r.statusText)
+			include()
+		}
+		r.send()
+	} // include()
+
 	// --- dom_loaded() main code ---
 
 	// get the page content
@@ -276,8 +317,8 @@ function render() {
 	abc2svg.abc_end = function() {}
 
 	// load the required modules, then render the music
-	if (abc2svg.modules.load(page, render))
-		render()
+	if (abc2svg.modules.load(page, include))
+		include()
 } // dom_loaded()
 
 // wait for the scripts to be loaded

@@ -57,6 +57,7 @@ if (typeof abc2svg == "undefined")
 // function called when abc2svg is fully loaded
 function dom_loaded() {
     var	abc, i,
+	a_inc = {},
 	errtxt = '',
 	app = "abcweb2",
 	elts,				// ABC HTML elements
@@ -84,6 +85,9 @@ function dom_loaded() {
 
 	// abc2svg init argument
 	user = {
+		read_file: function(fn) {
+			return a_inc[fn]
+		}, // read_file()
 		errmsg: function(msg, l, c) {	// get the errors
 			errtxt += clean_txt(msg) + '\n'
 		},
@@ -226,7 +230,6 @@ function dom_loaded() {
 				alert("abc2svg bad generated SVG: " + e.message +
 					"\nStack:\n" + e.stack)
 			}
-
 			i++
 		}
 
@@ -256,6 +259,46 @@ function dom_loaded() {
 		}
 		document.head.appendChild(s)
 	}
+
+	// load the %%abc-include files
+	function include() {
+	    var	i, j, fn, r,
+		page = abcsrc,
+		k = 0
+
+		while (1) {
+			i = page.indexOf('%%abc-include ', k)
+			if (i < 0) {
+				render()
+				return
+			}
+			i += 14
+			j = page.indexOf('\n', i)
+			fn = page.slice(i, j).trim()
+			if (!a_inc[fn])
+				break
+			k = j
+		}
+
+		// %%abc-include found: load the file
+		r = new XMLHttpRequest()
+		r.open('GET', fn, true)		// (async)
+		r.onload = function() {
+			if (r.status === 200) {
+				a_inc[fn] = r.responseText
+			} else {
+				a_inc[fn] = '%\n'
+				alert('Error getting ' + fn + '\n' + r.statusText)
+			}
+			include()
+		}
+		r.onerror = function () {
+			a_inc[fn] = '%\n'
+			alert('Error getting ' + fn + '\n' + r.statusText)
+			include()
+		}
+		r.send()
+	} // include()
 
 	// --- dom_loaded() main code ---
 
@@ -289,8 +332,8 @@ function dom_loaded() {
 	indx[i] = abcsrc.length
 
 	// load the required modules
-	if (abc2svg.modules.load(abcsrc, render))
-		render()
+	if (abc2svg.modules.load(abcsrc, include))
+		include()
 } // dom_loaded()
 
 // wait for the page to be loaded
