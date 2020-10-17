@@ -996,6 +996,17 @@ function bar_cnv(bar_type) {
 	return bar_type
 }
 
+// output the measure repeat number
+function nrep_out(x, y, n) {
+	y -= 3
+	if (n < 10) {
+		xygl(x - 4, y, "mtr" + n)
+	} else {
+		xygl(x - 10, y, "mtr" + ((n / 10) | 0))
+		xygl(x - 2, y, "mtr" + (n % 10))
+	}
+} // nrep_out()
+
 /* -- draw a rest -- */
 /* (the staves are defined) */
 var rest_tb = [
@@ -1056,16 +1067,8 @@ function draw_rest(s) {
 			xygl(x, yb, "srep")
 		} else {
 			xygl(x, yb, "mrep")
-			if (s.rep_nb > 2 && s.v == cur_sy.top_voice) {
-				set_font("mrep")
-				bx = gene.curfont.box
-				if (bx)
-					gene.curfont.box = 0
-				xy_str(x, yb + p_staff.topbar - 9,
-					s.rep_nb.toString(), "c")
-				if (bx)
-					gene.curfont.box = bx
-			}
+			if (s.rep_nb > 2 && s.v == cur_sy.top_voice)
+				nrep_out(x, yb + p_staff.topbar, s.rep_nb)
 		}
 		anno_stop(s)
 		return
@@ -3382,11 +3385,8 @@ function draw_systems(indent) {
 				xygl(s2.x, yb, "mrep")
 			} else {
 				xygl(x, yb, "mrep2")
-				if (s.v == cur_sy.top_voice) {
-					set_font("mrep")
-					xy_str(x, yb + p_staff.topbar - 9,
-						s.bar_mrep.toString(), "c")
-				}
+				if (s.v == cur_sy.top_voice)
+					nrep_out(x, yb + p_staff.topbar, s.bar_mrep)
 			}
 		}
 
