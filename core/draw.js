@@ -1057,7 +1057,7 @@ function draw_rest(s) {
 		} else {
 			xygl(x, yb, "mrep")
 			if (s.rep_nb > 2 && s.v == cur_sy.top_voice) {
-				set_font("annotation");
+				set_font("mrep")
 				bx = gene.curfont.box
 				if (bx)
 					gene.curfont.box = 0
@@ -3382,9 +3382,11 @@ function draw_systems(indent) {
 				xygl(s2.x, yb, "mrep")
 			} else {
 				xygl(x, yb, "mrep2")
-				if (s.v == cur_sy.top_voice)
+				if (s.v == cur_sy.top_voice) {
+					set_font("mrep")
 					xy_str(x, yb + p_staff.topbar - 9,
 						s.bar_mrep.toString(), "c")
+				}
 			}
 		}
 
