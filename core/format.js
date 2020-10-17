@@ -70,7 +70,6 @@ H "History: "',
 	maxsysstaffsep: 2000,
 	measurefont: {name: "serif", style: "italic", size: 10},
 	measurenb: -1,
-	mrepfont: {name: "serif", style: "bold", size: 16},
 	musicfont: {name: "music", src: musicfont, size: 24},
 	musicspace: 6,
 //	notespacingfactor: 1.33
