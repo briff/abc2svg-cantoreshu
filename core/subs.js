@@ -284,7 +284,7 @@ function xy_str(x, y, str,
 	output += "</text>\n"
 }
 
-/* -- move trailing "The" to front, set to uppercase letters or add xref -- */
+// move last capitalized word to front when after a comma
 function trim_title(title, is_subtitle) {
 	var i
 
@@ -334,9 +334,9 @@ function write_title(title, is_subtitle) {
 		h = cfmt.titlespace
 	}
 	wh = strwh(title)
-	wh[1] += gene.curfont.pad
+	wh[1] += gene.curfont.pad * 2
 	vskip(wh[1] + h + gene.curfont.pad)
-	h = gene.curfont.pad / 2
+	h = gene.curfont.pad
 	if (cfmt.titleleft)
 		xy_str(0, h, title, null, null, wh)
 	else
@@ -374,21 +374,21 @@ function write_text(text, action) {
 	default:
 //	case 'c':
 //	case 'r':
+		font = gene.curfont
 		switch (action) {
 		case 'c': x = strlw / 2; break
-		case 'r': x = strlw; break
-		default: x = 0; break
+		case 'r': x = strlw - font.pad; break
+		default: x = font.pad; break
 		}
 		j = 0
-		font = gene.curfont
 		while (1) {
 			i = text.indexOf('\n', j)
 			if (i < 0) {
 				str = text.slice(j);
 				wh = strwh(str);
 				gene.curfont = font;
-				vskip(wh[1]  * cfmt.lineskipfac);
-				xy_str(x, 0, str, action, null, wh);
+				vskip(wh[1]  * cfmt.lineskipfac + font.pad * 2)
+				xy_str(x, font.pad, str, action, null, wh);
 				font = gene.curfont
 				break
 			}
@@ -406,8 +406,8 @@ function write_text(text, action) {
 				str = text.slice(j, i);
 				wh = strwh(str);
 				gene.curfont = font;
-				vskip(wh[1]  * cfmt.lineskipfac);
-				xy_str(x, 0, str, action, null, wh);
+				vskip(wh[1]  * cfmt.lineskipfac + font.pad * 2)
+				xy_str(x, font.pad, str, action, null, wh);
 				font = gene.curfont
 			}
 			j = i + 1

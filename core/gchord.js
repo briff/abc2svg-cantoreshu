@@ -259,7 +259,7 @@ Abc.prototype.gch_build = function(s) {
 		set_font(gch.font);
 		wh = strwh(gch.text);
 		gch.wh = wh
-		wh[1] += gch.font.pad
+		wh[1] += gch.font.pad * 2
 		switch (gch.type) {
 		case '@':
 			break
@@ -315,21 +315,21 @@ Abc.prototype.gch_build = function(s) {
 // (unscaled delayed output)
 // (possible hook)
 Abc.prototype.draw_gchord = function(i, s, x, y) {
-    var	i, an, h, hbox, w, y2
+    var	y2,
+	an = s.a_gch[i],
+	h = an.font.size,
+	pad = an.font.pad,
+	w = an.wh[0] + pad * 2
 
-	an = s.a_gch[i]
-	h = an.font.size
-	hbox = an.font.pad
-	w = an.wh[0]
 	switch (an.type) {
 	case '_':			// below
-		y -= h
-		y_set(s.st, 0, x, w, y - hbox)
+		y -= h + pad
+		y_set(s.st, 0, x, w, y - pad)
 		break
 	case '^':			// above
 		y = y_get(s.st, 1, x, w)
-		y += hbox
-		y_set(s.st, 1, x, w, y + h + hbox)
+		y += pad
+		y_set(s.st, 1, x, w, y + h + pad)
 		break
 	case '<':			// left
 	case '>':			// right
@@ -337,11 +337,13 @@ Abc.prototype.draw_gchord = function(i, s, x, y) {
 /*fixme: what symbol space?*/
 			if (s.notes[0].acc)
 				x -= s.notes[0].shac
+			x -= pad
 		} else {
 			if (s.xmx)
 				x += s.xmx
 			if (s.dots)
 				x += 1.5 + 3.5 * s.dots
+			x += pad
 		}
 		y += (s.type == C.NOTE ?
 				(((s.notes[s.nhd].pit + s.notes[0].pit) >> 1) -
@@ -351,11 +353,11 @@ Abc.prototype.draw_gchord = function(i, s, x, y) {
 		break
 	default:			// chord symbol
 		if (y >= 0) {
-			y += hbox
-			y_set(s.st, 1, x, w, y + h + hbox)
+			y += pad
+			y_set(s.st, 1, x, w, y + h + pad)
 		} else {
-			y -= h
-			y_set(s.st, 0, x, w, y - hbox)
+			y -= h + pad
+			y_set(s.st, 0, x, w, y - pad)
 		}
 		break
 	case '@':			// absolute
