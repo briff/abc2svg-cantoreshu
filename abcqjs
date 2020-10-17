@@ -26,11 +26,9 @@ var abc2svg = {
 	readFile: function(fname) {
 	    var	f, b
 
-		try {
-			f = std.open(fname, "r")
-		} catch(e) {
+		f = std.open(fname, "r")
+		if (!f)
 			return ""
-		}
 
 		b = f.readAsString()
 		f.close()
