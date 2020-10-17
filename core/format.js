@@ -101,7 +101,7 @@ H "History: "',
 	titlefont: {name: "serif", size: 20},
 //	titleleft: false,
 	titlespace: 6,
-	titletrim: true,
+//	titletrim: false,
 //	transp: 0,			// global transpose
 //	topmargin: .7 * IN,
 	topspace: 22,
