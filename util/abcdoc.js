@@ -56,8 +56,7 @@ function abcdoc() {
 	},
 	img_out: function(str) {	// image output
 		new_page += str
-	},
-	page_format: true		// define the non-page-breakable blocks
+	}
     }
 
 // replace <>& by XML character references
@@ -79,7 +78,6 @@ function clean_txt(txt) {
 			s.src = fn		// absolute URL
 		else
 			s.src = jsdir + fn;
-		s.type = 'text/javascript'
 		if (relay)
 			s.onload = relay;
 		s.onerror = onerror || function() {

@@ -74,8 +74,7 @@ var	abc,
 	},
 	img_out: function(str) {	// image output
 		new_page += str
-	},
-	page_format: true		// define the non-page-breakable blocks
+	}
     }
 
 // replace <>& by XML character references
