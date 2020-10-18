@@ -227,7 +227,6 @@ abc2svg.abc_init = function() {
 <meta name="generator" content="abc2svg-' + abc2svg.version + '"/>\n\
 <!-- CreationDate: ' + get_date() + '-->\n\
 <style>\n\
-svg {display:block}\n\
 body {width:' + cfmt.pagewidth.toFixed(0) +'px}\n\
 p {' + set_pstyle() + 'margin-top:0}\n\
 p span {line-height:' + ((cfmt.lineskipfac * 100) | 0).toString() + '%}\n' +
