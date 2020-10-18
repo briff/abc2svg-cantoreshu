@@ -512,6 +512,9 @@ Abc.prototype.set_format = function(cmd, param) {
 		else
 			cfmt[cmd] = f
 		break
+	case "page-format":
+		user.page_format = get_bool(param)
+		break
 	case "print-leftmargin":	// to remove
 		syntax(0, "$1 is deprecated - use %%printmargin instead", '%%' + cmd)
 		cmd = "printmargin"
