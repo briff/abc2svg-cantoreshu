@@ -1067,7 +1067,9 @@ function draw_rest(s) {
 			xygl(x, yb, "srep")
 		} else {
 			xygl(x, yb, "mrep")
-			if (s.rep_nb > 2 && s.v == cur_sy.top_voice)
+			if (s.rep_nb > 2 && s.v == cur_sy.top_voice
+			 && cfmt.measrepnb > 0
+			 && !(s.rep_nb % cfmt.measrepnb))
 				nrep_out(x, yb + p_staff.topbar, s.rep_nb)
 		}
 		anno_stop(s)

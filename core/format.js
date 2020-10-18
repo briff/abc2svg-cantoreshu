@@ -68,6 +68,7 @@ H "History: "',
 	maxshrink: .65,		// nice scores
 	maxstaffsep: 2000,
 	maxsysstaffsep: 2000,
+	measrepnb: 1,
 	measurefont: {name: "serif", style: "italic", size: 10},
 	measurenb: -1,
 	musicfont: {name: "music", src: musicfont, size: 24},
@@ -410,6 +411,7 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "measurenb":
 	case "rbmax":
 	case "rbmin":
+	case "measrepnb":
 	case "shiftunison":
 		v = parseInt(param)
 		if (isNaN(v)) {
