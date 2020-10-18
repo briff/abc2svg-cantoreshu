@@ -1251,7 +1251,8 @@ Abc.prototype.do_pscom = function(text) {
 		}
 		if (cmd == "newpage") {
 			blk_flush()
-			blkdiv = 2	// start the next SVG in a new page
+			if (user.page_format)
+				blkdiv = 2	// start the next SVG in a new page
 			return
 		}
 		break

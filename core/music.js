@@ -4632,6 +4632,8 @@ Abc.prototype.block_gen = function(s) {
 		break
 	case "newpage":
 		svg_flush()
+		if (!user.page_format)
+			break
 		if (blkdiv < 0)		// split the tune
 			user.img_out('</div>')
 		blkdiv = 2		// start the next SVG in a new page

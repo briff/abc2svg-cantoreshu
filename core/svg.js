@@ -46,7 +46,7 @@ var	output = "",		// output buffer
 		g: 0
 //		color: undefined
 	},
-	blkdiv = 1		// block of contiguous SVGs
+	blkdiv = 0		// block of contiguous SVGs
 				// -1: block started
 				//  0: no block
 				//  1: start a block
