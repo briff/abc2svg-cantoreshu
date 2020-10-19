@@ -18,6 +18,27 @@
 // You should have received a copy of the GNU General Public License
 // along with abc2svg.  If not, see <http://www.gnu.org/licenses/>.
 
+// This script is used in HTML or XHTML files.
+// It replaces the ABC sequences
+// - contained in <script> elements with the type "text/vnd.abc", or
+// - defined in HTML elements with the class "abc", or
+// - starting with "%abc" or "X:" at start of line up to a XML tag
+// by music as SVG images.
+// The other elements stay in place.
+// The script abc2svg-1.js may be loaded before this script.
+// It is automatically loaded when not present.
+//
+// When the file is .html, if the ABC sequence is contained inside
+// elements <script type="text/vnd.abc">, there is no constraint
+// about the ABC characters. Note that the <script> element is removed.
+// Outside a script vnd.abc, the characters '<', '>' and '&' must be
+// replaced by their XML counterparts ('&lt;', '&gt;' and '&amp;').
+// When the file is .xhtml, if the ABC sequence contains the characters
+// '<', '>' or '&', this sequence must be enclosed in a XML comment
+// (%<!-- .. %-->) or in a CDATA (%<![CDATA[ .. %]]>).
+//
+// Tune selection may be done by a 'hash' value in the URL of the page.
+
 window.onerror = function(msg, url, line) {
 	if (typeof msg == 'string')
 		alert("window error: " + msg +
@@ -36,11 +57,10 @@ if (typeof abc2svg == "undefined")
 
 // function called when abc2svg is fully loaded
 function dom_loaded() {
-var	abc,
+var	abc, new_page, src,
 	a_inc = {},
 	errtxt = '',
 	app = "abcweb",
-	new_page = '',
 	playing,
 	abcplay,
 	playconf = {
@@ -49,9 +69,6 @@ var	abc,
 		}
 	},
 	page,				// document source
-	a_src = [],			// index: #sequence,
-					//	value: [start_idx, end_idx]
-	glop,				// global sequence for play
 	tune_lst,		// array of [tsfirst, voice_tb] per tune
 	jsdir = document.currentScript ?
 		    document.currentScript.src.match(/.*\//) :
@@ -175,9 +192,17 @@ function render() {
 
 	// search the ABC tunes,
 	// replace them by SVG images with play on click
-    var	i = 0, j, k, res,
-		re = /\n%abc|\nX:/g,
-		re_stop = /\nX:|\n<|\n%.begin/g
+
+//search in page
+// 1- <script type="text/vnd.abc"> ..ABC.. <script>
+// 2- <anytag .. class="abc" .. > ..ABC.. </anytag>
+// 3- \n%abc ..ABC.. '<' with skip %%beginxxx .. %%endxxx
+// 4- \nX: ..ABC.. '<' with skip %%beginxxx .. %%endxxx
+
+
+    var	i = 0, j, k, res, sel,
+	re = /<script type="text\/vnd.abc"|<[^>]* class="abc"|%abc|X:/g,
+	re_stop = /\n<|\n%.begin[^\s]+/g
 
 	// aweful hack: user.anno_stop must be defined before Abc creation
 	// for being set later by follow() !
@@ -185,6 +210,7 @@ function render() {
 		user.anno_stop = function(){};
 
 	abc = new abc2svg.Abc(user)
+	new_page = ''
 
 	// initialize the play follow function
 	if (typeof follow == "function")
@@ -199,57 +225,93 @@ function render() {
 		return
 	}
 
+	src = '%%beginml\n'
 	for (;;) {
 
 		// get the start of a ABC sequence
 		res = re.exec(page)
-		if (!res)
+		if (!res) {
+			src += page.slice(i) + "\n%%endml\n"
 			break
+		}
 		j = re.lastIndex - res[0].length;
-		new_page += page.slice(i, j);
-
-		// get the end of the ABC sequence
-		// including the %%beginxxx/%%endxxx sequences
-		re_stop.lastIndex = ++j
-		while (1) {
-			res = re_stop.exec(page)
-			if (!res || res[0][1] != "%")
-				break
-			k = page.indexOf(res[0].replace("begin", "end"),
-					re_stop.lastIndex)
-			if (k < 0)
-				break
-			re_stop.lastIndex = k
+		if (j > 0 && page[j - 1] != '\n') {
+			re.lastIndex = i	// must be at start of line
+			continue
 		}
-		if (!res || k < 0)
-			k = page.length
-		else
-			k = re_stop.lastIndex - 2;
+		
+		src += page.slice(i, j)
 
-		try {
-			abc.tosvg(app, page, j, k)
-		} catch (e) {
-			alert("abc2svg javascript error: " + e.message +
-				"\nStack:\n" + e.stack)
-		}
-		abc2svg.abc_end()		// close the page if %%pageheight
-		if (errtxt) {
-			new_page += '<pre class="nop" style="background:#ff8080">' +
-					errtxt + "</pre>\n";
-			errtxt = ""
-		}
-
-		i = k
-		if (i >= page.length)
+		switch (res[0][1]) {
+		default:
+			res = res[0].match(/<([^\s]*)/)[1]	// tag
+			if (res == 'script') {		// <script
+				j = page.indexOf('>', j) + 2
+				i = page.indexOf('</' + res, j)
+				src += "%%endml\n" +
+					page.slice(j, i) // keep the script content only
+				i += 10
+			} else {			// < .. class="abc"
+				i = page.indexOf('>', j) + 2
+				src += page.slice(j, i) + "%%endml\n"
+				j = page.indexOf('</' + res, i)
+				src += page.slice(i, j)	// keep the element
+				i = j
+			}
 			break
-		if (page[i] == 'X')
-			i--
+		case 'a':		// %abc
+		case ':':		// X:
+
+			// get the end of the ABC sequence
+			// including the %%beginxxx/%%endxxx sequences
+			re_stop.lastIndex = j
+			while (1) {
+				res = re_stop.exec(page)
+				if (!res || res[0] == "\n<")
+					break
+				k = page.indexOf(res[0].replace("begin", "end"),
+						re_stop.lastIndex)
+				if (k < 0)
+					break
+				re_stop.lastIndex = k
+			}
+			if (!res || k < 0)
+				i = page.length
+			else
+				i = re_stop.lastIndex - 1
+			src += "%%endml\n" + page.slice(j, i)
+			break
+		}
+		if (i < 0)
+			break			// problem!
 		re.lastIndex = i
+		src += '%%beginml\n'
+	}
+
+	// do the selection if the hash permits some generation
+	// (the hash may be used to identify an element in the HTML document)
+	sel = window.location.hash.slice(1)
+	if (sel
+	 && src.match(new RegExp(sel)))
+		abc.tosvg(app, '%%select ' + decodeURIComponent(sel))
+
+	// generate the new source
+	try {
+		abc.tosvg(app, src)
+	} catch (e) {
+		alert("abc2svg javascript error: " + e.message +
+			"\nStack:\n" + e.stack)
+	}
+	abc2svg.abc_end()		// close the page if %%pageheight
+	if (errtxt) {
+		new_page += '<pre class="nop" style="background:#ff8080">' +
+				errtxt + "</pre>\n"
+		errtxt = ""
 	}
 
 	// change the page
 	try {
-		document.body.innerHTML = new_page + page.slice(i)
+		document.body.innerHTML = new_page
 	} catch (e) {
 		alert("abc2svg bad generated SVG: " + e.message +
 			"\nStack:\n" + e.stack)

@@ -130,7 +130,7 @@ in the HTML &lt;head&gt; and put the music as
 ABC sequences in the &lt;body&gt;.
 
 [This example][4] demonstrates how to do it.
-(Note that the paths are relative - see why below.)
+(Note that, in the example, the paths are relative - see why below.)
 
 [4]: http://moinejf.free.fr/abcm2ps-doc/tabac.xhtml "J'ai du bon tabac"
 
@@ -176,13 +176,6 @@ In the first example ("J'ai du bon tabac"), you saw that care
 should be taken with regard to the special XML characters
 '&lt;', '&gt;' and '&amp;' by enclosing
 the ABC sequences inside XML comments.
-The third abc2svg script **abcweb2-1.js**,
-following a bit the ABC standard 2.2, searches the music
-in the elements of the class `abc` and also in `<script>`s
-as you may see in the source of [this psaume][9].
-You will find more explanation about **abcweb2-1.js** in the section 4.3.
-
-[9]: http://dz.tugdual.free.fr/psaumes/psaume-32.html "Psaume 32"
 
 With any of the above scripts the music may be printed using
 the 'Print' button of the browser. You should add a style as:  
@@ -444,10 +437,16 @@ Here are the scripts which are used in a web context:
 
 - `abcweb-1.js`  
   This script replaces the ABC or MEI sequences found in the (X)HTML file
-  by SVG images of the music (the ABC sequences start on `X:` or `%abc`
-  at start of line, and stop on any XML tag - see below for MEI).  
-  When a ABC sequence contains the characters '<', '>' or '&',
-  it must be enclosed in a XML comment (inside the sequence as a comment).  
+  by SVG images of the music. The ABC sequences may start on `X:` or `%abc`
+  at start of line, and stop on any XML tag (see below for MEI).
+  They may also appear after a (X)HTML element of the class "abc"
+  (lower case letters) or inside a &lt;script&gt; with a type
+  ["text/vnd.abc"](https://www.iana.org/assignments/media-types/text/vnd.abc)
+  (the script element is removed from the page).  
+  When a ABC sequence is not included in a &lt;script&gt; and when it contains
+  the characters '<', '>' or '&',
+  it must be enclosed in a XML comment or in a CDATA
+  (%&lt;![CDATA[ .. %]]&gt; - the comment or CDATA must be in a ABC comment).  
   See the
   [%%beginml documentation](http://moinejf.free.fr/abcm2ps-doc/beginml.xhtml)
   for an example.  
@@ -468,23 +467,6 @@ Here are the scripts which are used in a web context:
   When one or many tunes are displayed, a menu in the top/right corner
   offers to go back to the tune list or to modify the ABC source.
   
-- `abcweb2-1.js`  
-  With this script, the ABC sequences are searched in the HTML elements
-  that have a class `abc`. The other HTML elements are rendered normally.  
-  Compared with the first script abcweb-1.js,
-  the special XML characters can be replaced by
-  their XML counterparts ('&amp;lt;', '&amp;gt;' or '&amp;amp;').  
-  The ABC sequences are also searched in &lt;script&gt; elements which have a type
-  ["text/vnd.abc"](https://www.iana.org/assignments/media-types/text/vnd.abc).
-  This works only when the file is a HTML file (not XHTML). Then,
-  the characters '<', '>' or '&', as well as '--', can be kept as they are
-  in the ABC sequences.  
-  Otherwise, as previously, when the file is a XHTML file, the ABC sequence
-  must be enclosed in a XML comment or in a CDATA (%&lt;![CDATA[ .. %]]&gt;).  
-  Tune selection and playing work like with the previous script.  
-  See [this file](http://moinejf.free.fr/abcm2ps-doc/multicol.xhtml)
-  for an example.
-
 - `snd-1.js`  
   This script may be used with `abcweb{,1,2}-1.js` to play the rendered
   ABC music.  
