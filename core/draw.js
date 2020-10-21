@@ -1990,7 +1990,8 @@ if (two_staves) error(2, k1, "*** multi-staves slurs not treated yet");
 			dx = x2
 			if (k2.sl1)
 				dx -= 5;
-			y -= height / 3
+			if (i)
+				y -= height / 3
 		} else {
 			dx = path[i + 1].x
 		}
