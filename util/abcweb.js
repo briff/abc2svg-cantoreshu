@@ -173,6 +173,14 @@ function clean_txt(txt) {
 		abcplay.play(s, null)
 	} // playseq()
 
+	// convert HTML to ABC
+	function toabc(s) {
+		return s.replace(/&gt;/g, '>')
+			.replace(/&lt;/g, '<')
+			.replace(/&amp;/g, '&')
+			.replace(/[ \t]+(%%|.:)/g, '$1')
+	} // toabc()
+
 // function to load javascript files
 	abc2svg.loadjs = function(fn, relay, onerror) {
 		var s = document.createElement('script');
@@ -255,7 +263,7 @@ function render() {
 				i = page.indexOf('>', j) + 2
 				src += page.slice(j, i) + "%%endml\n"
 				j = page.indexOf('</' + res, i)
-				src += page.slice(i, j)	// keep the element
+				src += toabc(page.slice(i, j))	// keep the element
 				i = j
 			}
 			break
