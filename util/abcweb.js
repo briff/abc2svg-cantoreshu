@@ -75,7 +75,7 @@ var	abc, new_page, src,
 		    (function() {
 		     var s_a = document.getElementsByTagName('script')
 			for (var k = 0; k < s_a.length; k++) {
-				if (s_a[k].src.indexOf('abcweb-') >= 0)
+				if (s_a[k].src.indexOf(app) >= 0)
 					return s_a[k].src.match(/.*\//) || ''
 			}
 			return ""	// ??

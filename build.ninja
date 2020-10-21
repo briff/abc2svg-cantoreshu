@@ -127,7 +127,7 @@ build abcemb1-$MAJOR.js: jscu util/abcemb1.js
 build abcemb2-$MAJOR.js: jscu util/abcemb2.js
 build abcweb-$MAJOR.js: jscu util/abcweb.js
 build abcweb1-$MAJOR.js: jscu util/abcweb1.js
-build abcweb2-$MAJOR.js: jscu util/abcweb2.js
+build abcweb2-$MAJOR.js: jscu util/abcweb.js
 build follow-$MAJOR.js: jscu util/follow.js
 build json-$MAJOR.js: jscu util/json.js
 build toaudio-$MAJOR.js: jscu util/toaudio.js
