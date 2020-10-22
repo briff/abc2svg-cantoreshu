@@ -243,11 +243,7 @@ function render() {
 			break
 		}
 		j = re.lastIndex - res[0].length;
-		if (j > 0 && page[j - 1] != '\n') {
-			re.lastIndex = i	// must be at start of line
-			continue
-		}
-		
+
 		src += page.slice(i, j)
 
 		switch (res[0][1]) {
