@@ -449,9 +449,11 @@ Here are the scripts which are used in a web context:
   (%&lt;![CDATA[ .. %]]&gt; - the comment or CDATA must be in a ABC comment).  
   See the
   [%%beginml documentation](http://moinejf.free.fr/abcm2ps-doc/beginml.xhtml)
-  for an example.  
+  for an example, and here is [how to put inline music in HTML][13].   
   Playing and highlighting the played notes may be offered loading
   the scripts `snd-1.js` and `follow-1.js` (see below).
+
+[13]: http://moinejf.free.fr/abcm2ps-doc/inline.html
 
 - `abcweb1-1.js`  
   This script replaces all the page body by music as SVG images.  
