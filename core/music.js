@@ -1611,13 +1611,13 @@ function set_nl(s) {			// s = start of line
 			s2.ts_next.ts_prev = s2
 			if (s1.text) {
 				s2.invis = true
-				s2.rbstart = s1.rbstart
 				self.set_width(s2)
 				s2.shrink = s1.wr + s2.wl
 				s2.space = 0
 				delete s1.text
 				delete s1.rbstart
 			}
+			delete s2.a_dd
 			if (s1 == so)
 				break
 			s1 = s1.ts_next
