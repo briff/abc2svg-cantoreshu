@@ -22,7 +22,7 @@
 // It replaces the ABC sequences
 // - contained in <script> elements with the type "text/vnd.abc", or
 // - defined in HTML elements with the class "abc", or
-// - starting with "%abc" or "X:" at start of line up to a XML tag
+// - starting with "%abc-n" or "X:n" at start of line up to a XML tag
 // by music as SVG images.
 // The other elements stay in place.
 // The script abc2svg-1.js may be loaded before this script.
@@ -31,7 +31,7 @@
 // When the file is .html, if the ABC sequence is contained inside
 // elements <script type="text/vnd.abc">, there is no constraint
 // about the ABC characters. Note that the <script> element is removed.
-// Outside a script vnd.abc, the characters '<', '>' and '&' must be
+// With a container of class "abc", the characters '<', '>' and '&' may be
 // replaced by their XML counterparts ('&lt;', '&gt;' and '&amp;').
 // When the file is .xhtml, if the ABC sequence contains the characters
 // '<', '>' or '&', this sequence must be enclosed in a XML comment
@@ -108,8 +108,7 @@ function clean_txt(txt) {
 
 	// function called on click on the music
 	abc2svg.playseq = function(evt) {
-	    var	i,
-		tunes = abc.tunes,	// list of the tunes created by the core
+	    var	i, j,
 		svg = evt.target,
 		e = svg			// keep the clicked element
 
@@ -129,7 +128,7 @@ function clean_txt(txt) {
 
 		// initialize the play object
 		if (!abcplay) {
-			if (typeof AbcPlay == "undefined") { // as play-1.js not loaded,
+			if (typeof AbcPlay == "undefined") { // as snd-1.js not loaded,
 				abc2svg.playseq = function(){}	// don't come here anymore
 				return
 			}
@@ -138,14 +137,10 @@ function clean_txt(txt) {
 
 		// if first time, get the tunes references
 		// and generate the play data of all tunes
-		if (tunes.length) {
-			tune_lst = tunes.slice(0)	// (array copy)
-			while (1) {
-				t = tunes.shift()
-				if (!t)
-					break
-				abcplay.add(t[0], t[1])
-			}
+		if (!tune_lst) {
+			tune_lst = abc.tunes
+			for (j = 0; j < tune_lst.length; j++)
+				abcplay.add(tune_lst[j][0], tune_lst[j][1])
 		}
 
 		// check if click on a music symbol
@@ -204,12 +199,11 @@ function render() {
 //search in page
 // 1- <script type="text/vnd.abc"> ..ABC.. <script>
 // 2- <anytag .. class="abc" .. > ..ABC.. </anytag>
-// 3- \n%abc ..ABC.. '<' with skip %%beginxxx .. %%endxxx
-// 4- \nX: ..ABC.. '<' with skip %%beginxxx .. %%endxxx
-
+// 3- %abc-n ..ABC.. '<' with skip %%beginxxx .. %%endxxx
+// 4- X:n ..ABC.. '<' with skip %%beginxxx .. %%endxxx
 
     var	i = 0, j, k, res, sel,
-	re = /<script type="text\/vnd.abc"|<[^>]* class="abc"|%abc|X:/g,
+	re = /<script type="text\/vnd.abc"|<[^>]* class="abc"|%abc-\d|X:\d/g,
 	re_stop = /\n<|\n%.begin[^\s]+/g
 
 	// aweful hack: user.anno_stop must be defined before Abc creation
@@ -246,7 +240,7 @@ function render() {
 
 		src += page.slice(i, j)
 
-		switch (res[0][1]) {
+		switch (res[0][0]) {
 		default:
 			res = res[0].match(/<([^\s]*)/)[1]	// tag
 			if (res == 'script') {		// <script
@@ -263,8 +257,13 @@ function render() {
 				i = j
 			}
 			break
-		case 'a':		// %abc
-		case ':':		// X:
+		case '%':		// %abc
+		case 'X':		// X:
+			if (j != 0 && page[j - 1] != '\n') {
+				src += res[0]		// not at start of line
+				i = re.lastIndex
+				continue
+			}
 
 			// get the end of the ABC sequence
 			// including the %%beginxxx/%%endxxx sequences
