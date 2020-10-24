@@ -516,11 +516,12 @@ function put_words(words) {
 			n++
 		} else if (p.length > maxn) {
 			maxn = p.length
+			i1 = i		// keep this line
 		}
 	}
 
 	w = get_lwidth() / 2		// half line width
-	lw = maxn * cwidf('a')		// max line width
+	lw = strwh(words[i1])[0]
 	i1 = i2 = 0
 	if (lw < w) {			// if 2 columns
 		j = n >> 1
