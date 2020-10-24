@@ -916,7 +916,7 @@ return true
 
 	// newline for music
 	sb: function(tag) {
-		curvoice.eoln = true
+		voice_tb[0].eoln = true
 	}, // sb()
 
 //	score: function(tag) {
@@ -2278,4 +2278,6 @@ error(1, null, "Bad duration " + tag.dur + " tag:" + tag.name)
 	param_set_font("dynamfont", "serifItalicBold 16")
 
 	parse_mei(xml2tree(mei)) // convert to internal music representation
+
+	parse.state = 0		// end of tune
 } // mei2mus()
