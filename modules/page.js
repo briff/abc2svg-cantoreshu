@@ -422,17 +422,17 @@ abc2svg.page = {
 			}
 
 			// get the previously defined page parameters
-			if (cfmt.botmargin) {
+			if (cfmt.botmargin != undefined) {
 				v = this.get_unit(cfmt.botmargin)
 				if (!isNaN(v))
 					page.botmargin = v
 			}
-			if (cfmt.topmargin) {
+			if (cfmt.topmargin != undefined) {
 				v = this.get_unit(cfmt.topmargin)
 				if (!isNaN(v))
 					page.topmargin = v
 			}
-			if (cfmt.gutter) {
+			if (cfmt.gutter != undefined) {
 				v = this.get_unit(cfmt.gutter)
 				if (!isNaN(v))
 					page.gutter = v
@@ -486,6 +486,7 @@ abc2svg.page = {
 
     set_hooks: function(abc) {
 	abc.set_format = abc2svg.page.set_fmt.bind(abc, abc.set_format)
+	user.page_format = true			// do page formatting
     }
 } // page
 
