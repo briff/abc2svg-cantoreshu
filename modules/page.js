@@ -221,10 +221,9 @@ abc2svg.page = {
     open_page: function(page,
 			ht) {	// spacing under the header
     var	h, l,
-//	font_style,
 	abc = page.abc,
 	cfmt = abc.cfmt(),
-	sty = ""
+	sty = '<div style="line-height:0'
 
 	page.pn++
 	page.pna++
@@ -233,13 +232,11 @@ abc2svg.page = {
 	if (page.first)
 		page.first = false
 	else
-		sty = "page-break-before:always"
+		sty += ";page-break-before:always"
 	if (page.gutter)
-		sty += (sty ? ";" : "") + "margin-left:" +
+		sty += ";margin-left:" +
 			((page.pn & 1) ? page.gutter : -page.gutter).toFixed(1) + "px"
-	abc2svg.page.img_out(page, sty ?
-			'<div style="' + sty + '">' :
-			'<div>')
+	abc2svg.page.img_out(page, sty + '">')
 	page.in_page = true
 
 	ht += page.topmargin
