@@ -69,7 +69,7 @@ var	abc, new_page, src,
 		}
 	},
 	page,				// document source
-	tune_lst,		// array of [tsfirst, voice_tb] per tune
+	tune_lst,		// array of [tsfirst, voice_tb, info, cfmt] per tune
 	jsdir = document.currentScript ?
 		    document.currentScript.src.match(/.*\//) :
 		    (function() {
@@ -140,7 +140,9 @@ function clean_txt(txt) {
 		if (!tune_lst) {
 			tune_lst = abc.tunes
 			for (j = 0; j < tune_lst.length; j++)
-				abcplay.add(tune_lst[j][0], tune_lst[j][1])
+				abcplay.add(tune_lst[j][0],
+					tune_lst[j][1],
+					tune_lst[j][3])
 		}
 
 		// check if click on a music symbol

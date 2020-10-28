@@ -1360,7 +1360,7 @@ function generate(in_mc) {
 		self.output_music()
 
 	if (tsfirst)		// if non void, keep tune data for upper layers
-		tunes.push([tsfirst, voice_tb, info])
+		tunes.push([tsfirst, voice_tb, info, cfmt])
 
 	// if inside multicol, reset the parser
 	if (!in_mc)

@@ -80,7 +80,7 @@ function dom_loaded() {
 			playing = false
 		}
 	},
-	tune_lst,		// array of [tsfirst, voice_tb] per tune
+	tune_lst,		// array of [tsfirst, voice_tb, info, cfmt] per tune
 	jsdir = document.currentScript ?
 		    document.currentScript.src.match(/.*\//) :
 		    (function() {
@@ -215,7 +215,6 @@ function dom_loaded() {
 	//	start / stop playing
 	abc2svg.playseq = function(evt) {
 	    var	e, i, s,
-		tunes = abc.tunes,	// list of the tunes created by the core
 		svg = evt.target
 
 		// initialize the play object
@@ -252,14 +251,12 @@ function dom_loaded() {
 
 		// if first time, get the tunes references
 		// and generate the play data of all tunes
-		if (tunes.length) {
-			tune_lst = tunes.slice(0)	// (array copy)
-			while (1) {
-				s = tunes.shift()
-				if (!s)
-					break
-				abcplay.add(s[0], s[1])
-			}
+		if (!tune_lst) {
+			tune_lst = abc.tunes
+			for (j = 0; j < tune_lst.length; j++)
+				abcplay.add(tune_lst[j][0],
+					tune_lst[j][1],
+					tune_lst[j][3])
 		}
 
 		// check if click on a music symbol
