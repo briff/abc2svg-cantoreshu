@@ -40,15 +40,16 @@ var abc2svg = {
 	loadjs: function(fn, relay, onerror) {
 		try {
 			load(fn[0] == "/" ? fn : (path + fn))
-			if (relay)
-				relay()
 		} catch(e) {
 			if (onerror)
 				onerror()
 			else
 				abc2svg.printErr("Cannot read file " + fn +
 					"\n  " + e.name + ": " + e.message)
+			return
 		}
+		if (relay)
+			relay()
 	} // loadjs()
 } // abc2svg
 
