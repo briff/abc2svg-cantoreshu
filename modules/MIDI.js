@@ -100,7 +100,9 @@ abc2svg.MIDI = {
     var	n, v, s, maps,
 	o, q, n, qs,
 	a = parm.split(/\s+/),
-	curvoice = this.get_curvoice()
+	abc = this,
+	cfmt = abc.cfmt(),
+	curvoice = abc.get_curvoice()
 
 	if (curvoice) {
 		if (curvoice.ignore)
@@ -111,93 +113,151 @@ abc2svg.MIDI = {
 					curvoice.v + 1
 	}
 	switch (a[1]) {
+//	case "bassprog":	// %%MIDI bassprog <#MIDI program> [octave=<n>]
+//		break
+//	case "bassvol":		// %%MIDI bassvol <volume>
+//		break
+//	case "beatstring":	// %%MIDI beatstring <string of fmp>
+//		break
+	case "chordname":	// %%MIDI chordname <list of MIDI pitches>
+				// example: %%MIDI chordname m 0 3 7
+		if (!cfmt.chord)
+			cfmt.chord = {}
+		if (!cfmt.chord.names)
+			cfmt.chord.names = {}
+		cfmt.chord.names[a[2]] = a.slice(3)
+		break
+	case "chordprog":	// %%MIDI chordprog <#MIDI program> [octave=<n>]
+		if (!cfmt.chord)
+			cfmt.chord = {}
+		cfmt.chord.prog = a[2]
+		if (a[3] && a[3].slice(0, 7) == "octave=")
+			cfmt.chord.trans = Number(a[3].slice(7))
+		break
+	case "chordvol":	// %%MIDI chordvol <volume>
+		if (!cfmt.chord)
+			cfmt.chord = {}
+		cfmt.chord.vol = Number(a[2])
+		break
+//	case "drone":		// %%MIDI drone <#prog> <pit_1> <pit_2> <vol_1> <vol_2>
+//				//	default: 70 45 33 80 80
+//		break
+//	case "droneon":		// %%MIDI droneon
+//		break
+//	case "droneoff":	// %%MIDI droneoff
+//		break
+//	case "gchord":		// %%MIDI gchord <list of letters and repeat numbers>
+//				//	z rest
+//				//	c chord
+//				//	f fundamental
+//				//	b fundamental + chord
+//				// defaults:
+//				//	M:2/4 or 4/4	fzczfzcz
+//				//	M:3/4	fzczcz
+//				//	M:6/8	fzcfzc
+//				//	M:9/8	fzcfzcfzc
+//		break
+	case "gchordon":	// %%MIDI gchordon
+	case "gchordoff":	// %%MIDI gchordoff
+		if (!cfmt.chord)
+			cfmt.chord = {}
+		if (abc.parse.state == 2)
+			abc.goto_tune()
+		if (abc.get_curvoice()) {
+			s = abc.new_block("midigch")
+			s.play = true
+			s.on = a[1][7] == 'n'
+		} else {
+			cfmt.chord.gchon = a[1][7] == 'n'
+		}
+		break
 	case "channel":
 		v = parseInt(a[2])
 		if (isNaN(v) || v <= 0 || v > 16) {
-			this.syntax(1, this.errs.bad_val, "%%MIDI channel")
+			abc.syntax(1, abc.errs.bad_val, "%%MIDI channel")
 			break
 		}
 		if (--v != 9) {			// channel range 1..16 => 0..15
-			if (this.parse.state == 3) {
-				s = this.new_block("midichn");
+			if (abc.parse.state == 3) {
+				s = abc.new_block("midichn");
 				s.play = true
 				s.chn = v
 			} else {
-				this.set_v_param("channel", v)
+				abc.set_v_param("channel", v)
 			}
 			break
 		}
 
 		// channel 10 is bank 128
-		abc2svg.MIDI.do_midi.call(this, "MIDI control 0 1")	// MSB bank
-		abc2svg.MIDI.do_midi.call(this, "MIDI control 32 0")	// LSB bank
+		abc2svg.MIDI.do_midi.call(abc, "MIDI control 0 1")	// MSB bank
+		abc2svg.MIDI.do_midi.call(abc, "MIDI control 32 0")	// LSB bank
 		break
 	case "drummap":
 //fixme: should have a 'MIDIdrum' per voice?
 		n = abc_b40(a[2])
 		v = Number(a[3])
 		if (!n || !v) {
-			this.syntax(1, this.errs.bad_val, "%%MIDI drummap")
+			abc.syntax(1, abc.errs.bad_val, "%%MIDI drummap")
 			break
 		}
-		maps = this.get_maps()
+		maps = abc.get_maps()
 		if (!maps.MIDIdrum)
 			maps.MIDIdrum = {}
 		if (!maps.MIDIdrum[n])
 			maps.MIDIdrum[n] = []
 		maps.MIDIdrum[n][3] = mid_pit(v)
-		this.set_v_param("mididrum", "MIDIdrum")
+		abc.set_v_param("mididrum", "MIDIdrum")
 		break
 	case "program":
 		if (a[3] != undefined) {	// with a channel
-			abc2svg.MIDI.do_midi.call(this, "MIDI channel " + a[2])
+			abc2svg.MIDI.do_midi.call(abc, "MIDI channel " + a[2])
 			v = a[3]
 		} else {
 			v = a[2];
 		}
 		v = parseInt(v)
 		if (isNaN(v) || v < 0 || v > 127) {
-			this.syntax(1, this.errs.bad_val, "%%MIDI program")
+			abc.syntax(1, abc.errs.bad_val, "%%MIDI program")
 			break
 		}
-		if (this.parse.state == 3) {
-			s = this.new_block("midiprog");
+		if (abc.parse.state == 3) {
+			s = abc.new_block("midiprog");
 			s.play = true
 			s.instr = v
 		} else {
-			this.set_v_param("instr", v)
+			abc.set_v_param("instr", v)
 		}
 		break
 	case "control":
 		n = parseInt(a[2])
 		if (isNaN(n) || n < 0 || n > 127) {
-			this.syntax(1, "Bad controller number in %%MIDI")
+			abc.syntax(1, "Bad controller number in %%MIDI")
 			break
 		}
 		v = parseInt(a[3])
 		if (isNaN(v) || v < 0 || v > 127) {
-			this.syntax(1, "Bad controller value in %%MIDI")
+			abc.syntax(1, "Bad controller value in %%MIDI")
 			break
 		}
-		if (this.parse.state == 3) {
-			s = this.new_block("midictl");
+		if (abc.parse.state == 3) {
+			s = abc.new_block("midictl");
 			s.play = true
 			s.ctrl = n;
 			s.val = v
 		} else {
-			this.set_v_param("midictl", a[2] + ' ' + a[3])
+			abc.set_v_param("midictl", a[2] + ' ' + a[3])
 		}
 		break
 	case "temperamentequal":
 		n = parseInt(a[2])
 		if (isNaN(n) || n < 5 || n > 255) {
-			this.syntax(1, this.errs.bad_val, "%%MIDI " + a[1])
+			abc.syntax(1, abc.errs.bad_val, "%%MIDI " + a[1])
 			return
 		}
 
 		// define the Turkish accidentals (53-TET)
 		if (n == 53) {
-			s = this.get_glyphs()
+			s = abc.get_glyphs()
 
 // #1
 			s.acc12_53 = '<text id="acc12_53" x="-1">&#xe282;</text>'
@@ -247,14 +307,14 @@ abc2svg.MIDI = {
 		q = 7.019550008653874,	//  Math.log(3/2)/Math.log(2) * 12
 					// = just intonation fifth
 		o = 12			// octave
-		this.cfmt().nedo = n	// octave divider
+		cfmt.nedo = n		// octave divider
 		qs = ((n * q / o + .5) | 0) * o / n	// new fifth
 
 		// warn on bad fifth values
 		if (qs < 6.85 || qs > 7.2)
-			this.syntax(0, this.errs.bad_val, "%%MIDI " + a[1])
+			abc.syntax(0, abc.errs.bad_val, "%%MIDI " + a[1])
 
-		this.cfmt().temper = tb40(qs)	// pitches / A in 100th of cents
+		cfmt.temper = tb40(qs)	// pitches / A in 100th of cents
 
 		break
 	}

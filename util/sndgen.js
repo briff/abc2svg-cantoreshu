@@ -39,8 +39,10 @@ function ToAudio() {
 
    // generate the play data of a tune
    add: function(first,		// starting symbol
-		voice_tb) {	// voice table
-    var	C = abc2svg.C,
+		voice_tb,	// voice table
+		cfmt) {		// tune parameters
+    var	toaud = this,
+	C = abc2svg.C,
 	p_time = 0,		// last playing time
 	abc_time = 0,		// last ABC time
 	play_fac = C.BLEN / 4 * 120 / 60, // play time factor - default: Q:1/4=120
@@ -257,6 +259,18 @@ function ToAudio() {
 	} // set_variant()
 
 	// add() main
+
+	// if some MIDI stuff, load the associated module
+	if (cfmt.chord) {
+		if (!abc2svg.chord) {
+			abc2svg.loadjs("chord-1.js",
+					function(){	// ok
+						toaud.add(first, voice_tb, cfmt)
+					})
+			return
+		}
+		abc2svg.chord(first, voice_tb, cfmt)
+	}
 
 	if (s.parts)
 		build_parts(s)
@@ -608,7 +622,7 @@ abc2svg.play_next = function(po) {
 			d = s.pdur / po.conf.speed
 
 			// follow the notes/rests while playing
-			if (po.onnote) {
+			if (po.onnote && s.istart) {
 				i = s.istart
 				st = (t - po.get_time(po)) * 1000
 				po.timouts.push(setTimeout(po.onnote, st, i, true))

@@ -66,6 +66,7 @@ gen util/abcemb2.js > abcemb2-$MAJOR.js
 gen util/abcweb.js > abcweb-$MAJOR.js
 gen util/abcweb1.js > abcweb1-$MAJOR.js
 gen util/abcweb.js > abcweb2-$MAJOR.js
+gen util/chord.js > chord-$MAJOR.js
 gen util/follow.js > follow-$MAJOR.js
 gen util/json.js > json-$MAJOR.js
 gen util/toaudio.js > toaudio-$MAJOR.js
