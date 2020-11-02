@@ -625,7 +625,7 @@ function play_tune(what) {
 			elt = tunes.shift()
 			if (!elt)
 				break
-			play.abcplay.add(elt[0], elt[1])
+			play.abcplay.add(elt[0], elt[1], elt[3])
 		}
 
 		play.si = play.ei = null
