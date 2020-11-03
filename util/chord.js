@@ -180,8 +180,17 @@ abc2svg.chord = function(first,		// first symbol in time
 	// set the chordnames defined by %%MIDI chordname
 	if (cfmt.chord.names) {
 		chnm = Object.create(abc2svg.chordnames)
-		for (k in cfmt.chord.names)
-			chnm[k] = cfmt.chord.names[k]
+		for (k in cfmt.chord.names) {
+			vch = ""
+			for (i = 0; i < cfmt.chord.names[k].length; i++) {
+				s = cfmt.chord.names[k][i]
+				vch += abc2svg.midlet[s % 12]
+				vch += i == 0 ? "-" :
+					(s >= 12 ? "+" : " ")
+			}
+//fixme: no inversion
+			chnm[k] = [ vch ]
+		}
 	} else {
 		chnm = abc2svg.chordnames
 	}
