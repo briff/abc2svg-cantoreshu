@@ -1,4 +1,4 @@
-// sndaud5.js - audio output using HTML5 audio
+// sndaud.js - audio output using HTML5 audio
 //
 // Copyright (C) 2019-2020 Jean-Francois Moine
 //
