@@ -103,15 +103,14 @@ if command -v weasyprint >/dev/null 2>&1; then
 # generate a (HTML+SVG) file
 # then, extract the SVG images (pages) to /tmp/ and build a file.html
 	cat > /tmp/abc.html <<EOF
-<html> <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-<style type="text/css">
+<!DOCTYPE html>
+<meta charset="utf-8"/>
+<style>
 @page {
  size: A4;
  margin: 0;
 }
 </style>
-</head>
 <body>
 EOF
 n=0
@@ -138,7 +137,7 @@ command $abcscr --pageheight 29.7cm --fullsvg 1 --musicfont abc2svg "$@" | while
 		;;
 	esac
 done
-	echo '</body></html>' >> /tmp/abc.html
+	echo '</body>' >> /tmp/abc.html
 
 echo weasyprint -f pdf /tmp/abc.html $out
 	weasyprint -f pdf /tmp/abc.html $out
@@ -206,7 +205,7 @@ function font_bug(str) {
 			return p
 		sty = sty[1].split('\n')
 		if (!page_sty)
-			page_sty = '<style type="text/css">\n</style>\n'
+			page_sty = '<style>\n</style>\n'
 		for (i = 0; i < sty.length; i++) {
 			if (page_sty.indexOf(sty[i]) < 0)
 				page_sty = page_sty.replace('</style>\n',
