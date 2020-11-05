@@ -470,7 +470,7 @@ Here are the scripts which are used in a web context:
   offers to go back to the tune list or to modify the ABC source.
   
 - `snd-1.js`  
-  This script may be used with `abcweb{,1,2}-1.js` to play the rendered
+  This script may be used with `abcweb{,1}-1.js` to play the rendered
   ABC music.  
 
 - `follow-1.js`  
