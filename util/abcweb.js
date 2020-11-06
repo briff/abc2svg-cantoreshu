@@ -37,7 +37,7 @@
 // '<', '>' or '&', this sequence must be enclosed in a XML comment
 // (%<!-- .. %-->) or in a CDATA (%<![CDATA[ .. %]]>).
 //
-// Tune selection may be done by a 'hash' value in the URL of the page.
+// ABC parameters may be defined in the query string of the URL.
 
 window.onerror = function(msg, url, line) {
 	if (typeof msg == 'string')
@@ -204,7 +204,7 @@ function render() {
 // 3- %abc-n ..ABC.. '<' with skip %%beginxxx .. %%endxxx
 // 4- X:n ..ABC.. '<' with skip %%beginxxx .. %%endxxx
 
-    var	i = 0, j, k, res, sel,
+    var	i = 0, j, k, res,
 	re = /<script type="text\/vnd.abc"|<[^>]* class="abc"|%abc-\d|X:\d/g,
 	re_stop = /\n<|\n%.begin[^\s]+/g
 
@@ -293,12 +293,16 @@ function render() {
 		src += '%%beginml\n'
 	}
 
-	// do the selection if the hash permits some generation
-	// (the hash may be used to identify an element in the HTML document)
-	sel = window.location.hash.slice(1)
-	if (sel
-	 && src.match(new RegExp(sel)))
-		abc.tosvg(app, '%%select ' + decodeURIComponent(sel))
+	// use the query string of URL for global parameters
+	k = location.search.substr(1).split("&")
+	for (i = 0; i < k.length; i++) {
+		if (k[i]) {
+			j = k[i].split('=')
+			if (j[0])
+				abc.tosvg(app, "%%" + j[0] + " " +
+						decodeURIComponent(j[1]))
+		}
+	}
 
 	// generate the new source
 	try {

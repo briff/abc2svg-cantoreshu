@@ -145,6 +145,12 @@ Without this CSS, the music is in-lined as in [this other example][5].
 
 [5]: http://moinejf.free.fr/abcm2ps-doc/dansou-i.html "Tune index example"
 
+Global ABC parameters may be added as `parameter=value` in the query string
+of the URL of the page. The [following example][16] calls the same
+"J'ai du bon tabac" with `pagescale=1.2` (giving `%%pagescale 1.5`).
+
+[16]: http://moinejf.free.fr/abcm2ps-doc/tabac.xhtml?pagescale=1.2 "J'ai du bon tabac"
+
 In the above examples, all the ABC music is generated (displayed
 and ready to be played) by means of the script **abcweb-1.js**.  
 If there is a large collection of tunes, it may be preferable to
@@ -437,7 +443,7 @@ Here are the scripts which are used in a web context:
 
 - `abcweb-1.js`  
   This script replaces the ABC or MEI sequences found in the (X)HTML file
-  by SVG images of the music. The ABC sequences may start on `X:` or `%abc`
+  by SVG images of the music. The ABC sequences may start on `X:` or `%abc-`
   at start of line, and stop on any XML tag (see below for MEI).
   They may also appear after a (X)HTML element of the class "abc"
   (lower case letters) or inside a &lt;script&gt; with a type
