@@ -32,7 +32,7 @@ exec jsc -e "var progdir='${progdir}/'
 //							(b2 & 0x3f))
 //			}
 //		} else {
-//			fout += fin[i]
+//			fout += String.fromCharCode(b1)
 //		}
 //	}
 //	return fout
