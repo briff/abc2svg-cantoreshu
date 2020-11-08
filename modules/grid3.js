@@ -6,7 +6,7 @@
 //
 // Parameters
 //	%%begingrid [ chord-define [ noprint ] ]
-//		list of chords, '-', measure bars ('|') and ':' for repeat
+//	    list of chords, '-' or '.', measure bars ('|') and ':' for repeat
 //	%%endgrid
 //
 //	%%gridfont font_name size (default: 'serif 16')
@@ -208,7 +208,7 @@ abc2svg.grid3 = {
 					bars[nr][++i] = '|'
 					cells[nr][i] = []
 				}
-				if (cl == '-')
+				if (cl == '.' || cl == '-')
 					cl = ''
 				cells[nr][i].push(cl)
 			}
@@ -312,7 +312,7 @@ abc2svg.grid3 = {
 			}]
 		}
 
-		if (ch != '-') {
+		if (ch != '.' && ch != '-') {
 			abc.set_a_gch([{	// define the chord symbol
 				type: 'g',
 				text: ch,
@@ -371,12 +371,13 @@ abc2svg.grid3 = {
 					while (s && !s.bar_type)
 						s = s.ts_next	// end of measure
 					if (!cs.length)
-						cs = ['-']
+						cs = ['.']
 					ntim = ss.time
 					dt = (s.time - ntim) / cs.length
 					s3 = null
 					for (i = 0; i < cs.length; i++) {
-						if (cs[i] != '-'
+						if ((cs[i] != '.'
+						  && cs[i] != '-')
 						 || !s3) {
 							while (ss.time < ntim)
 								ss = ss.ts_next
