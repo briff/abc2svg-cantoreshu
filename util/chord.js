@@ -106,7 +106,7 @@ abc2svg.chord = function(first,		// first symbol in time
 	// generate a chord
 	function gench(sb, gch) {
 	    var	r, ch, b, m, n, not,
-		a = (gch.otext || gch.text).
+		a = gch.otext.
 			replace(/\$./,'').
 			match(/([A-G])([#♯b♭]?)([^/]*)\/?(.*)/),
 			// a[1] = note, a[2] = acc, a[3] = type, a[4] = bass

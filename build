@@ -36,6 +36,7 @@ gen core/abc2svg.js core/deco.js core/draw.js\
 gen modules/ambitus.js > ambitus-$MAJOR.js
 gen modules/break.js > break-$MAJOR.js
 gen modules/capo.js > capo-$MAJOR.js
+gen modules/chordnames.js > chordnames-$MAJOR.js
 gen modules/clair.js > clair-$MAJOR.js
 gen modules/clip.js > clip-$MAJOR.js
 gen modules/combine.js > combine-$MAJOR.js

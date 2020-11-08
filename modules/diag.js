@@ -458,7 +458,7 @@ M-10.2 -31h20.4"/>';
 </g>'
 	}
 
-    var	s, i, gch, t
+    var	s, i, gch
 
 	for (s = voice_tb[0].sym; s; s = s.next) {
 		if (!s.a_gch)
@@ -468,10 +468,8 @@ M-10.2 -31h20.4"/>';
 			if (!gch || gch.type != 'g' || gch.capo)
 				continue
 
-			t = gch.otext || gch.text
-
 			// insert the diagram as a decoration
-			this.deco_cnv([t.replace(/\$\d|[ \t].*/g, "")], s, null)
+			this.deco_cnv(gch.otext, s, null)
 		}
 	}
     }, // do_diag()

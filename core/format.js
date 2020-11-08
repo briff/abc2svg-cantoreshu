@@ -485,12 +485,6 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "titleleft":
 		cfmt[cmd] = get_bool(param)
 		break
-	case "chordnames":
-		v = param.split(',')
-		cfmt.chordnames = {}
-		for (i = 0; i < v.length; i++)
-			cfmt.chordnames['CDEFGAB'[i]] = v[i]
-		break
 	case "composerspace":
 	case "indent":
 	case "infospace":

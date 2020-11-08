@@ -26,8 +26,6 @@ abc2svg.jazzchord = {
 		if (gch.type != 'g'
 		 || t.indexOf('$') >= 0)	// if some formatting already
 			continue
-		if (!gch.otext)
-			gch.otext = gch.text	// save for play accompaniment
 		switch (t) {
 		case "/": gch.text = "&#x1d10d;"; continue
 		case "%": gch.text = "&#x1d10e;"; continue
@@ -116,7 +114,7 @@ abc2svg.jazzchord = {
 	abc.param_set_font("setfont-8", "* * class=jc8")
 	abc.param_set_font("setfont-9", "* * class=jc9")
     } // set_hooks()
-} // tab
+} // jazzchord
 
 abc2svg.modules.hooks.push(abc2svg.jazzchord.set_hooks)
 abc2svg.modules.jazzchord.loaded = true

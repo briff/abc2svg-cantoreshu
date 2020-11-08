@@ -31,6 +31,7 @@ abc2svg.modules = {
 		beginps: { fn: 'psvg-1.js' },
 		break: { fn: 'break-1.js' },
 		capo: { fn: 'capo-1.js' },
+	chordnames: { fn: 'chordnames-1.js' },
 		clip: { fn: 'clip-1.js' },
 	clairnote: { fn: 'clair-1.js' },
 		voicecombine: { fn: 'combine-1.js' },

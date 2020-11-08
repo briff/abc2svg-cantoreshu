@@ -153,6 +153,7 @@ function parse_gchord(type) {
 			i++
 			break
 		}
+		gch.otext = gch.text	// save for play accompaniment
 		if (!a_gch)
 			a_gch = []
 		a_gch.push(gch)
@@ -233,13 +234,6 @@ Abc.prototype.gch_build = function(s) {
 	for (ix = 0; ix < s.a_gch.length; ix++) {
 		gch = s.a_gch[ix]
 		if (gch.type == 'g') {
-			if (cfmt.chordnames) {
-				gch.otext = gch.text;	// save for %%diagram
-				gch.text = gch.text.replace(/[A-G]/g,
-					function(c){return cfmt.chordnames[c]})
-				if (cfmt.chordnames.B == 'H')
-					gch.text = gch.text.replace(/Hb/g, 'Bb')
-			}
 			gch.text = gch.text.replace(/##|#|=|bb|b|  /g,
 				function(x) {
 					switch (x) {

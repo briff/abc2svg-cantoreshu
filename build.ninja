@@ -98,6 +98,7 @@ build mei2svg-$MAJOR.js: jsc core/abc2svg.js core/deco.js core/draw.js $
 build ambitus-$MAJOR.js: jscu modules/ambitus.js
 build break-$MAJOR.js: jscu modules/break.js
 build capo-$MAJOR.js: jscu modules/capo.js
+build chordnames-$MAJOR.js: jscu modules/chordnames.js
 build clair-$MAJOR.js: jscu modules/clair.js
 build clip-$MAJOR.js: jscu modules/clip.js
 build combine-$MAJOR.js: jscu modules/combine.js
@@ -146,7 +147,8 @@ build all: phony abc2svg-$MAJOR.js abcdoc-$MAJOR.js $
  abcemb-$MAJOR.js abcemb1-$MAJOR.js abcemb2-$MAJOR.js $
  abcweb-$MAJOR.js abcweb1-$MAJOR.js abcweb2-$MAJOR.js chord-$MAJOR.js $
  json-$MAJOR.js toaudio-$MAJOR.js snd-$MAJOR.js play-$MAJOR.js psvg-$MAJOR.js $
- ambitus-$MAJOR.js break-$MAJOR.js capo-$MAJOR.js clair-$MAJOR.js clip-$MAJOR.js $
+ ambitus-$MAJOR.js break-$MAJOR.js capo-$MAJOR.js $
+ chordnames-$MAJOR.js clair-$MAJOR.js clip-$MAJOR.js $
  combine-$MAJOR.js diag-$MAJOR.js equalbars-$MAJOR.js gamelan-$MAJOR.js $
  grid-$MAJOR.js grid2-$MAJOR.js grid3-$MAJOR.js jianpu-$MAJOR.js $
  jazzchord-$MAJOR.js  mdnn-$MAJOR.js $
