@@ -59,9 +59,6 @@ function parse_gchord(type) {
 		iend = parse.bol + line.index + 1
 	}
 
-	if (curvoice.pos.gch == C.SL_HIDDEN)
-		return
-
 	if (ann_font.pad)
 		h_ann += ann_font.pad
 	i = 0;
@@ -393,6 +390,9 @@ function draw_all_chsy() {
 	n_an = 0,		// max number of annotations
 	minmax = new Array(nstaff + 1)
 
+	if (curvoice.pos.gch == C.SL_HIDDEN)
+		pos = 0
+
 	// set a vertical offset to all the chord symbols/annotations
 	function set_an_yu(j) {
 	    var	an, i, s, x, y, w
@@ -414,7 +414,7 @@ function draw_all_chsy() {
 				y = y_get(s.st, 1, x, w)	// y / staff
 				if (an.type == 'g' && y < minmax[s.st].yup)
 					y = minmax[s.st].yup
-			} else if ((an.type == 'g' && pos < 0)
+			} else if ((an.type == 'g' && pos <= 0)
 				|| an.type == '_') {
 				continue
 			} else {
@@ -472,7 +472,7 @@ function draw_all_chsy() {
 					y = y_get(s.st, true, s.x, w)
 					if (y > minmax[s.st].yup)
 						minmax[s.st].yup = y
-				} else {
+				} else if (pos < 0) {
 					y = y_get(s.st, false, s.x, w)
 					if (y < minmax[s.st].ydn)
 						minmax[s.st].ydn = y
