@@ -2258,6 +2258,7 @@ function mrest_expand() {
 				s2 = clone(next)
 				delete s2.soln
 				delete s2.a_gch
+				delete s2.a_dd
 				lkvsym(s2, next)
 			} else {
 				s2 = _bar(s)		// end of tune
