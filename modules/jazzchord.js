@@ -15,9 +15,10 @@ abc2svg.jazzchord = {
     gch_build: function(of, s) {
     var	gch, i, ix, t
 
-	of(s)				// build the chord symbols
-	if (!this.cfmt().jazzchord)
+	if (!this.cfmt().jazzchord) {
+		of(s)
 		return
+	}
 
 	for (ix = 0; ix < s.a_gch.length; ix++) {
 		gch = s.a_gch[ix]
@@ -25,6 +26,8 @@ abc2svg.jazzchord = {
 		if (gch.type != 'g'
 		 || t.indexOf('$') >= 0)	// if some formatting already
 			continue
+		if (!gch.otext)
+			gch.otext = gch.text	// save for play accompaniment
 		switch (t) {
 		case "/": gch.text = "&#x1d10d;"; continue
 		case "%": gch.text = "&#x1d10e;"; continue
@@ -73,6 +76,7 @@ abc2svg.jazzchord = {
 		else
 			gch.text = t
 	}
+	of(s)				// build the chord symbols
     }, // gch_build()
 
     set_fmt: function(of, cmd, parm) {

@@ -204,7 +204,17 @@ function gch_transp(s) {
 	}
 }
 
-// -- build the chord symbols / annotations --
+// parser: add the parsed list of chord symbols and annotations
+//	to the symbol (note, rest or bar)
+function csan_add(s) {
+	s.a_gch = a_gch;
+	a_gch = null
+
+	if (curvoice.vtransp)
+		gch_transp(s)
+} // csan_add
+
+// generator: build the chord symbols / annotations
 // (possible hook)
 Abc.prototype.gch_build = function(s) {
 
@@ -216,12 +226,6 @@ Abc.prototype.gch_build = function(s) {
 		y_left = 0,
 		y_right = 0,
 		GCHPRE = .4;		// portion of chord before note
-
-	s.a_gch = a_gch;
-	a_gch = null
-
-	if (curvoice.vtransp)
-		gch_transp(s)
 
 	// change the accidentals in the chord symbols,
 	// convert the escape sequences in annotations, and

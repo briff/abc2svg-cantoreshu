@@ -70,7 +70,7 @@ Abc.prototype.psxygl = empty_function;
 Abc.prototype.set_cur_sy = function(sy) { cur_sy = sy };
 Abc.prototype.set_dscale = set_dscale;
 Abc.prototype.set_font = set_font;
-Abc.prototype.set_a_gch = function(a) { a_gch = a }
+Abc.prototype.set_a_gch = function(s, a) { a_gch = a; csan_add(s) }
 Abc.prototype.set_hl = set_hl
 Abc.prototype.set_scale = set_scale;
 Abc.prototype.set_tsfirst = function(s) { tsfirst = s };

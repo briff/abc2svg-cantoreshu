@@ -313,7 +313,7 @@ abc2svg.grid3 = {
 		}
 
 		if (ch != '.' && ch != '-') {
-			abc.set_a_gch([{	// define the chord symbol
+			abc.set_a_gch(s, [{	// define the chord symbol
 				type: 'g',
 				text: ch,
 				istart: ss.istart,

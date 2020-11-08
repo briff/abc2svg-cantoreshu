@@ -3455,6 +3455,8 @@ function check_end_bar() {
 
 /* -- set a pitch in all symbols and the start/stop of the beams -- */
 // and sort the pitches in the chords
+// and build the chord symbols / annotations
+// this function is called only once per tune
 function set_words(p_voice) {
 	var	s, s2, nflags, lastnote, res,
 		start_flag = true,
@@ -3467,6 +3469,8 @@ function set_words(p_voice) {
 		}
 	}
 	for (s = p_voice.sym; s; s = s.next) {
+		if (s.a_gch)
+			self.gch_build(s)
 		switch (s.type) {
 		case C.MREST:
 			start_flag = true
@@ -3610,7 +3614,7 @@ function set_rb(p_voice) {
 }
 
 /* -- initialize the generator -- */
-/* this function is called only once per tune  */
+// this function is called only once per tune
 
 var delpit = [0, -7, -14, 0]
 

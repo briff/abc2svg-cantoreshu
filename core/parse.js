@@ -1199,9 +1199,9 @@ function new_bar(dotted) {
 		}
 	}
 
-	// set the guitar chord and the decorations
+	// set the annotations and the decorations
 	if (a_gch)
-		self.gch_build(s)
+		csan_add(s)
 	if (a_dcn) {
 		deco_cnv(a_dcn, s);
 		a_dcn = null
@@ -1926,7 +1926,7 @@ Abc.prototype.new_note = function(grace, sls) {
 		s.grace = true
 	} else {
 		if (a_gch)
-			self.gch_build(s)
+			csan_add(s)
 		if (parse.repeat_n) {
 			s.repeat_n = parse.repeat_n;
 			s.repeat_k = parse.repeat_k;
