@@ -294,7 +294,7 @@ abc2svg.grid3 = {
 			nhd: 0,
 			notes: [{
 				pit: 18,
-				dur: dt
+				dur: 0
 			}]
 		}
 
@@ -378,7 +378,8 @@ abc2svg.grid3 = {
 							s3 = add_cs(ss, cs[i])
 						}
 						s3.dur += dt
-						s3.dur_orig += dt
+						s3.dur_orig =
+							s3.notes[0].dur = s3.dur
 						ntim += dt
 					}
 					while (s && s.type != C.BAR)
