@@ -252,32 +252,18 @@ abc2svg.grid3 = {
 		of(type, opt, txt)
 		return
 	}
-	if (this.parse.state >= 2) {
-		if (opt.indexOf("noprint") < 0) {
+	if (opt.indexOf("chord-define") >= 0)
+		this.cfmt().csdef = txt
+	if (opt.indexOf("noprint") < 0) {
+		if (this.parse.state >= 2) {
 			s = this.new_block(type)
 			s.text = txt
-		}
-		if (opt.indexOf("chord-define") >= 0) {
-			if (!this.get_curvoice())
-				this.goto_tune()
-			vt.push({
-				id: "grid3",
-				v: vt.length,
-				time: 0,
-				pos: {
-					gst: 0
-				},
-				scale: 1,
-				st: 0,
-				sls: []
-			})
-			this.cfmt().csdef = txt
-		}
-	} else {
-		abc2svg.grid3.block_gen.call(this, null, {
+		} else {
+			abc2svg.grid3.block_gen.call(this, null, {
 						subtype: type,
 						text: txt
 						})
+		}
 	}
     }, // do_begin_end()
 
@@ -341,11 +327,19 @@ abc2svg.grid3 = {
 	} // add_cs()
 
 	if (t) {				// if chord-define
-		for (i = 0; i < vt.length; i++) {
-			p_vc = vt[i]
-			if (p_vc.id == "grid3")
-				break
+		p_vc = {
+			id: "grid3",
+			v: vt.length,
+			time: 0,
+			pos: {
+				gst: 0
+			},
+			scale: 1,
+			st: 0,
+			second: true,
+			sls: []
 		}
+		vt.push(p_vc)	// add the voice supporting the chord symbols
 
 		t = t.split('\n')
 		while (1) {			// scan the grid content
