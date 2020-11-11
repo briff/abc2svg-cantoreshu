@@ -135,9 +135,14 @@ abc2svg.MIDI = {
 			cfmt.chord.trans = Number(a[3].slice(7))
 		break
 	case "chordvol":	// %%MIDI chordvol <volume>
+		v = Number(a[2])
+		if (isNaN(v) || v < 0 || v > 127) {
+			abc.syntax(1, abc.errs.bad_val, "%%MIDI chordvol")
+			break
+		}
 		if (!cfmt.chord)
 			cfmt.chord = {}
-		cfmt.chord.vol = Number(a[2])
+		cfmt.chord.vol = v / 127
 		break
 //	case "drone":		// %%MIDI drone <#prog> <pit_1> <pit_2> <vol_1> <vol_2>
 //				//	default: 70 45 33 80 80
