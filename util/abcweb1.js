@@ -249,9 +249,9 @@ function dom_loaded() {
 			return
 		i = i[1]			// tune number
 
-		// if first time, get the tunes references
+		// if a new generation, get the tunes references
 		// and generate the play data of all tunes
-		if (!tune_lst) {
+		if (tune_lst != abc.tunes) {
 			tune_lst = abc.tunes
 			for (j = 0; j < tune_lst.length; j++)
 				abcplay.add(tune_lst[j][0],
