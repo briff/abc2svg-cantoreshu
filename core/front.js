@@ -257,7 +257,10 @@ function tosvg(in_fname,		// file name
 	function uncomment(src, flag) {
 		if (!src)
 			return src
-		if (src.indexOf('%') >= 0)
+	    var	i = src.indexOf('%')
+		if (i == 0)
+			return ''
+		if (i > 0)
 			src = src.replace(/([^\\])%.*/, '$1')
 				 .replace(/\\%/g, '%');
 		src = src.replace(/\s+$/, '')
