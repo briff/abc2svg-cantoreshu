@@ -433,6 +433,35 @@ function empty_function() {
 var	anno_start = user.anno_start ? a_start : empty_function,
 	anno_stop = user.anno_stop ? a_stop : empty_function
 
+// output the stop user annotations
+function anno_put() {
+    var	s
+	while (1) {
+		s = anno_a.shift()
+		if (!s)
+			break
+		switch (s.type) {
+		case C.CLEF:
+		case C.METER:
+		case C.KEY:
+		case C.REST:
+			if (s.type != C.REST || s.rep_nb) {
+				set_sscale(s.st)
+				break
+			}
+			// fall thru
+		case C.GRACE:
+		case C.NOTE:
+		case C.MREST:
+			set_scale(s)
+			break
+//		default:
+//			continue
+		}
+		anno_stop(s)
+	}
+} // anno_put()
+
 // output a string with x, y, a and b
 // In the string,
 //	X and Y are replaced by scaled x and y

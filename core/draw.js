@@ -34,7 +34,8 @@ var	STEM_MIN	= 16,	/* min stem height under beams */
 	GSTEM		= 15,	/* grace note stem length */
 	GSTEM_XOFF	= 2.3	/* x offset for grace note stem */
 
-    var cache
+    var cache,
+	anno_a = []		// symbols with annotations
 
 /* -- compute the best vertical offset for the beams -- */
 function b_pos(grace, stem, nflags, b) {
@@ -1072,7 +1073,7 @@ function draw_rest(s) {
 			 && !(s.rep_nb % cfmt.measrepnb))
 				nrep_out(x, yb + p_staff.topbar, s.rep_nb)
 		}
-		anno_stop(s)
+		anno_a.push(s)
 		return
 	}
 
@@ -1137,7 +1138,7 @@ function draw_rest(s) {
 		}
 	}
 	set_color();
-	anno_stop(s)
+	anno_a.push(s)
 }
 
 /* -- draw grace notes -- */
@@ -1158,7 +1159,7 @@ function draw_gracenotes(s) {
 		draw_note(g, !bm.s2)
 		if (g == bm.s2)
 			bm.s2 = null			/* (draw flags again) */
-		anno_stop(g)
+		anno_a.push(s)
 		if (g.sls || g.sl2)
 			slur = true
 		if (!g.next)
@@ -3639,7 +3640,7 @@ Abc.prototype.draw_symbols = function(p_voice) {
 			if (!s.invis) {
 				anno_start(s);
 				draw_note(s, !bm.s2);
-				anno_stop(s)
+				anno_a.push(s)
 			}
 			if (s == bm.s2)
 				bm.s2 = null
@@ -3680,7 +3681,7 @@ Abc.prototype.draw_symbols = function(p_voice) {
 				}
 				xygl(x - 2, y, "oct")
 			}
-			anno_stop(s)
+			anno_a.push(s)
 			break
 		case C.METER:
 			p_voice.meter = s
@@ -3691,7 +3692,7 @@ Abc.prototype.draw_symbols = function(p_voice) {
 			set_sscale(s.st);
 			anno_start(s);
 			draw_meter(s);
-			anno_stop(s)
+			anno_a.push(s)
 			break
 		case C.KEY:
 			p_voice.ckey = s
@@ -3702,7 +3703,7 @@ Abc.prototype.draw_symbols = function(p_voice) {
 			set_sscale(s.st);
 			anno_start(s);
 			self.draw_keysig(x, s);
-			anno_stop(s)
+			anno_a.push(s)
 			break
 		case C.MREST:
 			set_scale(s);
@@ -3712,7 +3713,7 @@ Abc.prototype.draw_symbols = function(p_voice) {
 			out_XYAB('<text style="font:bold 15px serif"\n\
 	x ="X" y="Y" text-anchor="middle">A</text>\n',
 				x, staff_tb[s.st].y + 28, s.nmes);
-			anno_stop(s)
+			anno_a.push(s)
 			break
 		case C.GRACE:
 			set_scale(s);
@@ -3741,8 +3742,8 @@ Abc.prototype.draw_symbols = function(p_voice) {
 
 /* -- draw all symbols -- */
 function draw_all_sym() {
-	var	p_voice, v,
-		n = voice_tb.length
+    var	p_voice, v,
+	n = voice_tb.length
 
 	// draw all the helper/ledger lines
 	function draw_all_hl() {
@@ -3802,6 +3803,8 @@ function draw_all_sym() {
 
 	draw_all_deco();
 	draw_all_hl()
+	glout()			// output the symbols
+	anno_put()		// before outputting the symbol annotations
 	set_sscale(-1)				/* restore the scale */
 }
 
