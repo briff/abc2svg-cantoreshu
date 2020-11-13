@@ -1,6 +1,6 @@
-// play-1.js - file to include in html pages with abc2svg-1.js for playing
+// snd-1.js - file to include in html pages with abc2svg-1.js for playing
 //
-// Copyright (C) 2015-2019 Jean-Francois Moine
+// Copyright (C) 2015-2020 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -18,6 +18,10 @@
 // along with abc2svg.  If not, see <http://www.gnu.org/licenses/>.
 
 // This file is a wrapper around
+// - ToAudio (sndgen.js): generate the play data
+// - Audio5 (sndaud.js): play with HTML5 audio API and SF2
+// - Midi5 (sndmid.js): play with HTML5 MIDI api
+// old version:
 // - ToAudio (toaudio.js - convert ABC to audio sequences)
 // - Audio5 (toaudio5.js - play the audio sequences with webaudio and SF2)
 // - Midi5 (tomidi5.js - play the audio sequences with webmidi)
@@ -116,8 +120,16 @@ function AbcPlay(i_conf) {
 		abcplay.stop = current.stop
 		if (current.set_output)
 			current.set_output(out[o]);
+		if (abc2svg.pwait) {
+			if (typeof abc2svg.pwait == "boolean") {
+				abc2svg.pwait = function() {
+					abcplay.play(init.istart,
+							init.i_iend, init.a_e)
+				}
+			}
+			return
+		}
 		abcplay.play(init.istart, init.i_iend, init.a_e);
-		init = {}
 	} // play2()
 
 	// set default configuration values

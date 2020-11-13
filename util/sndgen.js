@@ -263,8 +263,14 @@ function ToAudio() {
 	// if some MIDI stuff, load the associated module
 	if (cfmt.chord) {
 		if (!abc2svg.chord) {
+			abc2svg.pwait = true	// don't start playing now
+
 			abc2svg.loadjs("chord-1.js",
 					function(){	// ok
+						toaud.add(first, voice_tb, cfmt)
+					},
+					function(){	// KO
+						cfmt.chord = null
 						toaud.add(first, voice_tb, cfmt)
 					})
 			return
@@ -390,6 +396,14 @@ function ToAudio() {
 		}
 		s = s.ts_next
 	} // loop
+
+	// if playing was waiting for a resource, start it now
+	if (abc2svg.pwait) {
+		i = abc2svg.pwait
+		delete abc2svg.pwait
+		if (typeof i == "function")
+			i()
+	}
    } // add()
  } // return
 } // ToAudio()
