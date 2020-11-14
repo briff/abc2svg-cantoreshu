@@ -429,7 +429,8 @@ function new_syst(init) {
 Abc.prototype.set_bar_num = function() {
     var	s, s2, tim, rep_tim, k, n,
 	bar_num = gene.nbar,
-	bar_tim = 0,
+	bar_tim = 0,			// time of previous repeat variant
+	ptim = 0,			// time of previous bar
 	wmeasure = voice_tb[cur_sy.top_voice].meter.wmeasure
 
 	// don't count a bar at start of tune
@@ -479,18 +480,17 @@ Abc.prototype.set_bar_num = function() {
 			tim = s.time
 			if (s.bar_num) {
 				bar_num = s.bar_num	// (%%setbarnb)
-				bar_tim = tim
+				ptim = bar_tim = tim
 				continue
 			}
 			if (wmeasure == 1) {		// if M:none
 				if (s.bar_dotted)
 					continue
 				if (s.text) {
-					if (s.text[0] == '1') {
-						if (!cfmt.contbarnb)
+					if (!cfmt.contbarnb) {
+						if (s.text[0] == '1')
 							rep_tim = bar_num
-					} else {
-						if (!cfmt.contbarnb)
+						else
 							bar_num = rep_tim
 					}
 				}
@@ -500,6 +500,16 @@ Abc.prototype.set_bar_num = function() {
 
 			n = bar_num + (tim - bar_tim) / wmeasure
 			k = n - (n | 0)
+			if (cfmt.checkbars
+			 && ((k && !s.bar_dotted && s.next)
+			  || (tim > ptim + wmeasure && s.prev.type != C.MREST)))
+				error(0, s, "Bad measure duration")
+			if (tim > ptim + wmeasure) {	// if more than one measure
+				n |= 0
+				k = 0
+				bar_tim = tim		// re-synchronize
+				bar_num = n
+			}
 			if (s.text) {
 				if (s.text[0] == '1') {
 					if (cfmt.contbarnb)
@@ -518,15 +528,12 @@ Abc.prototype.set_bar_num = function() {
 						s.bar_num = n
 				}
 			} else {
-				if (k) {
-					if (cfmt.checkbars
-					 && !s.bar_dotted && s.next)
-						error(0, s, "Bad measure duration")
-					bar_tim += k * wmeasure
+				if (k)
 					n -= k
-				}
 				s.bar_num = n
 			}
+			if (!k)
+				ptim = tim
 			break
 		}
 	}
