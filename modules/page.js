@@ -338,8 +338,6 @@ abc2svg.page = {
 		page.hb = page.h		// keep the offset of the start of tune
 		break
 	case "<svg":				// SVG image
-		if (!page.h)
-			abc2svg.page.open_page(page, 0)	// free text
 		h = Number(p.match(/height="(\d+)px"/)[1])
 		while (h + page.h >= page.hmax) { // if (still) page overflow
 			ht = page.blk ? 0 :
@@ -486,6 +484,7 @@ abc2svg.page = {
     set_hooks: function(abc) {
 	abc.set_format = abc2svg.page.set_fmt.bind(abc, abc.set_format)
 	user.page_format = true			// do page formatting
+	abc.set_pagef()
     }
 } // page
 
