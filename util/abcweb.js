@@ -235,12 +235,14 @@ function render() {
 		// get the start of a ABC sequence
 		res = re.exec(page)
 		if (!res) {
-			src += page.slice(i) + "\n%%endml\n"
+			src += page.slice(i).replace(/\n%%/g,"\n%%%%") +
+					"\n%%endml\n"
 			break
 		}
 		j = re.lastIndex - res[0].length;
 
-		src += page.slice(i, j)
+		// (the core removes '%%' at start of line)
+		src += page.slice(i, j).replace(/\n%%/g,"\n%%%%")
 
 		switch (res[0][0]) {
 		default:
