@@ -25,30 +25,27 @@
 //		1st character = note (see abc2svg.letmid)
 //		2nd character = octave ('+', ' ', '-')
 abc2svg.chordnames = {
-	maj:	["C-E G C+", "E-C G C+", "G-C E G "],
-	min:	["C-e G C+", "e-C G C+", "G-C e G "],
+	'':	["C-E G C+", "E-C G C+", "G-C E G "],
 	m:	["C-e G C+", "e-C G C+", "G-C e G "],
 	'7':	["C-b-E G ", "E-C G b ", "G-E b C+", "b-E G C+"],
 	m7:	["C-b-e G ", "e-C G b ", "G-e b C+", "b-e G C+"],
 	m7b5:	["C-b-e g ", "e-C g b ", "g-e b C+", "b-e g C+"],
-	maj7:	["C-B-E G ", "E-C G B ", "G-E B C+", "B-E G C+"],
 	M7:	["C-B-E G ", "E-C G B ", "G-E B C+", "B-E G C+"],
 	'6':	["C-A-E G ", "E-C A B ", "A-E B C+", "B-E A C+"],
 	m6:	["C-A-e G ", "e-C A B ", "A-e B C+", "B-e A C+"],
 	aug:	["C-E a C+", "E-C a C+", "a-C E a "],
-	plus:	["C-E a C+", "E-C a C+", "a-C E a "],
+//	plus:	["C-E a C+", "E-C a C+", "a-C E a "],
 	aug7:	["C-b-E a ", "E-C a b ", "a-E b C+", "b-E a C+"],
 	dim:	["C-E g C+", "E-C g C+", "g-C E g "],
 	dim7:	["C-e g A ", "e-C g A ", "g-e A C+", "A-C e G "],
 	'9':	["C-b-E G D+", "E-C G b D+", "G-E b C+D+", "b-E G C+D+", "D-G-C E b "],
-	m9:	["C-b-eE G D+", "e-C G b D+", "G-e b C+D+", "b-e G C+D+", "D-G-C e b "],
+	m9:	["C-b-e G D+", "e-C G b D+", "G-e b C+D+", "b-e G C+D+", "D-G-C e b "],
 	maj9:	["C-B-E G D+", "E-C G B D+", "G-E B C+D+", "B-E G C+D+", "D-G-C E B "],
 	M9:	["C-B-E G D+", "E-C G B D+", "G-C E B D+", "B-E G C+D+", "D-G-C E B "],
 	'11':	["C-b-E G D+F+", "E-C G b D+F+", "G-E b C+D+F+", "b-E G C+D+F+",
 						"D-G-C E b F+", "F-D-G-C E b D+"],
 	dim9:	["C-A-e g d+", "e-C g A d+", "g-C e A d+", "A-C e g d+", "D-g-C e A "],
-	sus:	["C-F G C+", "F-C G C+", "G-C F G "],
-	sus4:	["C-E G C+", "E-C G C+", "G-C F G "],
+	sus4:	["C-F G C+", "F-C G C+", "G-C F G "],
 	sus9:	["C-D G C+", "D-C G C+", "G-C D G "],
 	'7sus4': ["C-b-F G ", "F-C G b ", "G-F b C+", "b-C F G "],
 	'7sus9': ["C-b-D G ", "D-C G b ", "G-D b C+", "b-C D G "],
@@ -83,8 +80,6 @@ abc2svg.chord = function(first,		// first symbol in time
 	    var	i, v,
 		r = []
 
-		if (b < 0)
-			b += 12
 		b = abc2svg.midlet[b]
 		i = ch.length
 		while (--i > 0) {
@@ -107,7 +102,7 @@ abc2svg.chord = function(first,		// first symbol in time
 	function gench(sb, gch) {
 	    var	r, ch, b, m, n, not,
 		a = gch.otext.
-			replace(/\$./,'').
+//			replace(/\$./,'').
 			match(/([A-G])([#♯b♭]?)([^/]*)\/?(.*)/),
 			// a[1] = note, a[2] = acc, a[3] = type, a[4] = bass
 		s = {
@@ -131,20 +126,24 @@ abc2svg.chord = function(first,		// first symbol in time
 			case "b":
 			case "♭": r--; break
 			}
-			if (!a[3])
-				a[3] = "maj"
-			ch = chnm[a[3]]
-			if (!ch)
-				ch = a[3][0] == 'm' ? chnm.min : chnm.maj
-
+			if (!a[3]) {
+				ch = chnm[""]
+			} else {
+				ch = abc2svg.ch_alias[a[3]]
+				if (ch == undefined)
+					ch = a[3]
+				ch = chnm[ch]
+				if (!ch)
+					ch = a[3][0] == 'm' ? chnm.m : chnm[""]
+			}
 			if (a[4]) {
 				b = abc2svg.letmid[a[4][0]]
 				if (b != undefined) {
 					switch (a[4][1]) {
 					case "#":
-					case "♯": b++; break
+					case "♯": b++; if (b >= 12) b = 0; break
 					case "b":
-					case "♭": b--; break
+					case "♭": b--;  if (b < 0) b = 11; break
 					}
 				}
 			}

@@ -458,6 +458,17 @@ M-10.2 -31h20.4"/>';
 </g>'
 	}
 
+	// convert the chord symbol to a "better known" one
+	function ch_cnv(t) {
+	    var	a = t.match(/[A-G][#♯b♭]?([^/]*)\/?/)	// a[1] = chord type
+		if (a && a[1]) {
+			a[2] = abc2svg.ch_alias[a[1]]
+			if (a[2] != undefined)
+				t = t.replace(a[1], a[2])
+		}
+		return t
+	} // ch_cnv()
+
     var	s, i, gch
 
 	for (s = voice_tb[0].sym; s; s = s.next) {
@@ -469,7 +480,7 @@ M-10.2 -31h20.4"/>';
 				continue
 
 			// insert the diagram as a decoration
-			this.deco_cnv(gch.otext, s, null)
+			this.deco_cnv([ ch_cnv(gch.otext) ], s, null)
 		}
 	}
     }, // do_diag()
