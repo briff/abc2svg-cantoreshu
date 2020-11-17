@@ -148,6 +148,32 @@ abc2svg.b40m = function(b) {
 	return ((b / 40) | 0) * 12 + abc2svg.b40_m[b % 40]
 } // b40m()
 
+// chord table
+// This table is used in various modules
+// to convert the types of chord symbols to a minimum set.
+// More chord types may be added by the command %%chordalias.
+abc2svg.ch_alias = {
+	"maj": "",
+	"min": "m",
+	"-": "m",
+	"°": "dim",
+	"+": "aug",
+	"+5": "aug",
+	"maj7": "M7",
+	"Δ7": "M7",
+	"Δ": "M7",
+	"min7": "m7",
+	"-7": "m7",
+	"ø7": "m7b5",
+	"°7": "dim7",
+	"min+7": "m+7",
+	"aug7": "+7",
+	"7+5": "+7",
+	"7#5": "+7",
+	"sus": "sus4",
+	"7sus": "7sus4"
+} // ch_alias
+
 // simplify a rational number n/d
 abc2svg.rat = function(n, d) {
     var	a, t,
