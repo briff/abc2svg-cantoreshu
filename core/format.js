@@ -487,10 +487,10 @@ Abc.prototype.set_format = function(cmd, param) {
 		break
 	case "chordalias":
 		v = param.split(/\s+/)
-		if (v.length != 2)
+		if (!v.length)
 			syntax(1, errs.bad_val, "%%chordalias")
 		else
-			abc2svg.ch_alias[v[0]] = v[1]
+			abc2svg.ch_alias[v[0]] = v[1] || ""
 		break
 	case "composerspace":
 	case "indent":
