@@ -1359,7 +1359,6 @@ return true
 			}
 			break
 		}
-		a_gch = s.a_gch || []
 		t = curr.text.split('\n')
 		if (t[0][0] == ' ')
 			t[0] = t[0].slice(1)
@@ -1369,9 +1368,8 @@ return true
 				font: font,
 				text: t[i]
 			}
-			a_gch.push(gch)
+			s.a_gch.push(gch)
 		}
-		self.gch_build(s)
 		curr.text = undefined
 	}, // dir()
 
