@@ -110,15 +110,8 @@ function get_sym(p, cont) {
 			break
 		case '"':
 			parse_gchord(d)
-			if (a_gch) {			// if no error
-				d = s.a_gch		// save the previous ch/an
-				self.gch_build(s)
-				if (d) {
-					for (j = 0; j < s.a_gch.length; j++)
-						d.push(s.a_gch[j])
-					s.a_gch = d
-				}
-			}
+			if (a_gch)			// if no error
+				csan_add(s)
 			break
 		}
 		s = s.next;
