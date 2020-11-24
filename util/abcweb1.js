@@ -130,6 +130,22 @@ function dom_loaded() {
 		}
 	} // user
 
+	// extract the ABC code from the HTML body
+	function fix_abc(s) {
+	    var	j,
+		i = s.indexOf('<script')
+
+		if (i >= 0) {
+			i = s.indexOf('type="text/vnd.abc"', i)
+			if (i > 0) {
+				i = s.indexOf('\n', i) + 1
+				j = s.indexOf('</script', i)
+				return s.slice(i, j)
+			}
+		}
+		return s
+	} // fix_abc()
+
 	// replace <>& by XML character references
 	function clean_txt(txt) {
 		return txt.replace(/<|>|&.*?;|&/g, function(c) {
@@ -480,7 +496,7 @@ onclick="abc2svg.do_render(\'.*\')">' + tt + '</li>\n\
 	}
 
 	// get the page content
-	page = document.body.innerHTML
+	page = fix_abc(document.body.innerHTML)
 
 	// accept page formatting
 	abc2svg.abc_end = function() {}
