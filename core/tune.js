@@ -682,7 +682,7 @@ function set_transp() {
 				break
 			s = s.prev
 			if (!s) {
-				s = curvoice.ckey
+				s = curvoice.key	// first key
 				break
 			}
 		}
