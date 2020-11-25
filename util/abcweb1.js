@@ -473,11 +473,13 @@ onclick="abc2svg.do_render(\'.*\')">' + tt + '</li>\n\
 		r.onload = function() {
 			if (r.status === 200) {
 				a_inc[fn] = r.responseText
+				if (abc2svg.modules.load(a_inc[fn], include))
+					include()
 			} else {
 				a_inc[fn] = '%\n'
 				alert('Error getting ' + fn + '\n' + r.statusText)
+				include()
 			}
-			include()
 		}
 		r.onerror = function () {
 			a_inc[fn] = '%\n'
