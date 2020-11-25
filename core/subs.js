@@ -17,6 +17,33 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with abc2svg-core.  If not, see <http://www.gnu.org/licenses/>.
 
+// add font styles
+    var	sheet
+var add_fstyle = typeof document != "undefined" ?
+    function(s) {
+    var	e
+	if (!sheet) {
+		if (abc2svg.sheet) {	// if styles from a previous generation
+			sheet = abc2svg.sheet
+			e = sheet.cssRules.length
+			while (--e >= 0)
+				sheet.deleteRule(e)
+		} else {
+			e = document.createElement('style')
+			document.head.appendChild(e)
+			abc2svg.sheet = sheet = e.sheet
+		}
+	}
+	s = s.match(/[^{]+{[^}]+}/g)	// insert each style
+	while (1) {
+		e = s.shift()
+		if (!e)
+			break
+		sheet.insertRule(e, sheet.cssRules.length)
+	}
+    } // add_fstyle()
+    : function(s) { font_style += s }
+
 // width of characters according to the font type
 // these tables were created from the font 'Liberation'
 
@@ -87,6 +114,8 @@ var strwh = typeof document != "undefined" ?
 	document.body.appendChild(el)
 
 	return function(str) {
+		if (str.wh)
+			return str.wh
 	    var	c,
 		font = gene.curfont,
 		h = font.size,
@@ -96,6 +125,12 @@ var strwh = typeof document != "undefined" ?
 		i = 0
 
 		el.style.font = style_font(font).slice(5);
+
+		if (typeof str == "object") {	// if string already converted
+			el.innerHTML = str
+			str.wh = [ el.clientWidth, el.clientHeight ]
+			return str.wh
+		}
 
 		str = str.replace(/<|>|&[^&]*?;|&|  /g, function(c){
 			switch (c) {
@@ -179,21 +214,18 @@ var strwh = typeof document != "undefined" ?
 	return [w, h]
 }
 
-// set the default and current font
-function set_font(xxx) {
-	if (typeof xxx == "string")
-		xxx = get_font(xxx);
-	cw_tb = xxx.name.slice(0, 4) == 'sans' ? ssw_tb : sw_tb;
-	gene.curfont = gene.deffont = xxx
-}
+// convert a string to a SVG text, handling the font changes
+// The string size is memorized into the String.
+function str2svg(str) {
+	// check if the string is already converted
+	if (typeof str == "object")
+		return str
 
-// output a string handling the font changes
-function out_str(str) {
-	var	n_font,
-		o_font = gene.curfont,
-		c_font = o_font;
+    var	o, n_font, wh,
+	o_font = gene.curfont,
+	c_font = o_font
 
-	// build the '<tspan>' element
+	// start a '<tspan>' element
 	function tspan(nf, of) {
 	    var	cl
 
@@ -207,16 +239,14 @@ function out_str(str) {
 			cl = font_class(nf)
 
 		return '<tspan\n\tclass="' + cl + '">'
-	}
+	} // tspan()
 
-	output += str.replace(/<|>|&[^&]*?;|&|  |\$./g, function(c){
+	o = str.replace(/<|>|&[^&]*?;|&|  |\$./g, function(c){
 			switch (c) {
 			case '<': return "&lt;"
 			case '>': return "&gt;"
-			case '&':
-				 return "&amp;"
-			case '  ':
-				return '  '		// space + nbspace
+			case '&': return "&amp;"
+			case '  ': return '  '	// space + nbspace
 			default:
 				if (c[0] != '$')
 					break
@@ -230,7 +260,7 @@ function out_str(str) {
 				if (n_font == c_font)
 					return c
 				if (c_font != o_font)
-					c = "</tspan>";
+					c = "</tspan>"
 				c_font = n_font
 				if (c_font == o_font)
 					return c
@@ -239,9 +269,30 @@ function out_str(str) {
 			return c		// &xxx;
 		})
 	if (c_font != o_font) {
-		output += "</tspan>";
+		o += "</tspan>"
 		gene.curfont = c_font	// keep current font for next paragraph
 	}
+
+	// convert to String and memorize the string width and height
+	o = new String(o)
+	if (typeof document != "undefined")
+		strwh(o)		// browser
+	else
+		o.wh = strwh(str)	// CLI
+	return o
+} // str2svg()
+
+// set the default and current font
+function set_font(xxx) {
+	if (typeof xxx == "string")
+		xxx = get_font(xxx)
+	cw_tb = xxx.name.slice(0, 4) == 'sans' ? ssw_tb : sw_tb
+	gene.curfont = gene.deffont = xxx
+}
+
+// output a string handling the font changes
+function out_str(str) {
+	output += str2svg(str)
 }
 
 // output a string, handling the font changes
@@ -250,12 +301,13 @@ function out_str(str) {
 //	'r' align right
 //	'j' justify - w is the line width
 //	otherwise align left
-function xy_str(x, y, str,
+function xy_str(x, y,
+		str,		// string or object String with attribute 'wh'
 		action,		// default: align left
 		w,		// needed for justify
 		wh) {		// optional [width, height]
 	if (!wh)
-		wh = strwh(str);
+		wh = str.wh || strwh(str)
 
 	output += '<text class="' + font_class(gene.curfont)
 	if (action != 'j' && str.length > 5
@@ -363,7 +415,8 @@ function write_text(text, action) {
 		return				// skip
 	set_font("text");
 	set_page();
-    var	wh, font,
+
+    var	wh, font, o,
 	strlw = get_lwidth(),
 		sz = gene.curfont.size,
 		lineskip = sz * cfmt.lineskipfac,
@@ -384,12 +437,9 @@ function write_text(text, action) {
 		while (1) {
 			i = text.indexOf('\n', j)
 			if (i < 0) {
-				str = text.slice(j);
-				wh = strwh(str);
-				gene.curfont = font;
-				vskip(wh[1]  * cfmt.lineskipfac + font.pad * 2)
-				xy_str(x, font.pad, str, action, null, wh);
-				font = gene.curfont
+				str = str2svg(text.slice(j))
+				vskip(str.wh[1]  * cfmt.lineskipfac + font.pad * 2)
+				xy_str(x, font.pad, str, action)
 				break
 			}
 			if (i == j) {			// new paragraph
@@ -403,12 +453,9 @@ function write_text(text, action) {
 				if (i == text.length)
 					break
 			} else {
-				str = text.slice(j, i);
-				wh = strwh(str);
-				gene.curfont = font;
-				vskip(wh[1]  * cfmt.lineskipfac + font.pad * 2)
-				xy_str(x, font.pad, str, action, null, wh);
-				font = gene.curfont
+				str = str2svg(text.slice(j, i))
+				vskip(str.wh[1]  * cfmt.lineskipfac + font.pad * 2)
+				xy_str(x, font.pad, str, action)
 			}
 			j = i + 1
 		}
@@ -431,25 +478,18 @@ function write_text(text, action) {
 				ww = strwh(words[j])[0];
 				w += ww
 				if (w >= strlw) {
-					str = words.slice(k, j).join(' ');
-					gene.curfont = font;
-					wh = strwh(str);
-					gene.curfont = font;
-					vskip(wh[1]  * cfmt.lineskipfac);
-					xy_str(0, 0, str, action, strlw, wh);
-					font = gene.curfont;
+					str = str2svg(words.slice(k, j).join(' '))
+					vskip(str.wh[1]  * cfmt.lineskipfac)
+					xy_str(0, 0, str, action, strlw)
 					k = j;
 					w = ww
 				}
 				w += cwidf(' ')
 			}
 			if (w != 0) {			// last line
-				str = words.slice(k).join(' ');
-				gene.curfont = font;
-				wh = strwh(str);
-				gene.curfont = font;
-				vskip(wh[1]  * cfmt.lineskipfac);
-				xy_str(0, 0, str, null, null, wh)
+				str = str2svg(words.slice(k).join(' '))
+				vskip(str.wh[1]  * cfmt.lineskipfac)
+				xy_str(0, 0, str)
 			}
 			vskip(parskip);
 			blk_flush()

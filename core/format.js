@@ -698,12 +698,11 @@ function use_font(font) {
 			if (!font.pad)
 				font.pad = 0
 		}
-		font_style += "\n.f" + font.fid + cfmt.fullsvg +
-			"{" + style_font(font) + "}"
+		add_fstyle(".f" + font.fid + "{" + style_font(font) + "}")
 		if (font.src)
-			font_style += "\n@font-face{\n\
+			add_fstyle("\n@font-face{\n\
  font-family:" + font.name + ";\n\
- src:" + font.src + "}"
+ src:" + font.src + "}")
 	}
 }
 

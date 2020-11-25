@@ -1267,7 +1267,7 @@ function svg_flush() {
 	output = ""
 
 	font_style = ''
-	if (cfmt.fullsvg) {
+	if (cfmt.fullsvg && typeof document == "undefined") {
 		defined_glyph = {}
 		for (i = 0; i < font_tb.length; i++)
 			font_tb[i].used = false
