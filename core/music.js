@@ -621,7 +621,7 @@ function set_w_chs(s) {
 				}
 			}
 			s0 = s;
-			w0 = ch.wh[0];
+			w0 = ch.text.wh[0];
 			n = 0;
 //			x = ch.font.box ? -2 : 0
 			x = 0
@@ -639,12 +639,12 @@ function gchord_width(s, wlnote, wlw) {
 		gch = s.a_gch[ix]
 		switch (gch.type) {
 		case '<':		/* left */
-			w = gch.wh[0] + wlnote
+			w = gch.text.wh[0] + wlnote
 			if (w > wlw)
 				wlw = w
 			break
 		case '>':		/* right */
-			w = gch.wh[0] + s.wr
+			w = gch.text.wh[0] + s.wr
 			if (w > arspc)
 				arspc = w
 			break

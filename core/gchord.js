@@ -245,15 +245,17 @@ Abc.prototype.gch_build = function(s) {
 		} else {
 			if (gch.type == '@'
 			 && !user.anno_start && !user.anno_stop) {
-				gch.wh = [0, 0]
+				set_font(gch.font)
+				gch.text = str2svg(gch.text)
+				gch.text.wh = [0, 0]
 				continue		/* no width */
 			}
 		}
 
 		/* set the offsets and widths */
 		set_font(gch.font);
-		wh = strwh(gch.text);
-		gch.wh = wh
+		gch.text = str2svg(gch.text)
+		wh = gch.text.wh
 		wh[1] += gch.font.pad * 2
 		switch (gch.type) {
 		case '@':
@@ -314,7 +316,7 @@ Abc.prototype.draw_gchord = function(i, s, x, y) {
 	an = s.a_gch[i],
 	h = an.font.size,
 	pad = an.font.pad,
-	w = an.wh[0] + pad * 2
+	w = an.text.wh[0] + pad * 2
 
 	switch (an.type) {
 	case '_':			// below
@@ -377,7 +379,7 @@ Abc.prototype.draw_gchord = function(i, s, x, y) {
 	if (user.anno_start)
 		user.anno_start("annot", an.istart, an.iend,
 			x - 2, y + h + 2, w + 4, h + 4, s)
-	xy_str(x, y, an.text, null, null, an.wh)
+	xy_str(x, y, an.text)
 	if (user.anno_stop)
 		user.anno_stop("annot", an.istart, an.iend,
 			x - 2, y + h + 2, w + 4, h + 4, s)
@@ -408,7 +410,7 @@ function draw_all_chsy() {
 			if ((an.type == 'g' && pos > 0)
 			 || an.type == '^') {
 				x = s.x + an.x
-				w = an.wh[0]
+				w = an.text.wh[0]
 				if (w && x + w > realwidth)
 					x = realwidth - w // let the text in the page
 				y = y_get(s.st, 1, x, w)	// y / staff
@@ -438,7 +440,7 @@ function draw_all_chsy() {
 			   || an.type == '_'))
 				continue
 			x = s.x + an.x
-			w = an.wh[0]
+			w = an.text.wh[0]
 			if (w && x + w > realwidth)	// let the text inside the page
 				x = realwidth - w
 			y = y_get(s.st, 0, x, w)	// y / staff
@@ -467,7 +469,7 @@ function draw_all_chsy() {
 		while (--i >= 0) {
 			if (an[i].type == 'g') {
 				an = an[i]
-				w = an.wh[0]
+				w = an.text.wh[0]
 				if (pos > 0) {
 					y = y_get(s.st, true, s.x, w)
 					if (y > minmax[s.st].yup)
