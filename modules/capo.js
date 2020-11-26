@@ -13,7 +13,7 @@ abc2svg.capo = {
     var	t, i, gch, gch2, i2,
 	abc = this,
 	p_v = abc.get_curvoice(),
-	a_gch = abc.get_a_gch()
+	a_gch = s.a_gch
 
 	if (p_v.capo && a_gch) {
 		t = p_v.capo

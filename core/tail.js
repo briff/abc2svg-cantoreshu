@@ -31,7 +31,6 @@ Abc.prototype.draw_note = draw_note;
 Abc.prototype.errs = errs;
 Abc.prototype.font_class = font_class;
 Abc.prototype.gch_tr1 = gch_tr1;
-Abc.prototype.get_a_gch = function() { return a_gch };
 Abc.prototype.get_bool = get_bool;
 Abc.prototype.get_cur_sy = function() { return cur_sy };
 Abc.prototype.get_curvoice = function() { return curvoice };
