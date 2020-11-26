@@ -107,11 +107,15 @@ function cwidf(c) {
 var strwh = typeof document != "undefined" ?
 
     // .. by the browser
-    (function(el) {
-	el.style.position = 'absolute';
-	el.style.top = '-1000px';
-	el.style.padding = '0';
-	document.body.appendChild(el)
+    (function() {
+    var	el = abc2svg.eltxt
+	if (!el) {
+		abc2svg.eltxt = el = document.createElement('text')
+		el.style.position = 'absolute';
+		el.style.top = '-1000px';
+		el.style.padding = '0';
+		document.body.appendChild(el)
+	}
 
 	return function(str) {
 		if (str.wh)
@@ -124,7 +128,8 @@ var strwh = typeof document != "undefined" ?
 		i0 = 0,
 		i = 0
 
-		el.style.font = style_font(font).slice(5);
+		el.className = font_class(font)
+		el.style.lineHeight = 1
 
 		if (typeof str == "object") {	// if string already converted
 			el.innerHTML = str
@@ -171,7 +176,7 @@ var strwh = typeof document != "undefined" ?
 		gene.curfont = font
 		return [w, h]
 	}
-    })(document.createElement('div')) :
+    })() :
 
     // .. by internal tables
     function(str) {
