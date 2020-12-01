@@ -53,7 +53,7 @@ representation or a list of the contents of the ABC file. Here
 are two bookmarklets that you can try.
 
 This
-<a href="javascript:(function(){var%20s,n=3,d=document,b=d.body;d.head.innerHTML='&lt;style&gt;\nsvg{display:block};@media print{body{margin:0;padding:0;border:0}.nop{display:none}}\n&lt;/style&gt;';b.innerHTML='\n%25abc-2.2%25%3c!--\n'+b.textContent+'%25--%3e\n';function%20f(u){s=d.createElement('script');s.src='http://moinejf.free.fr/js/'+u;s.onload=function(){if(--n==0)dom_loaded()};d.head.appendChild(s)};f('abcweb-1.js');f('snd-1.js');f('follow-1.js')})()"
+<a href="javascript:(function(){var%20s,n=3,d=document,b=d.body;d.head.innerHTML='&lt;style&gt;\nsvg{display:block};@media print{body{margin:0;padding:0;border:0}.nop{display:none}}\n&lt;/style&gt;';b.innerHTML='\n%25abc-2.2%25%3c!--\n'+b.textContent+'%25--%3e\n';function%20f(u){s=d.createElement('script');s.src='http://moinejf.free.fr/js/'+u;s.onload=function(){if(--n==0)dom_loaded()};d.head.appendChild(s)};f('abcweb-1.js');f('snd-1.js')})()"
 title="Copy me">first abc2svg bookmarklet</a>
 renders all the music it finds in the page currently displayed.  
 Once the music is displayed, clicking inside a tune starts playing it
@@ -66,7 +66,7 @@ try right clicking on the web page.)
 
 Alternatively, if your source contains many tunes, you can
 use this
-<a href="javascript:(function(){var%20s,n=3,d=document,b=d.body;d.head.innerHTML='&lt;style&gt;\nsvg{display:block};@media print{body{margin:0;padding:0;border:0}.nop{display:none}}\n&lt;/style&gt;';b.innerHTML='\n%25abc-2.2%25%3c!--\n'+b.textContent+'%25--%3e\n';function%20f(u){s=d.createElement('script');s.src='http://moinejf.free.fr/js/'+u;s.onload=function(){if(--n==0)dom_loaded()};d.head.appendChild(s)};f('abcweb1-1.js');f('snd-1.js');f('follow-1.js')})()"
+<a href="javascript:(function(){var%20s,n=3,d=document,b=d.body;d.head.innerHTML='&lt;style&gt;\nsvg{display:block};@media print{body{margin:0;padding:0;border:0}.nop{display:none}}\n&lt;/style&gt;';b.innerHTML='\n%25abc-2.2%25%3c!--\n'+b.textContent+'%25--%3e\n';function%20f(u){s=d.createElement('script');s.src='http://moinejf.free.fr/js/'+u;s.onload=function(){if(--n==0)dom_loaded()};d.head.appendChild(s)};f('abcweb1-1.js');f('snd-1.js')})()"
 title="Copy me">second bookmarklet</a>.
 The browser will list the titles of the tunes. Click on one of the titles
 to view the music representation.
@@ -124,7 +124,6 @@ To insert music in your web pages, you just have to insert the lines
 
 	<script src="http://moinejf.free.fr/js/abcweb-1.js"></script>
 	<script src="http://moinejf.free.fr/js/snd-1.js"></script>
-	<script src="http://moinejf.free.fr/js/follow-1.js"></script>
 
 in the HTML &lt;head&gt; and put the music as
 ABC sequences in the &lt;body&gt;.
@@ -457,7 +456,7 @@ Here are the scripts which are used in a web context:
   [%%beginml documentation](http://moinejf.free.fr/abcm2ps-doc/beginml.xhtml)
   for an example, and here is [how to put inline music in HTML][15].   
   Playing and highlighting the played notes may be offered loading
-  the scripts `snd-1.js` and `follow-1.js` (see below).
+  the script `snd-1.js` (see below).
 
 [15]: http://moinejf.free.fr/abcm2ps-doc/inline.html "abc2svg - inline music"
 
@@ -478,12 +477,6 @@ Here are the scripts which are used in a web context:
 - `snd-1.js`  
   This script may be used with `abcweb{,1}-1.js` to play the rendered
   ABC music.  
-
-- `follow-1.js`  
-  This script may be used after `snd-1.js`
-  to highlight the notes while playing.  
-  With `abcweb{,1,2}-1.js`, this script also permits to start playing
-  anywhere in the music.  
 
 - `abcdoc-1.js`  
   This script is mainly used for ABC documentation.
@@ -506,5 +499,21 @@ for an example).
 
 In shell mode, the script `abcqjs` also loads the right abc2svg core
 according to the source file extension (`.abc` or `.mei`).
+
+### 6. Credit
+
+**abc2svg** includes the following packages:
+
+- wps by Tomas Hlavaty
+  http://logand.com/sw/wps/log.html
+
+- JavaScript SoundFont 2 Parser by imaya/GREE Inc and Colin Clark
+  https://github.com/colinbdclark/sf2-parser
+
+- Scc1t2
+  http://www.ibiblio.org/thammer/HammerSound/localfiles/soundfonts/
+
+- strftime by T. H. Doan
+  https://thdoan.github.io/strftime/
 
 [Jean-François Moine](http://moinejf.free.fr)
