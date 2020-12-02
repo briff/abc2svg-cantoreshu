@@ -1,8 +1,7 @@
-#!/bin/sh
-#
-# abctopdf - converts ABC to PDF using abc2svg
-# and one of
+:;# abctopdf
+# convert ABC to PDF using abc2svg and one of
 #	- a chrome/chromium compatible web browser
+#	  (if not found, set its name in the environment variable 'BROWSER')
 #	- weasyprint (https://weasyprint.org/)
 #	- rsvg-convert (https://wiki.gnome.org/Projects/LibRsvg)
 #
@@ -13,6 +12,11 @@
 #		'%%pageheight 29.7cm' with rsvg-convert
 #
 # Copyright (C) 2019-2020 Jean-François Moine - License GPL3+
+
+# set a browser
+if [ x$BROWSER = x ]; then
+	BROWSER=chromium
+fi
 
 if [ $# -eq 0 ]; then
 	cat << EOF
@@ -84,7 +88,7 @@ for a do
 done
 
 # check if some chromium-based browser is available
-for c in chromium-browser vivaldi opera brave-browser epic google-chrome; do
+for c in $BROWSER chromium-browser vivaldi opera brave-browser epic google-chrome; do
 	if command -v $c >/dev/null 2>&1; then
 		echo "and $c"
 		command $abcscr "$@" > /tmp/o.html
