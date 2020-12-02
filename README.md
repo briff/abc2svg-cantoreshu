@@ -336,7 +336,8 @@ They are:
 #### 2.3 PDF generation
 
 `abctopdf` is a shell script which converts ABC to PDF using one of the
-previous shell scripts and, either a chrome/chromium compatible web browser,
+previous shell scripts and, either a chrome/chromium compatible web browser
+(settable by the environment variable 'BROWSER'),
 or the program [weasyprint](https://weasyprint.org/) or
 the program `rsvg-convert`.
 
