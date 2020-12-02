@@ -698,9 +698,11 @@ function use_font(font) {
 			if (!font.pad)
 				font.pad = 0
 		}
-		add_fstyle(".f" + font.fid + "{" + style_font(font) + "}")
+		add_fstyle(".f" + font.fid +
+			(typeof document == "undefined" ? cfmt.fullsvg : "") +
+			"{" + style_font(font) + "}")
 		if (font.src)
-			add_fstyle("\n@font-face{\n\
+			add_fstyle("@font-face{\n\
  font-family:" + font.name + ";\n\
  src:" + font.src + "}")
 	}
