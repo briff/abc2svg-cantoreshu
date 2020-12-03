@@ -1,6 +1,6 @@
-// follow-1.js - file to include in html pages after
-//	abcweb{,1,2}-1.js and snd-1.js.
-//	This script permits to follow the notes while playing.
+// follow-1.js - file included in snd-1.js
+//
+// This script permits to follow the notes while playing.
 // Scrolling the music may be disabled setting 'no_scroll' in the window object.
 //
 // Copyright (C) 2015-2020 Jean-Francois Moine
@@ -37,7 +37,7 @@ user.anno_stop = function(type, start, stop, x, y, w, h) {
 	abc.out_svg('<rect class="abcr _' + start + '_" x="');
 	abc.out_sxsy(x, '" y="', y);
 	abc.out_svg('" width="' + w.toFixed(2) +
-		'" height="' + h.toFixed(2) + '"/>\n')
+		'" height="' + abc.sh(h).toFixed(2) + '"/>\n')
 }
 
 	playconf.onnote = function(i, on) {
