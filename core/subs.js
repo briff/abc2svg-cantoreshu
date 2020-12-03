@@ -42,7 +42,7 @@ var add_fstyle = typeof document != "undefined" ?
 		sheet.insertRule(e, sheet.cssRules.length)
 	}
     } // add_fstyle()
-    : function(s) { font_style += s }
+    : function(s) { font_style += "\n" + s }
 
 // width of characters according to the font type
 // these tables were created from the font 'Liberation'
