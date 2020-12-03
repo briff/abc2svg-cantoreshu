@@ -45,7 +45,6 @@ function AbcPlay(i_conf) {
 	abcplay = {				// returned object (only instance)
 		clear: audio.clear,
 		add: audio.add,
-		set_sft: vf,
 		set_sfu: function(v) {
 			if (v == undefined)
 				return conf.sfu
