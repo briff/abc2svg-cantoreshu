@@ -302,6 +302,7 @@ abc2svg.grid3 = {
 			abc.set_a_gch(s, [{	// define the chord symbol
 				type: 'g',
 				text: ch,
+				otext: ch,
 				istart: ss.istart,
 				iend: ss.iend,
 				font: abc.get_font("gchord")
