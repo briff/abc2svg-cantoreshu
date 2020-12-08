@@ -106,8 +106,8 @@ var decos = {
 	"D.S.alfine": "3 dacs 16 38 38 D.S. al Fine",
 	fine: "3 dacs 16 10 10 Fine",
 	turn: "3 turn 10 0 5",
-	"trill(": "3 ltr 8 0 0",
-	"trill)": "3 ltr 8 0 0",
+	"trill(": "3 ltr 8 4 0",
+	"trill)": "3 ltr 8 4 0",
 	f: "6 f 18 1 7",
 	ff: "6 ff 18 2 10",
 	fff: "6 fff 18 4 13",
@@ -122,8 +122,8 @@ var decos = {
 	sfz: "6 sfz 18 4 10",
 	ped: "4 ped 18 6 10",
 	"ped-up": "4 pedoff 12 4 4",
-	"ped(": "4 lped 20 1 1",
-	"ped)": "4 lped 20 1 1",
+	"ped(": "4 lped 20 5 5",
+	"ped)": "4 lped 20 5 5",
 	"crescendo(": "6 cresc 18 0 0",
 	"crescendo)": "6 cresc 18 0 0",
 	"<(": "6 cresc 18 0 0",
@@ -496,9 +496,12 @@ function d_trill(de) {
 		s = de.start.s,
 		x = s.x
 
-	if (de.prev) {			// hack 'tr~~~~~'
-		x = de.prev.x + 10;
+	if (de.prev) {			// same height
+		x = de.prev.s.x + de.dd.wl + 2
 		y = de.prev.y
+		de.prev.val -= de.prev.dd.wr
+		if (de.prev.val < 8)
+			de.prev.val = 8
 	}
 	de.st = st
 
@@ -530,16 +533,18 @@ function d_trill(de) {
 	}
 	dd = de.dd;
 	if (!y)
-		y = y_get(st, up, x, w)
-	if (up) {
+		y = y_get(st, up, x - dd.wl - 5, w)
+	if (!de.prev) {
+	    if (up) {
 		tmp = staff_tb[s.st].topbar + 2
 		if (y < tmp)
 			y = tmp
-	} else {
-		y -= dd.h;
+	    } else {
 		tmp = staff_tb[s.st].botbar - 2
 		if (y > tmp)
 			y = tmp
+		y -= dd.h
+	    }
 	}
 	de.lden = false;
 	de.has_val = true;
@@ -1346,9 +1351,11 @@ function draw_deco_near() {
 			de2.start = de;
 			de2.defl.nost = de.defl.nost
 
-			// handle 'tr~~~~~'
-			if (dd.name == "trill("
-			 && i > 0 && a_de[i - 1].dd.name == "trill")
+			// handle same decoration type at a same time
+			if (i > 0
+			 && a_de[i - 1].s.time == de.s.time
+			 && a_de[i - 1].dd.name.slice(0, dd.name.length - 1) ==
+					dd.name.slice(0, dd.name.length - 1))
 				de2.prev = a_de[i - 1]
 		}
 
@@ -1386,7 +1393,7 @@ function draw_deco_near() {
 		}
 		break
 	}
-	if (a_de.length != 0)
+	if (a_de.length)
 		ldeco_update(s)
 
 	for ( ; s; s = s.ts_next) {
