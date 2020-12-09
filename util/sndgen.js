@@ -389,6 +389,10 @@ function ToAudio() {
 			s.chn = c
 			s.instr = instr[c]
 			break
+		case C.PART:
+			rst = s			// new possible restart
+			rst_fac = play_fac
+			break
 		case C.TEMPO:
 			if (s.tempo)
 				play_fac = set_tempo(s)
@@ -553,8 +557,6 @@ abc2svg.play_next = function(po) {
 			set_ctrl(po, s, t)	// set the MIDI controls
 		switch (s.type) {
 		case C.BAR:
-			if (s.bar_type.slice(-1) == ':') // left repeat
-				po.repv = 1
 			if (s.rep_p) {		// right repeat
 				po.repv++
 				if (!po.repn	// if repeat a first time
@@ -563,7 +565,8 @@ abc2svg.play_next = function(po) {
 					po.stim += (s.ptim - s.rep_p.ptim) /
 							po.conf.speed
 					s = s.rep_p	// left repeat
-					while (s.ts_next && !s.ts_next.seqst)
+					while (s.ts_next
+					 && !s.ts_next.dur)
 						s = s.ts_next
 					t = po.stim + s.ptim / po.conf.speed
 					po.repn = true
@@ -584,6 +587,8 @@ abc2svg.play_next = function(po) {
 					break
 				}
 			}
+			if (s.bar_type.slice(-1) == ':') // left repeat
+				po.repv = 1
 			while (s.ts_next && !s.ts_next.seqst)
 				s = s.ts_next
 			if (!s.part)
