@@ -573,7 +573,8 @@ function d_upstaff(de) {
 	var	yc, up, inv,
 		s = de.s,
 		dd = de.dd,
-		x = s.x,
+//		x = s.x,
+	x = de.x,
 		w = dd.wl + dd.wr,
 		stafft = staff_tb[s.st].topbar + 2,
 		staffb = staff_tb[s.st].botbar - 2
@@ -1052,7 +1053,6 @@ function draw_all_deco() {
 		if (!staff_tb[st].topbar)
 			continue		// invisible staff
 		x = de.x;
-//		y = de.y + staff_tb[st].y / staff_tb[st].staffscale
 		y = de.y + staff_tb[st].y
 
 		// update the coordinates if head decoration
@@ -1209,6 +1209,8 @@ function draw_deco_near() {
 				y: s.y,
 //				dy: 0
 			}
+			if (s.type == C.BAR)
+				de.x -= s.wl / 2 - 2
 			a_de.push(de)
 			if (dd.dd_en) {
 				de.ldst = true
