@@ -1752,7 +1752,7 @@ function set_nl(s) {			// s = start of line
 	for ( ; ; s = s.ts_next) {
 		if (!s)
 			return s
-		if (!s.seqst)
+		if (s.type == s.ts_prev.type)
 			continue
 		if (done < 0)
 			break
