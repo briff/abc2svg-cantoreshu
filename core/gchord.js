@@ -167,16 +167,16 @@ var	note_names = "CDEFGAB",
 
 		for (i = 0; i < csa.length; i++) {	// main and optional bass
 			p = csa[i];
-			o = p.search(/[ABCDEFG]/);
+			o = p.search(/[A-G]/)
 			if (o < 0)
 				continue		// strange chord symbol!
 			ip = o + 1
 			a = 0
-			while (p[ip] == '#') {
+			while (p[ip] == '#' || p[ip] == '\u266f') {
 				a++;
 				ip++
 			}
-			while (p[ip] == 'b') {
+			while (p[ip] == 'b' || p[ip] == '\u266d') {
 				a--;
 				ip++
 			}
