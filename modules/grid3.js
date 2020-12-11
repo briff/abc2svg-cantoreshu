@@ -307,7 +307,6 @@ abc2svg.grid3 = {
 				iend: ss.iend,
 				font: abc.get_font("gchord")
 			}])
-			abc.gch_build(s)
 		}
 
 		// insert the rest
