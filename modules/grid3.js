@@ -252,6 +252,18 @@ abc2svg.grid3 = {
 		of(type, opt, txt)
 		return
 	}
+
+	// replace the accidentals
+	txt = txt.replace(/#|=|b/g,
+		function(x) {
+			switch (x) {
+			case '#': return "\u266f"
+			case '=': return "\u266e"
+//			case 'b': return "\u266d"
+			}
+			return "\u266d"
+		})
+
 	if (opt.indexOf("chord-define") >= 0)
 		this.cfmt().csdef = txt
 	if (opt.indexOf("noprint") < 0) {
@@ -361,6 +373,8 @@ abc2svg.grid3 = {
 				if (cl[0] == '|' || cl[0] == ':') {
 					while (s && !s.dur)
 						s = s.ts_next
+					if (!s)
+						break
 					ss = s			// first note/rest
 					while (s && !s.bar_type)
 						s = s.ts_next	// end of measure
