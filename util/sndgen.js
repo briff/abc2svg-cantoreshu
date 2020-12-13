@@ -114,8 +114,9 @@ function ToAudio() {
 			s = s.ts_next
 			if (s.type == C.PART) {
 				s.part = first		// reverse pointer
+				v = s.text[0]		// 1st letter only
 				for (i = 0; i < first.parts.length; i++) {
-					if (first.parts[i] == s.text)
+					if (first.parts[i] == v)
 						first.p_s[i] = s
 				}
 			}
