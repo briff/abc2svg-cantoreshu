@@ -1558,7 +1558,7 @@ function custos_add(s) {
 
 /* -- define the beginning of a new music line -- */
 function set_nl(s) {			// s = start of line
-    var	p_voice, done, tim
+    var	p_voice, done, tim, ptyp
 
 	// divide a left repeat bar (|:) or a variant bar (|1)
 	function bardiv(so) {
@@ -1749,11 +1749,13 @@ function set_nl(s) {			// s = start of line
 			break
 	}
 	done = 0
+	ptyp = s.type
 	for ( ; ; s = s.ts_next) {
 		if (!s)
 			return s
-		if (s.type == s.ts_prev.type)
+		if (s.type == ptyp)
 			continue
+		ptyp = s.type
 		if (done < 0)
 			break
 		switch (s.type) {
