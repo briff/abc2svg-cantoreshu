@@ -1312,19 +1312,19 @@ function new_bar(dotted) {
 	if (curvoice.ulen < 0)			// L:auto
 		adjust_dur(s);
 
-	s2 = curvoice.last_sym
-	if (s2 && s2.time == curvoice.time) {
-		if (bar_type == "["
-		 || bar_type == "|:") {
+	if ((bar_type == "[" || bar_type == "|:")
+	 && !curvoice.eoln) {
+		s2 = curvoice.last_sym
+		if (s2 && s2.time == curvoice.time) {
 
 			// search if a previous bar at this time
-			do {
-				if (s2.type == C.BAR)
-					break
-				if (w_tb[s2.type]) // symbol with a width
-					break
-				s2 = s2.prev
-			} while (s2)
+//			do {
+//				if (s2.type == C.BAR)
+//					break
+//				if (w_tb[s2.type]) // symbol with a width
+//					break
+//				s2 = s2.prev
+//			} while (s2)
 			if (s2 && s2.type == C.BAR) {
 //		&& !s2.a_gch && !s2.a_dd
 //		&& !s.a_gch && !s.a_dd) {

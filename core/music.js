@@ -1733,7 +1733,7 @@ function set_nl(s) {			// s = start of line
 
 	/* if normal symbol, cut here */
 	switch (s.type) {
-	case C.BAR:
+//	case C.BAR:
 	case C.STAVES:
 		break
 	case C.GRACE:			/* don't cut on a grace note */
