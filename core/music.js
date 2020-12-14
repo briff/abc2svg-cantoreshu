@@ -1684,18 +1684,20 @@ function set_nl(s) {			// s = start of line
 					if (s3.v == s.v) {
 						s.next = s3.next
 						s.prev = s3
-						s.next.prev = s
-						s3.next = s
+						s.next.prev =
+							s3.next = s
 						break
 					}
 				}
 
 				// care with spacing
-				if (s.type != s.ts_prev.type) {
+//				if (s.type != s.ts_prev.type) {
+				if (!s.shrink && s.seqst) {
 					s.shrink = s.wl + s.prev.wr
-					s.space = s.ts_next.space
-					s.ts_next.space = 0
+					s.space = 0
 				}
+				while (s2.ts_next && s2.ts_next.type == s2.type)
+					s2 = s2.ts_next
 				continue
 			}
 			if (w_tb[s2.type])
