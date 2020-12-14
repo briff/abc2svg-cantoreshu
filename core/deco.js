@@ -526,9 +526,9 @@ function d_trill(de) {
 		w = s2.x - x - 6
 		if (s2.type == C.NOTE)
 			w -= 6
-		if (w < 20) {
-			x -= (20 - w) * .5;
-			w = 20
+		if (w < 10) {
+			x -= 10 - w
+			w = 10
 		}
 	}
 	dd = de.dd;
@@ -1333,12 +1333,12 @@ function draw_deco_near() {
 			}
 			if (j == n_de) {	// no end, insert one
 				de2 = {
-					s: de.s,
+					s: s,
 					st: de.st,
 					dd: dd2,
 					ix: a_de.length - 1,
 					x: realwidth - 6,
-					y: de.s.y,
+					y: s.y,
 					lden: true,
 					defl: {
 						noen: true
