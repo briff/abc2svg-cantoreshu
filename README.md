@@ -505,16 +505,16 @@ according to the source file extension (`.abc` or `.mei`).
 
 **abc2svg** includes the following packages:
 
-- wps by Tomas Hlavaty
-  http://logand.com/sw/wps/log.html
+- wps by Tomas Hlavaty  
+  <http://logand.com/sw/wps/log.html>
 
-- JavaScript SoundFont 2 Parser by imaya/GREE Inc and Colin Clark
-  https://github.com/colinbdclark/sf2-parser
+- JavaScript SoundFont 2 Parser by imaya/GREE Inc and Colin Clark  
+  <https://github.com/colinbdclark/sf2-parser>
 
-- Scc1t2
-  http://www.ibiblio.org/thammer/HammerSound/localfiles/soundfonts/
+- Scc1t2  
+  <http://www.ibiblio.org/thammer/HammerSound/localfiles/soundfonts/>
 
-- strftime by T. H. Doan
-  https://thdoan.github.io/strftime/
+- strftime by T. H. Doan  
+  <https://thdoan.github.io/strftime/>
 
 [Jean-François Moine](http://moinejf.free.fr)
