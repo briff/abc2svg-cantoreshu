@@ -1,6 +1,6 @@
 {
   "name": "abc2svg",
-  "version": "1.20.15",
+  "version": "1.20.16",
   "description": "ABC music notation translator",
   "devDependencies": {
     "uglify-js": "^2.5.0"
@@ -75,9 +75,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "abc2odt": "./abc2odt",
-    "abc2svg": "./abc2svg",
-    "abctopdf": "./abctopdf"
+    "abc2odt": "abc2odt",
+    "abc2svg": "abc2svg",
+    "abctopdf": "abctopdf"
   },
   "repository": {
     "type": "fossil",
