@@ -87,7 +87,8 @@ function abc_dump(tsfirst, voice_tb, info) {
 			curv = v
 			if (!vold[v]) {
 				vold[v] = true
-				if (p_voice.clef
+				if (ln		// if not the only voice
+				 && p_voice.clef
 				 && p_voice.clef.clef_type != 'a')
 					ln += ' ' + clef_dump(p_voice.clef)
 				if (p_voice.nm) {
