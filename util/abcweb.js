@@ -254,8 +254,9 @@ function render() {
 					page.slice(j, i) // keep the script content only
 				i += 10
 			} else {			// < .. class="abc"
-				i = page.indexOf('>', j) + 2
-				src += page.slice(j, i) + "%%endml\n"
+				i = page.indexOf('>', j) + 1
+				src += page.slice(j, i) + "\n%%endml\n"
+				i = page.indexOf('\n', i)
 				j = page.indexOf('</' + res, i)
 				src += toabc(page.slice(i, j))	// keep the element
 				i = j
