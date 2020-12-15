@@ -75,18 +75,6 @@ function Audio5(i_conf) {
 	rates = [],		// [instr][key] playback rates
 	w_instr = 0		// number of instruments being loaded
 
-	// default sound font load function
-	if (!conf.instr_load) {
-		conf.instr_load = function(instr, done, fail) {
-			abc2svg.loadjs(conf.sfu + '/' + instr + '.js',
-				function() {
-					 done(b64dcod(abcsf2[instr]))
-				},
-				fail
-			)
-		}
-	}
-
 	// base64 stuff
     var b64d = []
 	function init_b64d() {
@@ -142,8 +130,11 @@ function Audio5(i_conf) {
 	}
 
 	// create all notes of an instrument
-	function sf2_create(parser, instr) {
-	    var i, sid, gen, parm, sampleRate, sample,
+	function sf2_create(sf2_bin, instr) {
+	    var i, sid, gen, parm, sampleRate, sample, infos,
+		parser = new sf2.Parser(sf2_bin)
+
+		parser.parse()
 		infos = parser.getInstruments()[0].info
 
 		rates[instr] = []
@@ -210,9 +201,7 @@ function Audio5(i_conf) {
 		w_instr++
 		conf.instr_load(instr,
 			function(sf2_bin) {
-			    var	parser = new sf2.Parser(sf2_bin)
-				parser.parse()
-				sf2_create(parser, instr)
+				sf2_create(sf2_bin, instr)
 				if (--w_instr == 0)
 					play_start()
 			},
@@ -323,6 +312,18 @@ function Audio5(i_conf) {
 
 	if (!conf.sfu)
 		conf.sfu = "Scc1t2"	// set the default soundfont location
+
+	// default sound font load function
+	if (!conf.instr_load) {
+		conf.instr_load = function(instr, done, fail) {
+			abc2svg.loadjs(conf.sfu + '/' + instr + '.js',
+				function() {
+					 done(b64dcod(abcsf2[instr]))
+				},
+				fail
+			)
+		}
+	}
 
     // public methods
     return {
