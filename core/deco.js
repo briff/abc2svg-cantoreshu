@@ -491,17 +491,17 @@ function d_trill(de) {
 		return
     var	up, y, w, tmp,
 	dd = de.dd,
+	de2 = de.prev,
 		s2 = de.s,
 		st = s2.st,
 		s = de.start.s,
 		x = s.x
 
-	if (de.prev) {			// same height
-		x = de.prev.s.x + de.dd.wl + 2
-		y = de.prev.y
-		de.prev.val -= de.prev.dd.wr
-		if (de.prev.val < 8)
-			de.prev.val = 8
+	if (de2) {			// same height
+		x = de2.s.x + de.dd.wl + 2
+		de2.val -= de2.dd.wr
+		if (de2.val < 8)
+			de2.val = 8
 	}
 	de.st = st
 
@@ -532,20 +532,33 @@ function d_trill(de) {
 		}
 	}
 	dd = de.dd;
-	if (!y)
-		y = y_get(st, up, x - dd.wl - 5, w)
-	if (!de.prev) {
-	    if (up) {
+	y = y_get(st, up, x - dd.wl - 5, w)
+	if (up) {
 		tmp = staff_tb[s.st].topbar + 2
 		if (y < tmp)
 			y = tmp
-	    } else {
+	} else {
 		tmp = staff_tb[s.st].botbar - 2
 		if (y > tmp)
 			y = tmp
 		y -= dd.h
-	    }
 	}
+	if (de2) {			// if same height
+		if (up) {
+			if (y < de2.y)
+				y = de2.y	// (only on one note)
+		} else {
+			if (y >= de2.y) {
+				y = de2.y
+			} else {
+				do {
+					de2.y = y
+					de2 = de2.prev	// go backwards
+				} while (de2)
+			}
+		}
+	}
+
 	de.lden = false;
 	de.has_val = true;
 	de.val = w;
