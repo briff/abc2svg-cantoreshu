@@ -1708,6 +1708,10 @@ function set_nl(s) {			// s = start of line
 
 	s = s.ts_prev				// end of previous line
 
+	if (s.bar_type
+	 && s.prev && s.prev.bar_type)	// if 2 bars
+		s = s.prev		// put the 2nd one in the next line
+
 	// if on a note or rest, go to the next time
 	if (s.dur) {
 		tim = s.time + s.dur
