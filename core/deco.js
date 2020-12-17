@@ -1017,8 +1017,8 @@ function deco_width(s) {
 
 /* -- draw the decorations -- */
 /* (the staves are defined) */
-function draw_all_deco() {
-	if (a_de.length == 0)
+Abc.prototype.draw_all_deco = function() {
+	if (!a_de.length)
 		return
 	var	de, de2, dd, s, note, f, st, x, y, y2, ym, uf, i, str, a,
 		new_de = [],

@@ -45,6 +45,7 @@ abc2svg.modules = {
 	mdnn: { fn: 'mdnn-1.js' },
 		MIDI: { fn: 'MIDI-1.js' },
 	pageheight: { fn: 'page-1.js' },
+	pedline: { fn: 'pedline-1.js' },
 		percmap: { fn: 'perc-1.js' },
 	soloffs: { fn: 'soloffs-1.js' },
 	sth: { fn: 'sth-1.js' },

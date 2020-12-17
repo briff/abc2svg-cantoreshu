@@ -912,7 +912,7 @@ function out_ltr(x, y, val) {
 		x += 6
 	}
 }
-function out_lped(x, y, val, defl) {
+Abc.prototype.out_lped = function(x, y, val, defl) {
 	y += 4;
 	if (!defl.nost)
 		xygl(x, y, "ped");
@@ -992,7 +992,9 @@ var deco_val_tb = {
 	cresc:	out_cresc,
 	dim:	out_dim,
 	ltr:	out_ltr,
-	lped:	out_lped,
+	lped:	function(x, y, val, defl) {
+			self.out_lped(x, y, val, defl)
+		},
 	"8va":	out_8va,
 	"8vb":	out_8vb,
 	"15ma":	out_15ma,

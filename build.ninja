@@ -113,6 +113,7 @@ build jianpu-$MAJOR.js: jscu modules/jianpu.js
 build mdnn-$MAJOR.js: jscu modules/mdnn.js
 build MIDI-$MAJOR.js: jscu modules/MIDI.js
 build page-$MAJOR.js: jscu modules/page.js modules/strftime.js
+build pedline-$MAJOR.js: jscu modules/pedline.js
 build perc-$MAJOR.js: jscu modules/perc.js
 build psvg-$MAJOR.js: jscu modules/wps.js modules/psvg.js
 build soloffs-$MAJOR.js: jscu modules/soloffs.js
@@ -151,8 +152,8 @@ build all: phony abc2svg-$MAJOR.js abcdoc-$MAJOR.js $
  combine-$MAJOR.js diag-$MAJOR.js equalbars-$MAJOR.js gamelan-$MAJOR.js $
  grid-$MAJOR.js grid2-$MAJOR.js grid3-$MAJOR.js jianpu-$MAJOR.js $
  jazzchord-$MAJOR.js  mdnn-$MAJOR.js $
- MIDI-$MAJOR.js page-$MAJOR.js perc-$MAJOR.js soloffs-$MAJOR.js sth-$MAJOR.js $
- strtab-$MAJOR.js $
+ MIDI-$MAJOR.js page-$MAJOR.js pedline-$MAJOR.js perc-$MAJOR.js $
+ soloffs-$MAJOR.js sth-$MAJOR.js strtab-$MAJOR.js $
  temper-$MAJOR.js edit-$MAJOR.css edit-$MAJOR.js edit-$MAJOR.xhtml $
  abckbd-$MAJOR.js abckbd2-$MAJOR.js follow-$MAJOR.js
 # not mei2svg-$MAJOR.js

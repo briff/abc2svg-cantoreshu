@@ -21,6 +21,7 @@
 	init_tune()
 
 // Abc functions used by the modules
+Abc.prototype.a_de = function() { return a_de }
 Abc.prototype.add_style = function(s) { style += s };
 Abc.prototype.cfmt = function() { return cfmt };
 Abc.prototype.clone = clone;

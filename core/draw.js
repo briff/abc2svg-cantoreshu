@@ -3804,7 +3804,7 @@ function draw_all_sym() {
 		}
 	}
 
-	draw_all_deco();
+	self.draw_all_deco()
 	draw_all_hl()
 	glout()			// output the symbols
 	anno_put()		// before outputting the symbol annotations

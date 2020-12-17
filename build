@@ -51,6 +51,7 @@ gen modules/jianpu.js > jianpu-$MAJOR.js
 gen modules/mdnn.js > mdnn-$MAJOR.js
 gen modules/MIDI.js > MIDI-$MAJOR.js
 gen modules/page.js modules/strftime.js > page-$MAJOR.js
+gen modules/pedline.js > pedline-$MAJOR.js
 gen modules/perc.js > perc-$MAJOR.js
 gen modules/wps.js modules/psvg.js > psvg-$MAJOR.js
 gen modules/soloffs.js > soloffs-$MAJOR.js
