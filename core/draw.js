@@ -2923,7 +2923,10 @@ function draw_sym_near() {
 		case C.GRACE:
 			for (g = s.extra; g; g = g.next) {
 				y_set(s.st, true, g.x - 2, 4, g.ymx + 1);
-				y_set(s.st, false, g.x - 2, 4, g.ymn - 1)
+				y_set(s.st, false, g.x - 2, 4,
+//fixme: hack for slur/accidental far under the staff
+//						g.ymn - 1)
+						g.ymn - 5)
 			}
 			continue
 		case C.MREST:
