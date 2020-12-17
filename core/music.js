@@ -870,8 +870,10 @@ Abc.prototype.set_width = function(s) {
 			s.wl = s.wr = 1		// (!! not 0 !!)
 			return
 		}
-		s.wl = s.clef_small ? 9 : 12
-		s.wr = s.clef_small ? 7 : 12
+		s.wl = s.clef_small ? 11 : 12
+		s.wr = s.clef_small ? 10 : 12
+		if (s.next && s.next.type == C.BAR)
+			s.wr -= 4
 		return
 	case C.KEY:
 		if ((!s.k_a_acc && !s.k_sf && !s.k_old_sf) // if no accidental
