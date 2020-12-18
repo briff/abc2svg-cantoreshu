@@ -26,31 +26,31 @@ if (!abc2svg.loadjs) {
 }
 
 abc2svg.modules = {
-		ambitus: { fn: 'ambitus-1.js' },
-	begingrid: { fn: 'grid3-1.js' },
-		beginps: { fn: 'psvg-1.js' },
-		break: { fn: 'break-1.js' },
-		capo: { fn: 'capo-1.js' },
-	chordnames: { fn: 'chordnames-1.js' },
-		clip: { fn: 'clip-1.js' },
-	clairnote: { fn: 'clair-1.js' },
-		voicecombine: { fn: 'combine-1.js' },
-		diagram: { fn: 'diag-1.js' },
-	equalbars: { fn: 'equalbars-1.js' },
-	gamelan: { fn: 'gamelan-1.js' },
-		grid: { fn: 'grid-1.js' },
-		grid2: { fn: 'grid2-1.js' },
-	jazzchord: { fn: 'jazzchord-1.js' },
-	jianpu: { fn: 'jianpu-1.js' },
-	mdnn: { fn: 'mdnn-1.js' },
-		MIDI: { fn: 'MIDI-1.js' },
-	pageheight: { fn: 'page-1.js' },
-	pedline: { fn: 'pedline-1.js' },
-		percmap: { fn: 'perc-1.js' },
-	soloffs: { fn: 'soloffs-1.js' },
-	sth: { fn: 'sth-1.js' },
-	strtab: { fn: 'strtab-1.js' },
-	temperament: { fn: 'temper-1.js' },
+	ambitus: {},
+	begingrid: { fn: 'grid3' },
+	beginps: { fn: 'psvg' },
+	break: {},
+	capo: {},
+	chordnames: {},
+	clip: {},
+	clairnote: { fn: 'clair' },
+	voicecombine: { fn: 'combine' },
+	diagram: { fn: 'diag' },
+	equalbars: {},
+	gamelan: {},
+	grid: {},
+	grid2: {},
+	jazzchord: {},
+	jianpu: {},
+	mdnn: {},
+	MIDI: {},
+	pageheight: { fn: 'page' },
+	pedline: {},
+	percmap: { fn: 'perc' },
+	soloffs: {},
+	sth: {},
+	strtab: {},
+	temperament: { fn: 'temper' },
 
 	nreq: 0,
 	hooks: [],
@@ -87,7 +87,7 @@ abc2svg.modules = {
 		}
 
 		// test if some keyword in the file
-	    var	m, r, i,
+	    var	m, i, fn,
 		nreq_i = this.nreq,
 		ls = file.match(/(^|\n)(%%|I:).+?\b/g)
 
@@ -98,15 +98,20 @@ abc2svg.modules = {
 		this.errmsg = errmsg || get_errmsg()
 
 		for (i = 0; i < ls.length; i++) {
-			m = abc2svg.modules[ls[i].replace(/\n?(%%|I:)/, '')]
+			fn = ls[i].replace(/\n?(%%|I:)/, '')
+			m = abc2svg.modules[fn]
 			if (!m || m.loaded)
 				continue
 
 			m.loaded = true
 
 			// load the module
+			if (m.fn)
+				fn = m.fn
 			this.nreq++
-			abc2svg.loadjs(m.fn, load_end, function(){load_ko(m.fn)})
+			abc2svg.loadjs(fn + "-1.js",
+					load_end,
+					function() {load_ko(fn)})
 		}
 		return this.nreq == nreq_i
 	}
