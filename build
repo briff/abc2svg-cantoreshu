@@ -80,3 +80,5 @@ sed "s+@MAJOR@+$MAJOR+" editor/edit.xhtml > edit-$MAJOR.xhtml
 sed "s+@MAJOR@+$MAJOR+" editor/abckbd.js > abckbd-$MAJOR.js
 sed "s+@MAJOR@+$MAJOR+" editor/abckbd2.js > abckbd2-$MAJOR.js
 sed "s+@MAJOR@+$MAJOR+" editor/edit.js > edit-$MAJOR.js
+
+touch follow-$MAJOR.js

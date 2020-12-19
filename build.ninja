@@ -169,3 +169,8 @@ rule version
 	npm publish
 build minor: version
 build patch: version
+
+# temporary
+rule nul
+  command = touch $out
+build follow-$MAJOR.js: nul
