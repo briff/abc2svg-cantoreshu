@@ -33,6 +33,14 @@ gen core/abc2svg.js core/deco.js core/draw.js\
  core/modules.js >> $out
  echo "abc2svg.version=\"$VERSION\";abc2svg.vdate=\"$DATE\"" >> $out
 
+out=mei2svg-$MAJOR.js
+cp core/license $out
+gen core/abc2svg.js core/deco.js core/draw.js\
+ font.js core/format.js core/front.js core/music.js core/parse.js core/subs.js\
+ core/svg.js core/tune.js core/lyrics.js core/gchord.js core/mei.js core/tail.js\
+ core/modules.js >> $out
+ echo "abc2svg.version=\"$VERSION\";abc2svg.vdate=\"$DATE\"" >> $out
+
 gen modules/ambitus.js > ambitus-$MAJOR.js
 gen modules/break.js > break-$MAJOR.js
 gen modules/capo.js > capo-$MAJOR.js
