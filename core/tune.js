@@ -899,10 +899,12 @@ Abc.prototype.do_pscom = function(text) {
 
 	switch (cmd) {
 	case "center":
+		set_font("text")
 		if (parse.state >= 2) {
 			s = new_block("text");
 			s.text = param
 			s.opt = 'c'
+			s.font = gene.curfont
 			return
 		}
 		write_text(param, 'c')
@@ -1167,10 +1169,12 @@ Abc.prototype.do_pscom = function(text) {
 		}
 		break
 	case "text":
+		set_font("text")
 		if (parse.state >= 2) {
 			s = new_block(cmd);
 			s.text = param
 			s.opt = cfmt.textoption
+			s.font = gene.curfont
 			return
 		}
 		write_text(param, cfmt.textoption)
@@ -1319,10 +1323,12 @@ Abc.prototype.do_begin_end = function(type,
 		action = get_textopt(opt);
 		if (!action)
 			action = cfmt.textoption
+		set_font("text")
 		if (parse.state >= 2) {
 			s = new_block(type);
 			s.text = text
 			s.opt = action
+			s.font = gene.curfont
 			break
 		}
 		write_text(text, action)

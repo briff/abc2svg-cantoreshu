@@ -418,7 +418,6 @@ function put_inf2r(x, y, str1, str2, action) {
 function write_text(text, action) {
 	if (action == 's')
 		return				// skip
-	set_font("text");
 	set_page();
 
     var	wh, font, o,

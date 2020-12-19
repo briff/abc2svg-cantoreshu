@@ -4662,6 +4662,7 @@ Abc.prototype.block_gen = function(s) {
 		vskip(s.sk2);
 		break
 	case "text":
+		set_font(s.font)
 		write_text(s.text, s.opt)
 		break
 	case "title":
