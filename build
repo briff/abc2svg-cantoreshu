@@ -80,9 +80,9 @@ gen util/chord.js > chord-$MAJOR.js
 gen util/json.js > json-$MAJOR.js
 gen util/toaudio.js > toaudio-$MAJOR.js
 gen util/play.js util/toaudio.js util/toaudio5.js\
- util/sf2-parser.js util/tomidi5.js follow-$MAJOR.js > play-$MAJOR.js
+ util/sf2-parser.js util/tomidi5.js follow.js > play-$MAJOR.js
 gen util/play.js util/sndgen.js util/sndaud.js\
- util/sf2-parser.js util/sndmid.js follow-$MAJOR.js > snd-$MAJOR.js
+ util/sf2-parser.js util/sndmid.js follow.js > snd-$MAJOR.js
 
 sed "s+@MAJOR@+$MAJOR+" editor/edit.xhtml > edit-$MAJOR.xhtml
 sed "s+@MAJOR@+$MAJOR+" editor/abckbd.js > abckbd-$MAJOR.js
