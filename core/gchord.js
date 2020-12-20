@@ -362,12 +362,13 @@ Abc.prototype.draw_gchord = function(i, s, x, y) {
 				(((s.notes[s.nhd].pit + s.notes[0].pit) >> 1) -
 						18) * 3 :
 				12)		// fixed offset on rests and bars
+			+ h * .2
 		if (y > 0) {
-			y2 = y + h * .6
+			y2 = y + h * .8
 			if (y2 > staff_tb[s.st].ann_top)
 				staff_tb[s.st].ann_top = y2
 		} else {
-			y2 = y - h * .3
+			y2 = y
 			if (y2 < staff_tb[s.st].ann_bot)
 				staff_tb[s.st].ann_bot = y2
 		}
