@@ -1362,6 +1362,8 @@ return true
 		t = curr.text.split('\n')
 		if (t[0][0] == ' ')
 			t[0] = t[0].slice(1)
+		if (!s.a_gch)
+			s.a_gch = []
 		for (i = 0; i < t.length; i++) {
 			gch = {
 				type: ty,
