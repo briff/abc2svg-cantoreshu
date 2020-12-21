@@ -1562,10 +1562,12 @@ function custos_add(s) {
 function set_nl(s) {			// s = start of line
     var	p_voice, done, tim, ptyp
 
-	// divide a left repeat bar (|:) or a variant bar (|1)
+	// divide the left repeat (|:) or variant bars (|1)
 	function bardiv(so) {
-	    var s0, s1, s2, t1, t2, i,
-		t = so.bar_type.match(/(:*)([^:]*)(:*)/)
+	    var s0, s1, s2, t1, t2, i
+
+	    function new_type(s) {
+	    var	t = s.bar_type.match(/(:*)([^:]*)(:*)/)
 			// [1] = starting ':'s, [2] = middle, [3] = ending ':'s
 
 		if (!t[3]) {		// if start of variant
@@ -1584,6 +1586,7 @@ function set_nl(s) {			// s = start of line
 			t1 = t[1] + '|' + t[2].slice(0, i)
 			t2 = t[2].slice(i) +'|' + t[3]
 		}
+	    } // new_typ()
 
 		s1 = so				// top bar
 		while (s1.ts_prev.bar_type)
@@ -1591,6 +1594,7 @@ function set_nl(s) {			// s = start of line
 		s0 = so				// start of next line
 		while (s0.ts_next) {
 			switch (s0.ts_next.type) {
+			case C.BAR:
 			case C.KEY:
 			case C.METER:
 			case C.CLEF:
@@ -1600,6 +1604,11 @@ function set_nl(s) {			// s = start of line
 			break
 		}
 		while (1) {
+		    if (s1.bar_type
+		     && (s1.bar_type.slice(-1) == ':'
+		      || s1.text)
+		     && s1.bar_type != ':') {
+			new_type(s1)		// return t1 and t2
 			s2 = clone(s1)
 			s1.bar_type = t1
 			s2.bar_type = t2
@@ -1620,10 +1629,11 @@ function set_nl(s) {			// s = start of line
 				delete s1.rbstart
 			}
 			delete s2.a_dd
+			s0 = s2
+		    }
 			if (s1 == so)
 				break
 			s1 = s1.ts_next
-			s0 = s2
 		}
 	} // bardiv()
 
@@ -1727,12 +1737,8 @@ function set_nl(s) {			// s = start of line
 		s = s.ts_prev
 	}
 
-	// if on a left repeat bar or on a variant bar, divide
-	if (s.bar_type
-	 && (s.bar_type.slice(-1) == ':'
-	  || s.text)
-	 && s.bar_type != ':')
-		bardiv(s)
+	// divide the left repeat and a variant bars
+	bardiv(s)
 
 	// add the warning symbols at the end of the previous line
 	s = do_warn(s)
