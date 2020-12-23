@@ -1589,7 +1589,8 @@ function set_nl(s) {			// s = start of line
 	    } // new_typ()
 
 		s1 = so				// top bar
-		while (s1.ts_prev.bar_type)
+		while (s1.ts_prev		// (if [I:..] alone in source line)
+		 && s1.ts_prev.bar_type)
 			s1 = s1.ts_prev
 		s0 = so				// start of next line
 		while (s0.ts_next) {
