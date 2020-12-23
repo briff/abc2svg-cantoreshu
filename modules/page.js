@@ -1,4 +1,4 @@
-// page.js - module to generate one SVG image per page
+// page.js - module to generate pages
 //
 // Copyright (C) 2018-2020 Jean-Francois Moine - GPL3+
 //
@@ -34,8 +34,10 @@ abc2svg.page = {
     }, // abc_end()
 
     // generate a header or a footer in page.hf and return its height
-    gen_hf: function(page, up, font, str) {
+    gen_hf: function(page, ty) {
     var	a, i, j, k, x, y, y0, s,
+	font = page.abc.get_font(ty),
+	str = page[ty],
 	cfmt = page.abc.cfmt(),
 	fh = font.size * 1.1,
 	pos = [ '">',
@@ -246,8 +248,7 @@ abc2svg.page = {
 	page.hf = ''
 	if (page.header) {
 		l = abc.get_font_style().length
-		h = abc2svg.page.gen_hf(page, true,
-					abc.get_font("header"), page.header)
+		h = abc2svg.page.gen_hf(page, "header")
 		sty = abc.get_font_style().slice(l)		// new style(s)
 		if (cfmt.fullsvg || sty != page.hsty) {
 			page.hsty = sty
@@ -276,8 +277,7 @@ abc2svg.page = {
 	}
 	if (page.footer) {
 		l = abc.get_font_style().length
-		page.fh = abc2svg.page.gen_hf(page, false,
-					abc.get_font("footer"), page.footer)
+		page.fh = abc2svg.page.gen_hf(page, "footer")
 		sty = abc.get_font_style().slice(l)		// new style(s)
 		if (cfmt.fullsvg || sty != page.fsty) {
 			page.fsty = sty
