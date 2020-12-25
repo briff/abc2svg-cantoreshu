@@ -4733,6 +4733,13 @@ function set_piece() {
 
 		for (st = 0; st <= nstaff; st++) {
 			p_staff = staff_tb[st]
+
+			// ledger lines
+			// index = line number
+			// values = [x symbol, x start, x stop]
+			p_staff.hlu = []	// above the staff
+			p_staff.hld = []	// under the staff
+
 			if (!non_empty_gl[st]) {
 				p_staff.botbar = p_staff.topbar = 0
 				continue
@@ -4775,12 +4782,6 @@ function set_piece() {
 					break
 				}
 			}
-
-			// ledger lines
-			// index = line number
-			// values = [x symbol, x start, x stop]
-			p_staff.hlu = []	// above the staff
-			p_staff.hld = []	// under the staff
 		}
 	} // set_top_bot()
 
