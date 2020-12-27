@@ -1650,10 +1650,10 @@ function set_nl(s) {			// s = start of line
 
 	// set the eol on the next symbol
 	function set_eol_next(s) {
-		if (!s.next) {		// special case: the voice stops here
-			set_eol(s)
-			return s
-		}
+//		if (!s.next) {		// special case: the voice stops here
+//			set_eol(s)
+//			return s
+//		}
 		for (s = s.ts_next; s; s = s.ts_next) {
 			if (s.seqst) {
 				set_eol(s)
