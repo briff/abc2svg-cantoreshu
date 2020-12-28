@@ -2844,10 +2844,11 @@ Abc.prototype.set_pitch = function(last_s) {
 					note.pit += delta
 				}
 			}
-			if (s.type == C.NOTE) {
-				s.ymx = 3 * (s.notes[s.nhd].pit - 18) + 4;
-				s.ymn = 3 * (s.notes[0].pit - 18) - 4;
-			} else {
+//			if (s.type == C.NOTE) {
+//				s.ymx = 3 * (s.notes[s.nhd].pit - 18) + 4;
+//				s.ymn = 3 * (s.notes[0].pit - 18) - 4;
+//			} else {
+			if (s.type == C.REST) {
 				s.y = (((s.notes[0].pit - 18) / 2) | 0) * 6;
 				s.ymx = s.y + rest_sp[5 - s.nflags][0];
 				s.ymn = s.y - rest_sp[5 - s.nflags][1]
