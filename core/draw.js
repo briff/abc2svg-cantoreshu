@@ -2834,7 +2834,7 @@ function draw_all_ties(p_voice) {
  * The buffer output is delayed until the definition of the staff system
  */
 function draw_sym_near() {
-    var	p_voice, p_st, s, v, st, y, g, w, i, st, dx, top, bot,
+    var	p_voice, p_st, s, v, st, y, g, w, i, st, dx, top, bot, ymn,
 	output_sav = output;
 
 	// set the staff offsets of a beam
@@ -2953,7 +2953,11 @@ function draw_sym_near() {
 				w = s.beam_end ? 11 : 16
 			}
 			y_set(s.st, true, s.x + dx, w, s.ymx);
-			y_set(s.st, false, s.x - s.wl, s.wl + s.wr, s.ymn)
+			ymn = s.ymn
+			if (s.notes[0].acc	// set room for the accidental
+			 && ymn > 3 * (s.notes[0].pit - 18) - 9)
+				ymn = 3 * (s.notes[0].pit - 18) - 9
+			y_set(s.st, false, s.x - s.wl, s.wl + s.wr, ymn)
 		} else {
 			y_set(s.st, true, s.x - s.wl, s.wl + s.wr, s.ymx);
 			if (s.stemless) {
