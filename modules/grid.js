@@ -306,6 +306,7 @@ function build_grid(chords, bars, font, wmx) {
 					if (s.a_gch[i].type == 'g') {
 						if (!chord[beat_i]) {
 							chord[beat_i] = s.a_gch[i].text
+							abc.set_font(s.a_gch[i].font)
 							w = abc.strwh(chord[beat_i])[0]
 							if (w > wmx)
 								wmx = w
