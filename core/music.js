@@ -2395,7 +2395,7 @@ function set_auto_clef(st, s_start, clef_type_start) {
 		}
 		if (s.notes[0].pit < min)
 			min = s.notes[0].pit
-		else if (s.notes[s.nhd].pit > max)
+		if (s.notes[s.nhd].pit > max)
 			max = s.notes[s.nhd].pit
 	}
 
