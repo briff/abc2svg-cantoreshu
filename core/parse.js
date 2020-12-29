@@ -1672,12 +1672,12 @@ function parse_acc_pit(line) {
 	return note
 }
 
-/* set the mapping of a note */
+// return the mapping of a note
 //
 // The global 'maps' object is indexed by the map name.
 // Its content is an object ('map') indexed from the map type:
-// - normal = b40 pitch
-// - octave = 'o' + b40 pitch in C..B interval
+// - normal = ABC note
+// - octave = 'o' + ABC note in C..B interval
 // - key    = 'k' + scale index
 // - all    = 'all'
 // The 'map' is stored in the note. It is an array of
@@ -1685,16 +1685,15 @@ function parse_acc_pit(line) {
 //	[1] print (note)
 //	[2] color
 //	[3] play (note)
-function set_map(note) {
-    var	map = maps[curvoice.map],	// never null
-	n = abc2svg.pab40(note.pit, note.acc),
-	nn = n.toString()
+function set_map(pit, acc) {
+    var	nn = not2abc(pit, acc),
+	map = maps[curvoice.map]	// never null
 
 	if (!map[nn]) {
-		nn = 'o' + (n % 40).toString()		// octave
+		nn = 'o' + nn.replace(/[',]+/, '')	// ' octave
 		if (!map[nn]) {
-			n += 2 - curvoice.ckey.k_b40	// key
-			nn = 'k' + (abc2svg.b40_p[n % 40]).toString()
+			nn = 'k' + ntb[(pit + 75 -
+					curvoice.ckey.k_sf * 11) % 7]
 			if (!map[nn]) {
 				nn = 'all'		// 'all'
 				if (!map[nn])
@@ -1702,7 +1701,7 @@ function set_map(note) {
 			}
 		}
 	}
-	note.map = map[nn]
+	return map[nn]
 }
 
 /* -- parse note or rest with pitch and length -- */
@@ -2077,7 +2076,7 @@ Abc.prototype.new_note = function(grace, sls) {
 
 			if (curvoice.map
 			 && maps[curvoice.map])
-				set_map(note)
+				note.map = set_map(note.pit, i)
 
 			// starting slurs
 			if (sl1.length) {

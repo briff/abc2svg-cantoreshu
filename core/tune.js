@@ -539,13 +539,41 @@ Abc.prototype.set_bar_num = function() {
 	}
 }
 
+// convert a note to ABC
+function not2abc(pit, acc) {
+    var	i,
+	nn = ''
+
+	if (acc && acc != 3) {
+		if (typeof acc == "number") {
+			nn = ['__', '_', '', '^', '^^'][acc + 2]
+		} else {
+			i = acc[0]
+			if (i > 0) {
+				nn += '^'
+			} else {
+				nn += '_'
+				i = -i
+			}
+			nn += i + '/' + acc[1]
+		}
+	}
+	nn += ntb[(pit + 75) % 7]
+	for (i = pit; i >= 21; i -= 7)
+		nn += "'"
+	for (i = pit; i < 14; i += 7)
+		nn += ","
+	return nn
+} // not2abc()
+
 // note mapping
 // %%map map_name note [print [note_head]] [param]*
 function get_map(text) {
 	if (!text)
 		return
 
-    var	i, note, notes, map, tmp, ns, ty,
+    var	i, note, notes, map, tmp, ns,
+	ty = '',
 	a = text.split(/\s+/)
 
 	if (a.length < 3) {
@@ -560,26 +588,18 @@ function get_map(text) {
 		 || ns.indexOf("key,") == 0) {
 			ty = ns[0]
 			ns = ns.split(',')[1]
-			ns = ns.replace(/[,']*/, '').toUpperCase(); //'
-//		} else {
-//			ty = ''
+			ns = ns.replace(/[,']+/, '').toUpperCase() //'
+			if (ns.indexOf("key,") == 0)
+				ns = ns.replace(/[=^_]+/, '')
 		}
-		if (ty == 'k') {
-			ns = ty + ntb.indexOf(ns)
-		} else {
-			tmp = new scanBuf;
-			tmp.buffer = ns
-			note = parse_acc_pit(tmp)
-			if (!note) {
-				syntax(1, "Bad note in %%map")
-				return
-			}
-			if (ty == 'o')
-				ns = ty + (abc2svg.pab40(note.pit,
-						 note.acc) % 40).toString()
-			else
-				ns = abc2svg.pab40(note.pit, note.acc).toString()
+		tmp = new scanBuf
+		tmp.buffer = ns
+		note = parse_acc_pit(tmp)
+		if (!note) {
+			syntax(1, "Bad note in %%map")
+			return
 		}
+		ns = ty + not2abc(note.pit, note.acc)
 	}
 
 	notes = maps[a[0]]
