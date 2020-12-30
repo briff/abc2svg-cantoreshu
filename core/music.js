@@ -1704,8 +1704,7 @@ function set_nl(s) {			// s = start of line
 				}
 
 				// care with spacing
-//				if (s.type != s.ts_prev.type) {
-				if (!s.shrink && s.seqst) {
+				if (s.seqst) {
 					s.shrink = s.wl + s.prev.wr
 					s.space = 0
 				}
