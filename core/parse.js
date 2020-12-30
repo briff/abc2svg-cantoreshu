@@ -1685,8 +1685,9 @@ function parse_acc_pit(line) {
 //	[1] print (note)
 //	[2] color
 //	[3] play (note)
-function set_map(pit, acc) {
-    var	nn = not2abc(pit, acc),
+function set_map(note, acc) {
+    var	pit = note.pit,
+	nn = not2abc(pit, acc),
 	map = maps[curvoice.map]	// never null
 
 	if (!map[nn]) {
@@ -1701,7 +1702,20 @@ function set_map(pit, acc) {
 			}
 		}
 	}
-	return map[nn]
+	note.map = map = map[nn]
+	if (map[1]) {				// if print map
+		note.pit = pit = map[1].pit
+		note.acc = map[1].acc
+		if (!note.acc			// if no accidental
+		 && curvoice.acc[pit + 19])	// but one in the measure
+			note.acc = 3
+		curvoice.acc[pit + 19] = note.acc == 3 ? 0 : note.acc
+	}
+	if (map[2])				// if color
+		note.color = map[2]
+	nn = map[3]
+	if (nn)					// if play map
+		note.midi = pit2mid(nn.pit + 19, nn.acc)
 }
 
 /* -- parse note or rest with pitch and length -- */
@@ -2076,7 +2090,7 @@ Abc.prototype.new_note = function(grace, sls) {
 
 			if (curvoice.map
 			 && maps[curvoice.map])
-				note.map = set_map(note.pit, i)
+				set_map(note, i)
 
 			// starting slurs
 			if (sl1.length) {

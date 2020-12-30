@@ -764,29 +764,6 @@ function pit_adj() {
     var	i, p_v, s, sk, g,
 	nv = voice_tb.length
 
-	// map a note
-	// The 'map' in the note is an array of
-	//	[0] array of heads (glyph names)
-	//	[1] print (note)
-	//	[2] color
-	//	[3] play (note)
-	function note_map(note) {
-	    var nn,
-		map = note.map
-
-		if (!map)
-			return
-		if (map[1]) {			// if print map
-			note.pit = map[1].pit
-			note.acc = map[1].acc
-		}
-		if (map[2])			// if color
-			note.color = map[2]
-		nn = map[3]
-		if (nn)				// if play map
-			note.midi = pit2mid(nn.pit + 19, nn.acc)
-	} // note_map()
-
 	while (--nv >= 0) {
 		p_v = voice_tb[nv]
 		if (p_v.vtransp == undefined)
@@ -835,27 +812,6 @@ function pit_adj() {
 				break
 			}
 			sk = null
-		}
-	}
-
-	nv = voice_tb.length
-	while (--nv >= 0) {
-		p_v = voice_tb[nv]
-		if (p_v.map == undefined)
-			continue		// no map in this voice
-		for (s = p_v.sym; s; s = s.next) {
-			switch (s.type) {
-			case C.GRACE:
-				for (g = s.extra; g; g = g.next) {
-					for (i = 0; i <= g.nhd; i++)
-						note_map(g.notes[i])
-				}
-				break
-			case C.NOTE:
-				for (i = 0; i <= s.nhd; i++)
-					note_map(s.notes[i])
-				break
-			}
 		}
 	}
 } // pit_adj()
