@@ -1743,7 +1743,8 @@ function set_nl(s) {			// s = start of line
 			return s
 		/* fall thru */
 	default:
-		return set_eol(s)
+		set_eol(s)
+		return s
 	}
 
 	/* go back to handle the staff breaks at end of line */
