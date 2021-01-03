@@ -1,6 +1,6 @@
 // abc2svg - music.js - music generation
 //
-// Copyright (C) 2014-2020 Jean-Francois Moine
+// Copyright (C) 2014-2021 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -1563,8 +1563,9 @@ function set_nl(s) {			// s = start of line
     var	p_voice, done, tim, ptyp
 
 	// divide the left repeat (|:) or variant bars (|1)
-	function bardiv(so) {
-	    var s0, s1, s2, t1, t2, i
+	// the new bars go in the next line
+	function bardiv(so) {		// start of next line
+	    var s, s1, s2, t1, t2, i
 
 	    function new_type(s) {
 	    var	t = s.bar_type.match(/(:*)([^:]*)(:*)/)
@@ -1588,23 +1589,30 @@ function set_nl(s) {			// s = start of line
 		}
 	    } // new_typ()
 
-		s1 = so				// top bar
-		while (s1.ts_prev		// (if [I:..] alone in source line)
-		 && s1.ts_prev.bar_type)
-			s1 = s1.ts_prev
-		s0 = so				// start of next line
-		while (s0.ts_next) {
-			switch (s0.ts_next.type) {
-			case C.BAR:
+		s = so				// start of sequence
+		while (s.ts_prev
+		 && s.ts_prev.time == so.time) {
+			s = s.ts_prev
+			if (s.bar_type)
+				s1 = s		// first previous bar
+		}
+		if (!s1)
+			return so
+
+		// search the insertion point in the new line
+		for (s = so; ; s = s.ts_next) {
+			switch (s.type) {
+			default:
+				if (w_tb[s.type])
+					break
 			case C.KEY:
 			case C.METER:
 			case C.CLEF:
-				s0 = s0.ts_next
 				continue
 			}
 			break
 		}
-		while (1) {
+		while (s1 != so) {
 		    if (s1.bar_type
 		     && (s1.bar_type.slice(-1) == ':'
 		      || s1.text)
@@ -1613,14 +1621,16 @@ function set_nl(s) {			// s = start of line
 			s2 = clone(s1)
 			s1.bar_type = t1
 			s2.bar_type = t2
-			s2.next = s1.next	// voice
-			s2.prev = s1
-			s1.next = s2
-			s2.next.prev = s2
-			s2.ts_next = s0.ts_next	// time
-			s2.ts_prev = s0
-			s0.ts_next = s2
-			s2.ts_next.ts_prev = s2
+			lkvsym(s2, s1.next)	// voice
+			while (1) {
+				if (s.type != C.BAR
+				 || s.v > s2.v)
+					break
+				s = s.ts_next
+			}
+			lktsym(s2, s)		// time
+			if (s == so)
+				so = s2
 			if (s1.text) {
 				s2.invis = true
 				self.set_width(s2)
@@ -1630,15 +1640,13 @@ function set_nl(s) {			// s = start of line
 				delete s1.rbstart
 			}
 			delete s2.a_dd
-			s0 = s2
 		    }
-			if (s1 == so)
-				break
 			s1 = s1.ts_next
 		}
+		return so
 	} // bardiv()
 
-	// set the end of line marker
+	// set the start of line marker
 	function set_eol(s) {
 		if (cfmt.custos && voice_tb.length == 1)
 			custos_add(s)
@@ -1648,27 +1656,13 @@ function set_nl(s) {			// s = start of line
 			add_end_bar(s)
 	} // set_eol()
 
-	// set the eol on the next symbol
-	function set_eol_next(s) {
-//		if (!s.next) {		// special case: the voice stops here
-//			set_eol(s)
-//			return s
-//		}
-		for (s = s.ts_next; s; s = s.ts_next) {
-			if (s.seqst) {
-				set_eol(s)
-				break
-			}
-		}
-		return s
-	} // set_eol_next()
-
-	// 's' is the last symbol of the previous line
-	function do_warn(s) {
-	    var s2, s3
+	// put the warning symbols
+	// the new symbols go in the previous line
+	function do_warn(s) {		// start of next line
+	    var s1, s2, s3
 
 		// advance in the next line
-		for (s2 = s.ts_next; s2; s2 = s2.ts_next) {
+		for (s2 = s; s2; s2 = s2.ts_next) {
 			switch (s2.type) {
 			case C.KEY:
 				if (!cfmt.keywarn
@@ -1676,76 +1670,71 @@ function set_nl(s) {			// s = start of line
 				 || s2.k_none
 				 || s2.k_play)		// play only
 					continue
+				for (s1 = s.ts_prev; s1 ;s1 = s1.ts_prev) {
+					if (s1.type != C.METER)
+						break
+				}
 				// fall thru
 			case C.METER:
-				if (s2.type == C.METER
-				 && !cfmt.timewarn)
-					continue
+				if (s2.type == C.METER) {
+					if (!cfmt.timewarn)
+						continue
+					s1 = s.ts_prev
+				}
 				// fall thru
 			case C.CLEF:
-
-				// put the warning symbol at end of line
-				s3 = clone(s2)		// duplicate the K:/M:/clef
-				lktsym(s3, s.ts_next)	// link in time at eol
-				if (s3.ts_next == s2)
-					s2.seqst = true	// keep new line here
-				if (!s3.prev)		// if start of voice
+				if (!s2.prev)		// start of voice
 					continue
-				s = s3			// new last symbol
-				while (1) {		// link in voice
-					s3 = s3.ts_prev
-					if (s3.v == s.v) {
-						s.next = s3.next
-						s.prev = s3
-						s.next.prev =
-							s3.next = s
+				if (s2.type == C.CLEF) {
+					for (s1 = s.ts_prev; s1; s1 = s1.ts_prev) {
+						switch (s1.type) {
+						case C.BAR:
+						case C.KEY:
+						case C.METER:
+							continue
+						}
 						break
 					}
 				}
 
-				// care with spacing
-				if (s.seqst) {
-					s.shrink = s.wl + s.prev.wr
-					s.space = 0
+				// put the warning symbol at end of line
+				s3 = clone(s2)		// duplicate the K:/M:/clef
+
+				lktsym(s3, s1.ts_next)	// time link
+				if (s3.ts_next == s)
+					s.seqst = true	// (M: eol M:)
+
+				s1 = s3
+				while (1) {
+					s1 = s1.ts_next
+					if (s1.v == s2.v)
+						break
 				}
-				while (s2.ts_next && s2.ts_next.type == s2.type)
-					s2 = s2.ts_next
+				lkvsym(s3, s1)		// voice link
+
+				// care with spacing
+				if (s3.seqst) {
+					s3.shrink = s3.wl
+					if (s3.prev)	// if not start of voice
+						s3.shrink += s3.prev.wr
+					s3.space = 0
+					s3.next.shrink = s3.wr + s3.next.wl
+				}
 				continue
 			}
 			if (w_tb[s2.type])
 				break		// symbol with a width
 		}
-		return s
 	} // do_warn()
 
-	s = s.ts_prev				// end of previous line
-
-	if (s.bar_type
-	 && s.prev && s.prev.bar_type)	// if 2 bars
-		s = s.prev		// put the 2nd one in the next line
-
-	// if on a note or rest, go to the next time
-	if (s.dur) {
-		tim = s.time + s.dur
-		while (s) {
-			if (!s.ts_next)
-				return // null
-			if (s.time >= tim)
-				break
-			s = s.ts_next
-		}
-		s = s.ts_prev
-	}
-
 	// divide the left repeat and a variant bars
-	bardiv(s)
+	s = bardiv(s)
 
 	// add the warning symbols at the end of the previous line
-	s = do_warn(s)
+	do_warn(s)
 
 	/* if normal symbol, cut here */
-	switch (s.type) {
-//	case C.BAR:
+	switch (s.ts_prev.type) {
 	case C.STAVES:
 		break
 	case C.GRACE:			/* don't cut on a grace note */
@@ -1754,11 +1743,11 @@ function set_nl(s) {			// s = start of line
 			return s
 		/* fall thru */
 	default:
-		return set_eol_next(s)
+		return set_eol(s)
 	}
 
 	/* go back to handle the staff breaks at end of line */
-	for (; s; s = s.ts_prev) {
+	for (s = s.ts_prev; s; s = s.ts_prev) {
 		if (s.seqst && s.type != C.CLEF)
 			break
 	}
