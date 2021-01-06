@@ -339,8 +339,8 @@ function lkvsym(s, next) {	// voice linkage
 	next.prev = s
 }
 function lktsym(s, next) {	// time linkage
+	s.ts_next = next
 	if (next) {
-		s.ts_next = next;
 		s.ts_prev = next.ts_prev
 		if (s.ts_prev)
 			s.ts_prev.ts_next = s;
@@ -348,15 +348,22 @@ function lktsym(s, next) {	// time linkage
 	} else {
 //fixme
 error(2, s, "Bad linkage")
-		s.ts_next = s.ts_prev = null
+		s.ts_prev = null
 	}
 	s.seqst = !s.ts_prev ||
 			s.time != s.ts_prev.time ||
-			w_tb[s.ts_prev.type] != w_tb[s.type]
-	s = s.ts_next
-	if (s)
-		s.seqst = s.time != s.ts_prev.time ||
-			w_tb[s.ts_prev.type] != w_tb[s.type]
+			(w_tb[s.ts_prev.type] != w_tb[s.type]
+			 && w_tb[s.ts_prev.type] != 0)
+	if (!next)
+		return
+	next.seqst = next.time != s.time ||
+			(w_tb[s.type] != w_tb[next.type]
+			 && w_tb[s.type] != 0)
+	if (next.seqst) {
+		self.set_width(next)
+		next.shrink = next.prev.wr + next.wl
+		next.space = 0
+	}
 }
 
 /* -- unlink a symbol -- */
@@ -1633,9 +1640,6 @@ function set_nl(s) {			// s = start of line
 				so = s2
 			if (s1.text) {
 				s2.invis = true
-				self.set_width(s2)
-				s2.shrink = s1.wr + s2.wl
-				s2.space = 0
 				delete s1.text
 				delete s1.rbstart
 			}
