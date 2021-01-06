@@ -2913,6 +2913,8 @@ function parse_music_line() {
 		parse.tps = tps
 		parse.tpn = tpn
 	}
+	if (sls.length)
+		syntax(1, "Start of slur without note")
 	if (grace) {
 		syntax(1, "No end of grace note sequence");
 		curvoice.last_sym = grace.prev;
