@@ -1721,7 +1721,7 @@ function set_nl(s) {			// s = start of line
 					s3.shrink = s3.wl
 					if (s3.prev)	// if not start of voice
 						s3.shrink += s3.prev.wr
-					s3.space = 0
+					s3.space = set_space(s3, s3.ts_prev.time)
 					s3.next.shrink = s3.wr + s3.next.wl
 				}
 				continue
