@@ -14,7 +14,7 @@
 // The tail of the tune list ("(all tunes)") may be set in a global
 // javascript variable 'list_tail'.
 //
-// Copyright (C) 2019-2020 Jean-Francois Moine
+// Copyright (C) 2019-2021 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -189,18 +189,6 @@ function dom_loaded() {
 		}
 	} // do_scroll()
 
-	// menu functions
-	// click inside/outside of the menu button
-	window.onmouseup = function(event) {
-	    var	e = document.getElementById("dc")
-		if (e) {
-			if (event.target.className == "db")
-				e.classList.toggle("show")
-			else if (e.classList.contains("show"))
-				e.classList.remove("show")
-		}
-	} // onmouseup()
-
 	// source edit
 	abc2svg.src_upd = function() {
 		page = document.getElementById('ta').value
@@ -227,74 +215,6 @@ function dom_loaded() {
 		}
 	} // st_scroll()
 
-	// function called on click in the music:
-	//	start / stop playing
-	abc2svg.playseq = function(evt) {
-	    var	e, i, s,
-		svg = evt.target
-
-		// initialize the play object
-		if (!abcplay) {
-
-			// if play-1.js is not loaded, don't come here anymore
-			if (typeof AbcPlay == "undefined") {
-				abc2svg.playseq = function(){}
-				return
-			}
-			abcplay = AbcPlay(playconf)
-		}
-
-		// stop
-		if (playing) {
-			abcplay.stop()
-			return
-		}
-
-		// search if click in a SVG image
-		e = svg				// keep the clicked element
-		while (svg.tagName != 'svg') {
-			svg = svg.parentNode
-			if (!svg)
-				return
-		}
-		i = svg.getAttribute('class')
-		if (!i)
-			return
-		i = i.match(/tune(\d+)/)
-		if (!i)
-			return
-		i = i[1]			// tune number
-
-		// if a new generation, get the tunes references
-		// and generate the play data of all tunes
-		if (tune_lst != abc.tunes) {
-			tune_lst = abc.tunes
-			for (j = 0; j < tune_lst.length; j++)
-				abcplay.add(tune_lst[j][0],
-					tune_lst[j][1],
-					tune_lst[j][3])
-		}
-
-		// check if click on a music symbol
-		// (this works when 'follow' is active)
-		s = tune_lst[i][0]		// first symbol of the tune
-		i = e.getAttribute('class')
-		if (i)
-			i = i.match(/abcr _(\d+)_/)
-		if (i) {
-			i = i[1]		// symbol offset in the source
-			while (s && s.istart != i)
-				s = s.ts_next
-			if (!s) {		// fixme: error ?!
-				alert("play bug: no such symbol in the tune")
-				return
-			}
-		}
-
-		playing = true
-		abcplay.play(s, null)
-	} // playseq()
-
 	// function to load javascript files
 	abc2svg.loadjs = function(fn, relay, onerror) {
 	    var	s = document.createElement('script')
@@ -318,7 +238,7 @@ function dom_loaded() {
 		t = (typeof list_head == "undefined" ? "Tunes:" : list_head) + '<ul>\n'
 		tt = typeof list_tail == "undefined" ? "(all tunes)" : list_tail
 
-		window.onclick = null
+//		window.onclick = null
 
 		for (;;) {
 			i = page.indexOf("\nX:", i)
@@ -327,7 +247,8 @@ function dom_loaded() {
 			k = page.indexOf("\n", ++i)
 			j = page.indexOf("\nT:", i)
 			n++
-			t += '<li><a \
+//			t += '<li><a \
+			t += '<li \
 style="cursor:pointer;color:blue;text-decoration:underline" \
 onclick="abc2svg.do_render(\'' + page.slice(i, k) + '$\')">' +
 				page.slice(i + 2, k).replace(/%.*/,'')
@@ -340,16 +261,20 @@ onclick="abc2svg.do_render(\'' + page.slice(i, k) + '$\')">' +
 					t += " - " + page.slice(j, k).replace(/%.*/,'')
 				}
 			}
-			t += '</a></li>\n'
+//			t += '</a></li>\n'
+			t += '</li>\n'
 			i = k
 		}
 		if (n <= 1) {
 			abc2svg.do_render()
 			return
 		}
-		t += '<li><a \
+//		t += '<li><a \
+		t += '<li \
 style="cursor:pointer;color:blue;text-decoration:underline" \
-onclick="abc2svg.do_render(\'.*\')">' + tt + '</li>\n\
+onclick="abc2svg.do_render(\'.*\')">' + tt +
+//			'</li>\n\
+			'</li>\n\
 </ul>'
 
 		document.body.innerHTML = t
@@ -437,9 +362,6 @@ onclick="abc2svg.do_render(\'.*\')">' + tt + '</li>\n\
 			return
 		}
 
-		// prepare for play on click
-		window.onclick = abc2svg.playseq
-
 		// update the menu
 		setTimeout(function() {
 
@@ -501,6 +423,91 @@ onclick="abc2svg.do_render(\'.*\')">' + tt + '</li>\n\
 
 	// get the page content
 	page = fix_abc(document.body.innerHTML)
+
+	// mouse functions
+	window.onmouseup = function(evt) {
+
+		// stop playing
+		if (playing) {
+			abcplay.stop()
+			return
+		}
+
+	    var	e, s, j,
+		c = evt.target
+
+		// search if click in a SVG image
+		e = c				// keep the clicked element
+		while (c && c.tagName != 'svg')
+			c = c.parentNode
+		if (c)
+			c = c.getAttribute('class')
+
+		// no, remove the menu if active
+		if (!c) {
+			e = document.getElementById("dc")
+			if (e && e.classList.contains("show")) {
+				evt.stopImmediatePropagation()
+				evt.preventDefault()
+				e.classList.remove("show")
+			}
+			return
+		}
+
+		// if click in the menu button, show the menu
+		if (c == "db") {
+			evt.stopImmediatePropagation()
+			evt.preventDefault()
+			e = document.getElementById("dc")
+			e.classList.toggle("show")
+			return
+		}
+
+		//play stuff
+
+		// initialize the play object
+		if (!abcplay) {
+			if (typeof AbcPlay == "undefined")
+				return		// no play support
+			abcplay = AbcPlay(playconf)
+		}
+
+		// get the clicked tune
+		c = c.match(/tune(\d+)/)
+		if (!c)
+			return
+		c = c[1]			// tune number
+
+		// if a new generation, get the tunes references
+		// and generate the play data of all tunes
+		if (tune_lst != abc.tunes) {
+			tune_lst = abc.tunes
+			for (j = 0; j < tune_lst.length; j++)
+				abcplay.add(tune_lst[j][0],
+					tune_lst[j][1],
+					tune_lst[j][3])
+		}
+
+		// start playing from the clicked symbol
+		// (this works when 'follow' is active)
+		// or from the start of the tune
+		s = tune_lst[c][0]		// first symbol of the tune
+		c = e.getAttribute('class')
+		if (c)
+			c = c.match(/abcr _(\d+)_/)
+		if (c) {
+			c = c[1]		// symbol offset in the source
+			while (s && s.istart != c)
+				s = s.ts_next
+			if (!s) {		// fixme: error ?!
+				alert("play bug: no such symbol in the tune")
+				return
+			}
+		}
+
+		playing = true
+		abcplay.play(s, null)
+	} // onmouseup()
 
 	// accept page formatting
 	abc2svg.abc_end = function() {}
