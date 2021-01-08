@@ -366,7 +366,7 @@ onclick="abc2svg.do_render(\'.*\')">' + tt + '</li>\n\
 		sty.innerHTML = '\
 .dd{position:fixed;top:0;bottom:0;right:0;height:40px;cursor:pointer;font-size:16px}\
 #ss{display:none;background-color:red}\
-.db{display:block;margin:5px; padding:5px;background-color:yellow}\
+.db{margin:5px;background-color:yellow}\
 .db:hover,.db:focus{background-color:lightgreen}\
 .dc{position:absolute;left:-70px;min-width:100px;display:none;background-color:yellow}\
 .dc label{display:block;padding:0 5px 0 5px;margin:2px}\
@@ -417,7 +417,9 @@ onclick="abc2svg.do_render(\'.*\')">' + tt + '</li>\n\
 		// add the menu
 		new_page += '\
 <div id="dd" class="dd nop">\
-<label class="db">|||</label>\
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="db">\
+<path d="M4 6h15v2.5H4zm0 5h15v2.5H4zm0 5h15v2.5H4z" fill=black/>\
+</svg>\
 <div id="dc" class="dc">\
 <label id="edit" onclick="abc2svg.src_edit()">Source edit</label>\
 <label id="list" onclick="abc2svg.get_sel()">Tune list</label>\
