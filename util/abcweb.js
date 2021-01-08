@@ -1,7 +1,7 @@
 //#javascript
 // abcweb-1.js file to include in html pages
 //
-// Copyright (C) 2014-2020 Jean-Francois Moine
+// Copyright (C) 2014-2021 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -205,7 +205,7 @@ function render() {
 // 4- X:n ..ABC.. '<' with skip %%beginxxx .. %%endxxx
 
     var	i = 0, j, k, res,
-	re = /<script type="text\/vnd.abc"|<[^>]* class="abc"|%abc-\d|X:\d/g,
+	re = /<script type="text\/vnd.abc"|<[^>]* class="abc"|%abc-\d|X:\s*\d/g,
 	re_stop = /\n<|\n%.begin[^\s]+/g
 
 	// aweful hack: user.anno_stop must be defined before Abc creation
