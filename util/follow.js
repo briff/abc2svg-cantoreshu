@@ -70,9 +70,11 @@ user.anno_stop = function(type, start, stop, x, y, w, h) {
 			}
 		}
 	}
-
-	// create the style of the rectangles
-	var sty = document.createElement("style");
-	sty.innerHTML = ".abcr {fill: #d00000; fill-opacity: 0; z-index: 15}";
-	document.head.appendChild(sty)
 } // follow()
+
+// create the style of the rectangles
+(function () {
+    var	sty = document.createElement("style")
+	sty.innerHTML = ".abcr {fill: #d00000; fill-opacity: 0; z-index: 15}"
+	document.head.appendChild(sty)
+})()
