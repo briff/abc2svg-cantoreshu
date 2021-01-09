@@ -108,14 +108,12 @@ var strwh = typeof document != "undefined" ?
 
     // .. by the browser
     (function() {
-    var	el = abc2svg.eltxt
-	if (!el) {
-		abc2svg.eltxt = el = document.createElement('text')
-		el.style.position = 'absolute';
-		el.style.top = '-1000px';
-		el.style.padding = '0';
-		document.body.appendChild(el)
-	}
+	// (re)create a text element
+	abc2svg.eltxt = el = document.createElement('text')
+	el.style.position = 'absolute'
+	el.style.top = '-1000px'
+	el.style.padding = '0'
+	document.body.appendChild(el)
 
 	return function(str) {
 		if (str.wh)
