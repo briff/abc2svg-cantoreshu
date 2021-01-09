@@ -314,7 +314,7 @@ Abc.prototype.gch_build = function(s) {
 Abc.prototype.draw_gchord = function(i, s, x, y) {
     var	y2,
 	an = s.a_gch[i],
-	h = an.font.size,
+	h = an.text.wh[1],
 	pad = an.font.pad,
 	w = an.text.wh[0] + pad * 2
 
