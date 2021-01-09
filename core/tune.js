@@ -880,7 +880,7 @@ Abc.prototype.do_pscom = function(text) {
 			s = new_block("text");
 			s.text = param
 			s.opt = 'c'
-			s.font = gene.curfont
+			s.font = cfmt.textfont
 			return
 		}
 		write_text(param, 'c')
@@ -1150,7 +1150,7 @@ Abc.prototype.do_pscom = function(text) {
 			s = new_block(cmd);
 			s.text = param
 			s.opt = cfmt.textoption
-			s.font = gene.curfont
+			s.font = cfmt.textfont
 			return
 		}
 		write_text(param, cfmt.textoption)
@@ -1304,7 +1304,7 @@ Abc.prototype.do_begin_end = function(type,
 			s = new_block(type);
 			s.text = text
 			s.opt = action
-			s.font = gene.curfont
+			s.font = cfmt.textfont
 			break
 		}
 		write_text(text, action)
