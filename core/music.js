@@ -362,7 +362,9 @@ error(2, s, "Bad linkage")
 			 && w_tb[s.type] != 0)
 	if (next.seqst) {
 		self.set_width(next)
-		next.shrink = next.prev.wr + next.wl
+		next.shrink = next.wl
+		if (next.prev)
+			next.shrink += next.prev.wr
 		next.space = 0
 	}
 }
