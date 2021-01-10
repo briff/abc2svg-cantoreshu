@@ -3150,20 +3150,23 @@ var	s, i, st, prev_staff, v,
 	if (st > nstaff) {
 		st--;			/* one staff, empty */
 		p_staff = staff_tb[st]
-	} else {
+	}
+// else {
 		p_staff = staff_tb[st]
 		for (i = 0; i < YSTEP; i++) {
 			val = p_staff.top[i]
 			if (y < val)
 				y = val
 		}
-	}
+//	}
 
 	/* draw the parts and tempo indications if any */
 	y += draw_partempo(st, y)
 
-	if (!gene.st_print[st])
-		return y;
+	if (!gene.st_print[st]) {
+		p_staff.y = -y
+		return y
+	}
 
 	/* set the vertical offset of the 1st staff */
 	y *= p_staff.staffscale;
