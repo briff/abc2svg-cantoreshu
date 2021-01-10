@@ -109,7 +109,7 @@ var strwh = typeof document != "undefined" ?
     // .. by the browser
     (function() {
 	// (re)create a text element
-	abc2svg.eltxt = el = document.createElement('text')
+    var	el = document.createElement('text')
 	el.style.position = 'absolute'
 	el.style.top = '-1000px'
 	el.style.padding = '0'
