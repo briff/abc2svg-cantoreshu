@@ -116,7 +116,9 @@ abc2svg.chord = function(first,		// first symbol in time
 		if (a)
 			r = abc2svg.letmid[a[1]]	// root
 		if (r == undefined) {
-			s.type = C.REST			// ("0") = no chord
+			if (a[1] != "N")
+				return
+			s.type = C.REST			// ("N") = no chord
 			ch = [0]
 			r = 0
 		} else {
