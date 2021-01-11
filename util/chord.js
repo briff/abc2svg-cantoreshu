@@ -136,8 +136,9 @@ abc2svg.chord = function(first,		// first symbol in time
 				if (!ch)
 					ch = a[3][0] == 'm' ? chnm.m : chnm[""]
 			}
-			if (a[4]) {
-				b = abc2svg.letmid[a[4][0]]
+			if (a[4]) {			// bass
+				b = a[4][0].toUpperCase()
+				b = abc2svg.letmid[b]
 				if (b != undefined) {
 					switch (a[4][1]) {
 					case "#":
