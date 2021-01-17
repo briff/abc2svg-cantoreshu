@@ -1,6 +1,6 @@
 // sndaud.js - audio output using HTML5 audio
 //
-// Copyright (C) 2019-2020 Jean-Francois Moine
+// Copyright (C) 2019-2021 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -29,15 +29,9 @@
 //		Arguments:
 //			i: start index of the note in the ABC source
 //			on: true on note start, false on note stop
-//	instr_load: function to load the sound font of an instrument
-//			(optional)
-//		Arguments:
-//			instr: MIDI instrument number
-//			done: callback function in case of success
-//				Arguments: soundfont in binary format
-//			fail: callback function in case of error
-//				no argument
 //	errmsg: function called on error (default: alert)
+//		Arguments:
+//			error message
 //
 //  When playing, the following items must/may be set:
 //	gain: (mandatory) volume, must be set to [0..1]
@@ -199,9 +193,9 @@ function Audio5(i_conf) {
 	// load an instrument (.js file)
 	function load_instr(instr) {
 		w_instr++
-		conf.instr_load(instr,
-			function(sf2_bin) {
-				sf2_create(sf2_bin, instr)
+		abc2svg.loadjs(conf.sfu + '/' + instr + '.js',
+			function() {
+				sf2_create(b64dcod(abcsf2[instr]), instr)
 				if (--w_instr == 0)
 					play_start()
 			},
@@ -312,18 +306,6 @@ function Audio5(i_conf) {
 
 	if (!conf.sfu)
 		conf.sfu = "Scc1t2"	// set the default soundfont location
-
-	// default sound font load function
-	if (!conf.instr_load) {
-		conf.instr_load = function(instr, done, fail) {
-			abc2svg.loadjs(conf.sfu + '/' + instr + '.js',
-				function() {
-					 done(b64dcod(abcsf2[instr]))
-				},
-				fail
-			)
-		}
-	}
 
     // public methods
     return {
