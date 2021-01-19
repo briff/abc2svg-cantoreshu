@@ -168,7 +168,8 @@ abc2svg.MIDI = {
 			cfmt.chord = {}
 		if (abc.parse.state == 2)
 			abc.goto_tune()
-		if (abc.get_curvoice()) {
+		if (abc.parse.state >= 2
+		 && abc.get_curvoice()) {
 			s = abc.new_block("midigch")
 			s.play = true
 			s.on = a[1][7] == 'n'
