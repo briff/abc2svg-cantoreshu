@@ -64,6 +64,8 @@ function Audio5(i_conf) {
 	gain,			// global gain
 
 	// instruments/notes
+	parser,			// SF2 parser
+	presets,		// array of presets
 	instr = [],		// [voice] bank + instrument
 	params = [],		// [instr][key] note parameters per instrument
 	rates = [],		// [instr][key] playback rates
@@ -124,36 +126,108 @@ function Audio5(i_conf) {
 	}
 
 	// create all notes of an instrument
-	function sf2_create(sf2_bin, instr) {
-	    var i, sid, gen, parm, sampleRate, sample, infos,
-		parser = new sf2.Parser(sf2_bin)
+	function sf2_create(instr) {
 
-		parser.parse()
-		infos = parser.getInstruments()[0].info
+		// get the instrument parameters
+		// adapted from getInstruments() in sf2-parser.js
+		function get_instr(i) {
+		    var	instrument = parser.instrument,
+			zone = parser.instrumentZone,
+			j = instrument[i].instrumentBagIndex,
+			jl = instrument[i + 1]
+				? instrument[i + 1].instrumentBagIndex
+				: zone.length,
+			info = []
+
+			while (j < jl) {
+				instrumentGenerator =
+					parser.createInstrumentGenerator_(zone, j)
+//				instrumentModulator =
+//					parser.createInstrumentModulator_(zone, j)
+
+				info.push({
+					generator: instrumentGenerator.generator,
+//					modulator: instrumentModulator.modulator
+				})
+				j++
+			}
+//console.log('instr: '+instrument[i].instrumentName)
+		return {
+//			name: instrument[i].instrumentName,
+			info: info
+		}
+	} // get_instr()
+
+//test
+abc2svg.parser = parser
+	    var i, j, k, sid, gen, parm, oparm, sample, infos,
+		sampleRate, scale, sm,
+//		is = parser.getInstruments(),	// array of {name, info}
+		b = instr >> 7,			// bank
+		p = instr % 0x7f,		// preset
+		pr = presets
 
 		rates[instr] = []
-		for (i = 0; i < infos.length; i++) {
+
+		// search the bank:preset
+		for (i = 0; i < pr.length; i++) {
+			gen = pr[i].header
+			if (gen.preset == p
+			 && gen.bank == b)
+				break
+		}
+		pr = pr[i]
+		if (!pr) {
+//fixme: error
+			return			// unknown preset!
+		}
+		pr = pr.info			// list of gen/mod
+		for (k = 0; k < pr.length; k++) {
+		    if (!pr[k].generator.instrument)
+			continue
+		    oparm = {			// default parameters
+			attack: .001,
+			hold: .001,
+			decay: .001,
+			sustain: 0
+//			release: .001
+		    }
+		    sm = 0			// sampleModes
+
+//		    infos = is[pr[k].generator.instrument.amount].info
+		    infos = get_instr(pr[k].generator.instrument.amount).info
+//console.log('infos '+infos.length)
+		    for (i = 0; i < infos.length; i++) {
 			gen = infos[i].generator
+
+			if (gen.attackVolEnv)
+				oparm.attack = Math.pow(2,
+						gen.attackVolEnv.amount / 1200)
+			if (gen.holdVolEnv)
+				oparm.hold = Math.pow(2,
+						gen.holdVolEnv.amount / 1200)
+			if (gen.decayVolEnv)
+				oparm.decay = Math.pow(2,
+						gen.decayVolEnv.amount / 1200) / 3
+			if (gen.sustainVolEnv)
+				oparm.sustain = gen.sustainVolEnv.amount / 1000
+//			if (gen.releaseVolEnv)
+//				oparm.release = Math.pow(2,
+//						gen.releaseVolEnv.amount / 1200)
+
+			parm = Object.create(oparm)	// new parameters
+			if (gen.sampleModes)
+				sm = gen.sampleModes.amount
+
 			if (!gen.sampleID)	// (empty generator!)
 				continue
 			sid = gen.sampleID.amount
 			sampleRate = parser.sampleHeader[sid].sampleRate
 			sample = parser.sample[sid]
-			parm = {
-				attack: Math.pow(2, (gen.attackVolEnv ?
-					gen.attackVolEnv.amount : -12000) / 1200),
-				hold: Math.pow(2, (gen.holdVolEnv ?
-					gen.holdVolEnv.amount : -12000) / 1200),
-				decay: Math.pow(2, (gen.decayVolEnv ?
-					gen.decayVolEnv.amount : -12000) / 1200) / 3,
-				sustain: gen.sustainVolEnv ?
-					(gen.sustainVolEnv.amount / 1000) : 0,
-//				release: Math.pow(2, (gen.releaseVolEnv ?
-//					gen.releaseVolEnv.amount : -12000) / 1200),
-				buffer: ac.createBuffer(1,
-							sample.length,
-							sampleRate)
-			}
+			parm.buffer = ac.createBuffer(1,
+						sample.length,
+						sampleRate)
+
 			parm.hold += parm.attack
 			parm.decay += parm.hold
 
@@ -165,7 +239,7 @@ function Audio5(i_conf) {
 
 			sample_cp(parm.buffer, sample)
 
-			if (gen.sampleModes && (gen.sampleModes.amount & 1)) {
+			if (sm & 1) {
 				parm.loopStart = parser.sampleHeader[sid].startLoop /
 					sampleRate
 				parm.loopEnd = parser.sampleHeader[sid].endLoop /
@@ -173,7 +247,7 @@ function Audio5(i_conf) {
 			}
 
 			// define the notes
-		    var scale = (gen.scaleTuning ?
+			scale = (gen.scaleTuning ?
 					gen.scaleTuning.amount : 100) / 100,
 			tune = (gen.coarseTune ? gen.coarseTune.amount : 0) +
 				(gen.fineTune ? gen.fineTune.amount : 0) / 100 +
@@ -187,6 +261,7 @@ function Audio5(i_conf) {
 							(j + tune) * scale)
 				params[instr][j] = parm
 			}
+		    }
 		}
 	} // sf2_create()
 
@@ -195,7 +270,10 @@ function Audio5(i_conf) {
 		w_instr++
 		abc2svg.loadjs(conf.sfu + '/' + instr + '.js',
 			function() {
-				sf2_create(b64dcod(abcsf2[instr]), instr)
+				parser = new sf2.Parser(b64dcod(abcsf2[instr]))
+				parser.parse()
+				presets = parser.getPresets()
+				sf2_create(instr)
 				if (--w_instr == 0)
 					play_start()
 			},
@@ -208,19 +286,80 @@ function Audio5(i_conf) {
 			})
 	} // load_instr()
 
-	// start loading the instruments
+	// load the needed instruments
 	function load_res(s) {
-	    var i
+	    if (abc2svg.sf2
+	     || conf.sfu.slice(-4) == ".sf2"
+	     || conf.sfu.slice(-3) == ".js") {
 
+		// if the soundfont is loaded as .js
+		if (abc2svg.sf2) {
+			if (!parser) {
+				parser = new sf2.Parser(b64dcod(abc2svg.sf2))
+				parser.parse()
+				presets = parser.getPresets()
+			}
+
+		// load the soundfont if no done yet
+		} else if (!parser) {
+		    if (conf.sfu.slice(-3) == ".js") {
+			abc2svg.loadjs(conf.sfu,
+				function() {
+					load_res(s)	// load the instruments
+				},
+				function() {
+					errmsg('could not load the sound file '
+						+ conf.sfu)
+				})
+			return
+		    }
+		    var	r = new XMLHttpRequest()	// .sf2
+			r.open('GET', conf.sfu, true)
+			r.responseType = "arraybuffer"
+			r.onload = function() {
+				if (r.status === 200) {
+					parser = new sf2.Parser(
+							new Uint8Array(r.response))
+					parser.parse()
+					presets = parser.getPresets()
+					load_res(s)	// load the instruments
+				} else {
+					errmsg('could not load the sound file '
+						+ conf.sfu)
+				}
+			}
+			r.onerror = fail
+			r.send()
+			return
+		}
+
+		// create the instruments
 		while (s) {
-			i = s.instr
+		    var	i = s.instr
 			if (i != undefined && !params[i]) {
-				params[i] = []
+				params[i] = []	// instrument being loaded
+				sf2_create(i)
+			}
+			s = s.ts_next
+		}
+		play_start()
+	   } else {
+
+	// (case instruments as base64 encoded js file,
+	//  one file per instrument)
+		w_instr++			// play lock
+		while (s) {
+		    var	i = s.instr
+			if (i != undefined && !params[i]) {
+				params[i] = []	// instrument being loaded
 				load_instr(i)
 			}
 			s = s.ts_next
 		}
-	}
+		if (--w_instr == 0)		// all resources were there already
+			play_start()
+	    }
+	} // load_res()
 
 	// return the play real time in seconds
 	function get_time(po) {
@@ -368,10 +507,7 @@ function Audio5(i_conf) {
 			params: params,
 			rates: rates
 		}
-		w_instr++
 		load_res(i_start)
-		if (--w_instr == 0)		// all resources are there
-			play_start()
 	}, // play()
 
 	// stop playing
