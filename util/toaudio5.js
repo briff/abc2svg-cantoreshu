@@ -1,6 +1,6 @@
 // toaudio5.js - audio output using HTML5 audio
 //
-// Copyright (C) 2015-2020 Jean-Francois Moine
+// Copyright (C) 2015-2021 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -156,7 +156,23 @@ function Audio5(i_conf) {
 	// create all notes of an instrument
 	function sf2_create(parser, instr) {
 	    var i, sid, gen, parm, sampleRate, sample,
-		infos = parser.getInstruments()[0].info;
+//		infos = parser.getInstruments()[0].info;
+		j,
+		infos = [],
+		instrument = parser.instrument,
+		zone = parser.instrumentZone
+
+		i = instrument[0].instrumentBagIndex
+		j = instrument[1] ? instrument[1].instrumentBagIndex
+				  : zone.length
+		while (i < j) {
+			infos.push({
+				generator: parser.
+						createInstrumentGenerator_(zone, i)
+							.generator
+			})
+			i++
+		}
 
 		rates[instr] = []
 		for (i = 0; i < infos.length; i++) {
