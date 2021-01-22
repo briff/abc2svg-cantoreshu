@@ -158,11 +158,9 @@ function Audio5(i_conf) {
 		}
 	} // get_instr()
 
-//test
-abc2svg.parser = parser
+	// sf2_create
 	    var i, j, k, sid, gen, parm, oparm, sample, infos,
 		sampleRate, scale, sm,
-//		is = parser.getInstruments(),	// array of {name, info}
 		b = instr >> 7,			// bank
 		p = instr % 0x7f,		// preset
 		pr = presets
@@ -178,7 +176,7 @@ abc2svg.parser = parser
 		}
 		pr = pr[i]
 		if (!pr) {
-//fixme: error
+			errmsg('unknown instrument ' + b + ':' + p)
 			return			// unknown preset!
 		}
 		pr = pr.info			// list of gen/mod
@@ -328,7 +326,10 @@ abc2svg.parser = parser
 						+ conf.sfu)
 				}
 			}
-			r.onerror = fail
+			r.onerror = function() {
+					errmsg('could not load the sound file '
+						+ conf.sfu)
+			}
 			r.send()
 			return
 		}
@@ -500,6 +501,7 @@ abc2svg.parser = parser
 			get_time: get_time,
 			midi_ctrl: midi_ctrl,
 			note_run: note_run,
+			timouts: [],
 
 			// audio specific
 			ac: ac,

@@ -1,6 +1,6 @@
 // sndmid.js - audio output using HTML5 MIDI
 //
-// Copyright (C) 2019-2020 Jean-Francois Moine
+// Copyright (C) 2019-2021 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -197,6 +197,7 @@ function Midi5(i_conf) {
 				get_time: get_time,
 				midi_ctrl: midi_ctrl,
 				note_run: note_run,
+				timouts: [],
 
 				// MIDI specific
 				op: op,		// output port
