@@ -132,6 +132,8 @@ function clean_txt(txt) {
 				abc2svg.playseq = function(){}	// don't come here anymore
 				return
 			}
+			if (abc.cfmt().soundfont)
+				playconf.sfu = abc.cfmt().soundfont.name
 			abcplay = AbcPlay(playconf);
 		}
 
