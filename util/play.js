@@ -1,6 +1,6 @@
 // snd-1.js - file to include in html pages with abc2svg-1.js for playing
 //
-// Copyright (C) 2015-2020 Jean-Francois Moine
+// Copyright (C) 2015-2021 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -136,16 +136,19 @@ function AbcPlay(i_conf) {
 	conf.speed = 1;
 
 	// get the play parameters from localStorage
-	(function get_param() {
+	(function() {
+	    var	v
 		try {
 			if (!localStorage)
 				return
 		} catch (e) {
 			return
 		}
-	    var	v = localStorage.getItem("sfu")
+	    if (!conf.sfu) {
+		v = localStorage.getItem("sfu")
 		if (v)
 			conf.sfu = v;
+	    }
 		v = localStorage.getItem("volume")
 		if (v)
 			conf.gain = Number(v)
