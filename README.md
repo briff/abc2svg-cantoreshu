@@ -5,7 +5,7 @@ li p{margin-left:0}
 </style>
 ## abc2svg
 
-**abc2svg** is a set of Javascript files for handling
+**abc2svg** is a set of Javascript files for handling the
  [ABC music notation](http://abcnotation.com/). This includes
 editing, displaying, printing, playing the music files and
 converting them to other formats such as ABC and MEI notations.
@@ -22,6 +22,11 @@ A description of the ABC parameters that relate to both abcm2ps
 and abc2svg can be found [here][1].
 
 [1]: http://moinejf.free.fr/abcm2ps-doc/index.html "abc2svg documentation"
+
+Note: The ABC music notation is now discussed in the mailing list
+[abcusers at groups.io](https://groups.io/g/abcusers).
+Some work in progress about the ABC draft may be found in these
+[temporary pages](http://moinejf.free.fr/abcstd/).
 
 ### 1. Web browser usage
 
@@ -146,7 +151,7 @@ Without this CSS, the music is in-lined as in [this other example][5].
 
 Global ABC parameters may be added as `parameter=value` in the query string
 of the URL of the page. The [following example][16] calls the same
-"J'ai du bon tabac" with `pagescale=1.2` (giving `%%pagescale 1.5`).
+"J'ai du bon tabac" with `pagescale=1.2` (giving `%%pagescale 1.2`).
 
 [16]: http://moinejf.free.fr/abcm2ps-doc/tabac.xhtml?pagescale=1.2 "J'ai du bon tabac"
 
@@ -240,7 +245,7 @@ There are many ways to install abc2svg:
   I upload a new npm version about once a month.
 
 Using bookmarklets with a local installation does not work directly
-(because of a cross-domain security hole), but it is possible by running
+because of a cross-domain security hole, but this is possible by running
 a local HTTP server (you will also have to change the location
 of the scripts in the bookmarklet code).
 
@@ -430,9 +435,20 @@ Detailed information about the modules may be found in the [wiki][12].
   for more information).
 
 - Playing uses the HTML5 audio and/or the midi APIs.  
-  For audio, abc2svg uses a sound font (format SF2) which is splitted
+  For audio, by default, abc2svg uses a sound font (format SF2)
+  which is split into one file
   per instrument. This sound font is stored in the subdirectory `Scc1t2/`.
   Each instrument file is a base64 encoded javascript array.
+
+  Other sound fonts may be used. Some of them are stored in the subdirectory
+  `sf2/` (`AWE_ROM_gm` and `2MBGMGS`). Two formats are supported: raw SF2 and
+  SF2 wrapped into javascript (the raw SF2 files can be loaded
+  only when they are in the same HTTP domain).
+  The shell script `sf.sh` (in `sf2/`) may be used to create the javacript files
+  from raw SF2 files.  
+  The sound font to be used for playing may be defined in the ABC code
+  by the command `%%soundfont`. E.g.:  
+  `        %%soundfont http://moinejf.free.fr/js/sf2/AWE_ROM_gm.js`
 
 - The names of the abc2svg scripts have a suffix which is the version of
   the core interface (actually '`-1`').
@@ -444,7 +460,8 @@ Here are the scripts which are used in a web context:
 - `abcweb-1.js`  
   This script replaces the ABC or MEI sequences found in the (X)HTML file
   by SVG images of the music. The ABC sequences may start on `X:` or `%abc-`
-  at start of line, and stop on any XML tag (see below for MEI).
+  at start of line, and stop on any XML tag also at start of line
+  (see below for MEI).
   They may also appear after a (X)HTML element of the class "abc"
   (lower case letters) or inside a &lt;script&gt; with a type
   ["text/vnd.abc"](https://www.iana.org/assignments/media-types/text/vnd.abc)
