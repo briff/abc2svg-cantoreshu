@@ -1,6 +1,6 @@
 // abc2svg - format.js - formatting functions
 //
-// Copyright (C) 2014-2020 Jean-Francois Moine
+// Copyright (C) 2014-2021 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -400,7 +400,10 @@ Abc.prototype.set_format = function(cmd, param) {
 
 //fixme: should check the type and limits of the parameter values
 	if (/.+font(-[\d])?$/.test(cmd)) {
-		param_set_font(cmd, param)
+		if (cmd == "soundfont")
+			cfmt.soundfont = param
+		else
+			param_set_font(cmd, param)
 		return
 	}
 

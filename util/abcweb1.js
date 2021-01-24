@@ -470,7 +470,7 @@ onclick="abc2svg.do_render(\'.*\')">' + tt +
 			if (typeof AbcPlay == "undefined")
 				return		// no play support
 			if (abc.cfmt().soundfont)
-				playconf.sfu = abc.cfmt().soundfont.name
+				playconf.sfu = abc.cfmt().soundfont
 			abcplay = AbcPlay(playconf)
 		}
 

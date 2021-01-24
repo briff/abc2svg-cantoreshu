@@ -133,7 +133,7 @@ function clean_txt(txt) {
 				return
 			}
 			if (abc.cfmt().soundfont)
-				playconf.sfu = abc.cfmt().soundfont.name
+				playconf.sfu = abc.cfmt().soundfont
 			abcplay = AbcPlay(playconf);
 		}
 
