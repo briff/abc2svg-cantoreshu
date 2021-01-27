@@ -207,7 +207,7 @@ function render() {
 // 4- X:n ..ABC.. '<' with skip %%beginxxx .. %%endxxx
 
     var	i = 0, j, k, res,
-	re = /<script type="text\/vnd.abc"|<[^>]* class="abc"|%abc-\d|X:\s*\d/g,
+	re = /<script type="text\/vnd.abc"|<[^>]* class="[^"]*abc[^"]*"|%abc-\d|X:\s*\d/g,
 	re_stop = /\n<|\n%.begin[^\s]+/g
 
 	// aweful hack: user.anno_stop must be defined before Abc creation
@@ -236,7 +236,9 @@ function render() {
 
 		// get the start of a ABC sequence
 		res = re.exec(page)
-		if (!res) {
+		if (!res
+		 || (res[0].indexOf('class=') > 0
+		  && !/[" ]abc[" ]/.exec(res[0]))) {
 			src += page.slice(i).replace(/\n%%/g,"\n%%%%") +
 					"\n%%endml\n"
 			break
