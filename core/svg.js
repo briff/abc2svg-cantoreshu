@@ -1,6 +1,6 @@
 // abc2svg - svg.js - svg functions
 //
-// Copyright (C) 2014-2020 Jean-Francois Moine
+// Copyright (C) 2014-2021 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -1229,8 +1229,11 @@ function svg_flush() {
 			' viewBox="0 0 ' + img.width.toFixed(0) + ' ' +
 			 posy.toFixed(0) + '">\n'
 	} else {
-		head += ' width="' + img.width.toFixed(0) +
-			'px" height="' + posy.toFixed(0) + 'px">\n'
+		head += ' viewBox="0 0 ' + img.width.toFixed(0) + ' ' +
+			posy.toFixed(0) +
+			'" width="' + img.width.toFixed(0) +
+//			'px" height="' + posy.toFixed(0) + 'px">\n'
+			'px" height="auto">\n'
 	}
 
 	head += fulldefs
