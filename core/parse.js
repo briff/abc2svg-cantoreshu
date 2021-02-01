@@ -1156,7 +1156,7 @@ function adjust_dur(s) {
 }
 
 /* -- parse a bar -- */
-function new_bar(dotted) {
+function new_bar() {
 	var	s2, c, bar_type,
 		line = parse.line,
 		s = {
@@ -2843,7 +2843,7 @@ function parse_music_line() {
 					syntax(1, errs.bar_grace)
 					break
 				}
-				new_bar(line.buffer[line.index - 1] == '.')
+				new_bar()
 				continue
 			case '}':
 				s = curvoice.last_note
