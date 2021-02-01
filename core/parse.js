@@ -1,6 +1,6 @@
 // abc2svg - parse.js - ABC parse
 //
-// Copyright (C) 2014-2020 Jean-Francois Moine
+// Copyright (C) 2014-2021 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -18,7 +18,7 @@
 // along with abc2svg-core.  If not, see <http://www.gnu.org/licenses/>.
 
 var	a_gch,		// array of parsed guitar chords
-	a_dcn,		// array of parsed decoration names
+	a_dcn= [],	// array of parsed decoration names
 	multicol,	// multi column object
 	maps = {}	// maps object - see set_map()
 var	qplet_tb = new Int8Array([ 0, 1, 3, 2, 3, 0, 2, 0, 3, 0 ]),
@@ -1167,8 +1167,10 @@ function new_bar(dotted) {
 			multi: 0		// needed for decorations
 		}
 
-	if (dotted)
+	if (a_dcn.length && a_dcn[a_dcn.length - 1] == "dot") {
 		s.bar_dotted = true
+		a_dcn.pop()
+	}
 	if (vover && vover.bar)			// end of voice overlay
 		get_vover('|')
 	if (glovar.new_nbar) {			// %%setbarnb
@@ -1202,9 +1204,9 @@ function new_bar(dotted) {
 	// set the annotations and the decorations
 	if (a_gch)
 		csan_add(s)
-	if (a_dcn) {
+	if (a_dcn.length) {
 		deco_cnv(a_dcn, s);
-		a_dcn = null
+		a_dcn = []
 	}
 
 	// set the start/stop of ottava
@@ -1741,8 +1743,10 @@ function parse_vpos() {
 	var	line = parse.line,
 		ty = 0
 
-	if (line.buffer[line.index - 1] == '.' && !a_dcn)
+	if (a_dcn.length && a_dcn[a_dcn.length - 1] == "dot") {
 		ty = C.SL_DOTTED
+		a_dcn.pop()
+	}
 	switch (line.next_char()) {
 	case "'":
 		line.index++
@@ -1916,7 +1920,7 @@ Abc.prototype.new_note = function(grace, sls) {
 		}
 	} // do_ties()
 
-	a_dcn = null;
+	a_dcn = []
 	parse.stemless = false;
 	s = {
 		type: C.NOTE,
@@ -2034,8 +2038,6 @@ Abc.prototype.new_note = function(grace, sls) {
 						c = line.char()
 						continue
 					case '!':
-						if (!a_dcn)
-							a_dcn = []
 						if (type.length > 1) {
 							a_dcn.push(type.slice(1, -1))
 						} else {
@@ -2106,9 +2108,9 @@ Abc.prototype.new_note = function(grace, sls) {
 				}
 				note.s = s;		// link the note to the chord
 			}
-			if (a_dcn) {
+			if (a_dcn.length) {
 				note.a_dcn = a_dcn;
-				a_dcn = null
+				a_dcn = []
 			}
 			s.notes.push(note)
 			if (!in_chord)
@@ -2143,6 +2145,7 @@ Abc.prototype.new_note = function(grace, sls) {
 					switch (c) {
 					case '-':
 					case '(':
+						a_dcn.push("dot")
 						continue
 					}
 					syntax(1, "Misplaced dot")
@@ -2285,8 +2288,7 @@ Abc.prototype.new_note = function(grace, sls) {
 				c = line.next_char()
 				continue
 			case '.':
-				if (line.buffer[line.index + 1] != '-')
-					break
+				a_dcn.push("dot")
 				c = line.next_char()
 				continue
 			}
@@ -2309,7 +2311,7 @@ Abc.prototype.new_note = function(grace, sls) {
 			curvoice.sym_restart = s
 	}
 
-	if (a_dcn_sav)
+	if (a_dcn_sav.length)
 		deco_cnv(a_dcn_sav, s, s.prev)
 	if (parse.ottava.length) {
 		if (grace)
@@ -2535,17 +2537,6 @@ function parse_music_line() {
 				}
 			}
 
-			// special case for '.' (dot)
-			if (c == '.') {
-				switch (line.buffer[line.index + 1]) {
-				case '(':
-				case '-':
-				case '|':
-					c = line.next_char()
-					break
-				}
-			}
-
 			// check if start of a macro
 			if (!in_mac && maci[c]) {
 				n = 0
@@ -2692,8 +2683,6 @@ function parse_music_line() {
 				slur_add(s.notes[0])
 				break
 			case '!':			// start of decoration
-				if (!a_dcn)
-					a_dcn = []
 				if (type.length > 1) {	// decoration letter
 					dcn = type.slice(1, -1)
 				} else {
@@ -2829,7 +2818,7 @@ function parse_music_line() {
 				last_note_sav = curvoice.last_note;
 				curvoice.last_note = null;
 				a_dcn_sav = a_dcn;
-				a_dcn = undefined;
+				a_dcn = []
 				grace = {
 					type: C.GRACE,
 					fname: parse.fname,
@@ -2862,7 +2851,7 @@ function parse_music_line() {
 					syntax(1, errs.bad_char, c)
 					break
 				}
-				if (a_dcn)
+				if (a_dcn.length)
 					syntax(1, "Decoration ignored");
 				grace.extra = grace.next;
 				grace.extra.prev = null;
