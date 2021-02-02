@@ -1232,8 +1232,7 @@ function svg_flush() {
 		head += ' viewBox="0 0 ' + img.width.toFixed(0) + ' ' +
 			posy.toFixed(0) +
 			'" width="' + img.width.toFixed(0) +
-//			'px" height="' + posy.toFixed(0) + 'px">\n'
-			'px" height="auto">\n'
+			'px" height="' + posy.toFixed(0) + 'px">\n'
 	}
 
 	head += fulldefs
