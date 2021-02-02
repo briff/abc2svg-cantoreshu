@@ -338,7 +338,7 @@ abc2svg.page = {
 		page.hb = page.h		// keep the offset of the start of tune
 		break
 	case "<svg":				// SVG image
-		h = Number(p.match(/height="(\d+)px"/)[1])
+		h = Number(p.match(/viewBox="0 0 \d+ (\d+)"/)[1])
 		while (h + page.h >= page.hmax) { // if (still) page overflow
 			ht = page.blk ? 0 :
 				this.cfmt().topspace // tune continuation
