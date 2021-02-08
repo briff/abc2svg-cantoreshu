@@ -1,6 +1,6 @@
 // jianpu.js - module to output jiănpŭ (简谱) music sheets
 //
-// Copyright (C) 2020 Jean-Francois Moine - GPL3+
+// Copyright (C) 2020-2021 Jean-Francois Moine - GPL3+
 //
 // This module is loaded when "%%jianpu" appears in a ABC source.
 //
@@ -57,7 +57,8 @@ abc2svg.jianpu = {
 			seqst: true,
 			text: (sk.k_mode + 1) + "=" +
 				(abc2svg.jianpu.k_tb[sk.k_sf + 7 +
-					abc2svg.jianpu.cde2fcg[sk.k_mode]])
+					abc2svg.jianpu.cde2fcg[sk.k_mode]]),
+			font: abc.get_font("text")
 		},
 		s2 = voice_tb[0].sym
 
@@ -291,7 +292,7 @@ abc2svg.jianpu = {
 		out_svg('<text x="')
 		out_sxsy(x, '" y="', y)
 		out_svg('">' + p + '</text>\n')
-	} // out_txt()
+	} // out_mus()
 
 	function out_txt(x, y, p) {
 		out_svg('<text class="bn" x="')
