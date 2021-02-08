@@ -169,7 +169,7 @@ function param_set_font(xxxfont, p) {
 			name: font.name,
 			size: font.size,
 			box: font.box,
-			pad: font.pad
+			pad: font.pad || 0
 		}
 	}
 	cfmt[xxxfont] = font;
