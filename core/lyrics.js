@@ -1,6 +1,6 @@
 // abc2svg - lyrics.js - lyrics
 //
-// Copyright (C) 2014-2019 Jean-Francois Moine
+// Copyright (C) 2014-2021 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -231,16 +231,9 @@ function get_lyrics(text, cont) {
 		}
 		if (word
 		 && s.pos.voc != C.SL_HIDDEN) {
-			if (word.match(/^\$\d/)) {
-				gene.curfont = word[1] == '0' ?
-						dfnt :
-						get_font("u" + word[1])
-				word = word.slice(2)
-			}
 			ly = {
-				t: word,
+				t: str2svg(word),
 				font: gene.curfont,
-				wh: strwh(word),
 				istart: j,
 				iend: j + word.length
 			}
@@ -270,7 +263,7 @@ function ly_width(s, wlw) {
 			ly.shift = 0
 			continue
 		}
-		w = ly.wh[0];
+		w = p.wh[0]
 		swfac = ly.font.swfac;
 		xx = w + 2 * cwid(' ') * swfac
 		if (s.type == C.GRACE) {			// %%graceword
@@ -292,7 +285,7 @@ function ly_width(s, wlw) {
 			if (shift > 20)
 				shift = 20;
 			shift += sz
-			if (ly.t[0] >= '0' && ly.t[0] <= '9') {
+			if (p[0] >= '0' && p[0] <= '9') {
 				if (shift > align)
 					align = shift
 			}
@@ -383,7 +376,7 @@ function draw_lyric_line(p_voice, j, y) {
 		if (ly.font != gene.curfont)		/* font change */
 			gene.curfont = font = ly.font;
 		p = ly.t;
-		w = ly.wh[0];
+		w = p.wh[0]
 		shift = ly.shift
 		if (hyflag) {
 			if (p == "_\n") {		/* '_' */
@@ -430,7 +423,7 @@ function draw_lyric_line(p_voice, j, y) {
 			}
 			anno_start(s2, 'lyrics')
 		}
-		xy_str(x0, y, p, null, null, ly.wh);
+		xy_str(x0, y, p)
 		anno_stop(s2, 'lyrics')
 		lastx = x0 + w
 	}
@@ -498,7 +491,7 @@ function draw_lyrics(p_voice, nly, a_h, y,
 /* (the staves are not yet defined) */
 function draw_all_lyrics() {
 	var	p_voice, s, v, nly, i, x, y, w, a_ly, ly,
-		lyst_tb = new Array(nstaff+ 1),
+		lyst_tb = new Array(nstaff + 1),
 		nv = voice_tb.length,
 		h_tb = new Array(nv),
 		nly_tb = new Array(nv),
@@ -534,7 +527,7 @@ function draw_all_lyrics() {
 					ly = a_ly[i]
 					if (ly) {
 						x -= ly.shift;
-						w = ly.wh[0]
+						w = ly.t.wh[0]
 						break
 					}
 				}
@@ -551,8 +544,8 @@ function draw_all_lyrics() {
 					if (!ly)
 						continue
 					if (!h_tb[v][i]
-					 || ly.font.size > h_tb[v][i])
-						h_tb[v][i] = ly.font.size
+					 || ly.t.wh[1] > h_tb[v][i])
+						h_tb[v][i] = ly.t.wh[1]
 				}
 			}
 		} else {
