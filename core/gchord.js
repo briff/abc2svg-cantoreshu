@@ -1,6 +1,6 @@
 // abc2svg - gchord.js - chord symbols
 //
-// Copyright (C) 2014-2020 Jean-Francois Moine
+// Copyright (C) 2014-2021 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -316,7 +316,13 @@ Abc.prototype.draw_gchord = function(i, s, x, y) {
 	an = s.a_gch[i],
 	h = an.text.wh[1],
 	pad = an.font.pad,
-	w = an.text.wh[0] + pad * 2
+	w = an.text.wh[0] + pad * 2,
+	dy = 0
+
+	if (an.font.figb) {
+		h *= 2.4
+		dy = an.font.size * 1.3
+	}
 
 	switch (an.type) {
 	case '_':			// below
@@ -380,7 +386,7 @@ Abc.prototype.draw_gchord = function(i, s, x, y) {
 	if (user.anno_start)
 		user.anno_start("annot", an.istart, an.iend,
 			x - 2, y + h + 2, w + 4, h + 4, s)
-	xy_str(x, y, an.text)
+	xy_str(x, y + dy, an.text)
 	if (user.anno_stop)
 		user.anno_stop("annot", an.istart, an.iend,
 			x - 2, y + h + 2, w + 4, h + 4, s)

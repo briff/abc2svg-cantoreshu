@@ -257,6 +257,11 @@ function param_set_font(xxxfont, p) {
 	case "Times":	p = "serif"; break
 	case "Helvetica": p = "sans-serif"; break
 	case "Courier": p = "monospace"; break
+	default:
+//hack: the font "Figurato" is used for figured bass
+		if (p.indexOf("Fig") > 0)
+			font.figb = true
+		break
 	}
 
 	// accept url(...) as the font name
