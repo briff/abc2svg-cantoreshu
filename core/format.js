@@ -34,13 +34,23 @@ var cfmt = {
 	aligncomposer: 1,
 	beamslope: .4,			// max slope of a beam
 //	botmargin: .7 * IN,		// != 1.8 * CM,
+	bardef: {
+		"[":	"",		// invisible
+		"[]":	"",
+		"|:":	"[|:",
+		"|::":	"[|::",
+		"|:::":	"[|:::",
+		":|":	":|]",
+		"::|":	"::|]",
+		":::|":	":::|]",
+		"::":	":][:"
+	},
 	breaklimit: .7,
 	breakoneoln: true,
 	cancelkey: true,
 	composerfont: { name: "serif", style: "italic", size: 14 },
 	composerspace: 6,
 //	contbarnb: false,
-	dblrepbar: ':][:',
 	decoerr: true,
 	dynalign: true,
 	footerfont: { name: "serif", size: 16 },
@@ -430,7 +440,6 @@ Abc.prototype.set_format = function(cmd, param) {
 		break
 	case "bgcolor":
 	case "fgcolor":
-	case "dblrepbar":
 	case "titleformat":
 		cfmt[cmd] = param
 		break
@@ -492,6 +501,16 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "titlecaps":
 	case "titleleft":
 		cfmt[cmd] = get_bool(param)
+		break
+	case "dblrepbar":
+		param = ":: " + param
+		// fall thru
+	case "bardef":			// %%bardef oldbar newbar
+		v = param.split(/\s+/)
+		if (v.length != 2)
+			syntax(1, errs.bad_val, "%%bardef")
+		else
+			cfmt.bardef[v[0]] = v[1]
 		break
 	case "chordalias":
 		v = param.split(/\s+/)
@@ -761,3 +780,8 @@ function get_font(fn) {
 	use_font(font)
 	return font
 }
+
+// convert the measure bars
+function bar_cnv(bar_type) {
+	return cfmt.bardef[bar_type] || bar_type
+} // bar_cnv()

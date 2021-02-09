@@ -977,26 +977,6 @@ Abc.prototype.draw_keysig = function(x, s) {
 	}
 }
 
-/* -- convert the standard measure bars -- */
-function bar_cnv(bar_type) {
-	switch (bar_type) {
-	case "[":
-	case "[]":
-		return ""			/* invisible */
-	case "|:":
-	case "|::":
-	case "|:::":
-		return "[" + bar_type		/* |::: -> [|::: */
-	case ":|":
-	case "::|":
-	case ":::|":
-		return bar_type + "]"		/* :..| -> :..|] */
-	case "::":
-		return cfmt.dblrepbar		/* :: -> double repeat bar */
-	}
-	return bar_type
-}
-
 // output the measure repeat number
 function nrep_out(x, y, n) {
 	y -= 3
