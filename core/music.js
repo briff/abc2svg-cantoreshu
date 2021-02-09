@@ -2082,9 +2082,9 @@ function cut_tune(lwidth, indent) {
 			continue
 		} else {
 			s.soln = false
+			if (s.time == s2.time)
+				continue	// empty music line!
 			while (!s.seqst)
-//			 || s.ts_prev.type == C.GRACE
-//			 || s.ts_prev.type == C.SPACE)
 				s = s.ts_prev
 		}
 		s2 = set_lines(s2, s, lwidth, indent)
