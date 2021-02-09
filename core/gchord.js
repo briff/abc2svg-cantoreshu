@@ -205,7 +205,10 @@ function gch_transp(s) {
 // parser: add the parsed list of chord symbols and annotations
 //	to the symbol (note, rest or bar)
 function csan_add(s) {
-	s.a_gch = a_gch;
+	if (s.a_gch)
+		s.a_gch = s.a_gch.concat(a_gch)
+	else
+		s.a_gch = a_gch
 	a_gch = null
 
 	if (curvoice.vtransp)
