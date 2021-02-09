@@ -3274,8 +3274,8 @@ function draw_systems(indent) {
 		bar_bot = [],
 		bar_height = [],
 		ba = [],		// bars [symbol, bottom, height]
-		sb = [],
-		thb = []
+		sb = "",
+		thb = ""
 
 	/* -- set the bottom and height of the measure bars -- */
 	function bar_set() {
@@ -3420,7 +3420,9 @@ function draw_systems(indent) {
 					out_XYAB('<path class="bW" d="MX Yv-F"/>\n',
 						x, bot, h)
 				} else {
-					sb.push(new Float32Array([x, bot, h]))
+					sb += 'M' + sx(x).toFixed(1)
+						+ ' ' + self.sy(bot).toFixed(1)
+						+ 'v-' + h.toFixed(1)
 				}
 				break
 			default:
@@ -3431,7 +3433,9 @@ function draw_systems(indent) {
 					out_XYAB('<path class="bthW" d="MX Yv-F"/>\n',
 						x + 1.5, bot, h)
 				else
-					thb.push(new Float32Array([x + 1.5, bot, h]))
+					thb += 'M' + sx(x + 1.5).toFixed(1)
+						+ ' ' + self.sy(bot).toFixed(1)
+						+ 'v-' + h.toFixed(1)
 				break
 			case ":":
 				x -= 2;
@@ -3462,25 +3466,15 @@ function draw_systems(indent) {
 			gene.curfont.box = bx
 
 		set_sscale(-1)
-		l = sb.length
-		if (l) {			// single bars [x, y, h]
+		if (sb)			// single bars
 			output += '<path class="bW" d="'
-			for (i = 0; i < l; i++) {
-				b = sb[i];
-				out_XYAB('MX Yv-F', b[0], b[1], b[2])
-			}
-			output += '"/>\n'
-		}
+				+ sb
+				+ '"/>\n'
 
-		l = thb.length
-		if (l) {			// thick bars [x, y, h]
+		if (thb)		// thick bars [x, y, h]
 			output += '<path class="bthW" d="'
-			for (i = 0; i < l; i++) {
-				b = thb[i];
-				out_XYAB('MX Yv-F', b[0], b[1], b[2])
-			}
-			output += '"/>\n'
-		}
+				+ thb
+				+ '"/>\n'
 	} // out_bars()
 
 	// ---- draw_systems() ----
