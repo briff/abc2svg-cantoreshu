@@ -4765,7 +4765,7 @@ function set_piece() {
 			}
 
 			// define the helper lines
-			p_staff.hll = 17 + i;		// pitch of lowest note
+			p_staff.hll = 17 + i * 2	// pitch of lowest note
 							// without helper line
 							// ('D' when standard staff)
 			p_staff.hlmap = new Int8Array(new Array((l - i + 1) * 2))
