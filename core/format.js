@@ -30,6 +30,7 @@ var	font_tb = [],
 	fmt_lock = {}
 
 var cfmt = {
+	"abc-version": "1",		// default: old version
 	annotationfont: {name: "sans-serif", size: 12},
 	aligncomposer: 1,
 	beamslope: .4,			// max slope of a beam
@@ -438,6 +439,7 @@ Abc.prototype.set_format = function(cmd, param) {
 		}
 		cfmt[cmd] = v
 		break
+	case "abc-version":
 	case "bgcolor":
 	case "fgcolor":
 	case "titleformat":

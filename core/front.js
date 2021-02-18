@@ -397,6 +397,8 @@ function tosvg(in_fname,		// file name
 		bol = 0
 	if (!eof)
 		eof = file.length
+	if (file.slice(bol, bol + 5) == "%abc-")
+		cfmt["abc-version"] = /[1-9.]+/.exec(file.slice(bol + 5, bol + 10))
 	for ( ; bol < eof; bol = parse.eol + 1) {
 		eol = file.indexOf('\n', bol)	// get a line
 		if (eol < 0 || eol > eof)
