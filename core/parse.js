@@ -1191,7 +1191,7 @@ function new_bar() {
 		break
 	}
 	if (bar_type[0] == ':') {
-		if (bar_type.length == 1) {	// ":" alone
+		if (bar_type == ':') {		// ":" alone
 			bar_type = '|';
 			s.bar_dotted = true
 		} else {
@@ -1384,8 +1384,9 @@ function new_bar() {
 		bar_type = "::"
 		break
 	case "||":
-		if (!cfmt.rbdbstop)
+		if (cfmt["abc-version"] >= "2.2")
 			break
+		// fall thru - play repeat on double bar when old ABC version
 	case "[|":
 	case "|]":
 		s.rbstop = 2

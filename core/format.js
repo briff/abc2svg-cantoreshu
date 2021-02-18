@@ -92,7 +92,6 @@ H "History: "',
 	pagewidth: 21 * CM,
 	printmargin: 0,
 	rightmargin: 1.4 * CM,
-	rbdbstop: true,
 	rbmax: 4,
 	rbmin: 2,
 	repeatfont: {name: "serif", size: 13},
@@ -493,7 +492,6 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "keywarn":
 	case "linewarn":
 	case "quiet":
-	case "rbdbstop":
 	case "singleline":
 	case "squarebreve":
 	case "splittune":
@@ -677,6 +675,14 @@ Abc.prototype.set_format = function(cmd, param) {
 		break
 	case "voicescale":
 		set_v_param("scale", param)
+		break
+	// deprecated
+	case "rbdbstop":
+		v = get_bool(param)
+		if (v && cfmt["abc-version"] >= "2.2")
+			cfmt["abc-version"] = "1"
+		else if (!v && cfmt["abc-version"] < "2.2")
+			cfmt["abc-version"] = "2.2"
 		break
 	default:		// memorize all global commands
 		if (parse.state == 0)		// (needed for modules)
