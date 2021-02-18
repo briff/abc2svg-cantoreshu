@@ -4822,6 +4822,8 @@ function set_piece() {
 				blocks.push(s)
 				unlksym(s)
 			}
+			if (s.ts_next && s.ts_next.shrink)
+				s.ts_next.shrink = 0
 			continue
 		}
 		st = s.st
