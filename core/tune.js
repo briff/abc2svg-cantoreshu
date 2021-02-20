@@ -177,7 +177,7 @@ function sort_all() {
 		}
 
 		/* search the min time and symbol weight */
-		wmin = time = 1000000				/* big int */
+		wmin = time = 10000000		// big int
 		for (ir = 0; ir < nv; ir++) {
 			v = vn[ir]
 			if (v == undefined)
