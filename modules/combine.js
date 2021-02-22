@@ -12,6 +12,7 @@ abc2svg.combine = {
     // function called at start of the generation when multi-voices
     comb_v: function() {
     var	C = abc2svg.C,
+	sy,
 	delsym = []		// deleted symbols for slurs and ties
 
     // check if voice combine may occur
@@ -21,10 +22,10 @@ abc2svg.combine = {
 
 	if (!s2 || (s2.type != C.NOTE && s2.type != C.REST))
 		return false
-	if (s2.v == s.v
-	 || s2.st != s.st
+	if (s2.st != s.st
 	 || s2.time != s.time
-	 || s2.dur != s.dur)
+	 || s2.dur != s.dur
+	 || sy.voices[s2.v].range != sy.voices[s.v].range + 1)	// next voice only
 		return false
 	if (s.combine <= 0
 	 && s2.type != s.type)
@@ -157,6 +158,9 @@ function do_combine(s) {
 			if (may_combine.call(this, s))
 				do_combine.call(this, s)
 			continue
+		case C.STAVES:
+			sy = s.sy
+			// fall thru
 		default:
 			continue
 		case C.NOTE:
