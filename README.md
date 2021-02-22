@@ -5,8 +5,8 @@ li p{margin-left:0}
 </style>
 ## abc2svg
 
-**abc2svg** is a set of Javascript files for handling the
- [ABC music notation](http://abcnotation.com/). This includes
+**abc2svg** is a set of ECMAscript files that handle the
+[ABC music notation](http://abcnotation.com/). This includes
 editing, displaying, printing, playing the music files and
 converting them to other formats such as ABC and MEI notations.
 
@@ -136,7 +136,7 @@ ABC sequences in the &lt;body&gt;.
 [This example][4] demonstrates how to do it.
 (Note that, in the example, the paths are relative - see why below.)
 
-[4]: http://moinejf.free.fr/abcm2ps-doc/tabac.xhtml "J'ai du bon tabac"
+[4]: http://moinejf.free.fr/abcm2ps-doc/tabac.html "J'ai du bon tabac"
 
 As it is apparent, HTML and ABC can be mixed in the same html file.
 Both are rendered in the order you defined them.
@@ -153,7 +153,7 @@ Global ABC parameters may be added as `parameter=value` in the query string
 of the URL of the page. The [following example][16] calls the same
 "J'ai du bon tabac" with `pagescale=1.2` (giving `%%pagescale 1.2`).
 
-[16]: http://moinejf.free.fr/abcm2ps-doc/tabac.xhtml?pagescale=1.2 "J'ai du bon tabac"
+[16]: http://moinejf.free.fr/abcm2ps-doc/tabac.html?pagescale=1.2 "J'ai du bon tabac"
 
 In the above examples, all the ABC music is generated (displayed
 and ready to be played) by means of the script **abcweb-1.js**.  
@@ -181,11 +181,6 @@ For instance, here is the ['Duo' de J. Boyvin][8].
 
 [7]: https://en.wikibooks.org/wiki/Regular_Expressions "Regular expressions"
 [8]: http://moinejf.free.fr/abc/boyvin-2-2.html#T:Duo "Duo"
-
-In the first example ("J'ai du bon tabac"), you saw that care
-should be taken with regard to the special XML characters
-'&lt;', '&gt;' and '&amp;' by enclosing
-the ABC sequences inside XML comments.
 
 With any of the above scripts the music may be printed using
 the 'Print' button of the browser. You should add a style as:  
@@ -500,7 +495,7 @@ Here are the scripts which are used in a web context:
   This script is mainly used for ABC documentation.
   It lets the ABC source sequences in the page before the SVG images.  
   See the source of
-  [abcm2ps/abc2svg features](http://moinejf.free.fr/abcm2ps-doc/features.xhtml)
+  [abcm2ps/abc2svg features](http://moinejf.free.fr/abcm2ps-doc/features.html)
   for an example.
 
 ### 5. MEI support
