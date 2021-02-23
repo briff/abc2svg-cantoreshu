@@ -222,12 +222,12 @@ abc2svg.abc_init = function() {
 
 		abc2svg.print('<!DOCTYPE html>\n\
 <html>\n\
-<head>\n\
 <meta charset="utf-8"/>\n\
 <meta name="generator" content="abc2svg-' + abc2svg.version + '"/>\n\
 <!-- CreationDate: ' + get_date() + '-->\n\
 <style>\n\
 body {width:' + cfmt.pagewidth.toFixed(0) +'px}\n\
+svg {display:block}\n\
 p {' + set_pstyle() + 'margin-top:0}\n\
 p span {line-height:' + ((cfmt.lineskipfac * 100) | 0).toString() + '%}\n' +
 			((header || footer) ? media_f : media_s))
