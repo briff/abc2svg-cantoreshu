@@ -207,7 +207,7 @@ abc2svg.chord = function(first,		// first symbol in time
 			time: 0
 		},
 		instr: cfmt.chord.prog || 0,
-		vol: cfmt.chord.vol || .8
+		vol: cfmt.chord.vol || .7
 	}
 	vch.last_sym = vch.sym
 	voice_tb.push(vch)
