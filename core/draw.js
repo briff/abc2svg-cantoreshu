@@ -1,6 +1,6 @@
 // abc2svg - draw.js - draw functions
 //
-// Copyright (C) 2014-2020 Jean-Francois Moine
+// Copyright (C) 2014-2021 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -1121,62 +1121,21 @@ function draw_rest(s) {
 	anno_a.push(s)
 }
 
-/* -- draw grace notes -- */
-/* (the staves are defined) */
-function draw_gracenotes(s) {
-    var	yy, x0, y0, x1, y1, x2, y2, x3, y3, bet1, bet2, slur,
-	dy1, dy2, g, last, note,
-	bm = {}
+function grace_slur(s) {
+    var	yy, x0, y0, x3, y3, bet1, bet2, dy1, dy2, last, below,
+	so = s,
+	g = s.extra
 
-	/* draw the notes */
-//	bm.s2 = undefined			/* (draw flags) */
-	for (g = s.extra; g; g = g.next) {
-		if (g.beam_st && !g.beam_end) {
-			if (self.calculate_beam(bm, g))
-				draw_beams(bm)
-		}
-		anno_start(g);
-		draw_note(g, !bm.s2)
-		if (g == bm.s2)
-			bm.s2 = null			/* (draw flags again) */
-		anno_a.push(s)
-		if (g.sls || g.sl2)
-			slur = true
+	while (1) {
 		if (!g.next)
 			break			/* (keep the last note) */
+		g = g.next
 	}
-
-	// if an acciaccatura, draw a bar 
-	if (s.sappo) {
-		g = s.extra
-		if (!g.next) {			/* if one note */
-			x1 = 9;
-			y1 = g.stem > 0 ? 5 : -5
-		} else {			/* many notes */
-			x1 = (g.next.x - g.x) * .5 + 4;
-			y1 = (g.ys + g.next.ys) * .5 - g.y
-			if (g.stem > 0)
-				y1 -= 1
-			else
-				y1 += 1
-		}
-		note = g.notes[g.stem < 0 ? 0 : g.nhd];
-		out_acciac(x_head(g, note), y_head(g, note),
-				x1, y1, g.stem > 0)
-	}
-
-	/* slur */
-//fixme: have a full key symbol in voice
-	if (s.p_v.ckey.k_bagpipe		/* no slur when bagpipe */
-	 || !cfmt.graceslurs
-	 || slur				// explicit slur
-	 || s.tie_s				// some tie
-	 || !s.next
-	 || s.next.type != C.NOTE)
-		return
 	last = g
-	if (((g.stem >= 0 || s.multi < 0) && g.notes[0].pit <= 28)
-	 || g.notes[0].pit < 16) {		// slur below
+
+	below = ((g.stem >= 0 || s.multi < 0) && g.notes[0].pit <= 28)
+			|| g.notes[0].pit < 16
+	if (below) {
 		yy = 127
 		for (g = s.extra; g; g = g.next) {
 			if (g.y < yy) {
@@ -1254,17 +1213,86 @@ function draw_gracenotes(s) {
 		}
 	}
 
-	x1 = bet1 * x3 + (1 - bet1) * x0 - x0;
-	y1 = bet1 * y3 + (1 - bet1) * y0 - dy1 - y0;
-	x2 = bet2 * x3 + (1 - bet2) * x0 - x0;
-	y2 = bet2 * y3 + (1 - bet2) * y0 - dy2 - y0;
+	so.slur = {
+		x0: x0,
+		y0: y0,
+		x1: bet1 * x3 + (1 - bet1) * x0 - x0,
+		y1: y0 - bet1 * y3 - (1 - bet1) * y0 + dy1,
+		x2: bet2 * x3 + (1 - bet2) * x0 - x0,
+		y2: y0 - bet2 * y3 - (1 - bet2) * y0 + dy2,
+		x3: x3 - x0,
+		y3: y0 - y3
+	}
+	y0 -= so.slur.y1
+	g = so.extra
+//fixme: useless?
+//	y_set(s.st, !below, x0, x3 - x0, y0)
+	if (below) {
+		if (y0 < g.ymn)
+			g.ymn = y0
+	} else {
+		if (y0 > g.ymx)
+			g.ymx = y0
+	}
+} // grace_slur()
 
-	anno_start(s, 'slur');
-	xypath(x0, y0 + staff_tb[s.st].y);
-	output += 'c' + x1.toFixed(1) + ' ' + (-y1).toFixed(1) +
-		' ' + x2.toFixed(1) + ' ' + (-y2).toFixed(1) +
-		' ' + (x3 - x0).toFixed(1) + ' ' + (-y3 + y0).toFixed(1) + '"/>\n';
-	anno_stop(s, 'slur')
+/* -- draw grace notes -- */
+/* (the staves are defined) */
+function draw_gracenotes(s) {
+    var	x1, y1,
+	last, note,
+	bm = {},
+	g = s.extra
+
+	/* draw the notes */
+//	bm.s2 = undefined			/* (draw flags) */
+	while (1) {
+		if (g.beam_st && !g.beam_end) {
+			if (self.calculate_beam(bm, g))
+				draw_beams(bm)
+		}
+		anno_start(g)
+		draw_note(g, !bm.s2)
+		if (g == bm.s2)
+			bm.s2 = null			/* (draw flags again) */
+		anno_a.push(s)
+//		if (g.sls || g.sl2)
+//			slur = true
+		if (!g.next)
+			break			/* (keep the last note) */
+		g = g.next
+	}
+	last = g
+
+	// if an acciaccatura, draw a bar 
+	if (s.sappo) {
+		g = s.extra
+		if (!g.next) {			/* if one note */
+			x1 = 9
+			y1 = g.stem > 0 ? 5 : -5
+		} else {			/* many notes */
+			x1 = (g.next.x - g.x) * .5 + 4
+			y1 = (g.ys + g.next.ys) * .5 - g.y
+			if (g.stem > 0)
+				y1 -= 1
+			else
+				y1 += 1
+		}
+		note = g.notes[g.stem < 0 ? 0 : g.nhd]
+		out_acciac(x_head(g, note), y_head(g, note),
+				x1, y1, g.stem > 0)
+	}
+
+	/* slur */
+	g = s.slur
+	if (g) {
+		anno_start(s, 'slur')
+		xypath(g.x0, g.y0 + staff_tb[s.st].y)
+		output += 'c' + g.x1.toFixed(1) + ' ' + g.y1.toFixed(1) +
+			' ' + g.x2.toFixed(1) + ' ' + g.y2.toFixed(1) +
+			' ' + g.x3.toFixed(1) + ' ' + g.y3.toFixed(1) + '"/>\n'
+		anno_stop(s, 'slur')
+	}
 }
 
 /* -- set the y offset of the dots -- */
@@ -2155,7 +2183,7 @@ function draw_slurs(s, last) {
 /* See http://moinejf.free.fr/abcm2ps-doc/tuplets.xhtml
  * for the value of 'tp.f' */
 function draw_tuplet(s1) {
-    var	s2, s3, g, upstaff, nb_only, some_slur,
+    var	s2, s3, g, upstaff, nb_only,
 	x1, x2, y1, y2, xm, ym, a, s0, yy, yx, dy, a, dir, r,
 	tp = s1.tp.shift()		// tuplet parameters
 
@@ -2814,7 +2842,7 @@ function draw_all_ties(p_voice) {
  * The buffer output is delayed until the definition of the staff system
  */
 function draw_sym_near() {
-    var	p_voice, p_st, s, v, st, y, g, w, i, st, dx, top, bot, ymn,
+    var	p_voice, p_st, s, v, st, y, g, w, i, st, dx, top, bot, ymn, slur,
 	output_sav = output;
 
 	// set the staff offsets of a beam
@@ -2871,14 +2899,28 @@ function draw_sym_near() {
 		for (s = p_voice.sym; s; s = s.next) {
 			switch (s.type) {
 			case C.GRACE:
+				slur = 0
 				for (g = s.extra; g; g = g.next) {
 					if (g.beam_st && !g.beam_end) {
 						self.calculate_beam(bm, g)
 						if (bm.s2)
 							set_yab(g, bm.s2)
 					}
+					if (g.sls || g.sl1)
+						slur++
 				}
+				if (!s.p_v.ckey.k_bagpipe	// no slur when bagpipe
+				 && cfmt.graceslurs
+				 && !slur			// explicit slur
+				 && !s.tie_s			// some tie
+				 && s.next
+				 && s.next.type == C.NOTE)
+					grace_slur(s)
 				break
+			}
+		}
+		for (s = p_voice.sym; s; s = s.next) {
+			switch (s.type) {
 			case C.NOTE:
 				if ((s.beam_st && !s.beam_end)
 				 || (first_note && !s.beam_st)) {
