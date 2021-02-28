@@ -247,13 +247,41 @@ function get_lyrics(text, cont) {
 	curvoice.lyric_cont = s
 }
 
-// -- set the width needed by the lyrics --
-// (called once per tune)
-function ly_width(s, wlw) {
-	var	ly, sz, swfac, align, xx, w, i, j, k, shift, p,
-		a_ly = s.a_ly;
-
+// install the words under a note
+function ly_set(s) {
+    var	i, j, ly, d, s1, s2, s3, p, w, wf, xx, sz, shift, dw,
+	wx = 0,
+	wl = 0,
+	n = 0,
+	dx = 0,
+	a_ly = s.a_ly,
 	align = 0
+
+	// get the available horizontal space before the next lyric words
+	for (s2 = s.ts_next; s2; s2 = s2.ts_next) {
+		if (s2.shrink) {
+			dx += s2.shrink
+			n++			// number of note without word
+		}
+		if (s2.bar_type)
+			break
+		if (!s2.a_ly)
+			continue
+		i = s2.a_ly.length
+		while (--i >= 0) {
+			ly = s2.a_ly[i]
+			if (!ly)
+				continue
+			p = ly.t
+			if (p != "-\n" && p != "_\n")
+				break
+			dx -= 6
+		}
+		if (i >= 0)
+			break
+	}
+
+	// define the offset of the words
 	for (i = 0; i < a_ly.length; i++) {
 		ly = a_ly[i]
 		if (!ly)
@@ -263,16 +291,15 @@ function ly_width(s, wlw) {
 			ly.shift = 0
 			continue
 		}
-		w = p.wh[0]
-		swfac = ly.font.swfac;
-		xx = w + 2 * cwid(' ') * swfac
-		if (s.type == C.GRACE) {			// %%graceword
+		wf = ly.font.swfac
+		w = p.wh[0] + 2 * cwid(' ') * wf
+		if (s.type == C.GRACE) {		// %%graceword
 			shift = s.wl
 		} else if ((p[0] >= '0' && p[0] <= '9' && p.length > 2)
-		 || p[1] == ':'
-		 || p[0] == '(' || p[0] == ')') {
+			|| p[1] == ':'
+			|| p[0] == '(' || p[0] == ')') {
 			if (p[0] == '(') {
-				sz = cwid('(') * swfac
+				sz = cwid('(') * wf
 			} else {
 				j = p.indexOf(' ');	// (&nbsp;)
 				set_font(ly.font)
@@ -281,54 +308,52 @@ function ly_width(s, wlw) {
 				else
 					sz = w * .2
 			}
-			shift = (w - sz + 2 * cwid(' ') * swfac) * .4
-			if (shift > 20)
-				shift = 20;
+			w -= sz
+			shift = w * .4
+			if (shift > 14)
+				shift = 14
 			shift += sz
 			if (p[0] >= '0' && p[0] <= '9') {
 				if (shift > align)
 					align = shift
 			}
 		} else {
-			shift = xx * .4
-			if (shift > 20)
-				shift = 20
+			shift = w * .4
+			if (shift > 14)
+				shift = 14
 		}
 		ly.shift = shift
-		if (wlw < shift)
-			wlw = shift;
-//		if (p[p.length - 1] == "\n")		// if "xx-"
-//			xx -= cwid(' ') * swfac
-		xx -= shift;
-		shift = 2 * cwid(' ') * swfac
-		for (k = s.next; k; k = k.next) {
-			switch (k.type) {
-			case C.NOTE:
-			case C.REST:
-				if (!k.a_ly || !k.a_ly[i])
-					xx -= 9
-				else if (k.a_ly[i].t == "-\n"
-				      || k.a_ly[i].t == "_\n")
-					xx -= shift
-				else
-					break
-				if (xx <= 0)
-					break
-				continue
-			case C.CLEF:
-			case C.METER:
-			case C.KEY:
-				xx -= 10
-				continue
-			default:
-				xx -= 5
-				break
-			}
-			break
-		}
-		if (xx > s.wr)
-			s.wr = xx
+		if (shift > wl)
+			wl = shift		// max left space
+		if (w > wx)
+			wx = w			// max width
 	}
+
+	// set the left space
+	s3 = s
+	while (!s3.seqst)
+		s3 = s3.ts_prev
+	if (s3.wl < wl) {
+		s3.shrink += wl - s3.wl
+		s3.wl = wl
+	}
+
+	// if not room enough, shift the following notes to the right
+	if (dx < wx) {
+		dx = (wx - dx) / n
+		s1 = s.ts_next
+		while (1) {
+			if (s1.shrink) {
+				s1.shrink += dx
+				s3.wr += dx	// (needed for end of line)
+				s3 = s1
+			}
+			if (s1 == s2)
+				break
+			s1 = s1.ts_next
+		}
+	}
+
 	if (align > 0) {
 		for (i = 0; i < a_ly.length; i++) {
 			ly = a_ly[i]
@@ -336,8 +361,7 @@ function ly_width(s, wlw) {
 				ly.shift = align
 		}
 	}
-	return wlw
-}
+} // ly_set()
 
 /* -- draw the lyrics under (or above) notes -- */
 /* (the staves are not yet defined) */

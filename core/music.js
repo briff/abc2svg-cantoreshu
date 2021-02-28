@@ -362,6 +362,8 @@ error(2, s, "Bad linkage")
 			 && w_tb[s.type] != 0)
 	if (next.seqst) {
 		self.set_width(next)
+		if (next.a_ly)
+			ly_set(next)
 		next.shrink = next.wl
 		if (next.prev)
 			next.shrink += next.prev.wr
@@ -593,7 +595,8 @@ function set_graceoffs(s) {
 }
 
 // Compute the smallest spacing between symbols according to chord symbols
-//	so that they stay at the same offset.
+//	so that they stay at the same offset
+// and, also, adjust the spacing due to the lyric words.
 // Constraints:
 // - assume the chord symbols are only in the first staff
 // - treat only the first chord symbol of each symbol
@@ -608,6 +611,9 @@ function set_w_chs(s) {
 			x += s.shrink;
 			n++
 		}
+		if (s.a_ly)			// if some lyric
+			ly_set(s)
+
 		if (!s.a_gch)
 			continue
 		for (i = 0; i < s.a_gch.length; i++) {
@@ -803,10 +809,7 @@ Abc.prototype.set_width = function(s) {
 		if (s.a_gch)
 			wlw = gchord_width(s, wlnote, wlw)
 
-		/* leave room for vocals under note */
-		/* related to draw_lyrics() */
-		if (s.a_ly)
-			wlw = ly_width(s, wlw)
+		// ignore the lyrics for now
 
 		/* if preceeded by a grace note sequence, adjust */
 		if (s2 && s2.type == C.GRACE)
@@ -1223,9 +1226,9 @@ function add_end_bar(s) {
 	b.ts_next = s.ts_next
 	b.shrink = s.wr + 3
 
-	if (s.next)
+//	if (s.next)
 		s.next.prev = b
-	if (s.ts_next)
+//	if (s.ts_next)
 		s.ts_next.ts_prev = b
 	s.next = s.ts_next = b
 	b.space = set_space(b, s.time)
@@ -1247,7 +1250,7 @@ function set_allsymwidth() {
 	tim = s.time
 	while (1) {
 		do {
-			if (s.a_gch && !s_chs)
+			if ((s.a_gch || s.a_ly) && !s_chs)
 				s_chs = s;
 			self.set_width(s);
 			st = s.st
@@ -1302,6 +1305,7 @@ function set_allsymwidth() {
 	}
 
 	// let the chord symbols at the same offset
+	// and adjust the spacing due to the lyrics
 	if (s_chs)
 		set_w_chs(s_chs)
 }
@@ -1734,7 +1738,7 @@ function set_nl(s) {			// s = start of line
 		}
 	} // do_warn()
 
-	// divide the left repeat and a variant bars
+	// divide the left repeat and variant bars
 	s = bardiv(s)
 
 	// add the warning symbols at the end of the previous line
@@ -3443,6 +3447,8 @@ function init_music_line() {
 	shr = 0
 	do {
 		self.set_width(s)
+		if (s.a_ly)
+			ly_set(s)
 		if (shr < s.wl)
 			shr = s.wl;
 		s = s.ts_next
