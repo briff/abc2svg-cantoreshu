@@ -162,7 +162,7 @@ function Audio5(i_conf) {
 	    var i, j, k, sid, gen, parm, oparm, sample, infos,
 		sampleRate, scale, sm,
 		b = instr >> 7,			// bank
-		p = instr % 0x7f,		// preset
+		p = instr % 128,		// preset
 		pr = presets
 
 		rates[instr] = []
