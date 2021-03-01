@@ -117,7 +117,7 @@ function get_sym(p, cont) {
 		s = s.next;
 		i++
 	}
-	curvoice.lyric_cont = s
+	curvoice.sym_cont = s
 }
 
 /* -- parse a lyric (vocal) line (w:) -- */
