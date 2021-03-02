@@ -2741,9 +2741,11 @@ function draw_all_ties(p_voice) {
 				s2 = s.next
 				s.next = s1
 				s.st = s1.st
+				time = s.time
 				s.time = s1.time - s.dur
 				draw_ties(s, s1, 1)
 				s.next = s2	// restore the linkage for play
+				s.time = time
 			}
 			if (s1.tie_s)
 				break
