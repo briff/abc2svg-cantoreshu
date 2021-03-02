@@ -382,7 +382,7 @@ function Audio5(i_conf) {
 	function note_run(po, s, key, t, d) {
 	    var	g, st,
 		instr = s.instr,
-		k = key | 0
+		k = key | 0,
 		parm = po.params[instr][k],
 		o = po.ac.createBufferSource(),
 		v = s.p_v.vol == undefined ? 1 : s.p_v.vol	// volume (gain)
