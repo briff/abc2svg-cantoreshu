@@ -249,7 +249,8 @@ function get_lyrics(text, cont) {
 
 // install the words under a note
 function ly_set(s) {
-    var	i, j, ly, d, s1, s2, s3, p, w, wf, xx, sz, shift, dw,
+    var	i, j, ly, d, s1, s2, p, w, spw, xx, sz, shift, dw,
+	s3 = s,				// start of the current time sequence
 	wx = 0,
 	wl = 0,
 	n = 0,
@@ -261,10 +262,12 @@ function ly_set(s) {
 	for (s2 = s.ts_next; s2; s2 = s2.ts_next) {
 		if (s2.shrink) {
 			dx += s2.shrink
-			n++			// number of note without word
+			n++			// number of symbols without word
 		}
-		if (s2.bar_type)
+		if (s2.bar_type) {		// stop on a bar
+			dx += 3			// and take some of its spacing
 			break
+		}
 		if (!s2.a_ly)
 			continue
 		i = s2.a_ly.length
@@ -275,7 +278,6 @@ function ly_set(s) {
 			p = ly.t
 			if (p != "-\n" && p != "_\n")
 				break
-			dx -= 6
 		}
 		if (i >= 0)
 			break
@@ -291,15 +293,15 @@ function ly_set(s) {
 			ly.shift = 0
 			continue
 		}
-		wf = ly.font.swfac
-		w = p.wh[0] + 2 * cwid(' ') * wf
+		spw = cwid(' ') * ly.font.swfac
+		w = p.wh[0] + spw * 1.5
 		if (s.type == C.GRACE) {		// %%graceword
 			shift = s.wl
 		} else if ((p[0] >= '0' && p[0] <= '9' && p.length > 2)
 			|| p[1] == ':'
 			|| p[0] == '(' || p[0] == ')') {
 			if (p[0] == '(') {
-				sz = cwid('(') * wf
+				sz = spw
 			} else {
 				j = p.indexOf(' ');	// (&nbsp;)
 				set_font(ly.font)
@@ -325,20 +327,23 @@ function ly_set(s) {
 		ly.shift = shift
 		if (shift > wl)
 			wl = shift		// max left space
+		w -= shift			// right width
 		if (w > wx)
 			wx = w			// max width
 	}
 
 	// set the left space
-	s3 = s
 	while (!s3.seqst)
 		s3 = s3.ts_prev
+	if (s3.ts_prev.bar_type)
+		wl -= 4			// don't move too much the measure bar
 	if (s3.wl < wl) {
 		s3.shrink += wl - s3.wl
 		s3.wl = wl
 	}
 
 	// if not room enough, shift the following notes to the right
+	dx -= 6
 	if (dx < wx) {
 		dx = (wx - dx) / n
 		s1 = s.ts_next
