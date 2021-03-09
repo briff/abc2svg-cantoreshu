@@ -122,7 +122,7 @@ function get_sym(p, cont) {
 
 /* -- parse a lyric (vocal) line (w:) -- */
 function get_lyrics(text, cont) {
-    var s, word, p, i, j, ly, dfnt
+    var s, word, p, i, j, ly, dfnt, ln
 
 	if (curvoice.ignore)
 		return
@@ -168,6 +168,7 @@ function get_lyrics(text, cont) {
 			i++
 		if (!p[i])
 			break
+		ln = 0
 		j = parse.istart + i + 2	// start index
 		switch (p[i]) { 
 		case '|':
@@ -181,10 +182,9 @@ function get_lyrics(text, cont) {
 			i++
 			continue
 		case '-':
-			word = "-\n"
-			break
 		case '_':
-			word = "_\n"
+			word = p[i]
+			ln = 2			// line continuation
 			break
 		case '*':
 			word = ""
@@ -212,7 +212,7 @@ function get_lyrics(text, cont) {
 					i++
 					continue
 				case '-':
-					word += "\n"
+					ln = 1		// start of line
 					break
 				case '\\':
 					word += p[++i];
@@ -242,6 +242,8 @@ function get_lyrics(text, cont) {
 				istart: j,
 				iend: j + word.length
 			}
+			if (ln)
+				ly.ln = ln
 			if (!s.a_ly)
 				s.a_ly = []
 			s.a_ly[curvoice.lyric_line] = ly
@@ -280,8 +282,7 @@ function ly_set(s) {
 			ly = s2.a_ly[i]
 			if (!ly)
 				continue
-			p = ly.t
-			if (p != "-\n" && p != "_\n")
+			if (ly.ln != 2)
 				break
 		}
 		if (i >= 0)
@@ -294,7 +295,7 @@ function ly_set(s) {
 		if (!ly)
 			continue
 		p = ly.t;
-		if (p == "-\n" || p == "_\n") {
+		if (ly.ln == 2) {
 			ly.shift = 0
 			continue
 		}
@@ -377,7 +378,7 @@ function ly_set(s) {
 /* (the staves are not yet defined) */
 /* !! this routine is tied to ly_width() !! */
 function draw_lyric_line(p_voice, j, y) {
-	var	p, lastx, w, s, s2, ly, lyl,
+	var	p, lastx, w, s, s2, ly, lyl, ln,
 		hyflag, lflag, x0, font, shift
 
 	if (p_voice.hy_st & (1 << j)) {
@@ -413,25 +414,24 @@ function draw_lyric_line(p_voice, j, y) {
 		w = p.wh[0]
 		shift = ly.shift
 		if (hyflag) {
-			if (p == "_\n") {		/* '_' */
-				p = "-\n"
-			} else if (p != "-\n") {	/* not '-' */
+			if (ly.ln == 2 && p == "_") {	// '_'
+				p = "-"
+			} else if (ly.ln != 2) {	// not '-'
 				out_hyph(lastx, y, s.x - shift - lastx);
 				hyflag = false;
 				lastx = s.x + s.wr
 			}
 		}
 		if (lflag
-		 && p != "_\n") {		/* not '_' */
+		 && (ly.ln != 2 || p != "_")) {	// not '_'
 			out_wln(lastx + 3, y, x0 - lastx + 3);
 			lflag = false;
 			lastx = s.x + s.wr
 		}
-		if (p == "-\n"			/* '-' */
-		 || p == "_\n") {		/* '_' */
+		if (ly.ln == 2) {		// '-' or '_'
 			if (x0 == 0 && lastx > s.x - 18)
 				lastx = s.x - 18
-			if (p[0] == '-')
+			if (p == '-')
 				hyflag = true
 			else
 				lflag = true;
@@ -439,10 +439,8 @@ function draw_lyric_line(p_voice, j, y) {
 			continue
 		}
 		x0 = s.x - shift;
-		if (p.slice(-1) == '\n') {
-			p = p.slice(0, -1);	/* '-' at end */
+		if (ly.ln)			// '-' at end
 			hyflag = true
-		}
 		if (user.anno_start || user.anno_stop) {
 			s2 = {
 				st: s.st,
@@ -472,12 +470,12 @@ function draw_lyric_line(p_voice, j, y) {
 	}
 
 	/* see if any underscore in the next line */
-	for (p_voice.s_next ; s; s = s.next) {
+	for (p_voice.s_next; s; s = s.next) {
 		if (s.type == C.NOTE) {
 			if (!s.a_ly)
 				break
 			ly = s.a_ly[j]
-			if (ly && ly.t == "_\n") {
+			if (ly && ly.ln && ly.t == "_") {
 				lflag = true;
 				x0 = realwidth - 15
 				if (x0 < lastx + 12)
