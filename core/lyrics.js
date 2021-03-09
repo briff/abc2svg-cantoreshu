@@ -136,6 +136,12 @@ function get_lyrics(text, cont) {
 			syntax(1, "+: lyric without music")
 			return
 		}
+		dfnt = get_font("vocal")
+		if (gene.deffont != dfnt) {	// if vocalfont change
+			if (gene.curfont == gene.deffont)
+				gene.curfont = dfnt
+			gene.deffont = dfnt
+		}
 	} else {
 		set_font("vocal")
 		if (curvoice.lyric_restart) {		// new music
@@ -155,7 +161,6 @@ function get_lyrics(text, cont) {
 	}
 
 	/* scan the lyric line */
-	dfnt = gene.curfont			// font at start of line
 	p = text;
 	i = 0
 	while (1) {
