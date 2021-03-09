@@ -4827,8 +4827,7 @@ function set_piece() {
 			if (!s.play) {
 				blocks.push(s)
 				unlksym(s)
-			}
-			if (s.ts_next && s.ts_next.shrink)
+			} else if (s.ts_next && s.ts_next.shrink)
 				s.ts_next.shrink = 0
 			continue
 		}
