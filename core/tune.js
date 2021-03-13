@@ -1,6 +1,6 @@
 // abc2svg - tune.js - tune generation
 //
-// Copyright (C) 2014-2020 Jean-Francois Moine
+// Copyright (C) 2014-2021 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -977,11 +977,8 @@ Abc.prototype.do_pscom = function(text) {
 		parse.ottava.push(n)
 		return
 	case "repbra":
-		if (parse.state >= 2) {
-			if (parse.state == 2)
-				goto_tune();
+		if (curvoice)
 			curvoice.norepbra = !get_bool(param)
-		}
 		return
 	case "repeat":
 		if (parse.state != 3)
@@ -1199,12 +1196,8 @@ Abc.prototype.do_pscom = function(text) {
 		set_user(param)
 		return
 	case "voicecolor":
-		if (parse.state != 3) {
-			if (parse.state != 2)
-				return
-			goto_tune()
-		}
-		curvoice.color = param
+		if (curvoice)
+			curvoice.color = param
 		return
 	case "vskip":
 		val = get_unit(param)
