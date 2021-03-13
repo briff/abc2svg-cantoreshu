@@ -237,7 +237,7 @@ function get_lyrics(text, cont) {
 		if (word
 		 && s.pos.voc != C.SL_HIDDEN) {
 			ly = {
-				t: str2svg(word),
+				t: word,
 				font: gene.curfont,
 				istart: j,
 				iend: j + word.length
@@ -294,7 +294,7 @@ function ly_set(s) {
 		ly = a_ly[i]
 		if (!ly)
 			continue
-		p = ly.t;
+		ly.t = p = str2svg(ly.t)
 		if (ly.ln == 2) {
 			ly.shift = 0
 			continue

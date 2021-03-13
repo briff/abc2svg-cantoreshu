@@ -392,35 +392,30 @@ break
 			for (s = voice_tb[v].sym; s; s = s.next) {
 				if (s.type != C.NOTE)
 					continue
-				ly = s.a_ly
-				if (!ly) {
+				if (!s.a_ly) {
 					for (i = 0; i < nly; i++)
 						w[i] += "*"
 					continue
 				}
 				for (i = 0; i < nly; i++) {
+					ly = s.a_ly[i]
 					if (!w[i])
 						w[i] = ""
-					if (!ly[i]) {
+					if (!ly) {
 						w[i] += '*'
 						continue
 					}
-					t = ly[i].t
-					switch (t) {
-					case '-\n':
-						w[i] += '-'
-						break
-					case '_\n':
-						w[i] += '_'
-						break
-					default:
-						t = t.replace(/ /g, '~')
+					t = ly.t
+					if (ly.ln) {
+						w[i] += t
+						if (ly.ln == 1)
+							w[i] += '-'
+					} else {
+						t = t.replace(/ /g, '~')
 						t = t.replace(/-/g, '\\-')
-						t = t.replace(/\n/g, '-');
 						if (t.slice(-1) != "-")
 							t += ' '
 						w[i] += t
-						break
 					}
 				}
 			}
