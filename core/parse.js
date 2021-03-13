@@ -1963,6 +1963,7 @@ Abc.prototype.new_note = function(grace, sls) {
 
 		// ignore if in second voice
 		if (curvoice.second) {
+			delete curvoice.eoln	// ignore the end of line
 			curvoice.time += s.dur
 			return //null
 		}
