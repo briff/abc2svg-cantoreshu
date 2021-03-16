@@ -2440,12 +2440,10 @@ function draw_tuplet(s1) {
 			yy = ym + (s3.x - xm) * a
 			if (s3.ymx < yy)
 				s3.ymx = yy
-			if (s3 == s2)
-				break
 			y_set(upstaff, true, s3.x, s3.next.x - s3.x, yy)
-		} else if (s3 == s2) {
-			break
 		}
+		if (s3 == s2)
+			break
 	}
 
     // below
@@ -2513,8 +2511,6 @@ function draw_tuplet(s1) {
 	ym -= 2
 	for (s3 = s1; ; s3 = s3.next) {
 		if (s3.st == upstaff) {
-			if (s3 == s2)
-				break
 			yy = ym + (s3.x - xm) * a
 			if (s3.ymn > yy)
 				s3.ymn = yy;
