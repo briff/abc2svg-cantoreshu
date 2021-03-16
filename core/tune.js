@@ -1648,7 +1648,6 @@ function get_staves(cmd, parm) {
 		delete p_voice.new_name
 		delete p_voice.lyric_restart
 		delete p_voice.lyric_cont
-		delete p_voice.ly_a_h;
 		delete p_voice.sym_restart
 		delete p_voice.sym_cont
 		delete p_voice.have_ly
@@ -1970,6 +1969,7 @@ function init_tune() {
 	staves_found = -1;
 	gene = {}
 	a_de = []			// remove old decorations
+	cross = {}			// new cross voice decorations
 }
 
 // treat V: with many voices

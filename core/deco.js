@@ -1,6 +1,6 @@
 // abc2svg - deco.js - decorations
 //
-// Copyright (C) 2014-2020 Jean-Francois Moine
+// Copyright (C) 2014-2021 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -52,7 +52,8 @@
 // }
 
 var	dd_tb = {},		// definition of the decorations
-	a_de			// array of the decoration elements
+	a_de,			// array of the decoration elements
+	cross			// cross voice decorations
 
 // decorations - populate with standard decorations
 var decos = {
@@ -170,7 +171,9 @@ var decos = {
 	courtesy: "43 0 0 0 0",
 	"cacc-1": "3 cacc-1 0 0 0",
 	cacc3: "3 cacc3 0 0 0",
-	cacc1: "3 cacc1 0 0 0"},
+	cacc1: "3 cacc1 0 0 0",
+	"tie(": "44 0 0 0 0",
+	"tie)": "44 0 0 0 0"},
 
 	// types of decoration per function
 	f_near = [true, true, true],
@@ -723,7 +726,7 @@ function deco_def(nm) {
 		return //undefined
 	}
 	if (c_func > 10
-	 && (c_func < 32 || c_func > 43)) {
+	 && (c_func < 32 || c_func > 44)) {
 		error(1, null, "%%deco: bad C function index '$1'", c_func)
 		return //undefined
 	}
@@ -956,6 +959,23 @@ function deco_cnv(a_dcn, s, prev) {
 			if (!s.notes[0].a_dcn)
 				s.notes[0].a_dcn = []
 			s.notes[0].a_dcn.push("cacc" + j)
+			continue
+		case 44:		// cross-voice ties
+			j = dd.name.slice(0, -1)
+			if (dd.name.slice(-1) == '(') {
+				cross[j] = s	// keep the start
+				for (i = 0; i <= s.nhd; i++) {
+					s.notes[i].tie_ty = C.SL_AUTO
+					s.notes[i].s = s
+				}
+				continue
+			}
+			if (!cross[j]) {
+				error(1, null, "No start of !$1!", dd.name)
+				continue
+			}
+			do_ties(s, cross[j])
+			cross[j] = null
 			continue
 		}
 

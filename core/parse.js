@@ -1196,8 +1196,6 @@ function new_bar() {
 			s.bar_dotted = true
 		} else {
 			s.rbstop = 2		// right repeat with end
-			if (curvoice.tie_s)
-				curvoice.tie_s.tie_s = s
 		}
 	}
 
@@ -1875,51 +1873,56 @@ function pit2mid(pit, acc) {
 	return p0 + o + (p1 - p0) * s
 } // pit2mid()
 
+// handle the ties
+function do_ties(s, tie_s) {
+    var	i, m, note, mid, s2
+
+	for (m = 0; m <= s.nhd; m++) {
+		note = s.notes[m]
+		mid = note.midi
+		if (tie_s.type != C.GRACE) {
+			for (i = 0; i <= tie_s.nhd; i++) {
+				if (!tie_s.notes[i].tie_ty)
+					continue
+				// (tie_s.notes[i].tie_n may exist
+				//  on repeat restart)
+				if (tie_s.notes[i].midi == mid) {
+					tie_s.notes[i].tie_n = note
+					note.s = s
+					tie_s.tie_s = s
+					break
+				}
+			}
+		} else {
+			for (s2 = tie_s.extra; s2; s2 = s2.next) {
+				if (!s2.notes[0].tie_ty)
+					continue
+				if (s2.notes[0].midi == mid) {
+					s2.tie_s = s
+					s2.notes[0].tie_n = note
+					note.s = s
+					s2.notes[0].s = s2
+					tie_s.tie_s = s
+					break
+				}
+			}
+		}
+	}
+
+	// set a pointer to the start of the tie if there is a time skip
+	if (!tie_s.tie_s)
+		syntax(1, "Bad tie")
+	else if (tie_s.time + tie_s.dur != (s.time || curvoice.time))
+		s.ti2 = tie_s
+} // do_ties()
+
 // (possible hook)
 Abc.prototype.new_note = function(grace, sls) {
     var	note, s, in_chord, c, dcn, type, tie_s, acc_tie,
-	i, n, s2, nd, res, num, dur, apit,
+	i, n, s2, nd, res, num, dur, apit, div, ty,
 	sl1 = [],
 	line = parse.line,
 	a_dcn_sav = a_dcn		// save parsed decoration names
-
-	// handle the ties
-	function do_ties(s, tie_s) {
-	    var	m, note, mid
-
-		for (m = 0; m <= s.nhd; m++) {
-			note = s.notes[m]
-			mid = note.midi
-			if (tie_s.type != C.GRACE) {
-				for (i = 0; i <= tie_s.nhd; i++) {
-					if (!tie_s.notes[i].tie_ty)
-						continue
-					// (tie_s.notes[i].tie_n may exist
-					//  on repeat restart)
-					if (tie_s.notes[i].midi == mid) {
-						tie_s.notes[i].tie_n = note
-						note.s = s
-						tie_s.tie_s = s
-						break
-					}
-				}
-			} else {
-				for (s2 = tie_s.extra; s2; s2 = s2.next) {
-					if (!s2.notes[0].tie_ty)
-						continue
-					if (s2.notes[0].midi == mid) {
-						s2.tie_s = s
-						s2.notes[0].tie_n = note
-						note.s = s
-						s2.notes[0].s = s2
-						tie_s.tie_s = s
-						break
-					}
-				}
-			}
-			s.ti2 = tie_s	// pointer to the tie start
-		}
-	} // do_ties()
 
 	a_dcn = []
 	parse.stemless = false;
@@ -2243,8 +2246,7 @@ Abc.prototype.new_note = function(grace, sls) {
 					s2.time = curvoice.time
 			}
 		} else {		/* grace note - adjust its duration */
-			var div = curvoice.ckey.k_bagpipe ? 8 : 4
-
+			div = curvoice.ckey.k_bagpipe ? 8 : 4
 			for (i = 0; i <= s.nhd; i++)
 				s.notes[i].dur /= div;
 			s.dur /= div;
@@ -2260,7 +2262,7 @@ Abc.prototype.new_note = function(grace, sls) {
 		while (1) {
 			switch (c) {
 			case '-':
-			    var	ty = parse_vpos()
+				ty = parse_vpos()
 				for (i = 0; i <= s.nhd; i++) {
 					s.notes[i].tie_ty = ty
 					s.notes[i].s = s

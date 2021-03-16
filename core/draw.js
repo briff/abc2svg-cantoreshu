@@ -2671,43 +2671,6 @@ function draw_ties(k1, k2,
 			mhead3.push(not1)	/* no match */
 	}
 
-	/* if any bad tie, try an other voice of the same staff */
-	if (!mhead3.length)
-		return				/* no bad tie */
-
-	time = k1.time + k1.dur
-	k3 = k1.ts_next
-	if (job != 1)
-		job = 0
-	while (k3 && k3.time < time)
-		k3 = k3.ts_next
-	while (k3 && k3.time == time) {
-		if (k3.type != C.NOTE
-		 || k3.st != k1.st) {
-			k3 = k3.ts_next
-			continue
-		}
-		for (i = mhead3.length; --i >= 0; ) {
-			not1 = mhead3[i]
-			pit = not1.opit || not1.pit
-			for (j = k3.nhd; j >= 0; j--) {
-				not3 = k3.notes[j]
-				pit2 = not3.opit || not3.pit
-				if (pit2 == pit) {
-					not1.tie_n = not3
-					if (!not3.s)
-						not3.s = k3
-					draw_note_ties(not1, job)
-					mhead3.splice(i, 1)
-					break
-				}
-			}
-		}
-		if (!mhead3.length)
-			break
-		k3 = k3.ts_next
-	}
-
 	if (mhead3.length)
 		error(1, k1, "Bad tie")
 }
@@ -2733,8 +2696,8 @@ function draw_all_ties(p_voice) {
 	set_color(s_next.color)
 	while (1) {
 		for (s1 = s_next; s1; s1 = s1.next) {
-			if (s1.ti2			// if no tie start
-			 && (s1 != s_next
+			if (s1.ti2			// if end of tie
+			 && (s1 != s_next		// (new end)
 			  || !s_next.prev)) {		// (at start of line)
 				s = s1.ti2
 				s.x = s1.x
@@ -2747,7 +2710,7 @@ function draw_all_ties(p_voice) {
 				s.next = s2	// restore the linkage for play
 				s.time = time
 			}
-			if (s1.tie_s)
+			if (s1.tie_s)			// start of tie
 				break
 		}
 		if (!s1)
@@ -2755,9 +2718,9 @@ function draw_all_ties(p_voice) {
 
 		// check if the tied note is in this line
 		s2 = s1.tie_s				// ending note of the tie
+		s = s1
 		if (s2.v == s1.v) {
 			s_next = s2
-			s = s1
 			while (1) {
 				if (!s.next) {
 					s2 = s
@@ -2770,7 +2733,6 @@ function draw_all_ties(p_voice) {
 			}
 		} else {
 			s_next = s1.next
-			s = s1
 			while (1) {
 				if (!s.ts_next) {
 					s = null
@@ -2787,8 +2749,9 @@ function draw_all_ties(p_voice) {
 			}
 		}
 
-		if (!s) {				// end of line
+		if (!s) {			// end of line
 			draw_ties_g(s1, s2, 2);
+			s1.tie_s.ti2 = s1	// draw a tie end in the next line
 			break
 		}
 
