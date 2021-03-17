@@ -792,11 +792,12 @@ function out_tubr(x, y, dx, dy, up) {
 	out_sxsy(x, ' ', y);
 	output += 'v' + h.toFixed(1) +
 		'l' + dx.toFixed(1) + ' ' + (-dy).toFixed(1) +
-		'v' + (-h).toFixed() + '"/>\n'
+		'v' + (-h).toFixed(1) + '"/>\n'
 }
 // tuplet bracket with number - the staves are not defined
 function out_tubrn(x, y, dx, dy, up, str) {
-    var	sw = str.length * 10,
+    var	dxx,
+	sw = str.length * 10,
 	h = up ? -3 : 3;
 
 	set_font("tuplet")
@@ -807,11 +808,16 @@ function out_tubrn(x, y, dx, dy, up, str) {
 		y += 6;
 	output += '<path class="stroke" d="m';
 	out_sxsy(x, ' ', y);
+	dxx = dx - sw + 1
+	if (dy > 0)
+		sw += dy / 8
+	else
+		sw -= dy / 8
 	output += 'v' + h.toFixed(1) +
 		'm' + dx.toFixed(1) + ' ' + (-dy).toFixed(1) +
 		'v' + (-h).toFixed(1) + '"/>\n' +
 		'<path class="stroke" stroke-dasharray="' +
-		((dx - sw) / 2).toFixed(1) + ' ' + sw.toFixed(1) +
+		(dxx / 2).toFixed(1) + ' ' + sw.toFixed(1) +
 		'" d="m';
 	out_sxsy(x, ' ', y - h);
 	output += 'l' + dx.toFixed(1) + ' ' + (-dy).toFixed(1) + '"/>\n'
