@@ -800,8 +800,8 @@ function deco_def(nm) {
 
 /* -- convert the decorations -- */
 function deco_cnv(a_dcn, s, prev) {
-	var	i, j, dd, dcn, note,
-		nd = a_dcn.length
+    var	i, j, dd, dcn, note, s1,
+	nd = a_dcn.length
 
 	for (i = 0; i < nd; i++) {
 		dcn = a_dcn[i];
@@ -961,21 +961,28 @@ function deco_cnv(a_dcn, s, prev) {
 			s.notes[0].a_dcn.push("cacc" + j)
 			continue
 		case 44:		// cross-voice ties
-			j = dd.name.slice(0, -1)
-			if (dd.name.slice(-1) == '(') {
-				cross[j] = s	// keep the start
-				for (i = 0; i <= s.nhd; i++) {
-					s.notes[i].tie_ty = C.SL_AUTO
-					s.notes[i].s = s
-				}
+			if (cross[dd.name]) {
+				error(1, s, "Conflict on !$1!", dd.name)
 				continue
 			}
+			j = dd.name.slice(0, -1) +
+				(dd.name.slice(-1) == '(' ? ')' : '(')
 			if (!cross[j]) {
-				error(1, null, "No start of !$1!", dd.name)
+				cross[dd.name] = s	// keep the start/end
 				continue
 			}
-			do_ties(s, cross[j])
+			if (j.slice(-1) == '(') {
+				s1 = cross[j]		// origin
+			} else {
+				s1 = s
+				s = cross[j]		// end
+			}
 			cross[j] = null
+			for (j = 0; j <= s1.nhd; j++) {
+				s1.notes[j].tie_ty = C.SL_AUTO
+				s1.notes[j].s = s1
+			}
+			do_ties(s, s1)
 			continue
 		}
 
