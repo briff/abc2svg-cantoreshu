@@ -701,25 +701,8 @@ break
 			gch_dump(s.a_gch)
 		if (s.a_dd)
 			deco_dump(s.a_dd)
-		if (s.invis) {
-			switch (s.type) {
-			case C.REST:
-			case C.SPACE:
-			case C.TEMPO:
-				break
-			case C.BAR:
-				if (s.bar_type == '[' || s.bar_type == ']')
-					break
-				// fall thru
-			default:
-				line += "!invisible!"
-				break
-			}
-		}
 		if (s.color)
 			line += "!" + s.color + "!"
-		if (s.feathered_beam)
-			line += s.feathered_beam > 0 ? "!beam-accel!" : "!beam-rall!"
 		switch (s.type) {
 		case C.BAR:
 			if (s.beam_on)
@@ -728,7 +711,7 @@ break
 				line += '.';
 			line += s.bar_type
 			if (s.text) {
-				if (!s.bar_type)
+//				if (!s.bar_type)
 					line += '['
 				if (s.text[0] >= '0' && s.text[0] <= '9')
 					line += s.text + ' '
@@ -776,21 +759,6 @@ break
 					}
 				}
 			}
-			if (s.beam_br1)
-				line += "!beambr1!"
-			if (s.beam_br2)
-				line += "!beambr2!"
-			if (s.trem1)
-				line += '!' + "///".slice(0, s.ntrem) + '!'
-			if (s.xstem)
-				line += "!xstem!"
-			if (s.stemless
-			 && s.notes[0].dur < C.BLEN)	// head duration
-				line += "!stemless!"
-			if (s.trem22)
-				line += "!trem" + s.ntrem + "!"
-			else if (s.trem2 && s.next && s.next.trem2)
-				s.next.trem22 = true
 			tie_ch = true
 			if (s.notes.length == 1) {
 				note_dump(s, s.notes[0], tie_ch)

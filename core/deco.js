@@ -864,17 +864,17 @@ function deco_cnv(a_dcn, s, prev) {
 			} else {
 				s.color = dd.name
 			}
-			continue
+			break
 		case 32:		/* invisible */
 			s.invis = true
-			continue
+			break
 		case 33:		/* beamon */
 			if (s.type != C.BAR) {
 				error(1, s, "!beamon! must be on a bar")
 				continue
 			}
 			s.beam_on = true
-			continue
+			break
 		case 34:		/* trem1..trem4 */
 			if (s.type != C.NOTE
 			 || !prev
@@ -895,14 +895,14 @@ function deco_cnv(a_dcn, s, prev) {
 				s.notes[j].dur *= 2;
 			for (j = 0; j <= prev.nhd; j++)
 				prev.notes[j].dur *= 2
-			continue
+			break
 		case 35:		/* xstem */
 			if (s.type != C.NOTE) {
 				error(1, s, errs.must_note, dd.name)
 				continue
 			}
 			s.xstem = true;
-			continue
+			break
 		case 36:		/* beambr1 / beambr2 */
 			if (s.type != C.NOTE) {
 				error(1, s, errs.must_note, dd.name)
@@ -912,10 +912,10 @@ function deco_cnv(a_dcn, s, prev) {
 				s.beam_br1 = true
 			else
 				s.beam_br2 = true
-			continue
+			break
 		case 37:		/* rbstop */
 			s.rbstop = 1	// open
-			continue
+			break
 		case 38:		/* /, // and /// = tremolo */
 			if (s.type != C.NOTE) {
 				error(1, s, errs.must_note, dd.name)
@@ -923,20 +923,20 @@ function deco_cnv(a_dcn, s, prev) {
 			}
 			s.trem1 = true;
 			s.ntrem = dd.name.length	/* 1, 2 or 3 */
-			continue
+			break
 		case 39:		/* beam-accel/beam-rall */
 			if (s.type != C.NOTE) {
 				error(1, s, errs.must_note, dd.name)
 				continue
 			}
 			s.feathered_beam = dd.name[5] == 'a' ? 1 : -1;
-			continue
+			break
 		case 40:		/* stemless */
 			s.stemless = true
-			continue
+			break
 		case 41:		/* rbend */
 			s.rbstop = 2	// with end
-			continue
+			break
 		case 42:		// editorial
 			if (!s.notes[0].acc)
 				continue
@@ -959,7 +959,7 @@ function deco_cnv(a_dcn, s, prev) {
 			if (!s.notes[0].a_dcn)
 				s.notes[0].a_dcn = []
 			s.notes[0].a_dcn.push("cacc" + j)
-			continue
+			break
 		case 44:		// cross-voice ties
 			if (cross[dd.name]) {
 				error(1, s, "Conflict on !$1!", dd.name)
@@ -983,7 +983,7 @@ function deco_cnv(a_dcn, s, prev) {
 				s1.notes[j].s = s1
 			}
 			do_ties(s, s1)
-			continue
+			break
 		}
 
 		// add the decoration in the symbol
@@ -1223,6 +1223,8 @@ function draw_deco_near() {
 			/* check if hidden */
 			switch (dd.func) {
 			default:
+				if (dd.func >= 32)
+					continue
 				pos = 0
 				break
 			case 3:				/* d_upstaff */
