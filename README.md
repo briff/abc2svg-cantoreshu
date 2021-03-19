@@ -271,9 +271,7 @@ The interfaces to the various scripts are different. Below you will
 find various scripts that I had to built.
 
 - `abcqjs` with `qjs` [QuickJS by Fabrice Bellard and Charlie Gordon][10]
-- `abcjs24` with `js24` (Mozilla JavaScript shell - Spidermonkey)
-- `abcjs52` with `js52` (Mozilla JavaScript shell - Spidermonkey)
-- `abcjs60` with `js60` (Mozilla JavaScript shell - Spidermonkey)
+- `abcmjs` with `js78`, `js68`, `js60`, `js52` or `js24` (Mozilla JavaScript shell)
 - `abcjsc` with `jsc-1` (webkitgtk2)
 - `abcv8` with `d8` (Google libv8)
 - `abcnode` with `node` (nodeJS without module)

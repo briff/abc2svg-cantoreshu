@@ -1,0 +1,40 @@
+:;# abc2svg with a Mozilla JavaScript interpreter
+
+for c in js78 js68 js60 js52 js24 end; do
+	if [ $c = 'end' ]; then
+		echo "$0: could not find a javascript interpreter - abort"
+		exit 1
+	fi
+	if command -v $c >/dev/null 2>&1; then
+		break
+	fi
+done
+
+exec $c -e "// interpreter specific functions
+var abc2svg = {
+    print: print,
+    printErr: printErr,
+    quit: function() {
+	quit(1)
+    },
+    readFile: read,
+    loadjs: function(fn, relay, onerror) {
+	try {
+		loadRelativeToScript(fn)
+		if (relay)
+			relay()
+	} catch(e) {
+		if (onerror)
+			onerror()
+		else
+			printErr('Cannot read file ' + fn)
+	}
+    } // loadjs()
+} // abc2svg
+
+loadRelativeToScript('abc2svg-1.js')
+loadRelativeToScript('cmdline.js')
+
+// main
+abc_cmd('abcmjs', scriptArgs, '$0')
+" -- "$@"
