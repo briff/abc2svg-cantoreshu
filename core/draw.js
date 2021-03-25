@@ -960,6 +960,10 @@ Abc.prototype.draw_keysig = function(x, s) {
 			acc = s.k_a_acc[i];
 			shift = (s.k_y_clef	// clef shift
 				+ acc.pit - 18) * 3
+			if (shift < -3)		// let the accidentals inside the staff
+				shift += 21
+			else if (shift > 27)
+				shift -= 21
 			if (i != 0
 			 && (shift > last_shift + 18
 			  || shift < last_shift - 18))
