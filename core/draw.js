@@ -969,7 +969,10 @@ Abc.prototype.draw_keysig = function(x, s) {
 			last_acc = acc.acc;
 			s2.x = x
 			s2.notes[0].pit = shift / 3 + 18;
-			self.draw_hl(s2)
+// is this useful?
+//			s2.head = C.FULL
+//			s2.notes[0].shhd = 0
+//			self.draw_hl(s2)
 			last_shift = shift;
 			draw_acc(x, staffb + shift, acc.acc)
 			x += 5.5
