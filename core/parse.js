@@ -1911,7 +1911,7 @@ function do_ties(s, tie_s) {
 
 	// set a pointer to the start of the tie if there is a time skip
 	if (!tie_s.tie_s)
-		syntax(1, "Bad tie")
+		error(1, tie_s, "Bad tie")
 	else if (tie_s.time + tie_s.dur != (s.time || curvoice.time))
 		s.ti2 = tie_s
 } // do_ties()
@@ -2196,10 +2196,6 @@ Abc.prototype.new_note = function(grace, sls) {
 	if (s.grace && s.type != C.NOTE) {
 		syntax(1, errs.bad_grace)
 		return //null
-	}
-	if (tie_s && s.type != C.NOTE) {
-		syntax(1, "Bad tie")
-		tie_s = null
 	}
 
 	if (s.notes) {				// if note or rest
