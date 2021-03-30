@@ -1224,7 +1224,7 @@ function add_end_bar(s) {
 	b.ts_next = s.ts_next
 	b.shrink = s.wr + 3
 
-//	if (s.next)
+	if (s.next)			// (must not be the end of the voice)
 		s.next.prev = b
 //	if (s.ts_next)
 		s.ts_next.ts_prev = b
