@@ -521,7 +521,7 @@ abc2svg.play_next = function(po) {
 
     // start and continue to play
     function play_cont(po) {
-    var	d, i, st, m, note, g, s2, t, maxt,
+    var	d, i, st, m, note, g, s2, t, maxt, now,
 	C = abc2svg.C,
 	s = po.s_cur
 
@@ -540,11 +540,11 @@ abc2svg.play_next = function(po) {
 		}
 	}
 	t = po.stim + s.ptim / po.conf.speed	// start time
+	now = po.get_time(po)
 
 	// if speed change, shift the start time
 	if (po.conf.new_speed) {
-		d = po.get_time(po)
-		po.stim = d - (d - po.stim) *
+		po.stim = now - (now - po.stim) *
 					po.conf.speed / po.conf.new_speed
 		po.conf.speed = po.conf.new_speed
 		po.conf.new_speed = 0
@@ -626,7 +626,9 @@ abc2svg.play_next = function(po) {
 			}
 			break
 		case C.NOTE:
+		case C.REST:
 			d = s.pdur / po.conf.speed
+		    if (s.type == C.NOTE) {
 			for (m = 0; m <= s.nhd; m++) {
 				note = s.notes[m]
 				if (note.ti2)
@@ -637,15 +639,15 @@ abc2svg.play_next = function(po) {
 					note.tie_ty ?
 						do_tie(s, note.midi, d) : d)
 			}
-			// fall thru
-		case C.REST:
-			d = s.pdur / po.conf.speed
+		    }
 
 			// follow the notes/rests while playing
 			if (po.onnote && s.istart) {
 				i = s.istart
-				st = (t - po.get_time(po)) * 1000
+				st = (t - now) * 1000
 				po.timouts.push(setTimeout(po.onnote, st, i, true))
+				if (d > 2)	// problem when loop on one long note
+					d -= .1
 				setTimeout(po.onnote, st + d * 1000, i, false)
 			}
 			break
@@ -654,7 +656,7 @@ abc2svg.play_next = function(po) {
 			if (s == po.s_end || !s.ts_next) {
 				if (po.onend)
 					setTimeout(po.onend,
-						(t - po.get_time(po) + d) * 1000,
+						(t - now + d) * 1000,
 						po.repv)
 				po.s_cur = s
 				return
@@ -671,7 +673,7 @@ abc2svg.play_next = function(po) {
 
 	// delay before next sound generation
 	po.timouts.push(setTimeout(play_cont,
-				(t - po.get_time(po)) * 1000
+				(t - now) * 1000
 					- 300,	// wake before end of playing
 				po))
     } // play_cont()
