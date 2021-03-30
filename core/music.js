@@ -889,9 +889,7 @@ Abc.prototype.set_width = function(s) {
 			s.wr -= 4
 		return
 	case C.KEY:
-		if ((!s.k_a_acc && !s.k_sf && !s.k_old_sf) // if no accidental
-		 || s.k_none				// or no key
-		 || s.k_play) {				// or key for play
+		if (s.invis) {				// if no accidental
 			s.wl = s.wr = 0			// no width
 			return
 		}
@@ -1677,9 +1675,7 @@ function set_nl(s) {			// s = start of line
 			switch (s2.type) {
 			case C.KEY:
 				if (!cfmt.keywarn
-				 || (!s2.k_a_acc && !s2.k_sf && !s2.k_old_sf)
-				 || s2.k_none
-				 || s2.k_play)		// play only
+				 || s2.invis)
 					continue
 				for (s1 = s.ts_prev; s1 ;s1 = s1.ts_prev) {
 					if (s1.type != C.METER)

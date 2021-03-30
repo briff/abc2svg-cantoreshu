@@ -1859,7 +1859,7 @@ function get_key(parm) {
 		 && transp == undefined) {
 			if (sndtran == undefined)
 				return		// not a key signature
-			s_key.k_play = true	// play only
+			s_key.invis = true	// play only
 		}
 		s_key.k_sf = curvoice.okey.k_sf
 	}
@@ -1873,6 +1873,11 @@ function get_key(parm) {
 		s_key.k_sndtran = sndtran
 
 	s_key.k_old_sf = curvoice.ckey.k_sf;	// memorize the key changes
+
+	if ((!s_key.k_a_acc || !s_key.k_a_acc.length)
+	 && !s_key.sf && !s_key.old_sf)
+		s_key.invis = true		// don't display the key signature
+
 	if (!s_key.k_b40)
 		s_key.k_b40 = curvoice.ckey.k_b40
 
