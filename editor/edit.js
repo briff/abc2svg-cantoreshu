@@ -587,9 +587,10 @@ function play_tune(what) {
 	}
 
 	function gsot(si) {	// go to the first playable symbol of a tune
-	    var	s = syms[si]
-		while (!s.dur)		// skip clef/key/...
-			s = s.ts_next
+	    var	s = syms[si].p_v.sym
+
+		while (s.ts_prev)		// go back to the first symbol
+			s = s.ts_prev
 		return gnrn(s)
 	}
 	function get_se(si) {			// get the starting symbol
