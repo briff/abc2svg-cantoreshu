@@ -90,7 +90,12 @@ function parse_gchord(type) {
 			gch.y = y_abs - h_ann / 2
 			break
 		case '^':
+			gch.pos = C.SL_ABOVE
+			// fall thru
 		case '_':
+			if (c == '_')
+				gch.pos = C.SL_BELOW
+			// fall thru
 		case '<':
 		case '>':
 			i++;
@@ -100,6 +105,7 @@ function parse_gchord(type) {
 			switch (type) {
 			case 'g':
 				gch.font = get_font("gchord")
+				gch.pos = curvoice.pos.gch || C.SL_ABOVE
 				break
 			case '@':
 				gch.x = x_abs;
@@ -222,8 +228,6 @@ Abc.prototype.gch_build = function(s) {
 	/* split the chord symbols / annotations
 	 * and initialize their vertical offsets */
 	var	gch, wh, xspc, ix,
-		y_above = 0,
-		y_below = 0,
 		y_left = 0,
 		y_right = 0,
 		GCHPRE = .4;		// portion of chord before note
@@ -398,12 +402,8 @@ Abc.prototype.draw_gchord = function(i, s, x, y) {
 // draw all chord symbols
 function draw_all_chsy() {
     var	s, san1, an, i, y, w,
-	pos = curvoice.pos.gch == C.SL_BELOW ? -1 : 1,
 	n_an = 0,		// max number of annotations
 	minmax = new Array(nstaff + 1)
-
-	if (curvoice.pos.gch == C.SL_HIDDEN)
-		pos = 0
 
 	// set a vertical offset to all the chord symbols/annotations
 	function set_an_yu(j) {
@@ -417,8 +417,7 @@ function draw_all_chsy() {
 			an = an[i]
 			if (!an)
 				continue
-			if ((an.type == 'g' && pos > 0)
-			 || an.type == '^') {
+			if (an.pos == C.SL_ABOVE) {
 				x = s.x + an.x
 				w = an.text.wh[0]
 				if (w && x + w > realwidth)
@@ -426,8 +425,7 @@ function draw_all_chsy() {
 				y = y_get(s.st, 1, x, w)	// y / staff
 				if (an.type == 'g' && y < minmax[s.st].yup)
 					y = minmax[s.st].yup
-			} else if ((an.type == 'g' && pos <= 0)
-				|| an.type == '_') {
+			} else if (an.pos == C.SL_BELOW) {
 				continue
 			} else {
 				x = s.x + an.x
@@ -446,8 +444,7 @@ function draw_all_chsy() {
 				continue
 			an = an[i]
 			if (!an
-			 || !((an.type == 'g' && pos < 0)
-			   || an.type == '_'))
+			 || an.pos != C.SL_BELOW)
 				continue
 			x = s.x + an.x
 			w = an.text.wh[0]
@@ -480,11 +477,11 @@ function draw_all_chsy() {
 			if (an[i].type == 'g') {
 				an = an[i]
 				w = an.text.wh[0]
-				if (pos > 0) {
+				if (an.pos == C.SL_ABOVE) {
 					y = y_get(s.st, true, s.x, w)
 					if (y > minmax[s.st].yup)
 						minmax[s.st].yup = y
-				} else if (pos < 0) {
+				} else if (an.pos == C.SL_BELOW) {
 					y = y_get(s.st, false, s.x, w)
 					if (y < minmax[s.st].ydn)
 						minmax[s.st].ydn = y
