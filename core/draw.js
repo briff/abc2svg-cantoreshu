@@ -1993,7 +1993,7 @@ if (two_staves) error(2, k1, "*** multi-staves slurs not treated yet");
 		addy -= 4 * Math.sqrt(-height) - 2
 	for (i = 0; i < i2; i++) {
 		k = path[i]
-		if (k.st != upstaff)
+		if (k.st != upstaff || k.type == C.BAR)
 			continue
 		y = a * k.x + addy
 		if (k.ymx < y)
@@ -2185,7 +2185,7 @@ function draw_slurs(s, last) {
 /* -- draw a tuplet -- */
 /* (the staves are not yet defined) */
 /* (delayed output) */
-/* See http://moinejf.free.fr/abcm2ps-doc/tuplets.xhtml
+/* See http://moinejf.free.fr/abcm2ps-doc/tuplets.html
  * for the value of 'tp.f' */
 function draw_tuplet(s1) {
     var	s2, s3, g, upstaff, nb_only,
