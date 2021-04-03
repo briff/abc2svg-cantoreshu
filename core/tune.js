@@ -1926,13 +1926,14 @@ function new_voice(id) {
 		time: 0,
 		new: true,
 		pos: {
-			dyn: 0,
-			gch: 0,
-			gst: 0,
-			orn: 0,
-			stm: 0,
-			voc: 0,
-			vol: 0
+//			dyn: 0,
+//			gch: 0,
+//			gst: 0,
+//			orn: 0,
+//			stm: 0,
+//			tup: 0,
+//			voc: 0,
+//			vol: 0
 		},
 		scale: 1,
 //		st: 0,
