@@ -1,6 +1,6 @@
 // abc2svg - abc2svg.js
 //
-// Copyright (C) 2014-2020 Jean-Francois Moine
+// Copyright (C) 2014-2021 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -282,7 +282,7 @@ function clone(obj, lvl) {
 	var tmp = new obj.constructor
 	for (var k in obj)
 	    if (obj.hasOwnProperty(k)) {
-		if (lvl && typeof obj[k] != "number")
+		if (lvl && typeof obj[k] == "object")
 			tmp[k] = clone(obj[k], lvl - 1)
 		else
 			tmp[k] = obj[k]

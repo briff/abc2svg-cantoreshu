@@ -545,7 +545,7 @@ function not2abc(pit, acc) {
 	nn = ''
 
 	if (acc && acc != 3) {
-		if (typeof acc == "number") {
+		if (typeof acc != "object") {
 			nn = ['__', '_', '', '^', '^^'][acc + 2]
 		} else {
 			i = acc[0]

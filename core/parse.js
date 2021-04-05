@@ -1830,7 +1830,7 @@ function pit2mid(pit, acc) {
 	if (acc == 3)				// if natural accidental
 		acc = 0
 	if (acc) {
-		if (typeof acc != "number") {
+		if (typeof acc == "object") {
 			s = acc[0] / acc[1]	// microtonal accidental
 			if (acc[1] == 100)	// in cents
 				return p + o + s
@@ -1848,7 +1848,7 @@ function pit2mid(pit, acc) {
 			return p
 		}
 	} else {				// equal temperament
-		if (typeof acc == "number") {	// if not a fraction
+		if (typeof acc != "object") {	// if not a fraction
 			b40 = abc2svg.p_b40[pit % 7] + acc
 			return cfmt.temper[b40] + o
 		}
@@ -2076,6 +2076,12 @@ Abc.prototype.new_note = function(grace, sls) {
 			// transpose
 			if (curvoice.octave)
 				note.pit += curvoice.octave * 7
+
+			// map
+			if (curvoice.map
+			 && maps[curvoice.map])
+				set_map(note, note.acc)
+
 			apit = note.pit + 19		// pitch from C-1
 
 			// get the explicit or implicit accidental
@@ -2094,10 +2100,6 @@ Abc.prototype.new_note = function(grace, sls) {
 			if (curvoice.ckey.k_sndtran)
 				note.midi += abc2svg.b40m(curvoice.ckey.k_sndtran +
 						122) - 36
-
-			if (curvoice.map
-			 && maps[curvoice.map])
-				set_map(note, i)
 
 			// starting slurs
 			if (sl1.length) {

@@ -728,7 +728,7 @@ function draw_meter(s) {
 
 /* -- draw an accidental -- */
 function draw_acc(x, y, a) {
-	if (typeof a != "number") {		// if microtone
+	if (typeof a == "object") {		// if microtone
 	    var	c,
 		n = a[0],
 		d = a[1]
