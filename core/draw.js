@@ -3398,8 +3398,8 @@ function draw_systems(indent) {
 		for (i = bar_type.length; --i >= 0; ) {
 			switch (bar_type[i]) {
 			case "|":
+				set_sscale(-1)
 				if (s.bar_dotted) {
-					set_sscale(-1);
 					w = (5 * p_staff.staffscale).toFixed(1);
 					out_XYAB(
 			'<path class="bW" stroke-dasharray="A,A" d="MX Yv-G"/>\n',
@@ -3416,6 +3416,7 @@ function draw_systems(indent) {
 			default:
 //			case "[":
 //			case "]":
+				set_sscale(-1)
 				x -= 3;
 				if (s.color)
 					out_XYAB('<path class="bthW" d="MX Yv-F"/>\n',
