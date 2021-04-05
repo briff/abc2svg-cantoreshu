@@ -734,7 +734,7 @@ function use_font(font) {
 				font.pad = 0
 		}
 		add_fstyle(".f" + font.fid +
-			(typeof document == "undefined" ? cfmt.fullsvg : "") +
+			(cfmt.fullsvg || "") +
 			"{" + style_font(font) + "}")
 		if (font.src)
 			add_fstyle("@font-face{\n\

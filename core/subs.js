@@ -22,6 +22,8 @@
 var add_fstyle = typeof document != "undefined" ?
     function(s) {
     var	e
+	if (cfmt.fullsvg)
+		font_style += "\n" + s
 	if (!sheet) {
 		if (abc2svg.sheet) {	// if styles from a previous generation
 			sheet = abc2svg.sheet
