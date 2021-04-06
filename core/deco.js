@@ -1162,7 +1162,7 @@ Abc.prototype.draw_all_deco = function() {
 				out_deco_val(x, y, f, de.val / stv_g.scale, de.defl)
 			else
 				out_deco_val(x, y, f, de.val, de.defl)
-			if (de.defl.noen)
+			if (de.cont)
 				new_de.push(de.start)	// to be continued next line
 		} else if (dd.str != undefined) {
 			str = dd.str
@@ -1381,6 +1381,7 @@ function draw_deco_near() {
 					ix: a_de.length - 1,
 					x: realwidth - 6,
 					y: s.y,
+					cont: true,	// keep for next line
 					lden: true,
 					defl: {
 						noen: true
