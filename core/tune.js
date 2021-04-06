@@ -1875,7 +1875,7 @@ function get_key(parm) {
 	s_key.k_old_sf = curvoice.ckey.k_sf;	// memorize the key changes
 
 	if ((!s_key.k_a_acc || !s_key.k_a_acc.length)
-	 && !s_key.sf && !s_key.old_sf)
+	 && !s_key.k_sf && !s_key.k_old_sf)
 		s_key.invis = true		// don't display the key signature
 
 	if (!s_key.k_b40)
