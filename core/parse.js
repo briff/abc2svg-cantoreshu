@@ -105,6 +105,9 @@ function new_clef(clef_def) {
 		s.clef_line = Number(clef_def[i]);
 		i++
 	}
+
+	// handle the octave (+/-8 - ^/_8)
+	delete curvoice.snd_oct
 	if (clef_def[i + 1] != '8')
 		return s
 	switch (clef_def[i]) {			// octave
