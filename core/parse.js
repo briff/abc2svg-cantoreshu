@@ -2077,7 +2077,9 @@ Abc.prototype.new_note = function(grace, sls) {
 			if (curvoice.octave)
 				note.pit += curvoice.octave * 7
 
+			// keep the pitch and accidental for note.midi
 			apit = note.pit + 19		// pitch from C-1
+			i = note.acc
 
 			// map
 			if (curvoice.map
@@ -2087,7 +2089,6 @@ Abc.prototype.new_note = function(grace, sls) {
 			// get the explicit or implicit accidental
 			// and keep the absolute pitch in (MIDI + cents) format
 		     if (!note.midi) {			// if not map play
-			i = note.acc
 			if (i) {
 				curvoice.acc[apit] = i
 			} else {
