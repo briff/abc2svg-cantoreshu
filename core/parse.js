@@ -1707,10 +1707,6 @@ function set_map(note, acc) {
 	if (map[1]) {				// if print map
 		note.pit = pit = map[1].pit
 		note.acc = map[1].acc
-		if (!note.acc			// if no accidental
-		 && curvoice.acc[pit + 19])	// but one in the measure
-			note.acc = 3
-		curvoice.acc[pit + 19] = note.acc == 3 ? 0 : note.acc
 	}
 	if (map[2])				// if color
 		note.color = map[2]
@@ -2077,18 +2073,10 @@ Abc.prototype.new_note = function(grace, sls) {
 			if (curvoice.octave)
 				note.pit += curvoice.octave * 7
 
-			// keep the pitch and accidental for note.midi
 			apit = note.pit + 19		// pitch from C-1
 			i = note.acc
 
-			// map
-			if (curvoice.map
-			 && maps[curvoice.map])
-				set_map(note, note.acc)
-
 			// get the explicit or implicit accidental
-			// and keep the absolute pitch in (MIDI + cents) format
-		     if (!note.midi) {			// if not map play
 			if (i) {
 				curvoice.acc[apit] = i
 			} else {
@@ -2098,8 +2086,15 @@ Abc.prototype.new_note = function(grace, sls) {
 				if (!i)
 					i = curvoice.ckey.k_map[apit % 7] || 0
 			}
-			note.midi = pit2mid(apit, i)
-		     }
+
+			// map
+			if (curvoice.map
+			 && maps[curvoice.map])
+				set_map(note, i)
+
+			if (!note.midi)			// if not map play
+				note.midi = pit2mid(apit, i)
+
 			if (curvoice.ckey.k_sndtran)
 				note.midi += abc2svg.b40m(curvoice.ckey.k_sndtran +
 						122) - 36
