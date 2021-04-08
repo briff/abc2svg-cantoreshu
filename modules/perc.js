@@ -182,10 +182,12 @@ var prn = {
     } // toabc()
 
     // do_perc()
-    var	a = parm.split(/\s+/)
+    var	a = parm.split(/\s+/),
+	p = a[1].replace(/[=_^]/, '')
 
 	this.do_pscom("map MIDIdrum " + a[1] +
 		" play=" + toabc(a[2]) +
+		" print=" + p +
 		(a[3] ? (" heads=" + a[3]) : ''))
 	this.set_v_param("perc", "MIDIdrum")
     }, // do_perc()
