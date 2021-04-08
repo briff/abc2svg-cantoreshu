@@ -249,7 +249,7 @@ function acc_shift(notes, dx_head) {
 		notes[i1].shac = notes[i2].shac = dx2
 	} else {
 		notes[i1].shac = dx1
-		notes[i2].shac = dx2 = dx1 + 7
+		notes[i2].shac = dx2 = dx1
 	}
 	dx2 += 7
 
@@ -4299,8 +4299,7 @@ function set_overlap() {
 					s1.dot_low = false
 				break
 			case 0:
-				if (s1.notes[i1].acc != s2.notes[i2].acc
-				 && !s1.notes[i1].acc && !s2.notes[i2].acc) {
+				if (s1.notes[i1].acc != s2.notes[i2].acc) {
 					t = -1
 					break
 				}
@@ -5122,13 +5121,11 @@ Abc.prototype.output_music = function() {
 		set_beams(voice_tb[v].sym);	/* decide on beams */
 
 	self.set_stems()		// set the stem lengths
+	set_acc_shft()			// set the horizontal offset of accidentals
 	if (nv > 1) {			// if many voices
 		set_rest_offset();	/* set the vertical offset of rests */
 		set_overlap();		/* shift the notes on voice overlap */
-//		set_rp_bars()		// set repeat bars
 	}
-	set_acc_shft();			// set the horizontal offset of accidentals
-
 	set_allsymwidth();		/* set the width of all symbols */
 
 	indent = set_indent(true)
