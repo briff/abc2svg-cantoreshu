@@ -2482,11 +2482,15 @@ function draw_tuplet(s1) {
 			a = 0
 		else if (a > s0)
 			a = s0
+		if (a > .35)
+			a = .35
 	} else {
 		if (a > 0)
 			a = 0
 		else if (a < s0)
 			a = s0
+		if (a < -.35)
+			a = -.35
 	}
 	if (a * a < .1 * .1)
 		a = 0
