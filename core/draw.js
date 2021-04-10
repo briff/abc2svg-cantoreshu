@@ -3373,6 +3373,7 @@ function draw_systems(indent) {
 
 		s.ymx = s.ymn + h;
 
+		set_sscale(-1)
 		anno_start(s)
 		if (s.color)
 			set_color(s.color);
@@ -3394,6 +3395,7 @@ function draw_systems(indent) {
 				if (s.v == cur_sy.top_voice)
 					nrep_out(x, yb + p_staff.topbar, s.bar_mrep)
 			}
+			set_sscale(-1)
 		}
 
 		if (bar_type == '||:')
@@ -3402,7 +3404,6 @@ function draw_systems(indent) {
 		for (i = bar_type.length; --i >= 0; ) {
 			switch (bar_type[i]) {
 			case "|":
-				set_sscale(-1)
 				if (s.bar_dotted) {
 					w = (5 * p_staff.staffscale).toFixed(1);
 					out_XYAB(
@@ -3420,7 +3421,6 @@ function draw_systems(indent) {
 			default:
 //			case "[":
 //			case "]":
-				set_sscale(-1)
 				x -= 3;
 				if (s.color)
 					out_XYAB('<path class="bthW" d="MX Yv-F"/>\n',
@@ -3434,6 +3434,7 @@ function draw_systems(indent) {
 				x -= 2;
 				set_sscale(st);
 				xygl(x + 1, yb - 12, "rdots")
+				set_sscale(-1)
 				break
 			}
 			x -= 3
