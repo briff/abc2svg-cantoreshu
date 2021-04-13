@@ -443,6 +443,11 @@ function insert_clef(s, clef_type, clef_line) {
 	while (!s.seqst)
 		s = s.ts_prev;
 	lktsym(new_s, s)
+
+	if (s.soln) {			// move the start of line
+		new_s.soln = true
+		delete s.soln
+	}
 	return new_s
 }
 
@@ -2550,7 +2555,7 @@ function set_clefs() {
 				sy.staves[st].maxsep = sy.voices[v].maxsep;
 
 			if (!p_voice.clef.clef_auto)
-				staff_clef[st].autoclef = false
+				delete staff_clef[st].autoclef
 		}
 	}
 	for (v = 0; v < voice_tb.length; v++) {
