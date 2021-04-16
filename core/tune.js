@@ -1322,8 +1322,9 @@ function generate(in_mc) {
 		get_vover(vover.bar ? '|' : ')')
 	}
 
-	if (!voice_tb.length)
-		return
+	if (parse.state < 3)		// if empty tune
+		goto_tune()		// output the tune header
+
 	voice_adj();
 	sort_all()			/* define the time / vertical sequences */
 	if (!tsfirst)
