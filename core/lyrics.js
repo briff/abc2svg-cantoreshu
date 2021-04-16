@@ -122,7 +122,7 @@ function get_sym(p, cont) {
 
 /* -- parse a lyric (vocal) line (w:) -- */
 function get_lyrics(text, cont) {
-    var s, word, p, i, j, ly, dfnt, ln
+    var s, word, p, i, j, ly, dfnt, ln, c, cf
 
 	if (curvoice.ignore)
 		return
@@ -163,6 +163,7 @@ function get_lyrics(text, cont) {
 	/* scan the lyric line */
 	p = text;
 	i = 0
+	cf = gene.curfont
 	while (1) {
 		while (p[i] == ' ' || p[i] == '\t')
 			i++
@@ -218,6 +219,14 @@ function get_lyrics(text, cont) {
 					word += p[++i];
 					i++
 					continue
+				case '$':
+					word += p[i++]
+					c = p[i]
+					if (c == '0')
+						gene.curfont = gene.deffont
+					else if (c >= '1' && c <= '9')
+						gene.curfont = get_font("u" + c)
+					// fall thru
 				default:
 					word += p[i++]
 					continue
@@ -238,7 +247,7 @@ function get_lyrics(text, cont) {
 		 && s.pos.voc != C.SL_HIDDEN) {
 			ly = {
 				t: word,
-				font: gene.curfont,
+				font: cf,
 				istart: j,
 				iend: j + word.length
 			}
@@ -247,6 +256,7 @@ function get_lyrics(text, cont) {
 			if (!s.a_ly)
 				s.a_ly = []
 			s.a_ly[curvoice.lyric_line] = ly
+			cf = gene.curfont
 		}
 		s = s.next;
 		i++
@@ -255,6 +265,7 @@ function get_lyrics(text, cont) {
 }
 
 // install the words under a note
+// (this function is called during the generation)
 function ly_set(s) {
     var	i, j, ly, d, s1, s2, p, w, spw, xx, sz, shift, dw,
 	s3 = s,				// start of the current time sequence
@@ -294,6 +305,7 @@ function ly_set(s) {
 		ly = a_ly[i]
 		if (!ly)
 			continue
+		gene.curfont = ly.font
 		ly.t = p = str2svg(ly.t)
 		if (ly.ln == 2) {
 			ly.shift = 0
