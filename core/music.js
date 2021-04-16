@@ -837,14 +837,17 @@ Abc.prototype.set_width = function(s) {
 			case "|":
 				w = 5		// 3 + 2
 				break
+			case "[":		// repeat number on secondary staff
+				w = 0
+				break
 			default:
 				w = 2 + 2.8 * bar_type.length
 				for (i = 0; i < bar_type.length; i++) {
 					switch (bar_type[i]) {
 					case "[":
 					case "]":
-						w += 3
-						break
+						w += 1
+						// fall thru
 					case ":":
 						w += 2
 						break
