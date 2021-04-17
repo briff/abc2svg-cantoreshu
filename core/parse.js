@@ -1378,7 +1378,7 @@ function new_bar() {
 	case "[]":
 	case "[|]":
 		s.invis = true;
-		bar_type = "[]"
+		bar_type = s.rbstart ? "[" : "[]"
 		break
 	case ":|:":
 	case ":||:":
@@ -1405,9 +1405,10 @@ function new_bar() {
 
 	/* if repeat bar and shift, add a repeat bar */
 	if (s.rbstart
+	 && bar_type != "["
 	 && !curvoice.norepbra
-	 && curvoice.st > 0
-	 && !(par_sy.staves[curvoice.st - 1].flags & STOP_BAR)) {
+	 && s.st > 0
+	 && !(par_sy.staves[s.st - 1].flags & STOP_BAR)) {
 		s2 = {
 			type: C.BAR,
 			fname: s.fname,
@@ -1420,7 +1421,7 @@ function new_bar() {
 			rbstart: 2
 		}
 		sym_link(s2);
-		s2.st = curvoice.st
+		s2.st = s.st
 		delete s.text;
 		s.rbstart = 0
 	}
