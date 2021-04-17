@@ -14,9 +14,7 @@ function load(fn) {
 	return std.loadScript(fn)
 }
 var abc2svg = {
-	print: function(str) {
-		print(str)
-	},
+	print: print,
 	printErr: function(str) {
 		std.err.printf("%s\n", str)
 	},
@@ -24,9 +22,9 @@ var abc2svg = {
 		std.exit(1)
 	},
 	readFile: function(fname) {
-	    var	f, b
-
+	    var	b,
 		f = std.open(fname, "r")
+
 		if (!f)
 			return ""
 
@@ -54,6 +52,8 @@ var abc2svg = {
 } // abc2svg
 
 // --- main ---
+
+	console.log = abc2svg.printErr
 
 	path = path ? path[0] : ""
 
