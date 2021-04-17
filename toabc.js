@@ -1,6 +1,6 @@
 // abc2svg - toabc.js - convert ABC to ABC
 //
-// Copyright (C) 2016-2020 Jean-Francois Moine
+// Copyright (C) 2016-2021 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //

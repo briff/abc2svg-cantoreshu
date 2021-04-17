@@ -1,6 +1,6 @@
 // pedline.js - module to draw pedal lines instead of 'Ped .. *'
 //
-// Copyright (C) 2020 Jean-Francois Moine - GPL3+
+// Copyright (C) 2020-2021 Jean-Francois Moine - GPL3+
 //
 // This module is loaded when "%%pedline" appears in a ABC source.
 //
