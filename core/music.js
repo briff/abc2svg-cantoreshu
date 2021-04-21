@@ -352,9 +352,9 @@ error(2, s, "Bad linkage")
 	}
 	s.seqst = !s.ts_prev
 		|| s.time != s.ts_prev.time
-		|| ((w_tb[s.ts_prev.type] != w_tb[s.type]
-		  && w_tb[s.ts_prev.type] != 0)
-		 || s.ts_prev.v == s.v)		// case cut bar
+		|| (w_tb[s.ts_prev.type] != w_tb[s.type]
+		 && w_tb[s.ts_prev.type] != 0)
+		|| s.ts_prev.v >= s.v		// case cut bar
 	if (!next)
 		return
 	next.seqst = next.time != s.time ||
