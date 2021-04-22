@@ -216,8 +216,9 @@ function get_lyrics(text, cont) {
 					ln = 1		// start of line
 					break
 				case '\\':
-					word += p[++i];
-					i++
+					if (!p[++i])
+						continue
+					word += p[i++]
 					continue
 				case '$':
 					word += p[i++]
