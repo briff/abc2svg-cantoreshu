@@ -191,11 +191,6 @@ function get_lyrics(text, cont) {
 			word = ""
 			break
 		default:
-			if (p[i] == '\\'
-			 && i == p.length - 1) {
-				curvoice.lyric_cont = s
-				return
-			}
 			word = "";
 			while (1) {
 				if (!p[i])

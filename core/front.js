@@ -713,11 +713,6 @@ function tosvg(in_fname,		// file name
 			 || cfmt.writefields.indexOf(line0) < 0)
 				break
 			get_lyrics(text, txt_add == ' ')
-			if (text.slice(-1) == '\\') {	// old continuation
-				txt_add = ' ';
-				last_info = line0
-				continue
-			}
 			break
 		case '|':			// "|:" starts a music line
 			if (parse.state < 2)
