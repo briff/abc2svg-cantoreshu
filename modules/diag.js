@@ -1,6 +1,6 @@
 // diag.js - module to insert guitar chord diagrams
 //
-// Copyright (C) 2018-2019 Jean-Francois Moine - GPL3+
+// Copyright (C) 2018-2021 Jean-Francois Moine - GPL3+
 //
 // This module is loaded when "%%diagram" appears in a ABC source.
 //
@@ -480,7 +480,7 @@ M-10.2 -31h20.4"/>';
 				continue
 
 			// insert the diagram as a decoration
-			this.deco_cnv([ ch_cnv(gch.otext) ], s, null)
+			this.deco_cnv([ ch_cnv(gch.text) ], s, null)
 		}
 	}
     }, // do_diag()
