@@ -425,7 +425,8 @@ function draw_all_chsy() {
 				y = y_get(s.st, 1, x, w)	// y / staff
 				if (an.type == 'g' && y < minmax[s.st].yup)
 					y = minmax[s.st].yup
-			} else if (an.pos == C.SL_BELOW) {
+			} else if (an.pos == C.SL_BELOW
+				|| an.pos == C.SL_HIDDEN) {
 				continue
 			} else {
 				x = s.x + an.x
