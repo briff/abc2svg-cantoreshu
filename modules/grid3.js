@@ -267,12 +267,13 @@ abc2svg.grid3 = {
 	if (opt.indexOf("chord-define") >= 0)
 		this.cfmt().csdef = txt
 	if (opt.indexOf("noprint") < 0) {
+		type += "3"
 		if (this.parse.state >= 2) {
 			s = this.new_block(type)
 			s.text = txt
 		} else {
 			abc2svg.grid3.block_gen.call(this, null, {
-						subtype: "grid3",
+						subtype: type,
 						text: txt
 						})
 		}
