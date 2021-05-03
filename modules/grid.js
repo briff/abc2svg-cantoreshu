@@ -1,6 +1,6 @@
 // grid.js - module to insert a chord grid before or after a tune
 //
-// Copyright (C) 2018-2020 Jean-Francois Moine - GPL3+
+// Copyright (C) 2018-2021 Jean-Francois Moine - GPL3+
 //
 // This module is loaded when "%%grid" appears in a ABC source.
 //
@@ -255,7 +255,7 @@ function build_grid(chords, bars, font, wmx) {
 	abc.blk_flush()
     }, // block_gen()
 
-    output_music: function(of) {
+    set_stems: function(of) {
     var	C = abc2svg.C,
 	abc = this,
 	tsfirst = abc.get_tsfirst(),
@@ -359,7 +359,7 @@ function build_grid(chords, bars, font, wmx) {
 		sb.wmx = wmx
 	} // build_chords
 
-	// -------- output_music --------
+	// -------- set_stems --------
 
 	// create a specific block
 	if (grid) {
@@ -411,7 +411,7 @@ function build_grid(chords, bars, font, wmx) {
 		}
 	}
 	of()
-    }, // output_music()
+    }, // set_stems()
 
     set_fmt: function(of, cmd, parm) {
 	if (cmd == "grid") {
@@ -445,7 +445,7 @@ function build_grid(chords, bars, font, wmx) {
 
     set_hooks: function(abc) {
 	abc.block_gen = abc2svg.grid.block_gen.bind(abc, abc.block_gen)
-	abc.output_music = abc2svg.grid.output_music.bind(abc, abc.output_music);
+	abc.set_stems = abc2svg.grid.set_stems.bind(abc, abc.set_stems)
 	abc.set_format = abc2svg.grid.set_fmt.bind(abc, abc.set_format)
     }
 } // grid

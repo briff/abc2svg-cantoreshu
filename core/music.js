@@ -1244,16 +1244,16 @@ function add_end_bar(s) {
 /* -- set the width and space of all symbols -- */
 // this function is called once for the whole tune
 function set_allsymwidth() {
-    var	maxx, val, st, s_chs, tim, stup,
+    var	val, st, s_chs, stup,
 	s = tsfirst,
 	s2 = s,
 	xa = 0,
 	xl = [],
-	wr = []
+	wr = [],
+	maxx = xa,
+	tim = s.time
 
 	/* loop on all symbols */
-	maxx = xa
-	tim = s.time
 	while (1) {
 		do {
 			if ((s.a_gch || s.a_ly) && !s_chs)
@@ -5118,9 +5118,6 @@ Abc.prototype.output_music = function() {
     var v, lwidth, indent, line_height, ts1st, tslast, p_v,
 	nv = voice_tb.length
 
-	gen_init()
-	if (!tsfirst)
-		return
 	set_global()
 	if (nv > 1)			// if many voices
 		self.set_stem_dir()	// set the stems direction in 'multi'
@@ -5129,6 +5126,11 @@ Abc.prototype.output_music = function() {
 		set_beams(voice_tb[v].sym);	/* decide on beams */
 
 	self.set_stems()		// set the stem lengths
+
+	gen_init()			// output the blocks and define the page layout
+	if (!tsfirst)
+		return
+
 	set_acc_shft()			// set the horizontal offset of accidentals
 	if (nv > 1) {			// if many voices
 		set_rest_offset();	/* set the vertical offset of rests */
