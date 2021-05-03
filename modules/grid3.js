@@ -20,7 +20,7 @@ abc2svg.grid3 = {
 
 // generate the grid
     block_gen: function(of, s) {
-	if (s.subtype != "grid") {
+	if (s.subtype != "grid3") {
 		of(s)
 		return
 	}
@@ -272,7 +272,7 @@ abc2svg.grid3 = {
 			s.text = txt
 		} else {
 			abc2svg.grid3.block_gen.call(this, null, {
-						subtype: type,
+						subtype: "grid3",
 						text: txt
 						})
 		}
