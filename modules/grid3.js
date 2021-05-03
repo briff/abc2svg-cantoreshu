@@ -1,6 +1,6 @@
 // grid3.js - module to insert a manual chords
 //
-// Copyright (C) 2020 Jean-Francois Moine - GPL3+
+// Copyright (C) 2020-2021 Jean-Francois Moine - GPL3+
 //
 // This module is loaded when "%%begingrid" appears in a ABC source.
 //
@@ -317,7 +317,8 @@ abc2svg.grid3 = {
 				otext: ch,
 				istart: ss.istart,
 				iend: ss.iend,
-				font: abc.get_font("gchord")
+				font: abc.get_font("gchord"),
+				pos: p_vc.pos.gch || C.SL_ABOVE
 			}])
 		}
 
