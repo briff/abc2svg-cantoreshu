@@ -2280,6 +2280,9 @@ function mrest_expand() {
 				delete s2.soln
 				delete s2.a_gch
 				delete s2.a_dd
+				delete s2.text
+				delete s2.rbstart
+				delete s2.rbstop
 				lkvsym(s2, next)
 			} else {
 				s2 = _bar(s)		// end of tune
