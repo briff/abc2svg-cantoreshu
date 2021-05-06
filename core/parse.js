@@ -1334,11 +1334,14 @@ function new_bar() {
 
 				// remove the invisible repeat bars
 				// when no shift is needed
-				if (bar_type == "["
+				if ((bar_type == "["
 				 && !s2.text
 				 && (curvoice.st == 0
 				  || (par_sy.staves[curvoice.st - 1].flags & STOP_BAR)
-				  || s.norepbra)) {
+				  || s.norepbra))
+				 || s2.bar_type == "|") {	// "|" + "|:" => "|:"
+					if (bar_type != "[")
+						s2.bar_type = bar_type
 					if (s.text)
 						s2.text = s.text
 					if (s.a_gch)
@@ -1354,8 +1357,7 @@ function new_bar() {
 				}
 
 				// merge back-to-back repeat bars
-				if (s2.st == curvoice.st
-				 && bar_type == "|:") {
+				if (bar_type == "|:") {
 					if (s2.bar_type == ":|") {
 						s2.bar_type = "::";
 						s2.rbstop = 2
