@@ -369,7 +369,19 @@ function voice_adj(sys_chg) {
 				}
 				continue
 			case C.MREST:
-				if (s.next && s.next.type != C.BAR) {
+				for (s2 = s.next; s2; s2 = s2.next) {
+					switch (s2.type) {
+					case C.BAR:
+					case C.GRACE:
+						break
+					default:
+						if (s2.dur)
+							break
+						continue
+					}
+					break
+				}
+				if (!s2 || s2.type != C.BAR) {
 					error(1, s,
 						"Lack of bar after multi-measure rest")
 					s2 = clone(s)
