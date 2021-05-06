@@ -2318,6 +2318,7 @@ function mrest_expand() {
 			s4 = clone(s)
 			delete s4.a_dd
 			delete s4.soln
+			delete s4.a_gch
 			if (s2.next) {
 				s4.next = s2.next
 				s4.next.prev = s4
