@@ -335,7 +335,7 @@ function voice_adj(sys_chg) {
 						note: {s: s2}
 					})
 				} else {
-					syntax(1, "Lack of ending slur(s)")
+					error(1, s, "Lack of ending slur(s)")
 				}
 			}
 		} // not %%score
@@ -370,7 +370,8 @@ function voice_adj(sys_chg) {
 				continue
 			case C.MREST:
 				if (s.next && s.next.type != C.BAR) {
-					syntax(1, "Lack of bar after multi-measure rest")
+					error(1, s,
+						"Lack of bar after multi-measure rest")
 					s2 = clone(s)
 					s2.type = C.BAR
 					s2.bar_type = '|'
