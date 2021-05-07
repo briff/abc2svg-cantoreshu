@@ -1642,6 +1642,7 @@ function set_nl(s) {			// s = start of line
 			new_type(s1)		// return t1 and t2
 			s2 = clone(s1)
 			s1.bar_type = t1
+			delete s1.rbstop
 			s2.bar_type = t2
 			lkvsym(s2, s1.next)	// voice
 			while (1) {
