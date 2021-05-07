@@ -2257,9 +2257,18 @@ function mrest_expand() {
 
 	// expand a multi-rest into a set of rest + bar
 	function mexp(s) {
-	    var	s2, s3, s4, next, tim, nbar,
+	    var	bar, s3, s4, tim, nbar,
 		nb = s.nmes,
-		dur = s.dur / nb
+		dur = s.dur / nb,
+		s2 = s.next
+
+		// get the bar (there may be some other symbols before the bar)
+		while (!s2.bar_type)
+			s2 = s2.next
+		bar = s2
+		while (!s2.bar_num)		// get the bar number
+			s2 = s2.ts_prev
+		nbar = s2.bar_num - s.nmes
 
 		// change the multi-rest into a single rest
 		s.type = C.REST
@@ -2269,28 +2278,19 @@ function mrest_expand() {
 
 		/* add the bar(s) and rest(s) */
 		tim = s.time + dur
-		s2 = next = s.next		// bar (always)
-		while (!s2.bar_num)		// get the bar number
-			s2 = s2.ts_prev
-		nbar = s2.bar_num - s.nmes
-
 		s3 = s2 = s
 		while (--nb > 0) {
 
 			// add the bar
-			if (next) {
-				s2 = clone(next)
-				delete s2.soln
-				delete s2.a_gch
-				delete s2.a_dd
-				delete s2.text
-				delete s2.rbstart
-				delete s2.rbstop
-				lkvsym(s2, next)
-			} else {
-				s2 = _bar(s)		// end of tune
-				s.next = s2
-			}
+			s2 = clone(bar)
+			delete s2.soln
+			delete s2.a_gch
+			delete s2.a_dd
+			delete s2.text
+			delete s2.rbstart
+			delete s2.rbstop
+			lkvsym(s2, bar)
+
 			s2.time = tim
 			while (s3.time < tim)
 				s3 = s3.ts_next	// bar at end of measure
