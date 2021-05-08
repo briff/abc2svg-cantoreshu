@@ -1223,7 +1223,7 @@ function draw_deco_near() {
 			/* check if hidden */
 			switch (dd.func) {
 			default:
-				if (dd.func >= 32)
+				if (dd.func >= 10)
 					continue
 				pos = 0
 				break
