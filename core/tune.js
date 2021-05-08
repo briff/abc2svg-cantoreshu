@@ -784,6 +784,7 @@ function pit_adj() {
 		if (p_v.key.k_transp) {
 			sk = p_v.key
 			key_transp(sk)
+			sk.k_old_sf = sk.k_sf	// no natural
 		} else {
 			sk = null
 		}
