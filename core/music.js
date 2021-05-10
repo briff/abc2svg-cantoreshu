@@ -1276,6 +1276,11 @@ function set_allsymwidth() {
 		s2.shrink = maxx - xa
 		s2.space = s2.ts_prev ? set_space(s2, tim) : 0
 
+		// adjust the spacing when after a spacer (y)
+		if (s2.space == 0 && s2.ts_prev
+		 && s2.ts_prev.type == C.SPACE && s2.ts_prev.seqst)
+			s2.space = s2.ts_prev.space /= 2
+
 		if (s2.dur && s2.dur != s2.notes[0].dur) {
 			if (!stup) {
 				stup = s2
