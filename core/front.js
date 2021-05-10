@@ -490,7 +490,7 @@ function tosvg(in_fname,		// file name
 				}
 				self.do_begin_end(b, uncomment(a[2]),
 					file.slice(eol + 1, i)
-						.replace(/^%?%/gm,'')
+						.replace(/^%?%/gm,''))
 				parse.eol = file.indexOf('\n', i + 6)
 				if (parse.eol < 0)
 					parse.eol = eof
