@@ -159,8 +159,8 @@ function Audio5(i_conf) {
 	} // get_instr()
 
 	// sf2_create
-	    var i, j, k, sid, gen, parm, oparm, sample, infos,
-		sampleRate, scale, sm,
+	    var i, j, k, sid, gen, parm, gparm, sample, infos,
+		sampleRate, scale,
 		b = instr >> 7,			// bank
 		p = instr % 128,		// preset
 		pr = presets
@@ -183,42 +183,46 @@ function Audio5(i_conf) {
 		for (k = 0; k < pr.length; k++) {
 		    if (!pr[k].generator.instrument)
 			continue
-		    oparm = {			// default parameters
-			attack: .001,
-			hold: .001,
-			decay: .001,
-			sustain: 0
-//			release: .001
-		    }
-		    sm = 0			// sampleModes
+		    gparm = null
 
-//		    infos = is[pr[k].generator.instrument.amount].info
 		    infos = get_instr(pr[k].generator.instrument.amount).info
-//console.log('infos '+infos.length)
 		    for (i = 0; i < infos.length; i++) {
 			gen = infos[i].generator
 
+			if (!gparm) {
+				parm = gparm = {	// default parameters
+					attack: .001,
+					hold: .001,
+					decay: .001,
+					sustain: 0
+//					release: .001
+				    }
+			} else {
+				parm = Object.create(gparm) // new parameters
+				if (!gen.sampleID)
+					gparm = parm	// global para,eters
+			}
+
 			if (gen.attackVolEnv)
-				oparm.attack = Math.pow(2,
+				parm.attack = Math.pow(2,
 						gen.attackVolEnv.amount / 1200)
 			if (gen.holdVolEnv)
-				oparm.hold = Math.pow(2,
+				parm.hold = Math.pow(2,
 						gen.holdVolEnv.amount / 1200)
 			if (gen.decayVolEnv)
-				oparm.decay = Math.pow(2,
+				parm.decay = Math.pow(2,
 						gen.decayVolEnv.amount / 1200) / 3
 			if (gen.sustainVolEnv)
-				oparm.sustain = gen.sustainVolEnv.amount / 1000
+				parm.sustain = gen.sustainVolEnv.amount / 1000
 //			if (gen.releaseVolEnv)
-//				oparm.release = Math.pow(2,
+//				parm.release = Math.pow(2,
 //						gen.releaseVolEnv.amount / 1200)
-
-			parm = Object.create(oparm)	// new parameters
-			if (gen.sampleModes)
-				sm = gen.sampleModes.amount
+			if (gen.sampleModes && gen.sampleModes.amount & 1)
+				parm.sm = 1
 
 			if (!gen.sampleID)	// (empty generator!)
 				continue
+
 			sid = gen.sampleID.amount
 			sampleRate = parser.sampleHeader[sid].sampleRate
 			sample = parser.sample[sid]
@@ -237,7 +241,7 @@ function Audio5(i_conf) {
 
 			sample_cp(parm.buffer, sample)
 
-			if (sm & 1) {
+			if (parm.sm) {
 				parm.loopStart = parser.sampleHeader[sid].startLoop /
 					sampleRate
 				parm.loopEnd = parser.sampleHeader[sid].endLoop /
