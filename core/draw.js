@@ -3708,7 +3708,7 @@ Abc.prototype.draw_symbols = function(p_voice) {
 			x += 32;
 			anno_start(s);
 			xygl(x, staff_tb[s.st].y + 12, "mrest");
-			out_XYAB('<text style="font:bold 15px serif"\n\
+			out_XYAB('<text style="font:bold 15px text,serif"\n\
 	x ="X" y="Y" text-anchor="middle">A</text>\n',
 				x, staff_tb[s.st].y + 28, s.nmes);
 			anno_a.push(s)

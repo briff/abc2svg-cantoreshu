@@ -834,29 +834,29 @@ var deco_str_style = {
 crdc:	{
 		dx: 0,
 		dy: 5,
-		style: 'font:italic 14px serif'
+		style: 'font:italic 14px text,serif'
 	},
 dacs:	{
 		dx: 0,
 		dy: 3,
-		style: 'font:16px serif',
+		style: 'font:16px text,serif',
 		anchor: ' text-anchor="middle"'
 	},
 fng:	{
 		dx: 0,
 		dy: 1,
-		style: 'font-family:Bookman; font-size:8px',
+		style: 'font-family:text,Bookman; font-size:8px',
 		anchor: ' text-anchor="middle"'
 	},
 pf:	{
 		dx: 0,
 		dy: 5,
-		style: 'font:italic bold 16px serif'
+		style: 'font:italic bold 16px text,serif'
 	},
 '@':	{
 		dx: 0,
 		dy: 5,
-		style: 'font: 12px sans-serif'
+		style: 'font: 12px text,sans-serif'
 	}
 }
 
@@ -928,7 +928,7 @@ Abc.prototype.out_lped = function(x, y, val, defl) {
 function out_8va(x, y, val, defl) {
 	if (!defl.nost) {
 		out_XYAB('<text x="X" y="Y" \
-style="font:italic bold 12px serif">8\
+style="font:italic bold 12px text,serif">8\
 <tspan dy="-4" style="font-size:10px">va</tspan></text>\n',
 			x - 8, y);
 		x += 12;
@@ -945,7 +945,7 @@ style="font:italic bold 12px serif">8\
 function out_8vb(x, y, val, defl) {
 	if (!defl.nost) {
 		out_XYAB('<text x="X" y="Y" \
-style="font:italic bold 12px serif">8\
+style="font:italic bold 12px text,serif">8\
 <tspan dy="-4" style="font-size:10px">vb</tspan></text>\n',
 			x - 8, y);
 		x += 4;
@@ -962,7 +962,7 @@ style="font:italic bold 12px serif">8\
 function out_15ma(x, y, val, defl) {
 	if (!defl.nost) {
 		out_XYAB('<text x="X" y="Y" \
-style="font:italic bold 12px serif">15\
+style="font:italic bold 12px text,serif">15\
 <tspan dy="-4" style="font-size:10px">ma</tspan></text>\n',
 			x - 10, y);
 		x += 20;
@@ -979,7 +979,7 @@ style="font:italic bold 12px serif">15\
 function out_15mb(x, y, val, defl) {
 	if (!defl.nost) {
 		out_XYAB('<text x="X" y="Y" \
-style="font:italic bold 12px serif">15\
+style="font:italic bold 12px text,serif">15\
 <tspan dy="-4" style="font-size:10px">mb</tspan></text>\n',
 			x - 10, y);
 		x += 7;
