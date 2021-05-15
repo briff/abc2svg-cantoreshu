@@ -123,7 +123,7 @@ var prn = {
     function toabc(p) {
     var	i, j, s, pit
 
-	if (/^[^_]*[A-Ga-g][,']*$/.test(p))	// '
+	if (/^[_^]*[A-Ga-g][,']*$/.test(p))	// '
 		return p		// ABC note
 
 	// if not a MIDI pitch, try a drum instrument name
