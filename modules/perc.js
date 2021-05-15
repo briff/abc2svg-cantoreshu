@@ -156,10 +156,10 @@ var prn = {
 				i = p.indexOf('-')
 				if (p[i + 1] != 't')
 					break
-				switch (p[1]) {
+				switch (p[i + 2]) {
 				case 'i':
 				case 'o':
-					pit = prn[s + p[1]]
+					pit = prn[s + p[i + 2]]
 					break
 				}
 				break
@@ -174,7 +174,7 @@ var prn = {
 		p += ','
 		pit += 12
 	}
-	while (pit > 72) {
+	while (pit >= 72) {
 		p += "'"
 		pit -= 12
 	}
