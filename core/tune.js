@@ -1138,10 +1138,10 @@ Abc.prototype.do_pscom = function(text) {
 		if (parse.scores && parse.scores.length > 0) {
 			text = parse.scores.shift();
 			cmd = text.match(/([^\s]+)\s*(.*)/);
-			get_staves(cmd[1], cmd[2])
-		} else {
-			get_staves(cmd, param)
+			param = cmd[2]
+			cmd = cmd[1]
 		}
+		get_staves(cmd, param)
 		return
 	case "sysstaffsep":
 //--fixme: may be global
