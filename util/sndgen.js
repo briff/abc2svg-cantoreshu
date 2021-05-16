@@ -1,6 +1,6 @@
 // sndgen.js - sound generation
 //
-// Copyright (C) 2019-2020 Jean-Francois Moine
+// Copyright (C) 2019-2021 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //

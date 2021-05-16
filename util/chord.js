@@ -1,6 +1,6 @@
 // chord.js - generation of accompaniment
 //
-// Copyright (C) 2020 Jean-Francois Moine and Seymour Shlien
+// Copyright (C) 2020-2021 Jean-Francois Moine and Seymour Shlien
 //
 // This file is part of abc2svg-core.
 //
