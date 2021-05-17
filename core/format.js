@@ -269,7 +269,7 @@ function param_set_font(xxxfont, p) {
 			syntax(1, "No end of url in font family")
 			return
 		}
-		p = p.slice(0, n)
+		p = p.slice(0, n + 1)
 	} else if (p[0] == '"') {
 		n = p.indexOf('"', 1)
 		if (n < 0) {
