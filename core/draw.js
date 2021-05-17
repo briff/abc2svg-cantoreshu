@@ -2523,7 +2523,8 @@ function draw_tuplet(s1) {
 			yy = ym + (s3.x - xm) * a
 			if (s3.ymn > yy)
 				s3.ymn = yy;
-			y_set(upstaff, false, s3.x, s3.next.x - s3.x, yy)
+			if (s3.next)
+				y_set(upstaff, false, s3.x, s3.next.x - s3.x, yy)
 		}
 		if (s3 == s2)
 			break
