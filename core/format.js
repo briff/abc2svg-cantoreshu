@@ -261,6 +261,28 @@ function param_set_font(xxxfont, p) {
 		set_font_fac(font)
 	else
 		font.swfac = 0
+
+	// get the font family
+	if (p[0] == 'u' && p.slice(0, 4) == "url(") {
+		n = p.indexOf(')', 1)
+		if (n < 0) {
+			syntax(1, "No end of url in font family")
+			return
+		}
+		p = p.slice(0, n)
+	} else if (p[0] == '"') {
+		n = p.indexOf('"', 1)
+		if (n < 0) {
+			syntax(1, "No end of string in font family")
+			return
+		}
+		p = p.slice(1, n)
+	} else {
+		n = p.indexOf(' ', 1)
+		if (n >= 0)
+			p = p.slice(0, n)
+	}
+
 	switch (p) {
 	case "":
 	case "*": return
