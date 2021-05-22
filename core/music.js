@@ -444,11 +444,17 @@ function insert_clef(s, clef_type, clef_line) {
 	/* link in time */
 	while (!s.seqst)
 		s = s.ts_prev;
-	lktsym(new_s, s)
-
-	if (s.soln) {			// move the start of line
-		new_s.soln = true
-		delete s.soln
+	if (s.type == C.STAVES) {
+		new_s.ts_next = s.ts_next
+		new_s.ts_next.ts_prev =
+			s.ts_next = new_s 
+		new_s.ts_prev = s
+	} else {
+		lktsym(new_s, s)
+		if (s.soln) {			// move the start of line
+			new_s.soln = true
+			delete s.soln
+		}
 	}
 	return new_s
 }
@@ -2391,11 +2397,11 @@ function mrest_expand() {
 // set the clefs (treble or bass) in a 'auto clef' sequence
 // return the starting clef type
 function set_auto_clef(st, s_start, clef_type_start) {
-	var s, min, max, time, s2, s3;
+    var	s, time, s2, s3,
+	max = 12,					/* "F," */
+	min = 20					/* "G" */
 
 	/* get the max and min pitches in the sequence */
-	max = 12;					/* "F," */
-	min = 20					/* "G" */
 	for (s = s_start; s; s = s.ts_next) {
 		if (s.type == C.STAVES && s != s_start)
 			break
@@ -2537,10 +2543,10 @@ function set_auto_clef(st, s_start, clef_type_start) {
  *				(created on voice creation, updated here)
  */
 function set_clefs() {
-	var	s, s2, st, v, p_voice, g, new_type, new_line, p_staff, pit,
-		staff_clef = new Array(nstaff + 1),	// st -> { clef, autoclef }
-		sy = cur_sy,
-		mid = []
+    var	s, s2, st, v, p_voice, g, new_type, new_line, p_staff, pit,
+	staff_clef = new Array(nstaff + 1),	// st -> { clef, autoclef }
+	sy = cur_sy,
+	mid = []
 
 	// create the staff table
 	staff_tb = new Array(nstaff + 1)
@@ -2597,7 +2603,7 @@ function set_clefs() {
 
 		switch (s.type) {
 		case C.STAVES:
-			sy = s.sy
+			sy = s.sy			// new system
 			for (st = 0; st <= nstaff; st++)
 				staff_clef[st].autoclef = true
 			for (v = 0; v < voice_tb.length; v++) {
