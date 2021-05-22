@@ -107,6 +107,12 @@ function parse_gchord(type) {
 				gch.font = get_font("gchord")
 				gch.pos = curvoice.pos.gch || C.SL_ABOVE
 				break
+			case '^': 
+				gch.pos = C.SL_ABOVE
+				break
+			case '_':
+				gch.pos = C.SL_BELOW
+				break
 			case '@':
 				gch.x = x_abs;
 				y_abs -= h_ann;
@@ -268,11 +274,6 @@ Abc.prototype.gch_build = function(s) {
 		case '@':
 			break
 		case '^':			/* above */
-			xspc = wh[0] * GCHPRE
-			if (xspc > 8)
-				xspc = 8;
-			gch.x = -xspc;
-			break
 		case '_':			/* below */
 			xspc = wh[0] * GCHPRE
 			if (xspc > 8)
