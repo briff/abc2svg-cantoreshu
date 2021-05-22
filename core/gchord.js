@@ -361,6 +361,10 @@ Abc.prototype.draw_gchord = function(i, s, x, y) {
 						18) * 3 :
 				12)		// fixed offset on rests and bars
 			- h / 2
+		if (y > 24)
+			y_set(s.st, 1, x, w, y + h + pad)
+		if (y < 0)
+			y_set(s.st, 0, x, w, y - pad)
 		break
 	default:			// chord symbol
 		if (y >= 0) {
