@@ -18,7 +18,7 @@
 // along with abc2svg-core.  If not, see <http://www.gnu.org/licenses/>.
 
 var	a_gch,		// array of parsed guitar chords
-	a_dcn= [],	// array of parsed decoration names
+	a_dcn = [],	// array of parsed decoration names
 	multicol,	// multi column object
 	maps = {}	// maps object - see set_map()
 var	qplet_tb = new Int8Array([ 0, 1, 3, 2, 3, 0, 2, 0, 3, 0 ]),
@@ -2923,6 +2923,10 @@ function parse_music_line() {
 	}
 	if (sls.length)
 		syntax(1, "Start of slur without note")
+	if (a_dcn.length) {
+		syntax(1, "Decoration without symbol")
+		a_dcn = []
+	}
 	if (grace) {
 		syntax(1, "No end of grace note sequence");
 		curvoice.last_sym = grace.prev;
