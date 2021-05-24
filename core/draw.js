@@ -1740,19 +1740,17 @@ if (two_staves) error(2, k1, "*** multi-staves slurs not treated yet");
 					 && k1.nflags >= -1	/* if with a stem */
 //fixme: check if at end of tuplet
 					 && !k1.in_tuplet) {
-//					  || k1.ys > y1 - 3)) {
 						if (k1.nflags > 0) {
 							x1 += 2;
 							y1 = k1.ys - 3
 						} else {
 							y1 = k1.ys - 6
 						}
-// don't clash with decorations
-//					} else {
-//						y1 = k1.ys + 3
+					} else {
+						y1 = k1.ys + 3
 					}
-//				} else {
-//					y1 = k1.y + 8
+				} else {
+					y1 = k1.y + 8
 				}
 			} else {
 				if (k1.stem < 0) {
@@ -1769,11 +1767,11 @@ if (two_staves) error(2, k1, "*** multi-staves slurs not treated yet");
 						} else {
 							y1 = k1.ys + 6
 						}
-//					} else {
-//						y1 = k1.ys - 3
+					} else {
+						y1 = k1.ys - 3
 					}
-//				} else {
-//					y1 = k1.y - 8
+				} else {
+					y1 = k1.y - 8
 				}
 			}
 		}
@@ -1791,12 +1789,11 @@ if (two_staves) error(2, k1, "*** multi-staves slurs not treated yet");
 					if (k2.beam_st
 					 && k2.nflags >= -1
 					 && !k2.in_tuplet)
-//						|| k2.ys > y2 - 3))
 						y2 = k2.ys - 6
-//					else
-//						y2 = k2.ys + 3
-//				} else {
-//					y2 = k2.y + 8
+					else
+						y2 = k2.ys + 3
+				} else {
+					y2 = k2.y + 8
 				}
 			} else {
 				if (k2.stem < 0) {
@@ -1806,10 +1803,10 @@ if (two_staves) error(2, k1, "*** multi-staves slurs not treated yet");
 					 && !k2.in_tuplet)
 //						|| k2.ys < y2 + 3))
 						y2 = k2.ys + 6
-//					else
-//						y2 = k2.ys - 3
-//				} else {
-//					y2 = k2.y - 8
+					else
+						y2 = k2.ys - 3
+				} else {
+					y2 = k2.y - 8
 				}
 			}
 		}
