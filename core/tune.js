@@ -162,7 +162,7 @@ function sort_all() {
 
 	// loop on the symbols of all voices
 	while (1) {
-		if (new_sy && fl) {
+		if (new_sy) {
 			sy = new_sy;
 			new_sy = null;
 			multi = -1;
@@ -206,22 +206,8 @@ function sort_all() {
 			if (!s || s.time != time
 			 || w_tb[s.type] != wmin)
 				continue
-			if (s.type == C.STAVES) {
-				new_sy = s.sy;
-
-				// set all voices of previous and next staff systems
-				// as reachable
-				for (ir2 = 0; ir2 < nv; ir2++) {
-					if (vn[ir2] == undefined)
-						break
-				}
-				for (v2 = 0; v2 < nv; v2++) {
-					if (!new_sy.voices[v2]
-					 || sy.voices[v2])
-						continue
-					vn[ir2++] = v2
-				}
-			}
+			if (s.type == C.STAVES)
+				new_sy = s.sy
 			if (fl) {
 				fl = 0;
 				s.seqst = true
