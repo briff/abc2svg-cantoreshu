@@ -842,12 +842,6 @@ dacs:	{
 		style: 'font:16px text,serif',
 		anchor: ' text-anchor="middle"'
 	},
-fng:	{
-		dx: 0,
-		dy: 1,
-		style: 'font-family:text,Bookman; font-size:8px',
-		anchor: ' text-anchor="middle"'
-	},
 pf:	{
 		dx: 0,
 		dy: 5,
@@ -856,11 +850,17 @@ pf:	{
 '@':	{
 		dx: 0,
 		dy: 5,
-		style: 'font: 12px text,sans-serif'
+		style: 'font:12px text,sans-serif'
 	}
 }
 
 function out_deco_str(x, y, name, str) {
+	if (name == 'fng') {
+		out_XYAB('\
+<text x="X" y="Y" style="font-size:14px" text-anchor="middle">A</text>\n',
+			x, y + 2, m_gl(str))
+		return
+	}
 	var	a, f,
 		a_deco = deco_str_style[name]
 
