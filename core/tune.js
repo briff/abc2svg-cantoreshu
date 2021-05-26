@@ -72,6 +72,8 @@ function sym_link(s) {
 	s.time = curvoice.time
 	if (s.dur && !s.grace)
 		curvoice.time += s.dur;
+	parse.ufmt = true
+	s.fmt = cfmt				// global parameters
 	s.pos = curvoice.pos
 	if (curvoice.second)
 		s.second = true
@@ -296,6 +298,7 @@ function voice_adj(sys_chg) {
 			if (s.next)
 				s.next.prev = s
 			p_voice.sym.next = s
+			s.fmt = cfmt
 		}
 	}
 
@@ -1782,6 +1785,7 @@ function is_voice_sig() {
 function get_clef(s) {
 	if (is_voice_sig()) {
 		curvoice.clef = s
+		s.fmt = cfmt
 		return
 	}
 

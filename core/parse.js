@@ -2308,8 +2308,6 @@ Abc.prototype.new_note = function(grace, sls) {
 
 	sym_link(s)
 
-	if (cfmt.shiftunison)
-		s.shiftunison = cfmt.shiftunison
 	if (!grace) {
 		if (!curvoice.lyric_restart)
 			curvoice.lyric_restart = s

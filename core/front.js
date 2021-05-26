@@ -288,6 +288,7 @@ function tosvg(in_fname,		// file name
 		maci = sav.maci;
 		parse.tune_v_opts = null;
 		parse.scores = null;
+		parse.ufmt = false
 		init_tune()
 		img.chg = true;
 		set_page();

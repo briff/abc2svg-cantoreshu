@@ -473,7 +473,7 @@ function draw_lyric_line(p_voice, j, y) {
 		if (x0 < lastx + 10)
 			x0 = lastx + 10;
 		out_hyph(lastx, y, x0 - lastx)
-		if (cfmt.hyphencont)
+		if (p_voice.s_next && p_voice.s_next.fmt.hyphencont)
 			p_voice.hy_st |= (1 << j)
 	}
 
@@ -505,8 +505,8 @@ function draw_lyrics(p_voice, nly, a_h, y,
 
 	set_font("vocal")
 	if (incr > 0) {				/* under the staff */
-		if (y > -cfmt.vocalspace)
-			y = -cfmt.vocalspace;
+		if (y > -tsfirst.fmt.vocalspace)
+			y = -tsfirst.fmt.vocalspace;
 		y *= sc
 		for (j = 0; j < nly; j++) {
 			y -= a_h[j] * 1.1;
@@ -516,7 +516,7 @@ function draw_lyrics(p_voice, nly, a_h, y,
 	}
 
 	/* above the staff */
-	top = staff_tb[p_voice.st].topbar + cfmt.vocalspace
+	top = staff_tb[p_voice.st].topbar + tsfirst.fmt.vocalspace
 	if (y < top)
 		y = top;
 	y *= sc

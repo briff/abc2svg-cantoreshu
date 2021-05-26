@@ -109,7 +109,7 @@ function identify_note(s, dur_o) {
 		head = C.SQUARE
 		break
 	case -3:
-		head = cfmt.squarebreve ? C.SQUARE : C.OVALBARS
+		head = s.fmt.squarebreve ? C.SQUARE : C.OVALBARS
 		break
 	case -2:
 		head = C.OVAL
@@ -549,9 +549,9 @@ function set_float() {
 /* -- set the x offset of the grace notes -- */
 function set_graceoffs(s) {
 	var	next, m, dx, x,
-		gspleft = cfmt.gracespace[0],
-		gspinside = cfmt.gracespace[1],
-		gspright = cfmt.gracespace[2],
+		gspleft = s.fmt.gracespace[0],
+		gspinside = s.fmt.gracespace[1],
+		gspright = s.fmt.gracespace[2],
 		g = s.extra;
 
 	if (s.prev && s.prev.type == C.BAR)
@@ -913,7 +913,7 @@ Abc.prototype.set_width = function(s) {
 		esp = 4
 		if (!s.k_a_acc) {
 			n1 = s.k_sf			/* new key sig */
-			if (s.k_old_sf && (cfmt.cancelkey || n1 == 0))
+			if (s.k_old_sf && (s.fmt.cancelkey || n1 == 0))
 				n2 = s.k_old_sf	/* old key */
 			else
 				n2 = 0
@@ -1222,7 +1222,8 @@ function _bar(s) {
 		notes: [{
 			pit: s.notes ? s.notes[0].pit : 22
 		}],
-		prev: s
+		prev: s,
+		fmt: s.fmt
 	}
 } // _bar()
 
@@ -1696,7 +1697,7 @@ function set_nl(s) {			// s = start of line
 		for (s2 = s; s2; s2 = s2.ts_next) {
 			switch (s2.type) {
 			case C.KEY:
-				if (!cfmt.keywarn
+				if (!s.fmt.keywarn
 				 || s2.invis)
 					continue
 				for (s1 = s.ts_prev; s1 ;s1 = s1.ts_prev) {
@@ -1706,7 +1707,7 @@ function set_nl(s) {			// s = start of line
 				// fall thru
 			case C.METER:
 				if (s2.type == C.METER) {
-					if (!cfmt.timewarn)
+					if (!s.fmt.timewarn)
 						continue
 					s1 = s.ts_prev
 				}
@@ -1856,7 +1857,7 @@ function get_width(s, next) {
     var	shrink, space,
 	w = 0,
 	wmx = 0,
-	sp_fac = (1 - cfmt.maxshrink)
+	sp_fac = (1 - s.fmt.maxshrink)
 
 	while (s != next) {
 		if (s.seqst) {
@@ -1865,7 +1866,7 @@ function get_width(s, next) {
 			if ((space = s.space) < shrink)
 				w += shrink
 			else
-				w += shrink * cfmt.maxshrink
+				w += shrink * s.fmt.maxshrink
 					+ space * sp_fac
 			s.x = w
 		}
@@ -1888,7 +1889,7 @@ function set_lines(	s,		/* first symbol */
 	ws = get_width(s, next)		// 2 widths: nice and shrinked
 
 	// take care of big key signatures at end of line
-	if (cfmt.keywarn && next
+	if (s.fmt.keywarn && next
 	 && next.type == C.KEY && !last.dur) {
 		ws[0] += next.wr
 		ws[1] += next.wr
@@ -1915,7 +1916,7 @@ function set_lines(	s,		/* first symbol */
 		xmin = s.x - s.shrink - indent;
 		xmax = xmin + lwidth;
 		xmid = xmin + wwidth / nlines;
-		xmin += wwidth / nlines * cfmt.breaklimit;
+		xmin += wwidth / nlines * s.fmt.breaklimit;
 		for (s = s.ts_next; s != next ; s = s.ts_next) {
 			if (!s.x)
 				continue
@@ -2066,8 +2067,8 @@ function cut_tune(lwidth, indent) {
 		lwidth -= 12
 
 	/* if asked, count the measures and set the EOLNs */
-	if (cfmt.barsperstaff) {
-		i = cfmt.barsperstaff;
+	i = s.fmt.barsperstaff
+	if (i) {
 		for (s2 = s; s2; s2 = s2.ts_next) {
 			if (s2.type != C.BAR
 			 || !s2.bar_num
@@ -2077,7 +2078,7 @@ function cut_tune(lwidth, indent) {
 				s2 = s2.ts_next
 			if (s2.ts_next)
 				s2.ts_next.soln = true
-			i = cfmt.barsperstaff
+			i = s.fmt.barsperstaff
 		}
 	}
 
@@ -3054,7 +3055,7 @@ if (st > nst) {
 				/* if 3 voices, and vertical space enough,
 				 * have stems down for the middle voice */
 				if (i != 0 && i + 2 == st_v.length) {
-					if (st_v[i].ymn - cfmt.stemheight
+					if (st_v[i].ymn - s.fmt.stemheight
 							>= st_v[i + 1].ymx)
 						s.multi = -1;
 
@@ -3250,7 +3251,7 @@ function new_sym(s, p_v, last_s) {
 
 /* -- init the symbols at start of a music line -- */
 function init_music_line() {
-   var	p_voice, s, s1, s2, s3, last_s, v, st, shr, shrmx, shl,
+   var	p_voice, s, s1, s2, s3, last_s, v, st, shr, shrmx, shl, fmt,
 	shlp, p_st, top,
 	nv = voice_tb.length
 
@@ -3276,6 +3277,7 @@ function init_music_line() {
 	// move the first clefs, key signatures and time signatures
 	// to the staves
 	s = tsfirst
+	fmt = s.fmt
 	while (s) {
 		switch (s.type) {
 		case C.CLEF:
@@ -3350,6 +3352,7 @@ function init_music_line() {
 // (fixme: needed for sample5 X:3 Fugue & staffnonote.xhtml)
 		if (!cur_sy.st_print[st])
 			s.invis = true
+		s.fmt = fmt
 	}
 
 	/* add keysig */
@@ -3365,6 +3368,7 @@ function init_music_line() {
 			new_sym(s, p_voice, last_s)
 			delete s.invis
 			s.k_old_sf = s2.k_sf	// no key cancel
+			s.fmt = fmt
 		}
 	}
 
@@ -3380,6 +3384,7 @@ function init_music_line() {
 				continue
 			s = clone(s2)
 			new_sym(s, p_voice, last_s)
+			s.fmt = fmt
 		}
 		insert_meter &= ~1		// no meter any more
 	}
@@ -3398,6 +3403,7 @@ function init_music_line() {
 				sls: p_voice.sls
 			}
 			new_sym(s, p_voice, last_s)
+			s.fmt = fmt
 			p_voice.sls = []
 		}
 	}
@@ -3437,6 +3443,7 @@ function init_music_line() {
 				p_voice.last_sym.rbstart = 1
 		} else {
 			new_sym(s2, p_voice, last_s)
+			s2.fmt = fmt
 		}
 	}
 
@@ -3519,7 +3526,9 @@ function set_words(p_voice) {
 			start_flag = true
 			break
 		case C.BAR:
-			s.bar_type = bar_cnv(s.bar_type)
+			res = s.fmt.bardef[s.bar_type]
+			if (res)
+				s.bar_type = res
 			if (!s.beam_on)
 				start_flag = true
 			if (!s.next && s.prev
@@ -3644,9 +3653,9 @@ function set_rb(p_voice) {
 				s.rbstop = 2	// right repeat with end
 				break
 			}
-			if (n == cfmt.rbmin)
+			if (n == s.fmt.rbmin)
 				s2 = s
-			if (n == cfmt.rbmax) {
+			if (n == s.fmt.rbmax) {
 				if (s2)
 					s = s2;
 				s.rbstop = 1	// right repeat without end
@@ -3851,7 +3860,7 @@ function set_beams(sym) {
 								s.stem = -1
 							} else {
 //--fixme: equal: check all notes of the beam
-								if (cfmt.bstemdown)
+								if (s.fmt.bstemdown)
 									s.stem = -1
 							}
 						}
@@ -3870,9 +3879,7 @@ function set_beams(sym) {
 				}
 				if (n < mid_p)
 					s.stem = 1
-				else if (n > mid_p)
-					s.stem = -1
-				else if (cfmt.bstemdown)
+				else if (n > mid_p || s.fmt.bstemdown)
 					s.stem = -1
 				else
 					s.stem = laststem
@@ -3896,9 +3903,10 @@ function set_beams(sym) {
 
 // check if there may be one head for unison when voice overlap
 function same_head(s1, s2) {
-	var i1, i2, l1, l2, head, i11, i12, i21, i22, sh1, sh2
+    var	i1, i2, l1, l2, head, i11, i12, i21, i22, sh1, sh2,
+	shu = s1.fmt.shiftunison || 0
 
-	if (s1.shiftunison && s1.shiftunison >= 3)
+	if (shu >= 3)
 		return false
 	if ((l1 = s1.dur) >= C.BLEN)
 		return false
@@ -3907,7 +3915,7 @@ function same_head(s1, s2) {
 	if (s1.stemless && s2.stemless)
 		return false
 	if (s1.dots != s2.dots) {
-		if ((s1.shiftunison && (s1.shiftunison & 1))
+		if (shu & 1
 		 || s1.dots * s2.dots != 0)
 			return false
 	}
@@ -3987,9 +3995,9 @@ function same_head(s1, s2) {
 			else if (s1.dots)
 				head = 1
 		} else if (l2 < C.BLEN / 4) {	/* (l1 >= C.BLEN / 2) */
-//			if ((s1.shiftunison && s1.shiftunison == 2)
+//			if (shu == 2)
 //			 || s1.dots != s2.dots)
-			if (s1.shiftunison && (s1.shiftunison & 2))
+			if (shu & 2)
 				return false
 			head = s2.dur >= C.BLEN / 2 ? 2 : 1
 		} else {
@@ -4543,7 +4551,7 @@ Abc.prototype.set_stems = function() {
 		}
 
 		/* set height of stem end */
-		slen = cfmt.stemheight
+		slen = s.fmt.stemheight
 		switch (nflags) {
 		case 2: slen += 0; break
 		case 3:	slen += 4; break
@@ -4634,6 +4642,7 @@ Abc.prototype.block_gen = function(s) {
 	case "pagewidth":
 	case "scale":
 	case "staffwidth":
+//fixme: no more useful?
 		blk_flush()
 		self.set_format(s.subtype, s.param)
 		break
@@ -4995,6 +5004,7 @@ Abc.prototype.set_sym_glue = function(width) {
 		|| blocks.length	//	(abcm2ps compatibility)
 
 	// strong shrink
+	s = tsfirst
 	if (xmin >= width) {
 		if (xmin > width)
 			error(1, s, "Line too much shrunk $1 $2 $3",
@@ -5002,15 +5012,15 @@ Abc.prototype.set_sym_glue = function(width) {
 				xx.toFixed(1),
 				width.toFixed(1));
 		x = 0
-		for (s = tsfirst; s; s = s.ts_next) {
+		for ( ; s; s = s.ts_next) {
 			if (s.seqst)
 				x += s.shrink;
 			s.x = x
 		}
 //		realwidth = width
 		spf_last = 0
-	} else if ((ll && xx + xs > width * (1 - cfmt.stretchlast))
-		 || (!ll && (xx + xs > width || cfmt.stretchstaff))) {
+	} else if ((ll && xx + xs > width * (1 - s.fmt.stretchlast))
+		 || (!ll && (xx + xs > width || s.fmt.stretchstaff))) {
 		if (xx == xse)			// if no space
 			xx += 5
 		for (var cnt = 4; --cnt >= 0; ) {
@@ -5043,7 +5053,7 @@ Abc.prototype.set_sym_glue = function(width) {
 		spf = (width - xs - xse) / xx
 		if (spf_last < spf)
 			spf = spf_last
-		for (s = tsfirst; s; s = s.ts_next) {
+		for ( ; s; s = s.ts_next) {
 			if (s.seqst)
 				x += s.space * spf <= s.shrink ?
 						s.shrink : s.space * spf

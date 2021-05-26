@@ -128,6 +128,38 @@ H "History: "',
 	wordsspace: 5
 }
 
+// parameters that are used in the symbols
+var sfmt = {
+bardef: true,
+barperstaff: true,
+beamslope: true,
+breaklimit: true,
+bstemdown: true,
+cancelkey: true,
+dynalign: true,
+flatbeams: true,
+gracespace: true,
+hyphencont: true,
+keywarn: true,
+maxshrink: true,
+maxstaffsep: true,
+maxsysstaffsep: true,
+measrepnb: true,
+rbmax: true,
+rbmin: true,
+shiftunison: true,
+slurheight: true,
+squarebreve: true,    
+staffsep: true,
+stemheight: true,
+stretchlast: true,
+stretchstaff: true,
+sysstaffsep: true,
+tieheight: true,
+timewarn: true,
+vocalspace: true
+} // sfmt
+
 function get_bool(param) {
 	return !param || !/^(0|n|f)/i.test(param) // accept void as true !
 }
@@ -445,6 +477,10 @@ Abc.prototype.set_format = function(cmd, param) {
 		return
 	}
 
+	// duplicate the global parameters if already used by symbols
+	if (sfmt[cmd] && parse.ufmt)
+		cfmt = Object.create(cfmt)
+
 	switch (cmd) {
 	case "aligncomposer":
 	case "barsperstaff":
@@ -530,10 +566,13 @@ Abc.prototype.set_format = function(cmd, param) {
 		// fall thru
 	case "bardef":			// %%bardef oldbar newbar
 		v = param.split(/\s+/)
-		if (v.length != 2)
+		if (v.length != 2) {
 			syntax(1, errs.bad_val, "%%bardef")
-		else
+		} else {
+			if (parse.ufmt)
+				cfmt.bardef = Object.create(cfmt.bardef)	// new object
 			cfmt.bardef[v[0]] = v[1]
+		}
 		break
 	case "chordalias":
 		v = param.split(/\s+/)
@@ -619,6 +658,8 @@ Abc.prototype.set_format = function(cmd, param) {
 				syntax(1, errs.bad_val, "%%gracespace")
 				break
 			}
+		if (parse.ufmt)
+			cfmt[cmd] = new Float32Array(3)
 		for (i = 0; i < 3; i++)
 			cfmt[cmd][i] = Number(v[i])
 		break
@@ -711,6 +752,12 @@ Abc.prototype.set_format = function(cmd, param) {
 		if (parse.state == 0)		// (needed for modules)
 			cfmt[cmd] = param
 		break
+	}
+
+	// check if already a same format
+	if (sfmt[cmd] && parse.ufmt) {
+		// to do...
+		parse.ufmt = false
 	}
 }
 
@@ -811,8 +858,3 @@ function get_font(fn) {
 	use_font(font)
 	return font
 }
-
-// convert the measure bars
-function bar_cnv(bar_type) {
-	return cfmt.bardef[bar_type] || bar_type
-} // bar_cnv()

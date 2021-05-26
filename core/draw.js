@@ -214,7 +214,7 @@ Abc.prototype.calculate_beam = function(bm, s1) {
 	}
 
 	// have flat beams on grace notes when asked
-	if (s.grace && cfmt.flatbeams)
+	if (s.grace && s1.fmt.flatbeams)
 		a = 0
 
 	// if a note inside the beam is the closest to the beam, the beam is flat
@@ -228,8 +228,8 @@ Abc.prototype.calculate_beam = function(bm, s1) {
 		a = (s2.ys + staff_tb[s2.st].y - y) / (s2.xs - s1.xs)
 
 	if (a != 0)
-		a = cfmt.beamslope * a /
-			(cfmt.beamslope + Math.abs(a)) // max steepness for beam
+		a = s1.fmt.beamslope * a /
+			(s1.fmt.beamslope + Math.abs(a)) // max steepness for beam
 
 	// pivot around the middle of the beam
 	b = (y + s2.ys + staff_tb[s2.st].y) / 2 - a * (s2.xs + s1.xs) / 2
@@ -877,7 +877,7 @@ Abc.prototype.draw_keysig = function(x, s) {
 	if (!s.k_a_acc) {
 
 		/* put neutrals if 'accidental cancel' */
-		if (cfmt.cancelkey || s.k_sf == 0) {
+		if (s.fmt.cancelkey || s.k_sf == 0) {
 
 			/* when flats to sharps, or sharps to flats, */
 			if (s.k_sf == 0
@@ -914,7 +914,7 @@ Abc.prototype.draw_keysig = function(x, s) {
 				shift += p_seq[i];
 				x += 5.5
 			}
-			if (cfmt.cancelkey && i < old_sf) {
+			if (s.fmt.cancelkey && i < old_sf) {
 				x += 2
 				for (; i < old_sf; i++) {
 					xygl(x, staffb + shift, "acc3");
@@ -933,7 +933,7 @@ Abc.prototype.draw_keysig = function(x, s) {
 				shift += p_seq[-i];
 				x += 5.5
 			}
-			if (cfmt.cancelkey && i > old_sf) {
+			if (s.fmt.cancelkey && i > old_sf) {
 				x += 2
 				for (; i > old_sf; i--) {
 					xygl(x, staffb + shift, "acc3");
@@ -1054,8 +1054,8 @@ function draw_rest(s) {
 		} else {
 			xygl(x, yb, "mrep")
 			if (s.rep_nb > 2 && s.v == cur_sy.top_voice
-			 && cfmt.measrepnb > 0
-			 && !(s.rep_nb % cfmt.measrepnb))
+			 && s.fmt.measrepnb > 0
+			 && !(s.rep_nb % s.fmt.measrepnb))
 				nrep_out(x, yb + p_staff.topbar, s.rep_nb)
 		}
 		anno_a.push(s)
@@ -1499,7 +1499,7 @@ function draw_note(s,
 			out_stem(x, y, slen, s.grace)
 		} else {				/* stem and flags */
 			out_stem(x, y, slen, s.grace,
-				 nflags, cfmt.straightflags)
+				 nflags, s.fmt.straightflags)
 		}
 	} else if (s.xstem) {				/* cross-staff stem */
 		s2 = s.ts_prev;
@@ -1971,7 +1971,7 @@ if (two_staves) error(2, k1, "*** multi-staves slurs not treated yet");
 		if (height > -.8 * y)
 			height = -.8 * y
 	}
-	height *= cfmt.slurheight;
+	height *= k1.fmt.slurheight;
 
 //	anno_start(k1_o, 'slur');
 	slur_out(x1, y1, x2, y2, dir, height, ty & C.SL_DOTTED);
@@ -2631,7 +2631,7 @@ function draw_note_ties(not1, job) {
 
 	y = staff_tb[st].y + 3 * (p - 18) + /* 1.0 * */ dir
 
-	h = (.03 * (x2 - x1) + 16) * dir * cfmt.tieheight
+	h = (.03 * (x2 - x1) + 16) * dir * s1.fmt.tieheight
 //	anno_start(k1, 'slur')
 	slur_out(x1, y, x2, y, dir, h, not1.tie_ty & C.SL_DOTTED)
 //	anno_stop(k1, 'slur')
@@ -2878,7 +2878,7 @@ function draw_sym_near() {
 						slur++
 				}
 				if (!s.p_v.ckey.k_bagpipe	// no slur when bagpipe
-				 && cfmt.graceslurs
+				 && s.fmt.graceslurs
 				 && !slur			// explicit slur
 				 && !s.tie_s			// some tie
 				 && s.next
@@ -3119,8 +3119,9 @@ function draw_vname(indent, stl) {
 
 // -- set the y offset of the staves and return the height of the whole system --
 function set_staff() {
-var	s, i, st, prev_staff, v,
+    var	i, st, prev_staff, v,
 	y, staffsep, dy, maxsep, mbot, val, p_voice, p_staff,
+	fmt = tsfirst.fmt,
 	sy = cur_sy
 
 	/* set the scale of the voices */
@@ -3160,7 +3161,7 @@ var	s, i, st, prev_staff, v,
 
 	/* set the vertical offset of the 1st staff */
 	y *= p_staff.staffscale;
-	staffsep = cfmt.staffsep * .5 +
+	staffsep = fmt.staffsep * .5 +
 			p_staff.topbar * p_staff.staffscale
 	if (y < staffsep)
 		y = staffsep
@@ -3175,8 +3176,8 @@ var	s, i, st, prev_staff, v,
 		if (!gene.st_print[st])
 			continue
 		p_staff = staff_tb[st]
-		staffsep = sy_staff_prev.sep || cfmt.sysstaffsep;
-		maxsep = sy_staff_prev.maxsep || cfmt.maxsysstaffsep;
+		staffsep = sy_staff_prev.sep || fmt.sysstaffsep;
+		maxsep = sy_staff_prev.maxsep || fmt.maxsysstaffsep;
 
 		dy = 0
 		if (p_staff.staffscale == staff_tb[prev_staff].staffscale) {
@@ -3244,10 +3245,10 @@ var	s, i, st, prev_staff, v,
 			return y
 	}
 	dy = -mbot;
-	staffsep = cfmt.staffsep * .5
+	staffsep = fmt.staffsep * .5
 	if (dy < staffsep)
 		dy = staffsep;
-	maxsep = cfmt.maxstaffsep * .5
+	maxsep = fmt.maxstaffsep * .5
 	if (dy > maxsep)
 		dy = maxsep;
 

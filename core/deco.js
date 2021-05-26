@@ -1051,7 +1051,7 @@ Abc.prototype.draw_all_deco = function() {
 		new_de = [],
 		ymid = []
 
-	if (!cfmt.dynalign) {
+	if (!tsfirst.fmt.dynalign) {
 		st = nstaff;
 		y = staff_tb[st].y
 		while (--st >= 0) {
@@ -1103,7 +1103,7 @@ Abc.prototype.draw_all_deco = function() {
 
 		/* center the dynamic marks between two staves */
 /*fixme: KO when deco on other voice and same direction*/
-		} else if (f_staff[dd.func] && !cfmt.dynalign
+		} else if (f_staff[dd.func] && !s.fmt.dynalign
 			&& ((de.up && st > 0)
 			 || (!de.up && st < nstaff))) {
 			if (de.up)
@@ -1621,7 +1621,7 @@ function draw_deco_staff() {
 		func_tb[dd.func](de)
 		if (dd.dd_en)		// if start
 			continue
-		if (cfmt.dynalign) {
+		if (de.s.fmt.dynalign) {
 			if (de.up) {
 				if (de.y > minmax[de.st].ymax)
 					minmax[de.st].ymax = de.y
@@ -1641,7 +1641,7 @@ function draw_deco_staff() {
 		if (dd.dd_en		// if start
 		 || !f_staff[dd.func])
 			continue
-		if (cfmt.dynalign) {
+		if (de.s.fmt.dynalign) {
 			if (de.up)
 				y = minmax[de.st].ymax
 			else
