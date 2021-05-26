@@ -618,19 +618,19 @@ function d_upstaff(de) {
 		 || (up < 0
 		  && (s.multi < 0
 		   || (!s.multi && s.stem > 0)))) {
-			yc = y_get(s.st, false, s.x - dd.wl, w) - 2
+			yc = y_get(s.st, false, x - dd.wl, w) - 2
 			if (yc > staffb)
 				yc = staffb;
 			yc -= dd.h;
-			y_set(s.st, false, s.x, 0, yc);
+			y_set(s.st, false, x, 0, yc)
 			inv = true;
 			s.ymn = yc
 		} else {
-			yc = y_get(s.st, true, s.x - dd.wl, w) + 2
+			yc = y_get(s.st, true, x - dd.wl, w) + 2
 			if (yc < stafft)
 				yc = stafft;
-			y_set(s.st, true, s.x - dd.wl, w, yc + dd.h);
 			s.ymx = yc + dd.h
+			y_set(s.st, true, x - dd.wl, w, s.ymx)
 		}
 		break
 	case "brth":
@@ -651,17 +651,17 @@ function d_upstaff(de) {
 		if (dd.name != "invertedfermata"
 		 && (up > 0
 		  || (up < 0 && s.multi >= 0))) {
-			yc = y_get(s.st, true, s.x - dd.wl, w) + 2 + dd.hd
+			yc = y_get(s.st, true, x - dd.wl, w) + 2 + dd.hd
 			if (yc < stafft)
 				yc = stafft;
-			y_set(s.st, true, s.x - dd.wl, w, yc + dd.h);
 			s.ymx = yc + dd.h
+			y_set(s.st, true, x - dd.wl, w, s.ymx)
 		} else {
-			yc = y_get(s.st, false, s.x - dd.wl, w) - 3 + dd.hd
+			yc = y_get(s.st, false, x - dd.wl, w) - 3 + dd.hd
 			if (yc > staffb)
 				yc = staffb;
 			yc -= dd.h;
-			y_set(s.st, false, s.x - dd.wl, w, yc - dd.hd)
+			y_set(s.st, false, x - dd.wl, w, yc - dd.hd)
 			if (dd.name == "fermata")
 				inv = true;
 			s.ymn = yc
