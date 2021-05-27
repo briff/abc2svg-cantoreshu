@@ -907,13 +907,15 @@ Abc.prototype.do_pscom = function(text) {
 		get_map(param)
 		return
 	case "maxsysstaffsep":
+	case "sysstaffsep":
 		if (parse.state == 3) {
 			val = get_unit(param)
 			if (isNaN(val)) {
-				syntax(1, errs.bad_val, "%%maxsysstaffsep")
+				syntax(1, errs.bad_val, "%%" + cmd)
 				return
 			}
-			par_sy.voices[curvoice.v].maxsep = val
+			par_sy.voices[curvoice.v][cmd[0] == 'm' ? "maxsep" : "sep"] =
+					val
 			return
 		}
 		break
@@ -1132,18 +1134,6 @@ Abc.prototype.do_pscom = function(text) {
 		}
 		get_staves(cmd, param)
 		return
-	case "sysstaffsep":
-//--fixme: may be global
-		if (parse.state == 3) {
-			val = get_unit(param)
-			if (isNaN(val)) {
-				syntax(1, errs.bad_val, "%%sysstaffsep")
-				return
-			}
-			par_sy.voices[curvoice.v].sep = val
-			return
-		}
-		break
 	case "text":
 		set_font("text")
 		if (parse.state >= 2) {

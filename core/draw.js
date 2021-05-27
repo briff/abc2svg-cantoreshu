@@ -3176,8 +3176,8 @@ function set_staff() {
 		if (!gene.st_print[st])
 			continue
 		p_staff = staff_tb[st]
-		staffsep = sy_staff_prev.sep || fmt.sysstaffsep;
-		maxsep = sy_staff_prev.maxsep || fmt.maxsysstaffsep;
+		staffsep = sy_staff_prev.sep || cfmt.sysstaffsep;
+		maxsep = sy_staff_prev.maxsep || cfmt.maxsysstaffsep;
 
 		dy = 0
 		if (p_staff.staffscale == staff_tb[prev_staff].staffscale) {
