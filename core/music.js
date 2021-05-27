@@ -3400,10 +3400,10 @@ function init_music_line() {
 				dur: 0,
 				multi: 0,
 				invis: true,
-				sls: p_voice.sls
+				sls: p_voice.sls,
+				fmt: fmt
 			}
 			new_sym(s, p_voice, last_s)
-			s.fmt = fmt
 			p_voice.sls = []
 		}
 	}
@@ -3414,20 +3414,10 @@ function init_music_line() {
 		s2 = p_voice.bar_start;
 		p_voice.bar_start = null
 
-		// if bar already, keep it in sequence
-		if (last_s && last_s.v == v) {
-			for (s3 = last_s; s3; s3 = s3.ts_next) {
-				if (s3.v != v)
-					break
-				switch (s3.type) {
-				case C.PART:
-				case C.TEMPO:
-					continue
-				case C.BAR:
-					p_voice.last_sym = s3
-					last_s = s3.ts_next
-					break
-				}
+		// check if bracket stop at this time
+		for (s = last_s; s && s.time == last_s.time; s = s.ts_next) {
+			if (s.rbstop) {
+				s2 = null
 				break
 			}
 		}
@@ -3646,13 +3636,13 @@ function set_rb(p_voice) {
 		for (s = s.next; s; s = s.next) {
 			if (s.type != C.BAR)
 				continue
-			n++
 			if (s.rbstop)
 				break
 			if (!s.next) {
 				s.rbstop = 2	// right repeat with end
 				break
 			}
+			n++
 			if (n == s.fmt.rbmin)
 				s2 = s
 			if (n == s.fmt.rbmax) {
