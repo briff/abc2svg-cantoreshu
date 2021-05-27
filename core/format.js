@@ -541,7 +541,6 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "contbarnb":
 	case "custos":
 	case "decoerr":
-	case "dynalign":
 	case "flatbeams":
 	case "graceslurs":
 	case "graceword":
@@ -722,6 +721,7 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "textoption":
 		cfmt[cmd] = get_textopt(param)
 		break
+	case "dynalign":
 	case "titletrim":
 		v = Number(param)
 		if (isNaN(v))

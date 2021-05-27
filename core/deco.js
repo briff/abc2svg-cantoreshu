@@ -427,6 +427,10 @@ function d_pf(de) {
 	// don't treat here the long decorations
 	if (de.ldst)			// if long deco start
 		return
+	if (s.fmt.dynalign < 0) {	// if no dynalign
+		d_upstaff(de)		// then, do as above/below the staff
+		return
+	}
 	if (de.start) {			// if long decoration
 		d_cresc(de)
 		return
@@ -600,7 +604,9 @@ function d_upstaff(de) {
 	up = -1
 	if (dd.func == 4) {		// below
 		up = 0
-	} else if (s.pos) {
+	} else if (dd.func == 6) {	// if dynamic/volume
+		up = up_p(s, s.pos.dyn)
+	} else {
 		switch (s.pos.orn) {
 		case C.SL_ABOVE:
 			up = 1
@@ -1621,7 +1627,7 @@ function draw_deco_staff() {
 		func_tb[dd.func](de)
 		if (dd.dd_en)		// if start
 			continue
-		if (de.s.fmt.dynalign) {
+		if (de.s.fmt.dynalign > 0) {	// if align
 			if (de.up) {
 				if (de.y > minmax[de.st].ymax)
 					minmax[de.st].ymax = de.y
@@ -1641,7 +1647,7 @@ function draw_deco_staff() {
 		if (dd.dd_en		// if start
 		 || !f_staff[dd.func])
 			continue
-		if (de.s.fmt.dynalign) {
+		if (de.s.fmt.dynalign > 0) {	// if align
 			if (de.up)
 				y = minmax[de.st].ymax
 			else
