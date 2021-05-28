@@ -249,7 +249,7 @@ function up_p(s, pos) {
 	case C.SL_BELOW:
 		return false
 	}
-	if (s.multi && s.multi != 0)
+	if (s.multi)
 		return s.multi > 0
 	if (!s.p_v.have_ly)
 		return false
@@ -519,7 +519,10 @@ function d_trill(de) {
 			up = 1
 			break
 		default:
-			up = s2.multi >= 0
+			if (dd.func == 6)
+				up = up_p(s, s.pos.dyn)
+			else
+				up = s2.multi >= 0
 			break
 		}
 	}
