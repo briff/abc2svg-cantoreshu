@@ -1000,7 +1000,7 @@ Abc.prototype.set_width = function(s) {
 		s.wl = set_graceoffs(s);
 		s.wr = 0
 		if (s.a_ly)
-			ly_width(s, wlw)
+			ly_set(s)
 		return
 	case C.STBRK:
 		s.wl = s.xmx
