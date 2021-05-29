@@ -300,6 +300,7 @@ abc2svg.grid3 = {
 			p_v: p_vc,
 			time: ntim,
 			st: 0,
+			fmt: ss.fmt,
 			dur: 0,
 			dur_orig: 0,
 			invis: true,
@@ -422,6 +423,7 @@ abc2svg.grid3 = {
 					}
 					if (!s)
 						break
+					ss.fmt = s.fmt
 					if (s.seqst) {
 						ss.seqst = true
 						delete s.seqst

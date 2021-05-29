@@ -87,6 +87,7 @@ abc2svg.gamelan = {
 				v: s.v,
 				p_v: s.p_v,
 				st: s.st,
+				fmt: s.fmt,
 				dur: d,
 				dur_orig: d_orig,
 				stem: 1,

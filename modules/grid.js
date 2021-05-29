@@ -365,6 +365,7 @@ function build_grid(chords, bars, font, wmx) {
 	if (grid) {
 	    var	C = abc2svg.C,
 		tsfirst = this.get_tsfirst(),
+		fmt = tsfirst.fmt,
 		voice_tb = this.get_voice_tb(),
 		p_v = voice_tb[this.get_top_v()],
 		s = {
@@ -409,6 +410,7 @@ function build_grid(chords, bars, font, wmx) {
 			p_v.sym.prev = s
 			p_v.sym = s
 		}
+		s.fmt = s.prev ? s.prev.fmt : fmt
 	}
 	of()
     }, // set_stems()
