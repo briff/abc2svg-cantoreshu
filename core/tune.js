@@ -696,6 +696,7 @@ function set_transp() {
 	}
 
 	if (is_voice_sig()) {			// if no symbol yet
+		curvoice.okey.fmt = cfmt
 		curvoice.key = s = clone(curvoice.okey)
 	} else {
 		s = curvoice.last_sym
