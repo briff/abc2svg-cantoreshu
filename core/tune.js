@@ -2127,8 +2127,8 @@ function goto_tune(is_K) {
 		p_voice.ulen = glovar.ulen
 		if (p_voice.ckey.k_bagpipe
 		 && !p_voice.pos.stm) {
-			p_voice.pos = clone(p_voice.pos);
-			p_voice.pos.stm = C.SL_BELOW
+			p_voice.pos = clone(p_voice.pos) & ~0x07
+			p_voice.pos.stm |= C.SL_BELOW
 		}
 	}
 

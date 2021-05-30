@@ -243,7 +243,7 @@ function y_set(st, up, x, w, y) {
 
 /* -- get the staff position of the dynamic and volume marks -- */
 function up_p(s, pos) {
-	switch (pos) {
+	switch (pos & 0x07) {
 	case C.SL_ABOVE:
 		return true
 	case C.SL_BELOW:
@@ -255,7 +255,7 @@ function up_p(s, pos) {
 		return false
 
 	/* above if the lyrics are below the staff */
-	return s.pos.voc != C.SL_ABOVE
+	return (s.pos.voc & 0x07) != C.SL_ABOVE
 }
 
 /* -- drawing functions -- */
@@ -427,7 +427,9 @@ function d_pf(de) {
 	// don't treat here the long decorations
 	if (de.ldst)			// if long deco start
 		return
-	if (s.fmt.dynalign < 0) {	// if no dynalign
+	if ((de.pos & C.SL_ALI_MSK) == C.SL_CLOSE
+	 || ((de.pos & C.SL_ALI_MSK) == 0
+	  && s.fmt.dynalign < 0)) {	// if no dynalign
 		d_upstaff(de)		// then, do as above/below the staff
 		return
 	}
@@ -437,7 +439,7 @@ function d_pf(de) {
 	}
 
 	de.val = dd.wl + dd.wr;
-	up = up_p(s, s.pos.vol)
+	up = up_p(s, de.pos)
 	if (up)
 		de.up = true;
 	x = s.x - dd.wl
@@ -520,7 +522,7 @@ function d_trill(de) {
 			break
 		default:
 			if (dd.func == 6)
-				up = up_p(s, s.pos.dyn)
+				up = up_p(s, de.pos)
 			else
 				up = s2.multi >= 0
 			break
@@ -608,9 +610,9 @@ function d_upstaff(de) {
 	if (dd.func == 4) {		// below
 		up = 0
 	} else if (dd.func == 6) {	// if dynamic/volume
-		up = up_p(s, s.pos.dyn)
+		up = up_p(s, de.pos)
 	} else {
-		switch (s.pos.orn) {
+		switch (de.pos & 0x07) {
 		case C.SL_ABOVE:
 			up = 1
 			break
@@ -1060,7 +1062,6 @@ Abc.prototype.draw_all_deco = function() {
 		new_de = [],
 		ymid = []
 
-	if (!tsfirst.fmt.dynalign) {
 		st = nstaff;
 		y = staff_tb[st].y
 		while (--st >= 0) {
@@ -1068,7 +1069,6 @@ Abc.prototype.draw_all_deco = function() {
 			ymid[st] = (y + 24 + y2) * .5;
 			y = y2
 		}
-	}
 
 	while (1) {
 		de = a_de.shift()
@@ -1112,7 +1112,10 @@ Abc.prototype.draw_all_deco = function() {
 
 		/* center the dynamic marks between two staves */
 /*fixme: KO when deco on other voice and same direction*/
-		} else if (f_staff[dd.func] && !s.fmt.dynalign
+		} else if (f_staff[dd.func]
+			&& ((de.pos & C.SL_ALI_MSK) == C.SL_CENTER
+			 || ((de.pos & C.SL_ALI_MSK) == 0
+			  && !s.fmt.dynalign))
 			&& ((de.up && st > 0)
 			 || (!de.up && st < nstaff))) {
 			if (de.up)
@@ -1247,7 +1250,7 @@ function draw_deco_near() {
 				pos = s.pos.dyn
 				break
 			}
-			if (pos == C.SL_HIDDEN)
+			if ((pos & 0x07) == C.SL_HIDDEN)
 				continue
 
 			de = {
@@ -1258,6 +1261,7 @@ function draw_deco_near() {
 				defl: {},
 				x: s.x,
 				y: s.y,
+				pos: pos
 //				dy: 0
 			}
 			if (s.type == C.BAR)
@@ -1630,7 +1634,9 @@ function draw_deco_staff() {
 		func_tb[dd.func](de)
 		if (dd.dd_en)		// if start
 			continue
-		if (de.s.fmt.dynalign > 0) {	// if align
+		if ((de.pos & C.SL_ALI_MSK) == C.SL_ALIGN
+		 || ((de.pos & C.SL_ALI_MSK) == 0
+		  && de.s.fmt.dynalign > 0)) {	// if align
 			if (de.up) {
 				if (de.y > minmax[de.st].ymax)
 					minmax[de.st].ymax = de.y
@@ -1650,7 +1656,9 @@ function draw_deco_staff() {
 		if (dd.dd_en		// if start
 		 || !f_staff[dd.func])
 			continue
-		if (de.s.fmt.dynalign > 0) {	// if align
+		if ((de.pos & C.SL_ALI_MSK) == C.SL_ALIGN
+		 || ((de.pos & C.SL_ALI_MSK) == 0
+		  && de.s.fmt.dynalign > 0)) {	// if align
 			if (de.up)
 				y = minmax[de.st].ymax
 			else

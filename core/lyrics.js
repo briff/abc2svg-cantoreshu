@@ -126,7 +126,7 @@ function get_lyrics(text, cont) {
 
 	if (curvoice.ignore)
 		return
-	if (curvoice.pos.voc != C.SL_HIDDEN)
+	if ((curvoice.pos.voc & 0x07) != C.SL_HIDDEN)
 		curvoice.have_ly = true
 
 	// get the starting symbol of the lyrics
@@ -240,7 +240,7 @@ function get_lyrics(text, cont) {
 			return
 		}
 		if (word
-		 && s.pos.voc != C.SL_HIDDEN) {
+		 && (s.pos.voc & 0x07) != C.SL_HIDDEN) {
 			ly = {
 				t: word,
 				font: cf,
@@ -384,7 +384,6 @@ function ly_set(s) {
 
 /* -- draw the lyrics under (or above) notes -- */
 /* (the staves are not yet defined) */
-/* !! this routine is tied to ly_width() !! */
 function draw_lyric_line(p_voice, j, y) {
 	var	p, lastx, w, s, s2, ly, lyl, ln,
 		hyflag, lflag, x0, font, shift
@@ -604,7 +603,7 @@ function draw_all_lyrics() {
 		if (nly == 0)
 			continue
 		if (p_voice.pos.voc)
-			above_tb[v] = p_voice.pos.voc == C.SL_ABOVE
+			above_tb[v] = (p_voice.pos.voc & 0x07) == C.SL_ABOVE
 		else if (voice_tb[v + 1]
 /*fixme:%%staves:KO - find an other way..*/
 		      && voice_tb[v + 1].st == st

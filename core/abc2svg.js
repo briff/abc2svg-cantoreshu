@@ -50,12 +50,16 @@ abc2svg.C = {
 	OVALBARS: 3,
 	SQUARE: 4,
 
-	// slur/tie types (3 + 1 bits)
-	SL_ABOVE: 0x01,
+	// position types
+	SL_ABOVE: 0x01,		// position (3 bits)
 	SL_BELOW: 0x02,
 	SL_AUTO: 0x03,
 	SL_HIDDEN: 0x04,
-	SL_DOTTED: 0x08		// (modifier bit)
+	SL_DOTTED: 0x08,	// modifiers
+	SL_ALI_MSK: 0x70,	// align
+		SL_ALIGN: 0x10,
+		SL_CENTER: 0x20,
+		SL_CLOSE: 0x40
     };
 
 // !! tied to the symbol types in abc2svg.js !!

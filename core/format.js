@@ -409,7 +409,7 @@ function set_pos(k, v) {		// keyword, value
 	k = k.slice(0, 3)
 	if (k == "ste")
 		k = "stm"
-	set_v_param("pos", k + ' ' + v)
+	set_v_param("pos", '"' + k + ' ' + v + '"')
 }
 
 // set/unset the fields to write
@@ -693,8 +693,12 @@ Abc.prototype.set_format = function(cmd, param) {
 		cfmt.sound = "play"		// without clef
 		break
 	case "pos":
-		cmd = param.split(/\s+/);
-		set_pos(cmd[0], cmd[1])
+		cmd = param.match(/(\w*)\s+(.*)/)
+		if (!cmd || !cmd[2]) {
+			syntax(1, "Error in %%pos")
+			break
+		}
+		set_pos(cmd[1], cmd[2])
 		break
 	case "sounding-score":
 		if (cfmt.sound != "play")

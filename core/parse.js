@@ -351,13 +351,20 @@ Abc.prototype.set_vp = function(a) {
 		case "stem=":			// compatibility
 		case "pos=":			// from %%pos only
 			if (item == "pos=")
-				item = a.shift().split(' ')
+				item = a.shift()
+					.slice(1, -1)	// always inside dble quotes
+					.split(' ')
 			else
 				item = ["stm", a.shift()];
 			val = posval[item[1]]
 			if (val == undefined) {
-				syntax(1, errs.bad_val, item[0])
+				syntax(1, errs.bad_val, "%%pos")
 				break
+			}
+			switch (item[2]) {
+			case "align": val |= C.SL_ALIGN; break
+			case "center": val |= C.SL_CENTER; break
+			case "close": val |= C.SL_CLOSE; break
 			}
 			if (!pos)
 				pos = {}
@@ -2206,7 +2213,7 @@ Abc.prototype.new_note = function(grace, sls) {
 
 	if (s.notes) {				// if note or rest
 		if (!grace) {
-			switch (curvoice.pos.stm) {
+			switch (curvoice.pos.stm & 0x07) {
 			case C.SL_ABOVE: s.stem = 1; break
 			case C.SL_BELOW: s.stem = -1; break
 			case C.SL_HIDDEN: s.stemless = true; break
@@ -2637,7 +2644,7 @@ function parse_music_line() {
 					c = cfmt.tuplets
 					if (curvoice.pos.tup) {
 						c = Object.create(c)
-						switch (curvoice.pos.tup) {
+						switch (curvoice.pos.tup & 0x07) {
 						case C.SL_ABOVE:
 							c[3] = 1
 							break
@@ -2843,7 +2850,7 @@ function parse_music_line() {
 					dur: 0,
 					multi: 0
 				}
-				switch (curvoice.pos.gst) {
+				switch (curvoice.pos.gst & 0x07) {
 				case C.SL_ABOVE: grace.stem = 1; break
 				case C.SL_BELOW: grace.stem = -1; break
 				case C.SL_HIDDEN: grace.stem = 2; break	/* opposite */
