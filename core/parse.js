@@ -1559,7 +1559,7 @@ function parse_staves(p) {
 			}
 			if (vids[vid]) {
 				syntax(1, "Double voice in %%score")
-//				err = true
+				err = true
 			} else {
 				vids[vid] = true
 				a_vf.push([vid, flags])
