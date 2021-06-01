@@ -1880,6 +1880,7 @@ function get_key(parm) {
 	curvoice.ckey = s_key
 
 	if (is_voice_sig()) {
+		s_key.fmt = cfmt
 		curvoice.key = clone(s_key)
 		if (s_key.k_none)
 			curvoice.key.k_sf = 0
