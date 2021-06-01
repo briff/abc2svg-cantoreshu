@@ -184,8 +184,8 @@ var decos = {
 function y_get(st, up, x, w) {
 	var	y,
 		p_staff = staff_tb[st],
-		i = (x / realwidth * YSTEP) | 0,
-		j = ((x + w) / realwidth * YSTEP) | 0
+	i = (x / 2) | 0,
+	j = ((x + w) / 2) | 0
 
 	if (i < 0)
 		i = 0
@@ -214,9 +214,9 @@ function y_get(st, up, x, w) {
 
 /* -- adjust the vertical offsets -- */
 function y_set(st, up, x, w, y) {
-	var	p_staff = staff_tb[st],
-		i = (x / realwidth * YSTEP) | 0,
-		j = ((x + w) / realwidth * YSTEP) | 0
+    var	p_staff = staff_tb[st],
+	i = (x / 2) | 0,
+	j = ((x + w) / 2) | 0
 
 	/* (may occur when annotation on 'y' at start of an empty staff) */
 	if (i < 0)

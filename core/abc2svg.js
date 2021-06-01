@@ -238,7 +238,7 @@ var	OPEN_BRACE = 0x01,
 
 	IN = 96,		// resolution 96 PPI
 	CM = 37.8,		// 1 inch = 2.54 centimeter
-	YSTEP = 256		/* number of steps for y offsets */
+	YSTEP			// number of steps for y offsets
 
 // error texts
 var errs = {

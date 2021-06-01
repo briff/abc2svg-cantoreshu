@@ -2842,14 +2842,13 @@ function draw_sym_near() {
 	} // set_yab()
 
 	output = ""
+	YSTEP = Math.ceil(realwidth / 2)
 
 	// initialize the min/max vertical offsets in the staves
 	for (st = 0; st <= nstaff; st++) {
 		p_st = staff_tb[st]
-		if (!p_st.top) {
-			p_st.top = new Float32Array(YSTEP)
-			p_st.bot = new Float32Array(YSTEP)
-		}
+		p_st.top = new Float32Array(YSTEP)
+		p_st.bot = new Float32Array(YSTEP)
 		for (i = 0; i < YSTEP; i++) {
 			p_st.top[i] = 0
 			p_st.bot[i] = 24
