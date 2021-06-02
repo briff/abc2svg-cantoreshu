@@ -875,9 +875,9 @@ function deco_cnv(a_dcn, s, prev) {
 				continue
 			}
 			note = s.notes[s.nhd] // move to the upper note of the chord
-			if (!note.a_dcn)
-				note.a_dcn = []
-			note.a_dcn.push(dd.name)
+			if (!note.a_dd)
+				note.a_dd = []
+			note.a_dd.push(dd)
 			continue
 		case 9:			// alternate head
 			if (!s.notes) {
@@ -889,9 +889,10 @@ function deco_cnv(a_dcn, s, prev) {
 			// move the alternate head of the chord to the notes
 			for (j = 0; j <= s.nhd; j++) {
 				note = s.notes[j]
-				if (!note.a_dcn)
-					note.a_dcn = []
-				note.a_dcn.push(dd.name)
+				note.invis = true
+				if (!note.a_dd)
+					note.a_dd = []
+				note.a_dd.push(dd)
 			}
 			continue
 		default:
