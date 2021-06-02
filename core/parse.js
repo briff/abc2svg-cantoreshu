@@ -2129,6 +2129,7 @@ Abc.prototype.new_note = function(grace, sls) {
 			if (a_dcn.length) {
 				note.a_dcn = a_dcn;
 				a_dcn = []
+				dh_cnv(s, note)
 			}
 			s.notes.push(note)
 			if (!in_chord)

@@ -809,6 +809,34 @@ function deco_def(nm) {
 	return dd
 }
 
+// define a cross-voice tie
+// @nm = decoration name
+// @s = note symbol
+// @nt1 = note
+function do_ctie(nm, s, nt1) {
+    var	nt2 = cross[nm],
+	nm2 = nm.slice(0, -1) + (nm.slice(-1) == '(' ? ')' : '(')
+
+	if (nt2) {
+		error(1, s, "Conflict on !$1!", nm)
+		return
+	}
+	nt1.s = s
+	nt2 = cross[nm2]
+	if (!nt2) {
+		cross[nm] = nt1		// keep the start/end
+		return
+	}
+	if (nm.slice(-1) == ')') {
+		nt2 = nt1
+		nt1 = cross[nm2]
+	}
+	cross[nm2] = null
+	nt1.tie_ty = C.SL_AUTO
+	nt1.tie_n = nt2
+	nt1.s.tie_s = nt2.s
+} // do_ctie()
+
 /* -- convert the decorations -- */
 function deco_cnv(a_dcn, s, prev) {
     var	i, j, dd, dcn, note, s1,
@@ -972,29 +1000,8 @@ function deco_cnv(a_dcn, s, prev) {
 			s.notes[0].a_dcn.push("cacc" + j)
 			break
 		case 44:		// cross-voice ties
-			if (cross[dd.name]) {
-				error(1, s, "Conflict on !$1!", dd.name)
-				continue
-			}
-			j = dd.name.slice(0, -1) +
-				(dd.name.slice(-1) == '(' ? ')' : '(')
-			if (!cross[j]) {
-				cross[dd.name] = s	// keep the start/end
-				continue
-			}
-			if (j.slice(-1) == '(') {
-				s1 = cross[j]		// origin
-			} else {
-				s1 = s
-				s = cross[j]		// end
-			}
-			cross[j] = null
-			for (j = 0; j <= s1.nhd; j++) {
-				s1.notes[j].tie_ty = C.SL_AUTO
-				s1.notes[j].s = s1
-			}
-			do_ties(s, s1)
-			break
+			do_ctie(dd.name, s, s.notes[0])	// (only one note for now)
+			continue
 		}
 
 		// add the decoration in the symbol
@@ -1003,6 +1010,55 @@ function deco_cnv(a_dcn, s, prev) {
 		s.a_dd.push(dd)
 	}
 }
+
+// -- convert head decorations --
+function dh_cnv(s, nt) {
+    var	k, dcn, dd,
+	nd = nt.a_dcn.length
+
+	for (k = 0; k < nd; k++) {
+		dcn = nt.a_dcn[k]
+		dd = dd_tb[dcn]
+		if (!dd) {
+			dd = deco_def(dcn)
+			if (!dd)
+				continue
+		}
+
+		switch (dd.func) {
+		case 0:
+		case 1:
+		case 3:
+		case 4:
+		case 8:			// gliss
+			break
+		default:
+//		case 2:			// arpeggio
+//		case 5:			// trill
+//		case 7:			// d_cresc
+			error(1, s, "Cannot have !$1! on a head", dd.name)
+			continue
+		case 9:			// head replacement
+		case 32:		// invisible
+			nt.invis = true
+			break
+		case 10:		// color
+			nt.color = dd.name
+			continue
+		case 40:		// stemless chord (abcm2ps behaviour)
+			s.stemless = true
+			continue
+		case 44:		// cross-voice ties
+			do_ctie(dd.name, s, nt)
+			continue
+		}
+
+		// add the decoration in the note
+		if (!nt.a_dd)
+			nt.a_dd = []
+		nt.a_dd.push(dd)
+	}
+} // dh_cnv()
 
 /* -- update the x position of a decoration -- */
 // used to center the rests
@@ -1283,45 +1339,12 @@ function draw_deco_near() {
 
 	// create the decorations of note heads
 	function create_dh(s, m) {
-		var	f, str, de, uf, k, dcn, dd,
+		var	de, k, dd,
 			note = s.notes[m],
-			nd = note.a_dcn.length
+			nd = note.a_dd.length
 
 		for (k = 0; k < nd; k++) {
-			dcn = note.a_dcn[k];
-			dd = dd_tb[dcn]
-			if (!dd) {
-				dd = deco_def(dcn)
-				if (!dd)
-					continue
-			}
-
-			switch (dd.func) {
-			case 0:
-			case 1:
-			case 3:
-			case 4:
-			case 8:			// gliss
-				break
-			default:
-//			case 2:			// arpeggio
-//			case 5:			// trill
-//			case 7:			// d_cresc
-				error(1, null, "Cannot have !$1! on a head", dd.name)
-				continue
-			case 9:			// head replacement
-				note.invis = true
-				break
-			case 10:		// color
-				note.color = dd.name
-				continue
-			case 32:		// invisible
-				note.invis = true
-				continue
-			case 40:		// stemless chord (abcm2ps behaviour)
-				s.stemless = true
-				continue
-			}
+			dd = note.a_dd[k]
 
 //fixme: check if hidden?
 			de = {
@@ -1351,7 +1374,7 @@ function draw_deco_near() {
 			create_deco(s)
 		if (s.notes) {
 			for (var m = 0; m < s.notes.length; m++) {
-				if (s.notes[m].a_dcn)
+				if (s.notes[m].a_dd)
 					create_dh(s, m)
 			}
 		}
