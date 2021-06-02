@@ -199,7 +199,7 @@ function m_gl(s) {
 		    var	m = tgls["mtr" + e]
 //fixme: !! no m.x nor m.y yet !!
 //			if (!m.x && !m.y)
-				return m.c
+				return m ? m.c : 0
 //			return '<tspan dx="'+ m.x.toFixed(1) +
 //				'" dy="' + m.y.toFixed(1) +
 //				'">' +
