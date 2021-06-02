@@ -3773,8 +3773,8 @@ function draw_all_sym() {
 						break
 					x2 = sx(hl[0])
 					output += 'm' +
-						(x2 - xp + hl[1] - dx2).toFixed(1) +
-						' 0h' + (-hl[1] + hl[2]).toFixed(1)
+						(x2 - xp + hl[1] - dx2).toFixed(2) +
+						' 0h' + (-hl[1] + hl[2]).toFixed(2)
 					xp = x2
 					dx2 = hl[2]
 				}
