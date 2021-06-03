@@ -1114,7 +1114,7 @@ function tempo_build(s) {
 		w += strwh(s.tempo_str1)[0]
 	}
 	if (s.tempo_notes) {
-		dy = ' dy="-.05em"'			// notes a bit higher
+		dy = ' dy="-1"'			// notes a bit higher
 		for (i = 0; i < s.tempo_notes.length; i++) {
 			p = tempo_note(s, s.tempo_notes[i])
 			str.push('<tspan\nclass="' +
@@ -1127,7 +1127,7 @@ function tempo_build(s) {
 			w += j * gene.curfont.swfac
 			dy = ''
 		}
-		str.push('<tspan dy=".065em">=</tspan>')
+		str.push('<tspan dy="1">=</tspan>')
 		w += cwidf('=')
 		if (s.tempo_ca) {
 			str.push(s.tempo_ca)
@@ -1143,7 +1143,7 @@ function tempo_build(s) {
 					font_class(cfmt.musicfont) +
 				'" style="font-size:' +
 				(gene.curfont.size * 1.3).toFixed(1) +
-				'px" dy="-.05em">' +
+				'px" dy="-1">' +
 				p + '</tspan>')
 			j = p.length > 1 ? 2 : 1
 			w += j * gene.curfont.swfac
@@ -1152,7 +1152,7 @@ function tempo_build(s) {
 	}
 	if (s.tempo_str2) {
 		if (dy)
-			str.push('<tspan\n\tdy=".065em">' +
+			str.push('<tspan\n\tdy="1">' +
 					s.tempo_str2 + '</tspan>')
 		else
 			str.push(s.tempo_str2)
@@ -1163,8 +1163,6 @@ function tempo_build(s) {
 	s.tempo_str = str.join(' ')
 	w += cwidf(' ') * (str.length - 1)
 	s.tempo_wh = [w, 13.0]		// (the height is not used)
-	if (dy)
-		s.tempo_dy = dy
 } // tempo_build()
 
 // output a tempo
