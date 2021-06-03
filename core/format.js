@@ -131,7 +131,7 @@ H "History: "',
 // parameters that are used in the symbols
 var sfmt = {
 bardef: true,
-barperstaff: true,
+barsperstaff: true,
 beamslope: true,
 breaklimit: true,
 bstemdown: true,
@@ -320,6 +320,7 @@ function param_set_font(xxxfont, p) {
 	case "Times":	p = "serif"; break
 	case "Helvetica": p = "sans-serif"; break
 	case "Courier": p = "monospace"; break
+	case "music": p = cfmt.musicfont.name; break
 	default:
 //hack: the font "Figurato" is used for figured bass
 		if (p.indexOf("Fig") > 0)
