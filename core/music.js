@@ -131,9 +131,9 @@ function set_head_shift(s) {
 		return			// single note
 
 	/* set the head shifts */
-	dx = dx_head * .78
+	dx = dx_head * .74
 	if (s.grace)
-		dx *= .5
+		dx *= .6
 	if (dir >= 0) {
 		i1 = 1;
 		i2 = n + 1;
