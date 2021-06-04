@@ -711,7 +711,7 @@ function deco_add(param) {
 
 // define a decoration
 function deco_def(nm) {
-    var a, dd, dd2, name2, c, i, elts, str, hd,
+    var a, dd, dd2, nm2, c, i, elts, str, hd,
 	text = decos[nm]
 
 	if (!text) {
@@ -768,7 +768,7 @@ function deco_def(nm) {
 	}
 
 	/* set the values */
-	dd.func = dd.name.indexOf("head-") == 0 ? 9 : c_func;
+	dd.func = nm.indexOf("head-") == 0 ? 9 : c_func;
 	dd.glyph = a[2];
 	dd.h = Number(h)
 	dd.hd = Number(hd)
@@ -783,15 +783,15 @@ function deco_def(nm) {
 
 	/* compatibility */
 	if (dd.func == 6 && dd.str == undefined)
-		dd.str = dd.name
+		dd.str = nm
 
 	// link the start and end of long decorations
-	c = dd.name.slice(-1)
+	c = nm.slice(-1)
 	if (c == '(' ||
-	    (c == ')' && dd.name.indexOf('(') < 0)) {
+	    (c == ')' && nm.indexOf('(') < 0)) {
 		dd.str = null;			// (no string)
-		name2 = dd.name.slice(0, -1) + (c == '(' ? ')' : '(');
-		dd2 = dd_tb[name2]
+		nm2 = nm.slice(0, -1) + (c == '(' ? ')' : '(');
+		dd2 = dd_tb[nm2]
 		if (dd2) {
 			if (c == '(') {
 				dd.dd_en = dd2;
@@ -801,7 +801,7 @@ function deco_def(nm) {
 				dd2.dd_en = dd
 			}
 		} else {
-			dd2 = deco_def(name2)
+			dd2 = deco_def(nm2)
 			if (!dd2)
 				return //undefined
 		}
@@ -839,14 +839,14 @@ function do_ctie(nm, s, nt1) {
 
 /* -- convert the decorations -- */
 function deco_cnv(a_dcn, s, prev) {
-    var	i, j, dd, dcn, note, s1,
+    var	i, j, dd, nm, note, s1,
 	nd = a_dcn.length
 
 	for (i = 0; i < nd; i++) {
-		dcn = a_dcn[i];
-		dd = dd_tb[dcn]
+		nm = a_dcn[i];
+		dd = dd_tb[nm]
 		if (!dd) {
-			dd = deco_def(dcn)
+			dd = deco_def(nm)
 			if (!dd)
 				continue
 		}
@@ -854,7 +854,7 @@ function deco_cnv(a_dcn, s, prev) {
 		/* special decorations */
 		switch (dd.func) {
 		case 0:			// near
-			if (s.type == C.BAR && dd.name == "dot") {
+			if (s.type == C.BAR && nm == "dot") {
 				s.bar_dotted = true
 				break
 			}
@@ -863,15 +863,13 @@ function deco_cnv(a_dcn, s, prev) {
 		case 2:			// arp
 //			if (s.type != C.NOTE && s.type != C.REST) {
 			if (!s.notes) {
-				error(1, s,
-					errs.must_note_rest, dd.name)
+				error(1, s, errs.must_note_rest, nm)
 				continue
 			}
 			break
 		case 8:			// gliss
 			if (s.type != C.NOTE) {
-				error(1, s,
-					errs.must_note, dd.name)
+				error(1, s, errs.must_note, nm)
 				continue
 			}
 			note = s.notes[s.nhd] // move to the upper note of the chord
@@ -881,8 +879,7 @@ function deco_cnv(a_dcn, s, prev) {
 			continue
 		case 9:			// alternate head
 			if (!s.notes) {
-				error(1, s,
-					errs.must_note_rest, dd.name)
+				error(1, s, errs.must_note_rest, nm)
 				continue
 			}
 
@@ -900,9 +897,9 @@ function deco_cnv(a_dcn, s, prev) {
 		case 10:		/* color */
 			if (s.notes) {
 				for (j = 0; j <= s.nhd; j++)
-					s.notes[j].color = dd.name
+					s.notes[j].color = nm
 			} else {
-				s.color = dd.name
+				s.color = nm
 			}
 			break
 		case 32:		/* invisible */
@@ -922,7 +919,7 @@ function deco_cnv(a_dcn, s, prev) {
 			 || s.dur != prev.dur) {
 				error(1, s,
 					"!$1! must be on the last of a couple of notes",
-					dd.name)
+					nm)
 				continue
 			}
 			s.trem2 = true;
@@ -930,7 +927,7 @@ function deco_cnv(a_dcn, s, prev) {
 			s.beam_st = false;
 			prev.beam_st = true;
 			prev.beam_end = false;
-			s.ntrem = prev.ntrem = Number(dd.name[4]);
+			s.ntrem = prev.ntrem = Number(nm[4]);
 			for (j = 0; j <= s.nhd; j++)
 				s.notes[j].dur *= 2;
 			for (j = 0; j <= prev.nhd; j++)
@@ -938,17 +935,17 @@ function deco_cnv(a_dcn, s, prev) {
 			break
 		case 35:		/* xstem */
 			if (s.type != C.NOTE) {
-				error(1, s, errs.must_note, dd.name)
+				error(1, s, errs.must_note, nm)
 				continue
 			}
 			s.xstem = true;
 			break
 		case 36:		/* beambr1 / beambr2 */
 			if (s.type != C.NOTE) {
-				error(1, s, errs.must_note, dd.name)
+				error(1, s, errs.must_note, nm)
 				continue
 			}
-			if (dd.name[6] == '1')
+			if (nm[6] == '1')
 				s.beam_br1 = true
 			else
 				s.beam_br2 = true
@@ -958,18 +955,18 @@ function deco_cnv(a_dcn, s, prev) {
 			break
 		case 38:		/* /, // and /// = tremolo */
 			if (s.type != C.NOTE) {
-				error(1, s, errs.must_note, dd.name)
+				error(1, s, errs.must_note, nm)
 				continue
 			}
 			s.trem1 = true;
-			s.ntrem = dd.name.length	/* 1, 2 or 3 */
+			s.ntrem = nm.length	/* 1, 2 or 3 */
 			break
 		case 39:		/* beam-accel/beam-rall */
 			if (s.type != C.NOTE) {
-				error(1, s, errs.must_note, dd.name)
+				error(1, s, errs.must_note, nm)
 				continue
 			}
-			s.feathered_beam = dd.name[5] == 'a' ? 1 : -1;
+			s.feathered_beam = nm[5] == 'a' ? 1 : -1;
 			break
 		case 40:		/* stemless */
 			s.stemless = true
@@ -980,10 +977,10 @@ function deco_cnv(a_dcn, s, prev) {
 		case 42:		// editorial
 			if (!s.notes[0].acc)
 				continue
-			dcn = "sacc" + s.notes[0].acc.toString() // small accidental
-			dd = dd_tb[dcn]
+			nm = "sacc" + s.notes[0].acc.toString() // small accidental
+			dd = dd_tb[nm]
 			if (!dd) {
-				dd = deco_def(dcn)
+				dd = deco_def(nm)
 				if (!dd) {
 					error(1, s, errs.bad_val, "!editorial!")
 					continue
@@ -1001,7 +998,7 @@ function deco_cnv(a_dcn, s, prev) {
 			s.notes[0].a_dcn.push("cacc" + j)
 			break
 		case 44:		// cross-voice ties
-			do_ctie(dd.name, s, s.notes[0])	// (only one note for now)
+			do_ctie(nm, s, s.notes[0])	// (only one note for now)
 			continue
 		}
 
@@ -1014,14 +1011,14 @@ function deco_cnv(a_dcn, s, prev) {
 
 // -- convert head decorations --
 function dh_cnv(s, nt) {
-    var	k, dcn, dd,
+    var	k, nm, dd,
 	nd = nt.a_dcn.length
 
 	for (k = 0; k < nd; k++) {
-		dcn = nt.a_dcn[k]
-		dd = dd_tb[dcn]
+		nm = nt.a_dcn[k]
+		dd = dd_tb[nm]
 		if (!dd) {
-			dd = deco_def(dcn)
+			dd = deco_def(nm)
 			if (!dd)
 				continue
 		}
@@ -1044,13 +1041,13 @@ function dh_cnv(s, nt) {
 			nt.invis = true
 			break
 		case 10:		// color
-			nt.color = dd.name
+			nt.color = nm
 			continue
 		case 40:		// stemless chord (abcm2ps behaviour)
 			s.stemless = true
 			continue
 		case 44:		// cross-voice ties
-			do_ctie(dd.name, s, nt)
+			do_ctie(nm, s, nt)
 			continue
 		}
 
