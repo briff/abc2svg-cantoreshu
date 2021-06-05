@@ -1112,7 +1112,7 @@ function deco_width(s) {
 Abc.prototype.draw_all_deco = function() {
 	if (!a_de.length)
 		return
-	var	de, de2, dd, s, note, f, st, x, y, y2, ym, uf, i, str, a,
+	var	de, dd, s, note, f, st, x, y, y2, ym, uf, i, str, a,
 		new_de = [],
 		ymid = []
 
@@ -1353,9 +1353,13 @@ function draw_deco_near() {
 				ix: 0,
 				defl: {},
 				x: s.x,
-				y: 3 * (note.pit - 18),
+				y: 3 * (note.pit - 18)
+					- dd.h / 2,	// vertical center
 //				dy: 0
 			}
+			if (dd.func != 0)
+				de.x -= dd.wr + 8	// avoid clash
+
 			a_de.push(de)
 			if (dd.dd_en) {
 				de.ldst = true
