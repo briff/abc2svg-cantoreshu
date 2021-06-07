@@ -1354,11 +1354,8 @@ function draw_deco_near() {
 				defl: {},
 				x: s.x,
 				y: 3 * (note.pit - 18)
-					- dd.h / 2,	// vertical center
 //				dy: 0
 			}
-			if (dd.func != 0)
-				de.x -= dd.wr + 8	// avoid clash
 
 			a_de.push(de)
 			if (dd.dd_en) {
