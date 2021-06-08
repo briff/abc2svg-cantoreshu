@@ -691,7 +691,7 @@ function gchord_width(s, wlnote, wlw) {
  * no extra glue is put between them */
 // (possible hook)
 Abc.prototype.set_width = function(s) {
-    var	s2, i, m, xx, w, wlnote, wlw, acc,
+    var	s2, i, m, xx, w, wlnote, wlw, acc, nt,
 	bar_type, meter, last_acc, n1, n2, esp, tmp
 
 	if (s.play) {			// if play symbol
@@ -724,18 +724,21 @@ Abc.prototype.set_width = function(s) {
 			}
 		}
 		for (m = 0; m <= s.nhd; m++) {
-			xx = s.notes[m].shhd
+			nt = s.notes[m]
+			xx = nt.shhd
 			if (xx < 0) {
 				if (wlnote < -xx + 5)
 					wlnote = -xx + 5
 			}
-			acc = s.notes[m].acc
+			acc = nt.acc
 			if (acc) {
-				tmp = s.notes[m].shac +
+				tmp = nt.shac +
 					(typeof acc == "object" ? 5.5 : 3.5)
 				if (wlnote < tmp)
 					wlnote = tmp
 			}
+			if (nt.a_dd)		// if decoration in chord
+				wlnote += deco_wch(nt)
 		}
 		if (s2) {
 			switch (s2.type) {

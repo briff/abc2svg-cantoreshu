@@ -128,12 +128,12 @@ var tgls = {
  "acc-3_2": {x:-3, y:0, c:"\ue281"},	// three-quarter-tones flat
   acc1_2: {x:-1, y:0, c:"\ue282"},	// quarter-tone sharp
   acc3_2: {x:-3, y:0, c:"\ue283"},	// three-quarter-tones sharp
-  accent: {x:-3, y:0, c:"\ue4a0"},
+  accent: {x:-3, y:2.5, c:"\ue4a0"},
   stc: {x:-1, y:-2, c:"\ue4a2"},	// staccato
   emb: {x:-4, y:-2, c:"\ue4a4"},
   wedge: {x:-1, y:0, c:"\ue4a8"},
-  marcato: {x:-3, y:0, c:"\ue4ac"},
-  hld: {x:-7, y:0, c:"\ue4c0"},		// fermata
+  marcato: {x:-3, y:-2, c:"\ue4ac"},
+  hld: {x:-7, y:2, c:"\ue4c0"},		// fermata
   brth: {x:0, y:0, c:"\ue4ce"},
   r00: {x:-1.5, y:0, c:"\ue4e1"},
   r0: {x:-1.5, y:0, c:"\ue4e2"},
@@ -149,28 +149,28 @@ var tgls = {
   mrep: {x:-6, y:0, c:"\ue500"},
   mrep2: {x:-9, y:0, c:"\ue501"},
   p: {x:-4, y:-6, c:"\ue520"},
-  f: {x:-4, y:-6, c:"\ue522"},
-  pppp: {x:-4, y:-6, c:"\ue529"},
-  ppp: {x:-4, y:-6, c:"\ue52a"},
-  pp: {x:-4, y:-6, c:"\ue52b"},
-  mp: {x:-4, y:-6, c:"\ue52c"},
-  mf: {x:-4, y:-6, c:"\ue52d"},
-  ff: {x:-4, y:-6, c:"\ue52f"},
-  fff: {x:-4, y:-6, c:"\ue530"},
-  ffff: {x:-4, y:-6, c:"\ue531"},
-  sfz: {x:-4, y:-6, c:"\ue539"},
+  f: {x:-2.5, y:-6, c:"\ue522"},
+  pppp: {x:-15, y:-6, c:"\ue529"},
+  ppp: {x:-11, y:-6, c:"\ue52a"},
+  pp: {x:-8, y:-6, c:"\ue52b"},
+  mp: {x:-8.5, y:-6, c:"\ue52c"},
+  mf: {x:-8, y:-6, c:"\ue52d"},
+  ff: {x:-6, y:-6, c:"\ue52f"},
+  fff: {x:-9, y:-6, c:"\ue530"},
+  ffff: {x:-12, y:-6, c:"\ue531"},
+  sfz: {x:-9, y:-6, c:"\ue539"},
   trl: {x:-4, y:-4, c:"\ue566"},	// trill
-  turn: {x:-5, y:-4, c:"\ue567"},
-  turnx: {x:-5, y:-4, c:"\ue569"},
-  umrd: {x:-7, y:-2, c:"\ue56c"},
-  lmrd: {x:-7, y:-2, c:"\ue56d"},
-  dplus: {x:-4, y:10, c:"\ue582"},	// plus
+  turn: {x:-5, y:3, c:"\ue567"},
+  turnx: {x:-5, y:3, c:"\ue569"},
+  umrd: {x:-7, y:2, c:"\ue56c"},
+  lmrd: {x:-7, y:2, c:"\ue56d"},
+  dplus: {x:-4, y:0, c:"\ue582"},	// plus
   sld: {x:-8, y:12, c:"\ue5d0"},	// slide
   grm: {x:-2, y:0, c:"\ue5e2"},		// grace mark
   dnb: {x:-4, y:0, c:"\ue610"},		// down bow
   upb: {x:-3, y:0, c:"\ue612"},		// up bow
   opend: {x:-2, y:0, c:"\ue614"},	// harmonic
-  roll: {x:0, y:0, c:"\ue618"},
+  roll: {x:0, y:2, c:"\ue618"},
   thumb: {x:0, y:0, c:"\ue624"},
   snap: {x:-2, y:0, c:"\ue630"},
   ped: {x:-10, y:0, c:"\ue650"},
@@ -858,7 +858,7 @@ function out_deco_str(x, y, name, str) {
 	if (name == 'fng') {
 		out_XYAB('\
 <text x="X" y="Y" style="font-size:14px" text-anchor="middle">A</text>\n',
-			x, y + 2, m_gl(str))
+			x, y, m_gl(str))
 		return
 	}
 	var	a, f,
