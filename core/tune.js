@@ -1748,7 +1748,7 @@ function get_vover(type) {
 
 	// add a bar at start of the measure overlay
 	// (needed for sort_all() in case of spaces - 'y')
-	if (vover.bar) {
+	if (vover.bar && vover.time) {
 		sym_link({
 			type: C.BAR,
 			bar_type: type,
