@@ -1347,11 +1347,12 @@ function y_head(s, note) {
 /* -- draw m-th head with accidentals and dots -- */
 /* (the staves are defined) */
 // sets {x,y}_note
-function draw_basic_note(x, s, m, y_tb) {
+function draw_basic_note(s, m, y_tb) {
 	var	i, p, yy, dotx, doty, inv,
 		old_color = false,
 		note = s.notes[m],
 		staffb = staff_tb[s.st].y,	/* bottom of staff */
+	x = s.x,
 		y = 3 * (note.pit - 18),	/* note height on staff */
 		shhd = note.shhd * stv_g.scale,
 		x_note = x + shhd,
@@ -1469,21 +1470,18 @@ function draw_basic_note(x, s, m, y_tb) {
 /* (the staves are defined) */
 function draw_note(s,
 		   fl) {		// draw flags
-    var	s2, i, m, y, staffb, slen, c, nflags,
-	x, y, note,
-	y_tb = new Array(s.nhd + 1)
+    var	s2, i, m, y, slen, c, nflags,
+	y_tb = new Array(s.nhd + 1),
+	note = s.notes[s.stem < 0 ? s.nhd : 0],	// master note head
+	x = x_head(s, note),
+	y = y_head(s, note),
+	staffb = staff_tb[s.st].y
 
 	if (s.dots)
 		setdoty(s, y_tb)
-
-	note = s.notes[s.stem < 0 ? s.nhd : 0];	// master note head
-	x = x_head(s, note)
-	staffb = staff_tb[s.st].y
-
 	self.draw_hl(s)
 
 	/* draw the stem and flags */
-	y = y_head(s, note)
 	if (!s.stemless) {
 		slen = s.ys - s.y;
 		nflags = s.nflags
@@ -1530,9 +1528,8 @@ function draw_note(s,
 	}
 
 	/* draw the note heads */
-	x = s.x
 	for (m = 0; m <= s.nhd; m++)
-		draw_basic_note(x, s, m, y_tb)
+		draw_basic_note(s, m, y_tb)
 }
 
 // find where to start a long decoration
@@ -2878,6 +2875,7 @@ function draw_sym_near() {
 				}
 				if (!s.p_v.ckey.k_bagpipe	// no slur when bagpipe
 				 && s.fmt.graceslurs
+				 && !s.gr_shift			// tied to previous note
 				 && !slur			// explicit slur
 				 && !s.tie_s			// some tie
 				 && s.next
