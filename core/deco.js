@@ -176,9 +176,22 @@ var decos = {
 	"tie)": "44 0 0 0 0"},
 
 	// types of decoration per function
-	f_near = [true, true, true],
-	f_note = [false, false, false, true, true, true, false, false, true],
-	f_staff = [false, false, false, false, false, false, true, true]
+	f_near = [
+		d_near,		// 0 - near the note
+		d_slide,	// 1
+		d_arp		// 2
+	],
+	f_note = [
+		null, null, null,
+		d_upstaff,	// 3 - tied to note
+		d_upstaff,	// 4 (below the staff)
+		d_trill	// 5
+	],
+	f_staff = [
+		null, null, null, null, null, null,
+		d_pf,		// 6 - tied to staff (dynamic marks)
+		d_cresc		// 7
+	]
 
 /* -- get the max/min vertical offset -- */
 function y_get(st, up, x, w) {
@@ -692,18 +705,6 @@ function d_upstaff(de) {
 	de.x = x;
 	de.y = y
 }
-
-/* deco function table */
-var func_tb = [
-	d_near,		/* 0 - near the note */
-	d_slide,	/* 1 */
-	d_arp,		/* 2 */
-	d_upstaff,	/* 3 - tied to note */
-	d_upstaff,	/* 4 (below the staff) */
-	d_trill,	/* 5 */
-	d_pf,		/* 6 - tied to staff (dynamic marks) */
-	d_cresc		/* 7 */
-]
 
 // add a decoration
 /* syntax:
@@ -1438,9 +1439,8 @@ function draw_deco_near() {
 				de.defl.nost = true
 			}
 
-			if (!f_near[dd.func])	/* if not near the note */
-				continue
-			func_tb[dd.func](de)
+			if (f_near[dd.func])
+				f_near[dd.func](de)
 		}
 	} // create_deco()
 
@@ -1633,7 +1633,7 @@ function draw_deco_note() {
 		f = dd.func
 		if (f_note[f]
 		 && de.m == undefined)
-			func_tb[f](de)
+			f_note[f](de)
 	}
 }
 
@@ -1777,7 +1777,7 @@ function draw_deco_staff() {
 		if (!f_staff[dd.func]	/* if not tied to the staff */
 		 || de.m != undefined)	// or head decoration
 			continue
-		func_tb[dd.func](de)
+		f_staff[dd.func](de)
 		if (dd.dd_en)		// if start
 			continue
 		if ((de.pos & C.SL_ALI_MSK) == C.SL_ALIGN
