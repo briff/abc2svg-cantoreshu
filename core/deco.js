@@ -330,7 +330,7 @@ function d_cresc(de) {
 	de.st = s2.st;
 	de.lden = false;		/* old behaviour */
 	de.has_val = true;
-	up = up6_p(s2, s2.pos.dyn)
+	up = up6(s2, s2.pos.dyn)
 	if (up)
 		de.up = true
 
