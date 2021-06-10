@@ -785,6 +785,11 @@ function deco_def(nm) {
 	if (str) {				// optional string
 		if (str[0] == '"')
 			str = str.slice(1, -1);
+		if (str[0] == '@'
+		 && !str.match(/^@([0-9.-]+),([0-9.-]+);?/)) {
+			error(1, null, "%%deco: bad position '$1'", str)
+			return
+		}
 		dd.str = str
 	}
 
