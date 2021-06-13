@@ -231,6 +231,9 @@ abc2svg.mdnn = {
 			note.a_dcn.push(abc2svg.mdnn.acc_tb[nn])
 		}
 
+		// convert the decorations
+		abc.dh_cnv(s, note)
+
 		// set the slurs and ties up
 		if (s.sls) {
 			for (i = 0; i < s.sls.length; i++)

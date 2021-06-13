@@ -27,6 +27,7 @@ Abc.prototype.cfmt = function() { return cfmt };
 Abc.prototype.clone = clone;
 Abc.prototype.deco_cnv = deco_cnv;
 Abc.prototype.defs_add = defs_add
+Abc.prototype.dh_cnv = dh_cnv
 Abc.prototype.draw_meter = draw_meter
 Abc.prototype.draw_note = draw_note;
 Abc.prototype.errs = errs;
