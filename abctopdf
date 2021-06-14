@@ -92,7 +92,8 @@ for c in $BROWSER chromium-browser vivaldi opera brave-browser epic google-chrom
 	if command -v $c >/dev/null 2>&1; then
 		echo "and $c"
 		command $abcscr "$@" > /tmp/o.html
-		$c --headless --disable-gpu --print-to-pdf=$out /tmp/o.html
+		$c --headless --disable-gpu\
+			--print-to-pdf=$out --print-to-pdf-no-header /tmp/o.html
 		rm /tmp/o.html
 		exit 0
 	fi
