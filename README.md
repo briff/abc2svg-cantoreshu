@@ -272,8 +272,7 @@ find various scripts that I had to built.
 
 - `abcqjs` with `qjs` [QuickJS by Fabrice Bellard and Charlie Gordon][10]
 - `abcmjs` with `js78`, `js68`, `js60`, `js52` or `js24` (Mozilla JavaScript shell)
-- `abcjsc` with `jsc-1` (webkitgtk2)
-- `abcv8` with `d8` (Google libv8)
+- `abcjsc` with `jsc` (webkit2gtk)
 - `abcnode` with `node` (nodeJS without module)
 - `abc2svg` with `node` (nodeJS with modules)
 
@@ -289,6 +288,11 @@ with:
   It defaults to `tohtml.js` (HTML+SVG)
 - `options` are the ABC options.  
   For compatibility, the last options are moved before the last ABC file.
+
+These scripts try to read a file `default.abc` at startup time.
+This file and also the files included by `%%abc-include` are searched
+in the current directory or in the colon separated list of directories
+contained in the environment variable `ABCPATH`.
 
 #### 2.2 Backend scripts
 
@@ -311,7 +315,7 @@ They are:
   The abc2svg music font (`abc2svf.woff` or `abc2svg.ttf`) must be installed
   in the local system for displaying and/or converting the .abw file.  
   Example:  
-  `        abcv8 toabw.js my_file.abc > my_file.abw`
+  `        abcmjs toabw.js my_file.abc > my_file.abw`
 
 - `tomei.js`  
   This script outputs the music as a [MEI](https://music-encoding.org/) file.  

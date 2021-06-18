@@ -10,6 +10,16 @@ for c in js78 js68 js60 js52 js24 end; do
 	fi
 done
 
+# search where are the abc2svg scripts
+p=$0
+if [ `dirname $p` = . ]; then
+	p=`which $p`
+fi
+if [ -L $p ]; then
+	p=`realpath $p`
+fi
+p=`dirname $p`
+
 exec $c -e "// interpreter specific functions
 var abc2svg = {
     print: print,
@@ -17,10 +27,16 @@ var abc2svg = {
     quit: function() {
 	quit(1)
     },
-    readFile: read,
+    readFile: function(fn) {
+	try {
+		return read(fn)
+	} catch(e) {
+	}
+	return null
+    },
     loadjs: function(fn, relay, onerror) {
 	try {
-		loadRelativeToScript(fn)
+		load(fn[0] == '/' ? fn : (path + fn))
 		if (relay)
 			relay()
 	} catch(e) {
@@ -32,9 +48,19 @@ var abc2svg = {
     } // loadjs()
 } // abc2svg
 
-loadRelativeToScript('abc2svg-1.js')
-loadRelativeToScript('cmdline.js')
+    var	args = scriptArgs,
+	path = '${ABCPATH}'
+
+	if (path)
+		abc2svg.path = path.split(':')
+
+	path = '${p}/'		// path to the abc2svg scripts
+
+	console.log = printErr
+
+load(path + 'abc2svg-1.js')
+load(path + 'cmdline.js')
 
 // main
-abc_cmd('abcmjs', scriptArgs, '$0')
+abc_cmd('abcmjs', args, '${c}')
 " -- "$@"

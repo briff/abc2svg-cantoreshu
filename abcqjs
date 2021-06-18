@@ -1,13 +1,22 @@
 :;# shell script to convert ABC or MEI music notation to other format
 # using abc2svg and quickjs (https://bellard.org/quickjs/)
 
+# search where are the abc2svg scripts
+p=$0
+if [ `dirname $p` = . ]; then
+	p=`which $p`
+fi
+if [ -L $p ]; then
+	p=`realpath $p`
+fi
+p=`dirname $p`
+
 exec qjs --std -e '
 
     var	i,
 	args = scriptArgs,
 	core = "abc2svg-1.js",
-	path = args.shift().	// the 1st argument is the script name
-			match(/.*\//)
+	path = args.shift() + "/"	// the 1st argument is the script path
 
 // interpreter specific functions
 function load(fn) {
@@ -21,23 +30,15 @@ var abc2svg = {
 	quit: function() {
 		std.exit(1)
 	},
-	readFile: function(fname) {
-	    var	b,
-		f = std.open(fname, "r")
-
-		if (!f)
-			return ""
-
-		b = f.readAsString()
-		f.close()
-		return b
-	}, // readfile()
+	readFile: std.loadFile,
 	get_mtime: function(fn) {
 		return new Date(os.stat(fn)[0].mtime)
 	},
 	loadjs: function(fn, relay, onerror) {
 		try {
 			load(fn[0] == "/" ? fn : (path + fn))
+			if (relay)
+				relay()
 		} catch(e) {
 			if (onerror)
 				onerror()
@@ -46,8 +47,6 @@ var abc2svg = {
 					"\n  " + e.name + ": " + e.message)
 			return
 		}
-		if (relay)
-			relay()
 	} // loadjs()
 } // abc2svg
 
@@ -55,7 +54,9 @@ var abc2svg = {
 
 	console.log = abc2svg.printErr
 
-	path = path ? path[0] : ""
+	i = std.getenv("ABCPATH")
+	if (i)
+		abc2svg.path = i.split(":")
 
 	i = args.length
 	while (--i >= 0) {
@@ -69,7 +70,7 @@ var abc2svg = {
 	load(path + "cmdline.js")
 
 	abc_cmd("abcqjs", args, "QuickJS")
-' $0 "$@"
+' $p "$@"
 
 The previous solution with the shebang line as
 #!/usr/bin/env -S qjs --std
