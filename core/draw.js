@@ -3103,7 +3103,7 @@ function draw_vname(indent, stl) {
 
 		// if instrument with 2 staves, center the voice name
 		if ((cur_sy.staves[st].flags & OPEN_BRACE)
-		 && st + 1 < staff_d.length
+		 && st + 1 < staff_tb.length
 		 && (cur_sy.staves[st + 1].flags & CLOSE_BRACE)
 		 && !staff_d[st + 1])
 			y -= (staff_tb[st].y - staff_tb[st + 1].y) * .5
