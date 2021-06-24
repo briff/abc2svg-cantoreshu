@@ -87,7 +87,8 @@ function parse_gchord(type) {
 					i--
 			}
 			gch.x = x_abs;
-			gch.y = y_abs - h_ann / 2
+			y_abs -= h_ann * .3	// center vertically
+			gch.y = y_abs
 			break
 		case '^':
 			gch.pos = C.SL_ABOVE
@@ -116,7 +117,7 @@ function parse_gchord(type) {
 			case '@':
 				gch.x = x_abs;
 				y_abs -= h_ann;
-				gch.y = y_abs - h_ann / 2
+				gch.y = y_abs
 				break
 			}
 			break
