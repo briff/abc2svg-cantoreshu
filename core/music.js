@@ -22,7 +22,7 @@ var	gene,
 	nstaff,			// current number of staves
 	tsnext,			// next line when cut
 	realwidth,		// real staff width while generating
-	insert_meter,		// insert time signature (1) and indent 1st line (2)
+	insert_meter,		// insert the time signature
 	spf_last,		// spacing for last short line
 
 /* width of notes indexed by log2(note_length) */
@@ -3295,7 +3295,7 @@ function init_music_line() {
 				break
 			case C.METER:
 				s.p_v.meter = s
-				insert_meter |= 1
+				insert_meter = cfmt.writefields.indexOf('M') >= 0
 				break
 			}
 			unlksym(s)
@@ -3376,7 +3376,7 @@ function init_music_line() {
 	}
 
 	/* add time signature (meter) if needed */
-	if (insert_meter & 1) {
+	if (insert_meter) {
 		for (v = 0; v < nv; v++) {
 			p_voice = voice_tb[v];
 			s2 = p_voice.meter
@@ -3389,7 +3389,7 @@ function init_music_line() {
 			new_sym(s, p_voice, last_s)
 			s.fmt = fmt
 		}
-		insert_meter &= ~1		// no meter any more
+		insert_meter = false		// no meter any more
 	}
 
 	// add an invisible bar for the various continued elements
@@ -3668,6 +3668,8 @@ function set_global() {
 	nv = voice_tb.length,
 	sy = cur_sy,
 	st = sy.nstaff
+
+	insert_meter = cfmt.writefields.indexOf('M') >= 0
 
 	/* get the max number of staves */
 	while (1) {
@@ -4635,8 +4637,6 @@ Abc.prototype.block_gen = function(s) {
 	case "pagewidth":
 	case "scale":
 	case "staffwidth":
-//fixme: no more useful?
-		blk_flush()
 		self.set_format(s.subtype, s.param)
 		break
 	case "mc_start":		// multicol start
@@ -4675,11 +4675,9 @@ Abc.prototype.block_gen = function(s) {
 		set_page()
 		break
 	case "ml":
-		blk_flush()
 		user.img_out(s.text)
 		break
 	case "newpage":
-		svg_flush()
 		if (!user.page_format)
 			break
 		if (blkdiv < 0)		// split the tune
@@ -5192,10 +5190,8 @@ Abc.prototype.output_music = function() {
 			draw_all_sym();
 			delayed_update();
 			vskip(line_height)
-			if (indent) {
+			if (indent)
 				posx -= indent;
-				insert_meter &= ~2	// no more indentation
-			}
 			while (blocks.length)
 				self.block_gen(blocks.shift())
 		}
@@ -5228,11 +5224,4 @@ Abc.prototype.output_music = function() {
 			p_v.sym.prev = p_v.s_prev
 		p_v.sym = p_v.osym
 	}
-}
-
-/* -- reset the generator -- */
-function reset_gen() {
-	insert_meter = cfmt.writefields.indexOf('M') >= 0 ?
-				3 :	/* insert meter and indent */
-				2	/* indent only */
 }

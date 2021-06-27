@@ -889,12 +889,10 @@ function new_meter(p) {
 		}
 	} else {
 		curvoice.wmeasure = wmeasure
-		if (is_voice_sig()) {
-			curvoice.meter = s;
-			reset_gen()
-		} else {
+		if (is_voice_sig())
+			curvoice.meter = s
+		else
 			sym_link(s)
-		}
 	}
 }
 

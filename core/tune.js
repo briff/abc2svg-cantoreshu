@@ -2096,7 +2096,6 @@ function goto_tune(is_K) {
 
 	set_page();
 	write_heading();
-	reset_gen();
 	if (glovar.new_nbar) {
 		gene.nbar = glovar.new_nbar	// measure numbering
 		glovar.new_nbar = 0
