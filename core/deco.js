@@ -660,14 +660,12 @@ function d_upstaff(de) {
 
 	if (dd.name.indexOf("invert") == 0)
 		de.inv = 1
-	if (dd.ty) {
-		switch (dd.ty[0]) {
-		case '@':
-		case '<':
-		case '>':
-			y = de.y
-			break
-		}
+	switch (dd.ty) {
+	case '@':
+	case '<':
+	case '>':
+		y = de.y
+		break
 	}
 	if (y == undefined) {
 		if (up && dd.name != "invertedfermata") {
@@ -845,38 +843,53 @@ function do_ctie(nm, s, nt1) {
 	nt1.s.tie_s = nt2.s
 } // do_ctie()
 
+// get/create the definition of a decoration
+function get_dd(nm) {
+    var	ty, p,
+	dd = dd_tb[nm]
+
+	if (dd)
+		return dd
+	if ("<>^_@".indexOf(nm[0]) >= 0	// if position
+	 && !/^(\^|>|<\(|<\)|>\(|>\))$/.test(nm)) {
+		ty = nm[0]
+		if (ty == '@') {
+			p = nm.match(/@([-\d]+),([-\d]+)/)
+			if (!p) {
+				error(1, s, "Bad position in !$1!", nm)
+				return
+			}
+			ty = p[0]
+		}
+		dd = deco_def(nm.replace(ty, ''))
+	} else {
+		dd = deco_def(nm)
+	}
+	if (!dd)
+		return
+	if (ty) {
+		dd = Object.create(dd)		// explicit position
+		dd_tb[nm] = dd
+		if (ty[0] == '@') {		// if with x,y
+			dd.x = Number(p[1])
+			dd.y = Number(p[2])
+			ty = '@'
+		}
+		dd.ty = ty
+	}
+	return dd
+} // get_dd()
+
 /* -- convert the decorations -- */
 function deco_cnv(a_dcn, s, prev) {
-    var	i, j, dd, nm, note, s1, ty,
+    var	i, j, dd, nm, note, s1,
 	nd = a_dcn.length
 
 	for (i = 0; i < nd; i++) {
 		nm = a_dcn[i]
-		if ("<>^_@".indexOf(nm[0]) >= 0	// if position
-		 && !/^(\^|>|<\(|<\)|>\(|>\))$/.test(nm)) {
-			ty = nm[0]
-			if (ty == '@') {
-				ty = nm.match(/@[-\d]+,[-\d]+/)
-				if (!ty) {
-					error(1, s, "Bad position in !$1!", nm)
-					continue
-				}
-				ty = ty[0]
-			}
-			nm = nm.replace(ty, '')
-		}
-		dd = dd_tb[nm]
-		if (!dd) {
-			dd = deco_def(nm)
-			if (!dd)
-				continue
-		}
-
-		if (ty) {
-			dd = Object.create(dd)	// explicit position
-			dd.ty = ty
-			ty = 0
-		}
+		dd = get_dd(nm)
+		if (!dd)
+			continue
 
 		/* special decorations */
 		switch (dd.func) {
@@ -1038,35 +1051,14 @@ function deco_cnv(a_dcn, s, prev) {
 
 // -- convert head decorations --
 function dh_cnv(s, nt) {
-    var	k, nm, dd, ty,
+    var	k, nm, dd,
 	nd = nt.a_dcn.length
 
 	for (k = 0; k < nd; k++) {
 		nm = nt.a_dcn[k]
-		if ("<>^_@".indexOf(nm[0]) >= 0	// if position
-		 && !/^(\^|>|<\(|<\)|>\(|>\))$/.test(nm)) {
-			ty = nm[0]
-			if (ty == '@') {
-				ty = nm.match(/@[-\d]+,[-\d]+/)
-				if (!ty) {
-					error(1, s, "Bad position in !$1!", nm)
-					continue
-				}
-				ty = ty[0]
-			}
-			nm = nm.replace(ty, '')
-		}
-		dd = dd_tb[nm]
-		if (!dd) {
-			dd = deco_def(nm)
-			if (!dd)
-				continue
-		}
-
-		if (ty) {
-			dd = Object.create(dd)
-			dd.ty = ty
-		}
+		dd = get_dd(nm)
+		if (!dd)
+			continue
 
 		switch (dd.func) {
 		case 0:
@@ -1406,12 +1398,9 @@ function draw_deco_near() {
 				y = 3 * (s.notes[0].pit - 18)
 						- (dd.h - dd.hd) / 2
 				break
-			default:
-				if (dd.ty && dd.ty[0] == '@') {
-					v = dd.ty.slice(1).split(',')
-					x += Number(v[0])
-					y += Number(v[1])
-				}
+			case '@':
+				x += dd.x
+				y += dd.y
 				break
 			}
 
@@ -1447,7 +1436,7 @@ function draw_deco_near() {
 
 	// create the decorations of note heads
 	function create_dh(s, m) {
-	    var	de, k, dd, v,
+	    var	de, k, dd,
 		note = s.notes[m],
 		nd = note.a_dd.length,
 		x = s.x
@@ -1469,10 +1458,9 @@ function draw_deco_near() {
 			}
 
 			if (dd.ty) {		// if explicit position
-				if (dd.ty[0] == '@') {
-					v = dd.ty.slice(1).split(',')
-					de.x += Number(v[0])
-					de.y += Number(v[1])
+				if (dd.ty == '@') {
+					de.x += dd.x
+					de.y += dd.y
 				} else {
 					de.y -= (dd.h - dd.hd) / 2	// center
 					if (dd.ty == '<')
