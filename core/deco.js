@@ -663,10 +663,6 @@ function d_upstaff(de) {
 	if (dd.ty) {
 		switch (dd.ty[0]) {
 		case '@':
-			y = dd.ty.slice(1).split(',')
-			x += Number(y[0])
-			y = Number(y[1])
-			break
 		case '<':
 		case '>':
 			y = de.y
