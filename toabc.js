@@ -229,14 +229,22 @@ function abc_dump(tsfirst, voice_tb, info, cfmt) {
 	} // clef_dump()
 
 	function deco_dump(a_dd) {
-	    var	i, n
+	    var	i, n, dd
 //fixme: check if user deco
 		for (i = 0; i < a_dd.length; i++) {
-			n = a_dd[i].name
-			if (deco_l[n])
-				line += deco_l[n]
-			else
-				line += '!' + n + '!'
+			dd = a_dd[i]
+			n = dd.name
+			if (dd.ty) {
+				if (dd.ty != '@')
+					line += '!' +dd.ty + n + '!'
+				else
+					line += '!@' + dd.x + ',' + dd.y + n + '!'
+			} else {
+				if (deco_l[n])
+					line += deco_l[n]
+				else
+					line += '!' + n + '!'
+			}
 		}
 	} // deco_dump
 
