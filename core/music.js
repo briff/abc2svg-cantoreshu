@@ -1574,14 +1574,14 @@ function custos_add(s) {
 	new_s = sym_add(p_voice, C.CUSTOS);
 	new_s.next = s;
 	s.prev = new_s;
+	new_s.wl = 0			// (needed here for lktsym)
+	new_s.wr = 4
 	lktsym(new_s, s);
 
 	new_s.shrink = s.shrink
 	if (new_s.shrink < 8 + 4)
 		new_s.shrink = 8 + 4;
 	new_s.space = s2.space;
-	new_s.wl = 0;
-	new_s.wr = 4;
 
 	new_s.nhd = s2.nhd;
 	new_s.notes = []
