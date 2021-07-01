@@ -3865,8 +3865,8 @@ function set_beams(sym) {
 					s.stem = laststem
 			} else {				// no beam
 				n = (s.notes[s.nhd].pit + s.notes[0].pit) / 2
-				if (n == mid_p) {
-					for (m = 0; m <= s.nhd; m++) {
+				if (n == mid_p && s.nhd > 1) {
+					for (m = 0; m < s.nhd; m++) {
 						if (s.notes[m].pit >= mid_p)
 							break
 					}
