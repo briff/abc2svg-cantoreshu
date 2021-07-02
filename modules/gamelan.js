@@ -417,6 +417,7 @@ abc2svg.gamelan = {
 				if (s.notes[s.nhd].jo > 3)
 					s.ymx += 2
 			}
+			s.ys = s.ymx		// (for tuplets)
 			break
 		}
 	}
