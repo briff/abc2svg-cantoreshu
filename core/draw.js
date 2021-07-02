@@ -3021,9 +3021,9 @@ function draw_sym_near() {
 		}
 	}
 
+	draw_deco_staff();
 	if (cfmt.measurenb >= 0)
 		draw_measnb();
-	draw_deco_staff();
 
 	/* if any lyric, draw them now as unscaled */
 	set_dscale(-1)

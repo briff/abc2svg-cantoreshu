@@ -1647,7 +1647,7 @@ function draw_deco_staff() {
 	function draw_repbra(p_voice) {
 		var s, s1, x, y, y2, i, p, w, wh, first_repeat;
 
-		/* search the max y offset */
+		// search the max y offset of the line
 		y = staff_tb[p_voice.st].topbar + 25	// 20 (vert bar) + 5 (room)
 		for (s = p_voice.sym; s; s = s.next) {
 			if (s.type != C.BAR)
@@ -1669,11 +1669,21 @@ function draw_deco_staff() {
 				if (s.rbstop)
 					break
 			}
-			y2 = y_get(p_voice.st, true, s1.x, s.x - s1.x)
+			y2 = y_get(p_voice.st, true, s1.x, s.x - s1.x) + 2
 			if (y < y2)
 				y = y2
 
-			/* have room for the repeat numbers */
+			// have room for the vertical lines and the repeat numbers
+			if (s1.rbstart == 2) {
+				y2 = y_get(p_voice.st, true, s1.x, 3) + 20
+				if (y < y2)
+					y = y2
+			}
+			if (s.rbstop == 2) {
+				y2 = y_get(p_voice.st, true, s.x - 3, 3) + 20
+				if (y < y2)
+					y = y2
+			}
 			if (s1.text) {
 				wh = strwh(s1.text);
 				y2 = y_get(p_voice.st, true, s1.x + 4, wh[0]) +
@@ -1872,15 +1882,13 @@ function draw_measnb() {
 
 			// don't display the number twice
 		     if (s.type != C.BAR || !s.bar_num) {
-			if (s.prev)
-				s = s.prev;
 			any_nb = true;
 			w = w0
 			if (bar_num >= 10)
 				w *= bar_num >= 100 ? 3 : 2
 			if (gene.curfont.pad)
 				w += gene.curfont.pad * 2
-			x = s.x + s.wr + 1	// if clef, shift a bit
+			x = s.x - s.wl + 2	// if clef, shift a bit
 			y = y_get(st, true, x, w)
 			if (y < staff_tb[st].topbar + 6)
 				y = staff_tb[st].topbar + 6;
@@ -1924,10 +1932,10 @@ function draw_measnb() {
 			w *= bar_num >= 100 ? 3 : 2
 		if (gene.curfont.pad)
 			w += gene.curfont.pad * 2
-		x = s.x - w * (s.text ? .6 : .4)
+		x = s.x
 		y = y_get(st, true, x, w)
-		if (y < staff_tb[st].topbar + 3)
-			y = staff_tb[st].topbar + 3
+		if (y < staff_tb[st].topbar + 6)
+			y = staff_tb[st].topbar + 6
 		if (s.next.type == C.NOTE) {
 			if (s.next.stem > 0) {
 				if (y < s.next.ys - gene.curfont.size)
