@@ -106,7 +106,8 @@ function get_sym(p, cont) {
 //		case '*':
 			break
 		case '!':
-			deco_cnv([d.slice(1, -1)], s, s.prev)
+			a_dcn.push(d.slice(1, -1))
+			deco_cnv(s, s.prev)
 			break
 		case '"':
 			parse_gchord(d)

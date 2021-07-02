@@ -881,12 +881,13 @@ function get_dd(nm) {
 } // get_dd()
 
 /* -- convert the decorations -- */
-function deco_cnv(a_dcn, s, prev) {
-    var	i, j, dd, nm, note, s1,
-	nd = a_dcn.length
+function deco_cnv(s, prev) {
+    var	j, dd, nm, note, s1, court
 
-	for (i = 0; i < nd; i++) {
-		nm = a_dcn[i]
+	while (1) {
+		nm = a_dcn.shift()
+		if (!nm)
+			break
 		dd = get_dd(nm)
 		if (!dd)
 			continue
@@ -1033,9 +1034,7 @@ function deco_cnv(a_dcn, s, prev) {
 			j = curvoice.acc[s.notes[0].pit + 19]
 			if (s.notes[0].acc || !j)
 				continue
-			if (!s.notes[0].a_dcn)
-				s.notes[0].a_dcn = []
-			s.notes[0].a_dcn.push("cacc" + j)
+			court = 1			// defer
 			break
 		case 44:		// cross-voice ties
 			do_ctie(nm, s, s.notes[0])	// (only one note for now)
@@ -1047,15 +1046,22 @@ function deco_cnv(a_dcn, s, prev) {
 			s.a_dd = []
 		s.a_dd.push(dd)
 	}
+	// handle the possible courtesy accidental
+	if (court) {
+		a_dcn.push("cacc" + j)
+		dh_cnv(s, s.notes[0])
+	}
 }
 
 // -- convert head decorations --
+// The decorations are in the global array a_dcn
 function dh_cnv(s, nt) {
-    var	k, nm, dd,
-	nd = nt.a_dcn.length
+    var	k, nm, dd
 
-	for (k = 0; k < nd; k++) {
-		nm = nt.a_dcn[k]
+	while (1) {
+		nm = a_dcn.shift()
+		if (!nm)
+			break
 		dd = get_dd(nm)
 		if (!dd)
 			continue

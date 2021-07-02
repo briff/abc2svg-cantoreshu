@@ -81,7 +81,7 @@ function sym_dup(s) {
 	s.notes = clone(s.notes)
 	for (m = 0; m <= s.nhd; m++) {
 		note = s.notes[m] = clone(s.notes[m])
-		delete note.a_dcn
+		delete note.a_dd
 	}
 	return s
 }

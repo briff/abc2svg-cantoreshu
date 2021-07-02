@@ -1210,10 +1210,8 @@ function new_bar() {
 	// set the annotations and the decorations
 	if (a_gch)
 		csan_add(s)
-	if (a_dcn.length) {
-		deco_cnv(a_dcn, s);
-		a_dcn = []
-	}
+	if (a_dcn.length)
+		deco_cnv(s)
 
 	// set the start/stop of ottava
 	if (parse.ottava.length) {
@@ -2050,22 +2048,10 @@ Abc.prototype.new_note = function(grace, sls) {
 						c = line.char()
 						continue
 					case '!':
-						if (type.length > 1) {
+						if (type.length > 1)
 							a_dcn.push(type.slice(1, -1))
-						} else {
-							dcn = ""
-							while (1) {
-								c = line.next_char()
-								if (!c) {
-									syntax(1, "No end of decoration")
-									return //null
-								}
-								if (c == '!')
-									break
-								dcn += c
-							}
-							a_dcn.push(dcn)
-						}
+						else
+							get_deco()	// line -> a_dcn
 						c = line.next_char()
 						continue
 					}
@@ -2124,11 +2110,8 @@ Abc.prototype.new_note = function(grace, sls) {
 				}
 				note.s = s;		// link the note to the chord
 			}
-			if (a_dcn.length) {
-				note.a_dcn = a_dcn;
-				a_dcn = []
+			if (a_dcn.length)
 				dh_cnv(s, note)
-			}
 			s.notes.push(note)
 			if (!in_chord)
 				break
@@ -2321,8 +2304,10 @@ Abc.prototype.new_note = function(grace, sls) {
 			curvoice.sym_restart = s
 	}
 
-	if (a_dcn_sav.length)
-		deco_cnv(a_dcn_sav, s, s.prev)
+	if (a_dcn_sav.length) {
+		a_dcn = a_dcn_sav
+		deco_cnv(s, s.prev)
+	}
 	if (parse.ottava.length) {
 		if (grace)
 			grace.ottava = parse.ottava
@@ -2361,6 +2346,32 @@ function tp_adj(s, fact) {
 		s = s.next
 	}
 } // tp_adj()
+
+// get a decoration
+function get_deco() {
+    var	c,
+	line = parse.line,
+	i = line.index,		// in case no deco end
+	dcn = ""
+
+	while (1) {
+		c = line.next_char()
+		if (!c) {
+			syntax(1, "No end of decoration")
+			line.index = i;
+			return
+		}
+		if (c == '!')
+			break
+		dcn += c
+	}
+	if (ottava[dcn] != undefined) {
+		glovar.ottava = true;
+		parse.ottava.push(ottava[dcn])
+	} else {
+		a_dcn.push(dcn)
+	}
+} // get_deco()
 
 // characters in the music line (ASCII only)
 var nil = "0",
@@ -2706,31 +2717,10 @@ function parse_music_line() {
 				slur_add(s.notes[0])
 				break
 			case '!':			// start of decoration
-				if (type.length > 1) {	// decoration letter
-					dcn = type.slice(1, -1)
-				} else {
-					dcn = "";
-					i = line.index		// in case no deco end
-					while (1) {
-						c = line.next_char()
-						if (!c)
-							break
-						if (c == '!')
-							break
-						dcn += c
-					}
-					if (!c) {
-						line.index = i;
-						syntax(1, "No end of decoration")
-						break
-					}
-				}
-				if (ottava[dcn] != undefined) {
-					glovar.ottava = true;
-					parse.ottava.push(ottava[dcn])
-				} else {
-					a_dcn.push(dcn)
-				}
+				if (type.length > 1)	// decoration letter
+					a_dcn.push(type.slice(1, -1))
+				else
+					get_deco()	// (line -> a_dcn)
 				break
 			case '"':
 				if (grace) {

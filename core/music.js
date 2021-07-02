@@ -2208,7 +2208,8 @@ function set_ottava() {
 	    var	dc_st = ["15mb(", "8vb(", null, "8va(", "15ma("],
 		dc_en = ["15mb)", "8vb)", null, "8va)", "15ma)"];
 
-		deco_cnv([(start ? dc_st : dc_en)[2 + ottava]], s)
+		a_dcn.push((start ? dc_st : dc_en)[2 + ottava])
+		deco_cnv(s)
 	}
 
 	for (st = 0; st <= nstaff; st++) {

@@ -464,10 +464,8 @@ break
 					s2.sl2 = 1
 			}
 		}
-		if (note.a_dcn) {
-			for (j = 0; j < note.a_dcn.length; j++)
-				line += '!' + note.a_dcn[j] + '!'
-		}
+		if (note.a_dd)
+			deco_dump(note.a_dd)
 		if (note.color)
 			line += "!" + note.color + "!"
 		switch (note.acc) {

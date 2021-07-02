@@ -181,7 +181,7 @@ M-10.2 -34.5h20.4"/>';
 			nm = ch_cnv(gch.text)
 			if (!decos[nm])		// if no decoration yet
 				diag_add(nm)
-			this.deco_cnv([ nm ], s, null) // insert diag as decoration
+			this.deco_put(nm, s)	// insert diag as decoration
 		}
 	}
     }, // do_diag()

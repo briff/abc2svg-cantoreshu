@@ -243,7 +243,7 @@ abc2svg.jianpu = {
 			if (s.a_dd) {
 				for (i = 0; i < s.a_dd.length; i++) {
 					if (s.a_dd[i].glyph == "stc") {
-						abc.deco_cnv(["gstc"], s)
+						abc.deco_put("gstc", s)
 						s.a_dd[i] = s.a_dd.pop()
 					}
 				}

@@ -202,9 +202,7 @@ abc2svg.mdnn = {
 		p = note.pit
 		pit = p + delta
 		nn = ((pit + 77) % 7) + 1	// note number
-		if (!note.a_dcn)
-			note.a_dcn = []
-		note.a_dcn.push('n' + nn)
+		abc.dh_put('n' + nn, s, note)
 
 		// display the note as C5 with stem up
 		note.pit = 23			// 'c'
@@ -213,41 +211,28 @@ abc2svg.mdnn = {
 		// octave
 		nn = (pit / 7) | 0
 		if (nn > prev_oct) {
-			if (prev_oct != -10) {
-				if (!note.a_dcn)
-					note.a_dcn = []
-				note.a_dcn.push('q')
-			}
+			if (prev_oct != -10)
+				abc.dh_put('q', s, note)
 			prev_oct = nn
 		} else if (nn < prev_oct) {
-			if (!note.a_dcn)
-				note.a_dcn = []
-			note.a_dcn.push('c')
+			abc.dh_put('c', s, note)
 			prev_oct = nn
 		}
 
 		// half and whole notes
-		if (s.dur >= C.BLEN / 2) {
-			if (!note.a_dcn)
-				note.a_dcn = []
-			note.a_dcn.push(s.dur >= C.BLEN ? 'w' : 'h')
-		}
+		if (s.dur >= C.BLEN / 2)
+			abc.dh_put(s.dur >= C.BLEN ? 'w' : 'h', s, note)
 
 		// accidentals
 		a = note.acc
 		if (a) {
 			note.acc = 0
-			if (!note.a_dcn)
-				note.a_dcn = []
 			nn = abc2svg.mdnn.cde2fcg[(p + 5 + 16 * 7) % 7] - sf
 			if (a != 3)
 				nn += a * 7
 			nn = ((((nn + 1 + 21) / 7) | 0) + 2 - 3 + 32 * 5) % 5
-			note.a_dcn.push(abc2svg.mdnn.acc_tb[nn])
+			abc.dh_put(abc2svg.mdnn.acc_tb[nn], s, note)
 		}
-
-		// convert the decorations
-		abc.dh_cnv(s, note)
 
 		// set the slurs and ties up
 		if (s.sls) {
