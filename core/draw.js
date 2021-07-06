@@ -3816,19 +3816,6 @@ function set_tie_dir(s) {
 		if (!s.tie_s)
 			continue
 
-		/* if other voice, set the ties in opposite direction */
-		if (s.multi != 0) {
-			dir = s.multi > 0 ? C.SL_ABOVE : C.SL_BELOW
-			for (i = 0; i <= s.nhd; i++) {
-				ty = s.notes[i].tie_ty
-				if (!((ty & 0x07) == C.SL_AUTO))
-					continue
-				s.notes[i].tie_ty = (ty & C.SL_DOTTED) | dir
-			}
-			continue
-		}
-
-		/* if one note, set the direction according to the stem */
 		sec = ntie = 0;
 		pit = 128
 		for (i = 0; i <= s.nhd; i++) {
@@ -3840,8 +3827,28 @@ function set_tie_dir(s) {
 				pit = s.notes[i].pit
 			}
 		}
-		if (ntie <= 1) {
+
+		if (s.stem * s.tie_s.stem < 0)
+			dir = pit >= 22	// up if above middle staff
+				? C.SL_ABOVE : C.SL_BELOW
+		else if (s.multi)
+			dir = s.multi > 0 ? C.SL_ABOVE : C.SL_BELOW
+		else
 			dir = s.stem < 0 ? C.SL_ABOVE : C.SL_BELOW
+
+		// if other voice, set the ties in opposite direction
+		if (s.multi) {
+			for (i = 0; i <= s.nhd; i++) {
+				ty = s.notes[i].tie_ty
+				if (!((ty & 0x07) == C.SL_AUTO))
+					continue
+				s.notes[i].tie_ty = (ty & C.SL_DOTTED) | dir
+			}
+			continue
+		}
+
+		/* if one note, set the direction according to the stem */
+		if (ntie <= 1) {
 			for (i = 0; i <= s.nhd; i++) {
 				ty = s.notes[i].tie_ty
 				if (ty) {
@@ -3853,7 +3860,7 @@ function set_tie_dir(s) {
 			}
 			continue
 		}
-		if (sec == 0) {
+		if (!sec) {
 			if (ntie & 1) {
 /* in chords with an odd number of notes, the outer noteheads are paired off
  * center notes are tied according to their position in relation to the
