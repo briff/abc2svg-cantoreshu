@@ -1614,9 +1614,8 @@ function set_nl(s) {			// s = start of line
 			t1 = t[1] + t[2]
 			t2 = '['
 		} else if (!t[1]) {	// if left repeat only
-			// [|: -> | [|:
-			// ||: -> || [|:
-			t1 = t[2][0] == '[' ? t[2].slice(1) : t[2]
+			// x|: -> || [|:
+			t1 = '||'
 			t2 = '[|' + t[3]
 		} else {
 			// :][: -> :|] [|:
