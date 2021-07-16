@@ -61,7 +61,6 @@ abc2svg.soloffs = {
 
     set_sym_glue: function(of, width) {
     var	s,
-	C = abc2svg.C,
 	tsfirst = this.get_tsfirst(),
 	soloffs = this.cfmt().soloffs;
 
