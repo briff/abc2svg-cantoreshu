@@ -20,13 +20,14 @@
 // This module is loaded when "%%grid" appears in a ABC source.
 //
 // Parameters
-//	%%grid <n> [include=<list>] [nomusic] [norepeat] [repbrk]
+//	%%grid <n> [include=<list>] [nomusic] [norepeat] [repbrk] [parts]
 //		<n> = number of columns (1: auto)
 //			> 0: above the tune, < 0: under the tune
 //		<list> = comma separated list of (continuous) measure numbers
 //		'nomusic' displays only the grid
 //		'norepeat' omits the ':' indications
 //		'repbrk' starts a new grid line on start/stop repeat
+//		'parts' displays the parts on the left side of the grid
 //	%%gridfont font_name size (default: 'serif 16')
 
 abc2svg.grid = {
@@ -45,9 +46,13 @@ abc2svg.grid = {
 	grid = cfmt.grid
 
 // generate the grid
-function build_grid(chords, bars, font, wmx) {
+function build_grid(s, font) {
     var	i, k, l, nr, bar, w, hr, x0, x, y, yl,
 	lc = '',
+	chords = s.chords,
+	bars = s.bars,
+	parts = s.parts || [],
+	wmx = s.wmx,
 	cells = [],
 	nc = grid.n
 
@@ -133,7 +138,7 @@ function build_grid(chords, bars, font, wmx) {
 		cells = chords
 	} else {				// with list of mesure numbers
 		bar = bars;
-		bars = []
+		bars = [ ]
 		for (i = 0; i < grid.ls.length; i++) {
 			l = grid.ls[i]
 			if (l.indexOf('-') < 0)
@@ -147,6 +152,7 @@ function build_grid(chords, bars, font, wmx) {
 				bars.push(bar[k])
 			}
 		}
+		bars.push(bar[k])		// ending bar
 	}
 
 	// get the number of columns
@@ -177,6 +183,7 @@ function build_grid(chords, bars, font, wmx) {
 		if (i == 0
 		 || (grid.repbrk
 		  && (bars[i].slice(-1) == ':' || bars[i][0] == ':'))
+		 || parts[i]
 		 || k >= nc) {
 			y -= hr			// new row
 			yl -= hr
@@ -207,7 +214,7 @@ function build_grid(chords, bars, font, wmx) {
 	}
 	abc.out_svg('"/>\n')
 
-	// show the repeat signs
+	// show the repeat signs and the parts
 	y = -1 + font.size * .7
 	x = x0
 	for (i = 0; i < bars.length; i++) {
@@ -220,11 +227,19 @@ function build_grid(chords, bars, font, wmx) {
 		}
 		if (i == 0
 		 || (grid.repbrk
-		  && (bars[i].slice(-1) == ':' || bars[i][0] == ':'))
+		  && (bar.slice(-1) == ':' || bar[0] == ':'))
+		 || parts[i]
 		 || k >= nc) {
 			y -= hr;			// new row
 			x = x0
 			k = 0
+			if (parts[i]) {
+				w = abc.strwh(parts[i])[0]
+				abc.out_svg('<text class="' + cls + '" x="')
+				abc.out_sxsy(x - 2 - w, '" y="', y)
+				abc.out_svg('" style="font-weight:bold">' +
+					parts[i] + '</text>\n')
+			}
 		}
 		k++
 		if (bar.slice(-1) == ':') {
@@ -266,7 +281,7 @@ function build_grid(chords, bars, font, wmx) {
 
 	// create the grid
 	abc.blk_flush()
-	build_grid(s.chords, s.bars, font, s.wmx)
+	build_grid(s, font)
 	abc.blk_flush()
     }, // block_gen()
 
@@ -295,6 +310,7 @@ function build_grid(chords, bars, font, wmx) {
 	    var	s, i, w, bt, rep,
 		bars = [],
 		chords = [],
+		parts = [],
 		chord = [],
 		beat = get_beat(voice_tb[0].meter),
 		wm = voice_tb[0].meter.wmeasure,
@@ -357,6 +373,9 @@ function build_grid(chords, bars, font, wmx) {
 				beat = get_beat(s)
 				wm = s.wmeasure
 				break
+			case C.PART:
+				parts[chords.length] = s.text
+				break
 			}
 		}
 
@@ -371,6 +390,8 @@ function build_grid(chords, bars, font, wmx) {
 
 		sb.chords = chords
 		sb.bars = bars
+		if (grid.parts && parts.length)
+			sb.parts = parts
 		sb.wmx = wmx
 	} // build_chords
 
@@ -449,6 +470,8 @@ function build_grid(chords, bars, font, wmx) {
 				grid.norep = true
 			else if (item == "nomusic")
 				grid.nomusic = true
+			else if (item == "parts")
+				grid.parts = true
 			else if (item == "repbrk")
 				grid.repbrk = true
 			else if (item.slice(0, 8) == "include=")
