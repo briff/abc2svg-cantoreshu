@@ -4675,11 +4675,13 @@ Abc.prototype.block_gen = function(s) {
 		set_page()
 		break
 	case "ml":
+		blk_flush()
 		user.img_out(s.text)
 		break
 	case "newpage":
 		if (!user.page_format)
 			break
+		blk_flush()
 		if (blkdiv < 0)		// split the tune
 			user.img_out('</div>')
 		blkdiv = 2		// start the next SVG in a new page
