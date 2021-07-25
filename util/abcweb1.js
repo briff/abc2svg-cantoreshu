@@ -237,8 +237,6 @@ function dom_loaded() {
 		t = (typeof list_head == "undefined" ? "Tunes:" : list_head) + '<ul>\n'
 		tt = typeof list_tail == "undefined" ? "(all tunes)" : list_tail
 
-//		window.onclick = null
-
 		for (;;) {
 			i = page.indexOf("\nX:", i)
 			if (i < 0)
@@ -423,11 +421,9 @@ onclick="abc2svg.do_render(\'.*\')">' + tt +
 	// get the page content
 	page = fix_abc(document.body.innerHTML)
 
-	// mouse functions
-	window.onmouseup = function(evt) {
-
-		// stop playing
-		if (playing) {
+	// mouse/tap events
+	window.onclick = function(evt) {
+		if (playing) {			// stop playing
 			abcplay.stop()
 			return
 		}
@@ -435,28 +431,24 @@ onclick="abc2svg.do_render(\'.*\')">' + tt +
 	    var	e, s, j,
 		c = evt.target
 
+		// remove the menu if active
+		e = document.getElementById("dc")
+		if (e && e.classList.contains("show")) {
+			e.classList.remove("show") // remove the menu
+			return
+		}
+
 		// search if click in a SVG image
 		e = c				// keep the clicked element
 		while (c && c.tagName != 'svg')
 			c = c.parentNode
-		if (c)
-			c = c.getAttribute('class')
-
-		// no, remove the menu if active
-		if (!c) {
-			e = document.getElementById("dc")
-			if (e && e.classList.contains("show")) {
-				evt.stopImmediatePropagation()
-				evt.preventDefault()
-				e.classList.remove("show")
-			}
+		if (!c)
 			return
-		}
+
+		c = c.getAttribute('class')
 
 		// if click in the menu button, show the menu
 		if (c == "db") {
-			evt.stopImmediatePropagation()
-			evt.preventDefault()
 			e = document.getElementById("dc")
 			e.classList.toggle("show")
 			return
@@ -508,7 +500,7 @@ onclick="abc2svg.do_render(\'.*\')">' + tt +
 
 		playing = true
 		abcplay.play(s, null)
-	} // onmouseup()
+	} // onclick()
 
 	// accept page formatting
 	abc2svg.abc_end = function() {}
