@@ -29,7 +29,7 @@
 //
 // When the file is .html, if the ABC sequence is contained inside
 // elements <script type="text/vnd.abc">, there is no constraint
-// about the ABC characters. Note that the <script> element is removed.
+// about the ABC characters. Note that the <script> tag is removed.
 // With a container of class "abc", the characters '<', '>' and '&' may be
 // replaced by their XML counterparts ('&lt;', '&gt;' and '&amp;').
 // When the file is .xhtml, if the ABC sequence contains the characters
@@ -205,8 +205,7 @@ function render() {
 // 3- %abc-n ..ABC.. '<' with skip %%beginxxx .. %%endxxx
 // 4- X:n ..ABC.. '<' with skip %%beginxxx .. %%endxxx
 
-    var	i = 0, j, k, res,
-	re = /<script type="text\/vnd.abc"|<[^>]* class="[^"]*abc[^"]*"|%abc-\d|X:\s*\d/g,
+    var	i = 0, j, k, res, re,
 	re_stop = /\n<|\n%.begin[^\s]+/g
 
 	// aweful hack: user.anno_stop must be defined before Abc creation
@@ -229,6 +228,14 @@ function render() {
 		document.body.innerHTML = new_page
 		return
 	}
+
+	// get the ABC insertion mode
+	if (page.indexOf('<script type="text/vnd.abc"') >= 0)
+		re = /<script type="text\/vnd.abc"/g
+	else if (/<[^>]* class="[^"]*abc[^"]*/.test(page))
+		re = /<[^>]* class="[^"]*abc[^"]*/g
+	else
+		re = /%abc-\d|X:\s*\d/g
 
 	src = '%%beginml\n'
 	for (;;) {
