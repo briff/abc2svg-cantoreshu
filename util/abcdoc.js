@@ -1,7 +1,7 @@
 //#javascript
 // abcdoc-1.js file to include in html pages with abc2svg-1.js
 //
-// Copyright (C) 2014-2020 Jean-Francois Moine
+// Copyright (C) 2014-2021 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -88,11 +88,15 @@ function clean_txt(txt) {
 
     // search the ABC tunes and add their rendering as SVG images
     function render() {
-	var	i = 0, j, k, res, scr,
-		re =				// start on "%abc" or "X:"
-			 /\n%abc|\nX:|<script[^>]+vnd.abc/g,
-		re_stop = /\n<|\n%.begin/g,	// stop on "<" and skip "%%begin"
+    var	i = 0, j, k, res, re,
+	re_stop = /\n<|\n%.begin/g,	// stop on "<" and skip "%%begin"
 	abc = new abc2svg.Abc(user);
+
+	// get the ABC insertion mode
+	if (page.indexOf('<script type="text/vnd.abc"') >= 0)
+		re = /<script type="text\/vnd.abc"/g
+	else
+		re = /\n%abc|\nX:/g
 
 	abc.tosvg('abcdoc', '%%bgcolor white\n\
 %%rightmargin 0.8cm\n\
