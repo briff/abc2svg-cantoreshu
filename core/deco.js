@@ -715,6 +715,10 @@ function deco_def(nm) {
     var a, dd, dd2, nm2, c, i, elts, str, hd,
 	text = decos[nm]
 
+	// check if a long decoration with number
+	if (!text && /\d[()]$/.test(nm))
+		text = decos[nm.replace(/\d/, '')]
+
 	if (!text) {
 		if (cfmt.decoerr)
 			error(1, null, "Unknown decoration '$1'", nm)
