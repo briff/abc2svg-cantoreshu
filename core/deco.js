@@ -329,7 +329,7 @@ function d_arp(de) {
 function d_cresc(de) {
 	if (de.ldst)			// skip start of deco
 		return
-	var	s, dd, dd2, up, x, dx, x2, i,
+    var	s, dd2, up, x, dx, x2, i,
 		s2 = de.s,
 		de2 = de.start,		/* start of the deco */
 		de2_prev, de_next;
@@ -343,7 +343,12 @@ function d_cresc(de) {
 	de.st = s2.st;
 	de.lden = false;		/* old behaviour */
 	de.has_val = true;
-	up = up6(s2, s2.pos.dyn)
+	if (de.dd.ty == '^')
+		up = 1
+	else if (de.dd.ty == '_')
+		;
+	else
+		up = up6(s2, s2.pos.dyn)
 	if (up)
 		de.up = true
 
@@ -388,10 +393,8 @@ function d_cresc(de) {
 	de.val = dx;
 	de.x = x;
 	de.y = y_get(de.st, up, x, dx)
-	if (!up) {
-		dd = de.dd;
-		de.y -= dd.h
-	}
+	if (!up)
+		de.y -= de.dd.h
 	/* (y_set is done later in draw_deco_staff) */
 }
 
@@ -416,7 +419,7 @@ function d_near(de) {
 		up = s.stem < 0
 	if (up) {
 		y = s.ymx | 0
-	} else if (dd.name[0] == 'w') {
+	} else if (dd.name[0] == 'w') {		// wedge
 		de.inv = true
 		y = s.ymn
 	} else {
@@ -559,6 +562,11 @@ function d_trill(de) {
 			break
 		}
 	}
+	if (dd.ty == '^')
+		up = 1
+	else if (dd.ty == '_')
+		up = 0
+
 	if (de.defl.noen) {		/* if no decoration end */
 		w = de.x - x
 		if (w < 20) {
@@ -711,13 +719,17 @@ function deco_add(param) {
 }
 
 // define a decoration
-function deco_def(nm) {
+// nm is the name of the decoration
+// nmd is the name of the definition in the table 'decos'
+function deco_def(nm, nmd) {
+	if (!nmd)
+		nmd = nm
     var a, dd, dd2, nm2, c, i, elts, str, hd,
-	text = decos[nm]
+	text = decos[nmd]
 
 	// check if a long decoration with number
-	if (!text && /\d[()]$/.test(nm))
-		text = decos[nm.replace(/\d/, '')]
+	if (!text && /\d[()]$/.test(nmd))
+		text = decos[nmd.replace(/\d/, '')]
 
 	if (!text) {
 		if (cfmt.decoerr)
@@ -798,7 +810,7 @@ function deco_def(nm) {
 	// link the start and end of long decorations
 	c = nm.slice(-1)
 	if (c == '(' ||
-	    (c == ')' && nm.indexOf('(') < 0)) {
+	    (c == ')' && nm.indexOf('(') < 0)) {	// not (#)
 		dd.str = null;			// (no string)
 		nm2 = nm.slice(0, -1) + (c == '(' ? ')' : '(');
 		dd2 = dd_tb[nm2]
@@ -810,10 +822,6 @@ function deco_def(nm) {
 				dd.dd_st = dd2;
 				dd2.dd_en = dd
 			}
-		} else {
-			dd2 = deco_def(nm2)
-			if (!dd2)
-				return //undefined
 		}
 	}
 	return dd
@@ -855,7 +863,7 @@ function get_dd(nm) {
 	if (dd)
 		return dd
 	if ("<>^_@".indexOf(nm[0]) >= 0	// if position
-	 && !/^(\^|>|<\(|<\)|>\(|>\))$/.test(nm)) {
+	 && !/^([^>]|[<>]\d?[()])$/.test(nm)) {
 		ty = nm[0]
 		if (ty == '@') {
 			p = nm.match(/@([-\d]+),([-\d]+)/)
@@ -865,15 +873,13 @@ function get_dd(nm) {
 			}
 			ty = p[0]
 		}
-		dd = deco_def(nm.replace(ty, ''))
+		dd = deco_def(nm, nm.replace(ty, ''))
 	} else {
 		dd = deco_def(nm)
 	}
 	if (!dd)
 		return
 	if (ty) {
-		dd = Object.create(dd)		// explicit position
-		dd_tb[nm] = dd
 		if (ty[0] == '@') {		// if with x,y
 			dd.x = Number(p[1])
 			dd.y = Number(p[2])
@@ -1557,8 +1563,8 @@ function draw_deco_near() {
 			// handle same decoration type at a same time
 			if (i > 0
 			 && a_de[i - 1].s.time == de.s.time
-			 && a_de[i - 1].dd.name.slice(0, dd.name.length - 1) ==
-					dd.name.slice(0, dd.name.length - 1))
+			 && a_de[i - 1].dd.name.slice(0, -2) ==
+					dd.name.slice(0, -2))
 				de2.prev = a_de[i - 1]
 		}
 
