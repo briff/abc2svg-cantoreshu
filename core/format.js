@@ -85,7 +85,7 @@ H "History: "',
 	measurenb: -1,
 	musicfont: {name: "music", src: musicfont, size: 24},
 	musicspace: 6,
-//	notespacingfactor: 1.33
+//	notespacingfactor: "1.33, 35",
 	partsfont: {name: txt_ff, size: 15},
 	parskipfac: .4,
 	partsspace: 8,
@@ -98,6 +98,12 @@ H "History: "',
 	repeatfont: {name: txt_ff, size: 13},
 	scale: 1,
 	slurheight: 1.0,
+	spatab: 	// spacing table (see "notespacingfactor" and set_space())
+		new Float32Array([	// default = "1.33, 35"
+			8.4, 11.2, 14.9, 19.8, 26.3,
+			35,
+			46.6, 61.9, 82.3, 109.5
+	]),
 	staffsep: 46,
 	stemheight: 21,			// one octave
 	stretchlast: .25,
@@ -672,22 +678,38 @@ Abc.prototype.set_format = function(cmd, param) {
 		set_infoname(param)
 		break
 	case "notespacingfactor":
-		f = parseFloat(param)
-		if (isNaN(f) || f < 1 || f > 2) {
+		v = param.match(/([.\d]+)[,\s]*(\d+)?/)
+		if (v) {
+			f = parseFloat(v[1])
+			if (isNaN(f) || f < 1 || f > 2) {
+				f = 0
+			} else if (v[1]) {
+				f2 = Number(v[2])
+				if (isNaN(f))
+					f = 0
+			} else {
+				f2 = cfmt.spatab[i]
+			}
+		}
+		if (!f) {
 			syntax(1, errs.bad_val, "%%" + cmd)
 			break
 		}
+		cfmt[cmd] = param		// (for dump)
+
+		// in the table 'spatab',
+		// the width of notes is indexed by log2(note_length)
+		cfmt.spatab = = new Float32Array(10)
 		i = 5;				// index of crotchet
-		f2 = space_tb[i]
-		for ( ; --i >= 0; ) {
-			f2 /= f;
-			space_tb[i] = f2
-		}
+		do {
+			cfmt.spatab[i] = f2
+			f2 /= f
+		} while (--i >= 0)
 		i = 5;
-		f2 = space_tb[i]
-		for ( ; ++i < space_tb.length; ) {
+		f2 = cfmt.spatab[i]
+		for ( ; ++i < cfmt.spatab.length; ) {
 			f2 *= f;
-			space_tb[i] = f2
+			cfmt.spatab[i] = f2
 		}
 		break
 	case "play":

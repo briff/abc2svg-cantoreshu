@@ -25,15 +25,6 @@ var	gene,
 	insert_meter,		// insert the time signature
 	spf_last,		// spacing for last short line
 
-/* width of notes indexed by log2(note_length) */
-	space_tb = new Float32Array([
-// factor 1.3 instead of 1.414 and crotchet 30px instead of 40px
-// change again:
-// factor 1.33 instead of 1.3 and crotchet 35px instead of 30px
-		8.4, 11.2, 14.9, 19.8, 26.3,
-		35,
-		46.6, 61.9, 82.3, 109.5
-	]),
 	smallest_duration
 
 /* -- decide whether to shift heads to other side of stem on chords -- */
@@ -1068,14 +1059,14 @@ function time2space(s, len) {
 			i = 0
 	}
 	l = len - ((C.BLEN / 16 / 8) << i)
-	space = space_tb[i]
+	space = cfmt.spatab[i]
 	if (l) {
 		if (l < 0) {
-			space = space_tb[0] * len / (C.BLEN / 16 / 8)
+			space = cfmt.spatab[0] * len / (C.BLEN / 16 / 8)
 		} else {
 			if (i >= 9)
 				i = 8
-			space += (space_tb[i + 1] - space_tb[i]) *
+			space += (cfmt.spatab[i + 1] - cfmt.spatab[i]) *
 					l / ((C.BLEN / 16 / 8) << i)
 		}
 	}
@@ -1097,8 +1088,8 @@ function set_space(s, ptime) {
 //		case C.REST:
 //			if (s.ts_prev.type == C.BAR) {
 //				if (s.nflags < -2)
-//					return space_tb[0]
-//				return space_tb[2]
+//					return cfmt.spatab[0]
+//				return cfmt.spatab[2]
 //			}
 //			break
 		}
