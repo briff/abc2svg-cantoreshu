@@ -683,12 +683,12 @@ Abc.prototype.set_format = function(cmd, param) {
 			f = parseFloat(v[1])
 			if (isNaN(f) || f < 1 || f > 2) {
 				f = 0
-			} else if (v[1]) {
+			} else if (v[2]) {
 				f2 = Number(v[2])
 				if (isNaN(f))
 					f = 0
 			} else {
-				f2 = cfmt.spatab[i]
+				f2 = cfmt.spatab[5]
 			}
 		}
 		if (!f) {
