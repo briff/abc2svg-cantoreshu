@@ -863,7 +863,7 @@ function get_dd(nm) {
 	if (dd)
 		return dd
 	if ("<>^_@".indexOf(nm[0]) >= 0	// if position
-	 && !/^([^>]|[<>]\d?[()])$/.test(nm)) {
+	 && !/^([>^]|[<>]\d?[()])$/.test(nm)) {
 		ty = nm[0]
 		if (ty == '@') {
 			p = nm.match(/@([-\d]+),([-\d]+)/)
