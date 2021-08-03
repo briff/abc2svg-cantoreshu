@@ -33,11 +33,10 @@ function get_sym(p, cont) {
 		}
 	} else {
 		if (curvoice.sym_restart) {		// new music
-			curvoice.sym_start = s = curvoice.sym_restart;
+			curvoice.sym_start = curvoice.sym_restart;
 			curvoice.sym_restart = null
-		} else {
-			s = curvoice.sym_start
 		}
+		s = curvoice.sym_start
 		if (!s)
 			s = curvoice.sym
 		if (!s) {
@@ -95,7 +94,7 @@ function get_sym(p, cont) {
 		}
 
 		/* store the element in the next note */
-		while (s && (s.type != C.NOTE || s.grace))
+		while (s && s.type != C.NOTE)
 			s = s.next
 		if (!s) {
 			syntax(1, "Too many elements in symbol line")
@@ -234,7 +233,7 @@ function get_lyrics(text, cont) {
 		}
 
 		/* store the word in the next note */
-		while (s && (s.type != C.NOTE || s.grace))
+		while (s && s.type != C.NOTE)
 			s = s.next
 		if (!s) {
 			syntax(1, "Too many words in lyric line")
