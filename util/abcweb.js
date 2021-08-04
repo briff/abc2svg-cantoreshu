@@ -230,8 +230,8 @@ function render() {
 	}
 
 	// get the ABC insertion mode
-	if (page.indexOf('<script type="text/vnd.abc"') >= 0)
-		re = /<script type="text\/vnd.abc"/g
+	if (/<script[^t>]*type="text\/vnd.abc"/.test(page))
+		re = /<script[^t>]*type="text\/vnd.abc"/g
 	else if (/<[^>]* class="[^"]*abc[^"]*/.test(page))
 		re = /<[^>]* class="[^"]*abc[^"]*/g
 	else
@@ -242,9 +242,7 @@ function render() {
 
 		// get the start of a ABC sequence
 		res = re.exec(page)
-		if (!res
-		 || (res[0].indexOf('class=') > 0
-		  && !/[" ]abc[" ]/.exec(res[0]))) {
+		if (!res) {
 			src += page.slice(i).replace(/\n%%/g,"\n%%%%") +
 					"\n%%endml\n"
 			break
