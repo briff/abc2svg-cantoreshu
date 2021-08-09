@@ -699,7 +699,7 @@ Abc.prototype.set_format = function(cmd, param) {
 
 		// in the table 'spatab',
 		// the width of notes is indexed by log2(note_length)
-		cfmt.spatab = = new Float32Array(10)
+		cfmt.spatab = new Float32Array(10)
 		i = 5;				// index of crotchet
 		do {
 			cfmt.spatab[i] = f2
