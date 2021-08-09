@@ -53,7 +53,6 @@ abc2svg.jazzchord = {
 			})
 		}
 
-
 		t = t.replace(/-|°|º|ᵒ|0|6\/9|\^/g, function(x) {
 			switch (x) {
 			case '-': return "–"
@@ -72,18 +71,36 @@ abc2svg.jazzchord = {
 			i++
 			break
 		}
-		a = t.match(/([A-G])([#♯b♭]?)([^/]*)\/?(.*)/)
-		// a[1] = note, a[2] = acc, a[3] = type, a[4] = bass
+		a = t.match(/([A-G])([#♯b♭]?)(maj|min|M|m)?([^/]*)\/?(.*)/)
+		// a[1]=note, a[2]=acc, a[3]=mode, a[4]=type, a[5]=bass
 		if (!a)
 			continue
-		if (!a[2])
-			t = a[1]
-		else
-			t = "$6" + a[1] + "$7" + a[2] + "$0"
-		if (a[3])
-			t += "$8" + a[3] + "$0"
+		switch (a[3]) {
+		case 'maj':
+		case 'M':
+			a[3] = 'Δ'
+			break
+		case 'min':
+		case 'm':
+			a[3] = '-'
+			break
+		}
+		switch (a[4]) {
+		case '5':
+		case '7':
+		case '9':
+		case '11':
+			if (a[2] == 'b' || a[2] == '♭') {
+				a[4] = a[2] + a[4]
+				a[2] = ''
+			}
+			break
+		}
+		t = "$7" + a[1] + (a[2] || '') +  (a[3] || '') + "$0"
 		if (a[4])
-			t += "/$9" + a[4] + "$0"
+			t += "$8" + a[4] + "$0"
+		if (a[5])
+			t += "/$9" + a[5] + "$0"
 		if (gch.text[0] == '(')
 			gch.text = '(' + t + ')'
 		else
@@ -119,12 +136,11 @@ abc2svg.jazzchord = {
 	abc.gch_build = abc2svg.jazzchord.gch_build.bind(abc, abc.gch_build)
 	abc.set_format = abc2svg.jazzchord.set_fmt.bind(abc, abc.set_format)
 
-	abc.add_style("\n.jc6{letter-spacing:-0.05em}\
-\n.jc7{baseline-shift:30%;font-size:75%}\
+	abc.add_style("\
+\n.jc7{letter-spacing:-0.05em}\
 \n.jc8{baseline-shift:25%;font-size:75%;letter-spacing:-0.05em}\
 \n.jc9{font-size:75%;letter-spacing:-0.05em}\
 ")
-	abc.param_set_font("setfont-6", "* * class=jc6")
 	abc.param_set_font("setfont-7", "* * class=jc7")
 	abc.param_set_font("setfont-8", "* * class=jc8")
 	abc.param_set_font("setfont-9", "* * class=jc9")
