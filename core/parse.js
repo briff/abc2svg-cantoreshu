@@ -2431,10 +2431,10 @@ function parse_music_line() {
 			if (m[i] == line.buffer[j])
 				continue
 			if (m[i] != 'n')		// search the base note
-				return //null
+				return //undefined
 			b = ntb.indexOf(line.buffer[j])
 			if (b < 0)
-				return //null
+				return //undefined
 			while (line.buffer[j + 1] == "'") {
 				b += 7;
 				j++
@@ -2450,21 +2450,23 @@ function parse_music_line() {
 
 	// convert a note as a number into a note as a ABC string
 	function n2n(n) {
-	    var	c = ntb[n]
+	    var	c = ''
 
 		while (n < 0) {
 			n += 7;
 			c += ','
 		}
-		while (n > 14) {
+		while (n >= 14) {
 			n -= 7;
 			c += "'"
 		}
-		return c
+		return ntb[n] + c
 	} // n2n()
 
 	// expand a transposing macro
 	function expand(m, b) {
+		if (b == undefined)		// if static macro
+			return m
 	    var	c, i,
 		r = "",				// result
 		n = m.length
@@ -2518,7 +2520,7 @@ function parse_music_line() {
 			s = curvoice.last_sym
 			parse.line = line = new scanBuf
 			parse.istart += line_sav.index
-			line.buffer = b ? expand(m, b) : m
+			line.buffer = expand(m, b)
 			parse_seq(true)
 			if (curvoice.time != te)
 				syntax(1, "Bad length of the macro sequence")
@@ -2528,7 +2530,7 @@ function parse_music_line() {
 				s.invis = s.play = true
 			curvoice = curv
 		} else {
-			line.buffer = b ? expand(m, b) : m;
+			line.buffer = expand(m, b)
 			parse_seq(true)
 		}
 
@@ -2560,7 +2562,7 @@ function parse_music_line() {
 
 			// check if start of a macro
 			if (!in_mac && maci[c]) {
-				n = 0
+				n = undefined
 				for (k in mac) {
 					if (!mac.hasOwnProperty(k)
 					 || k[0] != c)
@@ -2572,7 +2574,7 @@ function parse_music_line() {
 						line.index += k.length
 					} else {
 						n = check_mac(k)
-						if (!n)
+						if (n == undefined)
 							continue
 					}
 					parse_mac(k, mac[k], n)
