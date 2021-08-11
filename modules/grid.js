@@ -1,4 +1,4 @@
-// grid.js - module to insert a chord grid before or after a tune
+// abc2svg - grid.js - module to insert a chord grid before or after a tune
 //
 // Copyright (C) 2018-2021 Jean-Francois Moine
 //
@@ -318,7 +318,7 @@ function build_grid(s, font) {
 		beat_i = 0,
 		wmx = 0
 
-		// scan the first voice of the tune
+		// scan the music symbols
 		bars.push('|')
 		for (s = tsfirst; s; s = s.ts_next) {
 			while (s.time > cur_beat) {
@@ -326,6 +326,8 @@ function build_grid(s, font) {
 					beat_i++
 				cur_beat += beat
 			}
+			if (s.part)
+				parts[chords.length] = s.part.text
 			switch (s.type) {
 			case C.NOTE:
 			case C.REST:
@@ -372,9 +374,6 @@ function build_grid(s, font) {
 			case C.METER:
 				beat = get_beat(s)
 				wm = s.wmeasure
-				break
-			case C.PART:
-				parts[chords.length] = s.text
 				break
 			}
 		}

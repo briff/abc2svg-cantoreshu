@@ -908,20 +908,19 @@ break
 
 	// loop by time
 	for (s = tsfirst; s; s = s.ts_next) {
-		if (s.type == C.PART) {		// new part
+		if (s.part) {			// new part
 			voice_out()
-			if (s.invis && cfmt.writefields.indexOf('P') >= 0) {
+			q = s.part
+			if (q.invis && cfmt.writefields.indexOf('P') >= 0) {
 				abc2svg.print("%%writefields P 0")
 				cfmt.writefields =
 						cfmt.writefields.replace('P', '')
-			} else if (!s.invis && cfmt.writefields.indexOf('P') < 0) {
+			} else if (!q.invis && cfmt.writefields.indexOf('P') < 0) {
 				abc2svg.print("%%writefields P 1")
 				cfmt.writefields += 'P'
 			}
-			font_def("parts", s.text)
-			abc2svg.print('P:' + s.text)
-			while (s.ts_next && s.ts_next.type == C.PART)
-				s = s.ts_next
+			font_def("parts", q.text)
+			abc2svg.print('P:' + q.text)
 			continue
 		}
 		v = s.v

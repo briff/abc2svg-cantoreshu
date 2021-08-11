@@ -1970,7 +1970,7 @@ function draw_measnb() {
 /* -- draw the parts and the tempo information -- */
 /* (the staves are being defined) */
 function draw_partempo(st, top) {
-    var	s, some_part, some_tempo, h, w, y,
+    var	s, s2, some_part, some_tempo, h, w, y,
 	dy = 0,		/* put the tempo indication at top */
 	ht = 0
 
@@ -2031,7 +2031,8 @@ function draw_partempo(st, top) {
 /*fixme: should reduce vertical space if parts don't overlap tempo...*/
 	ymin = staff_tb[st].topbar + 6
 	for (s = tsfirst; s; s = s.ts_next) {
-		if (s.type != C.PART || s.invis)
+		s2 = s.part
+		if (!s2 || s2.invis)
 			continue
 		if (!some_part) {
 			some_part = s;
@@ -2039,7 +2040,7 @@ function draw_partempo(st, top) {
 			h = gene.curfont.size + 2 +
 				gene.curfont.pad * 2
 		}
-		w = strwh(s.text)[0];
+		w = strwh(s2.text)[0]
 		y = y_get(st, true, s.x - 10, w + 3)
 		if (ymin < y)
 			ymin = y
@@ -2050,21 +2051,19 @@ function draw_partempo(st, top) {
 			dy = ymin + h + ht - top
 
 		for (s = some_part; s; s = s.ts_next) {
-			if (s.type != C.PART || s.invis)
+			s2 = s.part
+			if (!s2 || s2.invis)
 				continue
-			s.x -= 10;
 			if (user.anno_start || user.anno_stop) {
-				w = strwh(s.text)[0];
+				w = strwh(s2.text)[0]
 				s.wl = 0;
 				s.wr = w;
 				s.ymn = -ht - h;
 				s.ymx = s.ymn + h;
 				anno_start(s)
 			}
-			xy_str(s.x, 2 - ht - h, s.text);
+			xy_str(s.x - 10, 2 - ht - h, s2.text)
 			anno_stop(s)
-			while (s.ts_next && s.ts_next.type == C.PART)
-				s = s.ts_next
 		}
 	}
 	return dy

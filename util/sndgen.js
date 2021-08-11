@@ -108,13 +108,13 @@ function ToAudio() {
 		s.p_s = []			// pointers to the parts
 		while (1) {
 			if (!s.ts_next) {
-				s.part = first	// end of tune = end of part
+				s.part1 = first	// end of tune = end of part
 				break
 			}
 			s = s.ts_next
-			if (s.type == C.PART) {
-				s.part = first		// reverse pointer
-				v = s.text[0]		// 1st letter only
+			if (s.part) {
+				s.part1 = first		// reverse pointer
+				v = s.part.text[0]	// 1st letter only
 				for (i = 0; i < first.parts.length; i++) {
 					if (first.parts[i] == v)
 						first.p_s[i] = s
@@ -300,6 +300,10 @@ function ToAudio() {
 		}
 		s.ptim = p_time
 
+		if (s.part) {			// new part
+			rst = s			// new possible restart
+			rst_fac = play_fac
+		}
 		switch (s.type) {
 		case C.BAR:
 			if (s.time != b_tim) {
@@ -389,10 +393,6 @@ function ToAudio() {
 			c = chn[v]			// channel
 			s.chn = c
 			s.instr = instr[c]
-			break
-		case C.PART:
-			rst = s			// new possible restart
-			rst_fac = play_fac
 			break
 		case C.TEMPO:
 			if (s.tempo)
@@ -592,13 +592,13 @@ abc2svg.play_next = function(po) {
 				po.repv = 1
 			while (s.ts_next && !s.ts_next.seqst)
 				s = s.ts_next
-			if (!s.part)
+			if (!s.part1)
 				break
 			// fall thru
-		case C.PART:
-			if (s.part				// if end of part
+		default:
+			if (s.part1				// if end of part
 			 && po.i_p != undefined) {
-				s2 = s.part.p_s[++po.i_p]	// next part
+				s2 = s.part1.p_s[++po.i_p]	// next part
 				if (s2) {
 					po.stim += (s.ptim - s2.ptim) / po.conf.speed
 					s = s2
@@ -607,6 +607,11 @@ abc2svg.play_next = function(po) {
 					s = po.s_end
 				}
 			}
+			break
+		}
+	    if (s && s != po.s_end) {
+		switch (s.type) {
+		case C.BAR:
 			break
 		case C.BLOCK:
 			if (s.subtype == "midictl")
@@ -652,8 +657,9 @@ abc2svg.play_next = function(po) {
 			}
 			break
 		}
+	    }
 		while (1) {
-			if (s == po.s_end || !s.ts_next) {
+			if (!s || s == po.s_end || !s.ts_next) {
 				if (po.onend)
 					setTimeout(po.onend,
 						(t - now + d) * 1000,
@@ -686,7 +692,7 @@ abc2svg.play_next = function(po) {
 			po.i_p = -1
 			return
 		}
-		s_p = s.part
+		s_p = s.part1
 		if (!s_p || !s_p.p_s)
 			continue
 		for (i = 0; i < s_p.p_s.length; i++) {

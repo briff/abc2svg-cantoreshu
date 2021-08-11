@@ -60,7 +60,7 @@ abc2svg.soloffs = {
     },
 
     set_sym_glue: function(of, width) {
-    var	s,
+    var	s, t,
 	tsfirst = this.get_tsfirst(),
 	soloffs = this.cfmt().soloffs;
 
@@ -70,8 +70,9 @@ abc2svg.soloffs = {
 	for (s = tsfirst; s; s = s.ts_next) {
 		if (s.dur)
 			break
-		if (soloffs[s.type] != undefined)
-			s.x = soloffs[s.type]
+		t = s.part ? C.PART : s.type
+		if (soloffs[t] != undefined)
+			s.x = soloffs[t]
 	}
     }, // set_sym_glue()
 

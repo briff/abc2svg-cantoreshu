@@ -1012,7 +1012,6 @@ Abc.prototype.set_width = function(s) {
 		tempo_build(s)
 		break
 	case C.BLOCK:				// no width
-	case C.PART:
 	case C.REMARK:
 	case C.STAVES:
 		break
@@ -1110,7 +1109,6 @@ function set_space(s, ptime) {
 		case C.CLEF:
 			return space - s.wl - s.wr
 		case C.BLOCK:			// no space
-		case C.PART:
 		case C.REMARK:
 		case C.STAVES:
 		case C.TEMPO:
@@ -2331,6 +2329,7 @@ function mrest_expand() {
 			delete s4.a_dd
 			delete s4.soln
 			delete s4.a_gch
+			delete s4.part
 			if (s2.next) {
 				s4.next = s2.next
 				s4.next.prev = s4
@@ -3291,7 +3290,6 @@ function init_music_line() {
 			}
 			unlksym(s)
 			// fall thru
-		case C.PART:
 		case C.TEMPO:
 		case C.BLOCK:
 		case C.REMARK:

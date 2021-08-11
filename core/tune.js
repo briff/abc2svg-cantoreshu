@@ -57,6 +57,8 @@ function voice_filter() {
 
 /* -- link a ABC symbol into the current voice -- */
 function sym_link(s) {
+    var	tim = curvoice.time
+
 	if (!s.fname)
 		set_ref(s)
 		parse.last_sym = s;
@@ -69,7 +71,7 @@ function sym_link(s) {
 	s.v = curvoice.v;
 	s.p_v = curvoice;
 	s.st = curvoice.cst;
-	s.time = curvoice.time
+	s.time = tim
 	if (s.dur && !s.grace)
 		curvoice.time += s.dur;
 	parse.ufmt = true
@@ -82,6 +84,12 @@ function sym_link(s) {
 	if (curvoice.eoln) {
 		s.soln = true
 		curvoice.eoln = false
+	}
+	if (parse.part && parse.part[tim]) {
+		if (!parse.part[tim].done) {
+			s.part = parse.part[tim]
+			parse.part[tim].done = true
+		}
 	}
 }
 

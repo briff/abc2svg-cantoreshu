@@ -3727,7 +3727,6 @@ Abc.prototype.draw_symbols = function(p_voice) {
 			draw_note(s, 0)
 			break
 		case C.BLOCK:			// no width
-		case C.PART:
 		case C.REMARK:
 		case C.STAVES:
 		case C.TEMPO:

@@ -1056,14 +1056,17 @@ function do_info(info_type, text) {
 		}
 		if (parse.state == 2)
 			goto_tune()
+		if (!parse.part)
+			parse.part = {}
+		if (parse.part[curvoice.time])	// P: already defined
+			break
 		s = {
-			type: C.PART,
 			text: text,
-			dur: 0
+			time: curvoice.time
 		}
 		if (cfmt.writefields.indexOf(info_type) < 0)
 			s.invis = true
-		sym_link(s)
+		parse.part[curvoice.time] = s
 		break
 	case 'Q':
 		if (parse.state == 0)
