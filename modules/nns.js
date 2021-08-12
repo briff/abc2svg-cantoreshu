@@ -32,7 +32,6 @@
 
 abc2svg.nns = {
     note_nm: "CDEFGAB",
-    acc_nm: ["bb", "b", "", "#", "##"],
 
 	// Nashville
     nns_nm: ["1", "♯1", "2", "♭3", "3", "4", "♯4",
@@ -264,7 +263,7 @@ function build_nns(s, font) {
     // hook before the generation
     set_stems: function(of) {
     var	C, tsfirst, voice_tb, fmt, p_v, s, s2, mode,
-	abc = this
+	abc = this,
 	nns = abc.cfmt().nns
 
 	function get_beat(s) {
@@ -353,8 +352,8 @@ function build_nns(s, font) {
 		wm = voice_tb[0].meter.wmeasure,
 		cur_beat = 0,
 		beat_i = 0,
-		tr = ((tsfirst.p_v.key.k_sf + 12) * 5)
-				% 12	// transposition to "C"
+		tr = (tsfirst.p_v.key.k_sf + 12) * 5
+					// transposition to "C"
 
 		// scan all the symbols
 		bars.push('|')
