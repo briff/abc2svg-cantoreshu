@@ -48,6 +48,7 @@ abc2svg.modules = {
 	pageheight: { fn: 'page' },
 	pedline: {},
 	percmap: { fn: 'perc' },
+	roman: {},
 	soloffs: {},
 	sth: {},
 	strtab: {},

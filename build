@@ -63,6 +63,7 @@ gen modules/page.js modules/strftime.js > page-$MAJOR.js
 gen modules/pedline.js > pedline-$MAJOR.js
 gen modules/perc.js > perc-$MAJOR.js
 gen modules/wps.js modules/psvg.js > psvg-$MAJOR.js
+gen modules/roman.js > roman-$MAJOR.js
 gen modules/soloffs.js > soloffs-$MAJOR.js
 gen modules/sth.js > sth-$MAJOR.js
 gen modules/strtab.js > strtab-$MAJOR.js
