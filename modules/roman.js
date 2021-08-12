@@ -90,7 +90,7 @@ abc2svg.roman = {
 		for (ix = 0; ix < s.a_gch.length; ix++) {
 			gch = s.a_gch[ix]
 			t = gch.text
-			if (gch.type == 'g' && t) {
+			if (gch.type == 'g' && t && t[0] != 'N') {
 				t = set_nm(t)
 				if (t)
 					gch.text = t
