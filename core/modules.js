@@ -44,6 +44,7 @@ abc2svg.modules = {
 	jianpu: {},
 	mdnn: {},
 	MIDI: {},
+	nns: {},
 	pageheight: { fn: 'page' },
 	pedline: {},
 	percmap: { fn: 'perc' },
