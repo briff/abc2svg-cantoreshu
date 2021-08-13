@@ -21,7 +21,10 @@
 // This module is loaded by %%roman.
 //
 // Parameters
-//	(none)
+//	%%roman int
+// <int>
+//	 = '1': use uppercase letters with 'm' for minor chords
+//	 = '2': user lowercase letters for minor chords
 
 abc2svg.roman = {
     note_nm: "CDEFGAB",
@@ -34,7 +37,8 @@ abc2svg.roman = {
 // inversions: 1st: (upper)6, 2nd: (upper)6 (lower) 4 
 
     gch_build: function(of, s) {
-    var	gch, ix, t
+    var	gch, ix, t,
+	ty = this.cfmt().roman
 
 	// transpose the chord back to "C"
 	function set_nm(p) {
@@ -79,6 +83,10 @@ abc2svg.roman = {
 				+ a
 				+ abc2svg.roman.tr
 			n = abc2svg.roman.nm[n % 12]
+			if (ty == 2 && p[o2] == 'm') {
+				n = n.toLowerCase()
+				o2++
+			}
 			csa[i] = p.slice(0, o)
 				+ n
 				+ p.slice(o2)
@@ -86,7 +94,7 @@ abc2svg.roman = {
 		return csa.join('/')
 	} // set_nm()
 
-	if (s.a_gch && this.cfmt().roman) {
+	if (ty && s.a_gch) {
 		for (ix = 0; ix < s.a_gch.length; ix++) {
 			gch = s.a_gch[ix]
 			t = gch.text
@@ -118,10 +126,17 @@ abc2svg.roman = {
     }, // o_mus()
 
     set_fmt: function(of, cmd, parm) {
-    var	cfmt = this.cfmt()
+    var	ty,
+	cfmt = this.cfmt()
 
 	if (cmd == "roman") {
-		cfmt.roman = true
+		if (!parm)
+			parm = "1"
+		ty = Number(parm)
+		if (isNaN(ty))
+			this.syntax(1, this.errs.bad_val, "%%roman")
+		else
+			cfmt.roman = ty
 		return
 	}
 	of(cmd, parm)
