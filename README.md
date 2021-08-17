@@ -14,7 +14,7 @@ The **abc2svg** core is based on the
 [abcm2ps](https://github.com/leesavide/abcm2ps) C code
 which requires compilation on every operating system. 
 The **abc2svg** scripts can run in any system with no compilation on
-any platform that contains an internet browser. This includes Windows,
+any platform that contains an internet browser. This includes MS-Windows,
 Apple, and Unix-like systems (Linux, BSD...) as well as portable devices
 such as cell phones and iPads.
 
@@ -22,11 +22,6 @@ A description of the ABC parameters that relate to both abcm2ps
 and abc2svg can be found [here][1].
 
 [1]: http://moinejf.free.fr/abcm2ps-doc/index.html "abc2svg documentation"
-
-Note: The ABC music notation is now discussed in the mailing list
-[abcusers at groups.io](https://groups.io/g/abcusers).
-Some work in progress about the ABC draft may be found in these
-[temporary pages](http://moinejf.free.fr/abcstd/).
 
 ### 1. Web browser usage
 
