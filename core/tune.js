@@ -140,8 +140,8 @@ var w_tb = new Uint8Array([
 ])
 
 function sort_all() {
-    var	s, s2, p_voice, v, time, w, wmin, ir, multi,
-	prev, nb, ir2, v2, fl, new_sy,
+    var	s, s2, p_voice, v, time, w, wmin, ir,
+	prev, fl, new_sy,
 	nv = voice_tb.length,
 	vtb = [],
 	vn = [],			// voice indexed by range
@@ -151,18 +151,12 @@ function sort_all() {
 		vtb.push(voice_tb[v].sym)
 
 	// set the first symbol
-	ir2 = nv
-	multi = -1
 	for (v = 0; v < nv; v++) {
 		if (!sy.voices[v])
 			continue
-		ir = sy.voices[v].range
-		if (ir < ir2)
-			ir2 = ir
-		vn[ir] = v
-		multi++
+		vn[sy.voices[v].range] = v
 	}
-	v = vn[ir2]
+	v = vn[0]
 	tsfirst = prev = vtb[v]
 	if (!tsfirst)
 		return				// no music
@@ -175,21 +169,19 @@ function sort_all() {
 		if (new_sy) {
 			sy = new_sy;
 			new_sy = null;
-			multi = -1;
 			vn = []
 			for (v = 0; v < nv; v++) {
 				if (!sy.voices[v])
 					continue
-				ir = sy.voices[v].range
-				vn[ir] = v;
-				multi++
+				vn[sy.voices[v].range] = v
 			}
 		}
 
 		/* search the min time and symbol weight */
 		wmin = time = 10000000		// big int
-		for (ir = 0; ir < nv; ir++) {
-			v = vn[ir]
+		ir = 0
+		while (1) {
+			v = vn[ir++]
 			if (v == undefined)
 				break
 			s = vtb[v]
@@ -208,8 +200,9 @@ function sort_all() {
 			break			// done
 
 		/* link the vertical sequence */
-		for (ir = 0; ir < nv; ir++) {
-			v = vn[ir]
+		ir = 0
+		while (1) {
+			v = vn[ir++]
 			if (v == undefined)
 				break
 			s = vtb[v]
