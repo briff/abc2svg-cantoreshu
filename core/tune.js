@@ -1435,20 +1435,21 @@ function acc_same_pitch(s, pit) {
 
 /* -- get staves definition (%%staves / %%score) -- */
 function get_staves(cmd, parm) {
-	var	s, p_voice, p_voice2, i, flags, v, vid,
-		st, range,
-		a_vf = parse_staves(parm) // array of [vid, flags]
+    var	s, p_voice, p_voice2, i, flags, v, vid, a_vf,
+	st, range,
+	maxtime = 0,
+	no_sym = true
 
-	if (!a_vf)
-		return
+	if (parm) {
+		a_vf = parse_staves(parm)	// => array of [vid, flags]
+		if (!a_vf)
+			return
+	}
 
 	if (voice_tb.length)
 		voice_adj(true);
 
 	/* create a new staff system */
-	var	maxtime = 0,
-		no_sym = true
-
 	for (v = 0; v < voice_tb.length; v++) {
 		p_voice = voice_tb[v]
 		if (p_voice.time > maxtime)
@@ -1481,6 +1482,18 @@ function get_staves(cmd, parm) {
 
 		sym_link(s);		// link the staves in this voice
 		par_sy.nstaff = nstaff;
+
+		// if no parameter, duplicate the current staff system
+		// and do a voice re-synchronization
+		if (!parm) {
+			par_sy = s.sy = clone(par_sy, 1)
+			staves_found = maxtime
+			for (v = 0; v < voice_tb.length; v++)
+				voice_tb[v].time = maxtime
+			curvoice = voice_tb[par_sy.top_voice]
+			return
+		}
+
 		new_syst();
 		s.sy = par_sy
 	}
