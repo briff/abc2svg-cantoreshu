@@ -435,17 +435,10 @@ function insert_clef(s, clef_type, clef_line) {
 	/* link in time */
 	while (!s.seqst)
 		s = s.ts_prev;
-	if (s.type == C.STAVES) {
-		new_s.ts_next = s.ts_next
-		new_s.ts_next.ts_prev =
-			s.ts_next = new_s 
-		new_s.ts_prev = s
-	} else {
-		lktsym(new_s, s)
-		if (s.soln) {			// move the start of line
-			new_s.soln = true
-			delete s.soln
-		}
+	lktsym(new_s, s)
+	if (s.soln) {			// move the start of line
+		new_s.soln = true
+		delete s.soln
 	}
 	return new_s
 }
