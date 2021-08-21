@@ -70,7 +70,7 @@ abc2svg.soloffs = {
 	for (s = tsfirst; s; s = s.ts_next) {
 		if (s.dur)
 			break
-		t = s.part ? C.PART : s.type
+		t = s.part ? abc2svg.C.PART : s.type
 		if (soloffs[t] != undefined)
 			s.x = soloffs[t]
 	}
