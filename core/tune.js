@@ -562,9 +562,9 @@ function not2abc(pit, acc) {
 		}
 	}
 	nn += ntb[(pit + 75) % 7]
-	for (i = pit; i >= 21; i -= 7)
+	for (i = pit; i >= 23; i -= 7)
 		nn += "'"
-	for (i = pit; i < 14; i += 7)
+	for (i = pit; i < 16; i += 7)
 		nn += ","
 	return nn
 } // not2abc()
