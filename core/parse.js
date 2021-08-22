@@ -576,9 +576,9 @@ function new_key(param) {
     if (sf < -1) {
 	switch (param[0]) {
 	case 'H':				// bagpipe
+		key_end = true
 		if (param[1].toLowerCase() != 'p') {
 			syntax(1, "Unknown bagpipe-like key")
-			key_end = true
 			break
 		}
 		s.k_bagpipe = param[1];
@@ -588,24 +588,22 @@ function new_key(param) {
 		// initialize the temperament if not done yet
 		if (!cfmt.temper)
 	// detune in cents for just intonation in A
+	// (from https://patrickmclaurin.com/wordpress/?page_id=2420)
 	//  C    ^C     D    _E     E     F    ^F     G    _A     A    _B     B
 	// 15.3 -14.0  -2.0 -10.0   1.9  13.3 -16.0 -31.8 -12.0   0.0  11.4   3.8
-	// (C is ^C,			F is ^F and G is =G)
-	// 86				 84
-	// temp = [100-14, -14, -2, -10, 2, 100-16, -16, -32, -12, 0, 11, 4]
 	// but 'A' bagpipe = 480Hz => raise Math.log2(480/440)*1200 = 151
 			cfmt.temper = new Float32Array([
-//	2.37, 1.37, 1.49, 1.41, 1.53, 2.35, 1.35, 1.19, 1.39, 1.51, 1.62, 1.55
+   //	1.66, 1.37, 1.49, 1.41, 1.53, 1.63, 1.35, 1.19, 1.39, 1.51, 1.62, 1.55
    //   C    ^C     D    _E     E     F    ^F     G    _A      A     _B      B
 11.62, 12.55,
-     2.37, 2.37, 3.49, 0,
-     2.37, 2.37, 3.49, 4.41, 5.53, 0,
-		 3.49, 4.41, 5.53, 7.35, 7.35,
-		       4.41, 5.53, 7.35, 7.35, 8.19, 0,
-				   7.35, 7.35, 8.19, 9.39, 10.51, 0,
+     1.66, 2.37, 3.49, 0,
+     1.66, 2.37, 3.49, 4.41, 5.53, 0,
+		 3.49, 4.41, 5.53, 6.63, 7.35,
+		       4.41, 5.53, 6.63, 7.35, 8.19, 0,
+				   6.63, 7.35, 8.19, 9.39, 10.51, 0,
 					       8.19, 9.39, 10.51, 11.62, 12.55, 0,
 							   10.51, 11.62, 12.55,
-									     2.37, 2.37
+									     1.66, 1.66
 			])
 		break
 	case 'P':
@@ -711,7 +709,10 @@ function new_key(param) {
 			s.k_map[(note.pit + 19) % 7] = note.acc
 		}
 	} else {
-		s.k_map = abc2svg.keys[sf + 7]
+		s.k_map = s.k_bagpipe && sf == 0
+			? abc2svg.keys[9]		// implicit F# and C#
+			: abc2svg.keys[sf + 7]
+
 	}
 	s.k_mode = mode
 
