@@ -193,7 +193,7 @@ M-10.2 -34.5h20.4"/>';
     },
 
     set_fmt: function(of, cmd, param) {
-    var	a,
+    var	a, d,
 	cfmt = this.cfmt()
 
 	switch (cmd) {
@@ -202,7 +202,14 @@ M-10.2 -34.5h20.4"/>';
 		return
 	case "setdiag":
 		a = param.match(/(\S*)\s+(.*)/)
-		abc2svg.diag.cd[a[1].replace('/', '.')] = a[2]
+		if (a && a.length == 3) {
+			d = a[2].split(' ')
+			if (d && d.length >= 3) {
+				abc2svg.diag.cd[a[1].replace('/', '.')] = a[2]
+				return
+			}
+		}
+		this.syntax(1, this.errs.bad_val, "%%setdiag")
 		return
 	}
 	of(cmd, param)
