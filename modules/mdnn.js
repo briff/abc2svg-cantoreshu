@@ -252,7 +252,7 @@ abc2svg.mdnn = {
 
   set_fmt: function(of, cmd, param) {
 	if (cmd == "mdnn")
-		this.cfmt().mdnn = true
+		this.cfmt().mdnn = param
 	else
 		of(cmd, param)
   }, // set_fmt()

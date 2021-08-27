@@ -313,6 +313,8 @@ abc2svg.clair = {
 // set a format parameter
     set_fmt: function(of, cmd, param) {
 	if (cmd == "clairnote") {
+		if (!this.get_bool(param))
+			return
 		this.set_v_param("clair", true);
 		this.set_v_param("stafflines", "|-|---|-|")
 		this.set_v_param("staffscale", .8)

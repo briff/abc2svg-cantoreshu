@@ -388,6 +388,8 @@ abc2svg.jianpu = {
 	if (cmd == "jianpu") {
 	    var	cfmt = this.cfmt()
 
+		if (!this.get_bool(param))
+			return
 		cfmt.jianpu = true
 		cfmt.staffsep = 20
 		cfmt.sysstaffsep = 14

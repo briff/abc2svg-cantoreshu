@@ -387,6 +387,8 @@ abc2svg.gamelan = {
 	if (cmd == "gamelan") {
 	    var	cfmt = this.cfmt()
 
+		if (!this.get_bool(param))
+			return
 		cfmt.gamelan = true
 		cfmt.staffsep = 20
 		cfmt.sysstaffsep = 14
