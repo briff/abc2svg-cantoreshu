@@ -1126,7 +1126,7 @@ Abc.prototype.do_pscom = function(text) {
 		return
 	case "staves":
 	case "score":
-		if (parse.state == 0)
+		if (!parse.state)
 			return
 		if (parse.scores && parse.scores.length > 0) {
 			text = parse.scores.shift();
@@ -1430,6 +1430,7 @@ function acc_same_pitch(s, pit) {
 function get_staves(cmd, parm) {
     var	s, p_voice, p_voice2, i, flags, v, vid, a_vf,
 	st, range,
+	nv = voice_tb.length,
 	maxtime = 0,
 	no_sym = true
 
@@ -1439,11 +1440,11 @@ function get_staves(cmd, parm) {
 			return
 	}
 
-	if (voice_tb.length)
+	if (nv)					// if many voices
 		voice_adj(true);
 
 	/* create a new staff system */
-	for (v = 0; v < voice_tb.length; v++) {
+	for (v = 0; v < nv; v++) {
 		p_voice = voice_tb[v]
 		if (p_voice.time > maxtime)
 			maxtime = p_voice.time
@@ -1451,7 +1452,7 @@ function get_staves(cmd, parm) {
 			no_sym = false
 	}
 	if (no_sym				/* if first %%staves */
-	 || (maxtime == 0 && staves_found < 0)) {
+	 || (!maxtime && staves_found < 0)) {
 		par_sy.staves = []
 		par_sy.voices = []
 	} else {
@@ -1481,7 +1482,7 @@ function get_staves(cmd, parm) {
 		if (!parm) {
 			par_sy = s.sy = clone(par_sy, 1)
 			staves_found = maxtime
-			for (v = 0; v < voice_tb.length; v++)
+			for (v = 0; v < nv; v++)
 				voice_tb[v].time = maxtime
 			curvoice = voice_tb[par_sy.top_voice]
 			return
@@ -1494,7 +1495,7 @@ function get_staves(cmd, parm) {
 	staves_found = maxtime
 
 	/* initialize the (old) voices */
-	for (v = 0; v < voice_tb.length; v++) {
+	for (v = 0; v < nv; v++) {
 		p_voice = voice_tb[v]
 		delete p_voice.second
 		delete p_voice.ignore
@@ -1511,8 +1512,9 @@ function get_staves(cmd, parm) {
 
 		// set the range and add the overlay voices
 		while (1) {
-			par_sy.voices[v] = {}
-			par_sy.voices[v].range = range++
+			par_sy.voices[v] = {
+				range: range++
+			}
 			p_voice = p_voice.voice_down
 			if (!p_voice)
 				break
@@ -1611,7 +1613,8 @@ function get_staves(cmd, parm) {
 			par_sy.staves[st].flags ^= STOP_BAR
 	}
 
-	for (v = 0; v < voice_tb.length; v++) {
+	nv = voice_tb.length
+	for (v = 0; v < nv; v++) {
 		p_voice = voice_tb[v]
 		if (!par_sy.voices[v])
 			continue
@@ -1779,10 +1782,10 @@ function is_voice_sig() {
 
 //	if (!curvoice.sym)
 //		return true	// new voice (may appear in the middle of a tune)
-	if (curvoice.time != 0)
+	if (curvoice.time)
 		return false
 	for (s = curvoice.last_sym; s; s = s.prev)
-		if (w_tb[s.type] != 0)
+		if (w_tb[s.type])
 			return false
 	return true
 }
@@ -1913,7 +1916,7 @@ function new_voice(id) {
 	if (n == 1
 	 && voice_tb[0].default) {
 		delete voice_tb[0].default
-		if (voice_tb[0].time == 0) {
+		if (!voice_tb[0].time) {
 			p_voice = voice_tb[0];
 			p_voice.id = id
 			if (cfmt.transp	// != undefined
