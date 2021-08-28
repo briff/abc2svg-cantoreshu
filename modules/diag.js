@@ -39,50 +39,50 @@
 
 abc2svg.diag = {
 
-// common diagrams - definitions adapted from Guido Gonzato and Chris Fargen
+// common diagrams by Guido Gonzato from http://www.guitar-chord.org/ (2021-08-27)
     cd: {
-	C: "032010 ,0 032010",
-	Cm: "003320 fr3 003420 barre=6-1",
-	C7: "032310 ,0 032410",
-	Cm7: "003020 fr3 x03020 barre=6-1",
+	C: "x32010 ,0 x32010",
+	Cm: "x03320 fr3 x03420 barre=5-1",
+	C7: "x32310 ,0 x32410",
+	Cm7: "003020 fr3 x03020 barre=5-1",
 	CM7: "032000 ,0 x21000",
-	Csus4: "000340 fr3 x00340 barre=6-1",
+	Csus4: "x03340 fr3 x02340 barre=5-1",
 	D: "000232 ,0 x00132",
 	Dm: "000231 ,0 x00231",
 	D7: "000212 ,0 x00312",
 	Dm7: "000211 ,0 xx0211",
-	DM7: "000222 ,0 xx0123",
-	Dsus4: "000233 ,0 xx0123",
+	DM7: "000222 ,0 xx0111",
+	Dsus4: "000233 ,0 xx0134",
 	E: "022100 ,0 023100",
 	Em: "022000 ,0 023000",
 	E7: "020100 ,0 020100",
-	Em7: "020000 ,0 010000",
+	Em7: "022030 ,0 023040",
 	EM7: "021100 ,0 031200",
-	Esus4: "002200 ,0 001200",
+	Esus4: "022200 ,0 023400",
 	F: "033200 fr1 034200 barre=6-1",
 	Fm: "033000 fr1 034000 barre=6-1",
 	F7: "030200 fr1 030200 barre=6-1",
 	Fm7: "030000 fr1 030000 barre=6-1",
-	FM7: "032200 fr1 042300 barre=6-1",
-	Fsus4: "003300 fr1 003400 barre=6-1",
+	FM7: "xx3210 ,0 xx3210",
+	Fsus4: "033300 fr1 023400 barre=6-1",
 	G: "320003 ,0 230004",
 	Gm: "033000 fr3 034000 barre=6-1",
 	G7: "320001 ,0 320001",
 	Gm7: "030000 fr3 030000 barre=6-1",
 	GM7: "320002 ,0 310002",
-	Gsus4: "003300 fr3 003400 barre=6-1",
+	Gsus4: "033300 fr3 023400 barre=6-1",
 	A: "002220 ,0 002340",
 	Am: "002210 ,0 002310",
 	A7: "002020 ,0 002030",
 	Am7: "002010 ,0 002010",
 	AM7: "002120 ,0 x02130",
-	Asus4: "000230 ,0 x00120",
-	B: "003330 fr2 002340 barre=6-1",
-	Bm: "003320 fr2 003410 barre=6-1",
+	Asus4: "x02230 ,0 x02340",
+	B: "x03330 fr2 002340 barre=5-1",
+	Bm: "x03320 fr2 003410 barre=5-1",
 	B7: "021202 ,0 x21304",
-	Bm7: "003020 fr2 x03020 barre=6-1",
-	BM7: "003230 fr2 x03240 barre=6-1",
-	Bsus4: "000230 fr2 x00340 barre=6-1",
+	Bm7: "003020 fr2 x03020 barre=5-1",
+	BM7: "003230 fr2 x03240 barre=5-1",
+	Bsus4: "x03340 fr2 x02340 barre=5-1",
     }, // cch{}
 
 // function called before tune generation
@@ -162,8 +162,8 @@ M-10.2 -34.5h20.4"/>';
 			l = d[3].match(/barre=(\d)-(\d)/)
 			if (l)
 				dc += '<path id="barre" class="stroke"\
- stroke-width=".9" d="M' + ((6 - l[1]) * 4 - 10)
-					+ '-31h' + ((l[1] - l[2]) * 4) + '"/>'
+ stroke-width="1.4" d="M' + ((6 - l[1]) * 4 - 12)
+					+ ' -31h' + ((l[1] - l[2]) * 4 + 4) + '"/>'
 		}
 		dc += '</g>'
 		glyphs[nm] = dc
