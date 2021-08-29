@@ -222,6 +222,11 @@ function get_lyrics(text, cont) {
 						gene.curfont = gene.deffont
 					else if (c >= '1' && c <= '9')
 						gene.curfont = get_font("u" + c)
+					if (word.length == 1) {
+						i++
+						word = '' // start with the new font
+						continue
+					}
 					// fall thru
 				default:
 					word += p[i++]

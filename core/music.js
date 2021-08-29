@@ -603,6 +603,7 @@ function set_w_chs(s) {
 	x = 0,
 	n = 0
 
+	set_font("vocal")
 	for ( ; s; s = s.ts_next) {
 		if (s.shrink) {
 			x += s.shrink;
