@@ -1179,10 +1179,6 @@ function new_bar() {
 			multi: 0		// needed for decorations
 		}
 
-	if (a_dcn.length && a_dcn[a_dcn.length - 1] == "dot") {
-		s.bar_dotted = true
-		a_dcn.pop()
-	}
 	if (vover && vover.bar)			// end of voice overlay
 		get_vover('|')
 	if (glovar.new_nbar) {			// %%setbarnb
@@ -2256,6 +2252,12 @@ Abc.prototype.new_note = function(grace, sls) {
 		c = line.char()
 		while (1) {
 			switch (c) {
+			case '.':
+				if (line.buffer[line.index + 1] != '-')
+					break
+				a_dcn.push("dot")
+				line.index++
+				// fall thru
 			case '-':
 				ty = parse_vpos()
 				for (i = 0; i <= s.nhd; i++) {
@@ -2280,15 +2282,6 @@ Abc.prototype.new_note = function(grace, sls) {
 					}
 				}
 				c = line.char()
-				continue
-			case ')':
-				s.notes[0].s = s
-				slur_add(s.notes[0])
-				c = line.next_char()
-				continue
-			case '.':
-				a_dcn.push("dot")
-				c = line.next_char()
 				continue
 			}
 			break
