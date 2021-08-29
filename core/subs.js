@@ -173,7 +173,6 @@ var strwh = typeof document != "undefined" ?
 		el.innerHTML = str.slice(i0);
 		w += el.clientWidth;
 
-		gene.curfont = font
 		return [w, h]
 	}
     })() :
@@ -215,7 +214,6 @@ var strwh = typeof document != "undefined" ?
 		}
 		w += cwid(c) * swfac
 	}
-	gene.curfont = font
 	return [w, h]
 }
 
@@ -440,12 +438,6 @@ function write_text(text, action) {
 		j = 0
 		while (1) {
 			i = text.indexOf('\n', j)
-			if (i < 0) {
-				str = str2svg(text.slice(j))
-				vskip(str.wh[1]  * cfmt.lineskipfac + font.pad * 2)
-				xy_str(x, font.pad, str, action)
-				break
-			}
 			if (i == j) {			// new paragraph
 				vskip(parskip);
 				blk_flush()
@@ -457,9 +449,15 @@ function write_text(text, action) {
 				if (i == text.length)
 					break
 			} else {
-				str = str2svg(text.slice(j, i))
-				vskip(str.wh[1]  * cfmt.lineskipfac + font.pad * 2)
+				if (i < 0)
+					str = text.slice(j)
+				else
+					str = text.slice(j, i)
+				vskip(strwh(str)[1]  * cfmt.lineskipfac
+					+ font.pad * 2)
 				xy_str(x, font.pad, str, action)
+				if (i < 0)
+					break
 			}
 			j = i + 1
 		}
@@ -476,24 +474,25 @@ function write_text(text, action) {
 			else
 				words = text.slice(j, i);
 			words = words.split(/\s+/);
-			w = k = 0
-			font = gene.curfont
+			w = k = wh = 0
 			for (j = 0; j < words.length; j++) {
-				ww = strwh(words[j])[0];
-				w += ww
+				ww = strwh(words[j])
+				w += ww[0]
 				if (w >= strlw) {
-					str = str2svg(words.slice(k, j).join(' '))
-					vskip(str.wh[1]  * cfmt.lineskipfac)
-					xy_str(0, 0, str, action, strlw)
+					vskip(wh * cfmt.lineskipfac)
+					xy_str(0, 0, words.slice(k, j).join(' '),
+						action, strlw)
 					k = j;
-					w = ww
+					w = ww[0]
+					wh = 0
 				}
 				w += cwidf(' ')
+				if (ww[1] > wh)
+					wh = ww[1]
 			}
 			if (w != 0) {			// last line
-				str = str2svg(words.slice(k).join(' '))
-				vskip(str.wh[1]  * cfmt.lineskipfac)
-				xy_str(0, 0, str)
+				vskip(wh * cfmt.lineskipfac)
+				xy_str(0, 0, words.slice(k).join(' '))
 			}
 			vskip(parskip);
 			blk_flush()
