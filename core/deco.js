@@ -907,7 +907,7 @@ function deco_cnv(s, prev) {
 		case 0:			// near
 			if (s.type == C.BAR && nm == "dot") {
 				s.bar_dotted = true
-				break
+				continue
 			}
 			// fall thru
 		case 1:			// slide
