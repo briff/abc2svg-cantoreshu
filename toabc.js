@@ -820,7 +820,7 @@ break
 			break
 		case C.REST:
 			line += s.invis ? 'x' : 'z';
-			dur_dump(s.dur)
+			dur_dump(s.dur_orig)
 			break
 		case C.SPACE:
 			line += 'y'
