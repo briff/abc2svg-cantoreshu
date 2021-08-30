@@ -25,7 +25,10 @@
 //
 // The result goes to stdout, one note per line, format:
 //
-//	<time> <MIDI_instrument> <MIDI_pitch> <duration>
+//	<time> <MIDI_instrument> <MIDI_pitch> <duration> <voice_number>
+
+// with TAB as the field separator.
+// The number after the dot in the voice number indicates a voice overlay.
 //
 // The time and the durations are in 1/100s.
 // Lines starting with '#' are comments.
@@ -44,7 +47,7 @@ abc2svg.abc_end = function() {
 		return v.toString()
 	} // pit()
 
-    var	e, t,
+    var	e, t, vn,
 	audio = ToAudio(),		// (in sndgen.js)
 	po = {				// play object
 		conf: {		// configuration
@@ -57,18 +60,46 @@ abc2svg.abc_end = function() {
 			abc2svg.print(' '+ (t * 100).toFixed(0) +
 				'\t' + s.instr +
 				'\t' + pit(k) +
-				'\t' + (d * 100).toFixed(0))
+				'\t' + (d * 100).toFixed(0) +
+				'\t' + vn[s.p_v.id])
 		} // note_run()
 	},
 	tunes = abc.tunes.slice(0)	// get a copy of the generated tunes
 
-	if (user.errtxt)
-		abc2svg.print("\n--- Errors ---\n" + user.errtxt)
+	// define the voice numbers
+	function dvn(v_tb) {
+	    var	i, n, p_v,
+		v = 0
+
+		vn = {}
+		while (1) {
+			p_v = v_tb[v]
+			if (!p_v)
+				break
+			if (vn[p_v.id]) {
+				v++
+				continue
+			}
+			vn[p_v.id] = v.toString()
+			n = 1
+			while (1) {
+				p_v = p_v.voice_down
+				if (!p_v)
+					break
+				vn[p_v.id] = v.toString() + '.' + n.toString()
+				n++
+			}
+			v++
+		}
+	} //dvn()
 
 	// ---- abc_end() body ----
 
+	if (user.errtxt)
+		abc2svg.printErr("\n--- Errors ---\n" + user.errtxt)
+
 	abc2svg.print('# MIDI flow (time and duration in 1/100s)\n\
-# time instr  pitch  duration')
+# time instr  pitch  duration voice')
 
 	// loop on the tunes and
 	while (1) {
@@ -76,6 +107,7 @@ abc2svg.abc_end = function() {
 		if (!e)
 			break
 
+		dvn(e[1])
 		audio.add(e[0], e[1], e[3])	// generate the music
 
 		t = (e[2].T || '(no title)').replace('\n', ' / ')
