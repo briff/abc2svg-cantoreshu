@@ -850,7 +850,7 @@ function get_font(fn) {
 	}
 
 	if (!font.name || !font.size) {		// if incomplete user font
-		font2 = Object.create(gene.curfont)
+		font2 = Object.create(gene.deffont)
 		if (font.name)
 			font2.name = font.name
 		if (font.normal) {
