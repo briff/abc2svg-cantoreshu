@@ -598,7 +598,7 @@ abc2svg.play_next = function(po) {
 		default:
 			if (s.part1				// if end of part
 			 && po.i_p != undefined) {
-				s2 = s.part1.p_s[++po.i_p]	// next part
+				s2 = s.part1.p_s[po.i_p++]	// next part
 				if (s2) {
 					po.stim += (s.ptim - s2.ptim) / po.conf.speed
 					s = s2
@@ -689,7 +689,7 @@ abc2svg.play_next = function(po) {
     var	s, i, s_p
 	for (s = po.s_cur; s; s = s.ts_prev) {
 		if (s.parts) {
-			po.i_p = -1
+			po.i_p = 0
 			return
 		}
 		s_p = s.part1
