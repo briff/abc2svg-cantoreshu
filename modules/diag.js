@@ -22,9 +22,13 @@
 // The command %%diagram draws a chord diagram above the chord symbols.
 //
 // Parameters
-//	%%diagram 1
+//	%%diagram [ <#diagram> | 0 ]
+// with
+//	<#diagram> identifier of the diagram type (number)
+//	('1' is for the 6 strings guitar)
 //
-// The command %%setdiag defines the chord diagram of a chord symbol.
+// The command %%setdiag defines the chord diagram of a chord symbol
+//	for the current diagram type.
 //
 // Parameters
 //	%%setdiag <chord> <dots> <label[,pos]> <fingers> [barre=<num>-<num>]
@@ -39,8 +43,9 @@
 
 abc2svg.diag = {
 
+    cd4: {},
 // common diagrams by Guido Gonzato from http://www.guitar-chord.org/ (2021-08-27)
-    cd: {
+    cd6: {
 	C: "x32010 ,0 x32010",
 	Cm: "x03320 fr3 x03420 barre=5-1",
 	C7: "x32310 ,0 x32410",
@@ -83,22 +88,39 @@ abc2svg.diag = {
 	Bm7: "003020 fr2 x03020 barre=5-1",
 	BM7: "003230 fr2 x03240 barre=5-1",
 	Bsus4: "x03340 fr2 x02340 barre=5-1",
-    }, // cch{}
+    }, // cd6{}
 
 // function called before tune generation
-    do_diag: function() {
+// n = number of strings
+    do_diag: function(n) {
     var	glyphs = this.get_glyphs(),
 	voice_tb = this.get_voice_tb(),
 	decos = this.get_decos()
 
 	// create the base decorations if not done yet
-	if (!glyphs['fb']) {
+	if (!glyphs.ddot) {
 		this.add_style("\
 \n.fng {font:6px sans-serif}\
 \n.frn {font:italic 7px sans-serif}")
+		glyphs.ddot = '<circle id="ddot" class="fill" r="1.5"/>'
+	}
 
-	// fingerboard
-		glyphs['fb'] = '<g id="fb">\n\
+	if (!glyphs["fb" + n]) {
+		if (n == 4) {
+			glyphs.fb4 = '<g id="fb4">\n\
+<path class="stroke" stroke-width="0.4" d="\
+M-6 -34h12m0 6h-12\
+m0 6h12m0 6h-12\
+m0 6h12"/>\n\
+<path class="stroke" stroke-width="0.5" d="\
+M-6 -34v24m4 0v-24\
+m4 0v24m4 0v-24"/>\n\
+</g>'
+			glyphs.nut4 =
+				'<path id="nut4" class="stroke" stroke-width="1.6" d="\
+M-6.2 -34.5h12.4"/>'
+		} else {
+			glyphs.fb6 = '<g id="fb6">\n\
 <path class="stroke" stroke-width="0.4" d="\
 M-10 -34h20m0 6h-20\
 m0 6h20m0 6h-20\
@@ -107,14 +129,11 @@ m0 6h20"/>\n\
 M-10 -34v24m4 0v-24\
 m4 0v24m4 0v-24\
 m4 0v24m4 0v-24"/>\n\
-</g>';
-
-// fret information
-		glyphs['nut'] =
-			'<path id="nut" class="stroke" stroke-width="1.6" d="\
-M-10.2 -34.5h20.4"/>';
-		glyphs['ddot'] =
-			'<circle id="ddot" class="fill" r="1.5"/>';
+</g>'
+			glyphs.nut6 =
+				'<path id="nut6" class="stroke" stroke-width="1.6" d="\
+M-10.2 -34.5h20.4"/>'
+		}
 	}
 
 	// convert the chord symbol to a "better known" one
@@ -130,30 +149,35 @@ M-10.2 -34.5h20.4"/>';
 
 	// add a decoration and display the diagram
 	function diag_add(nm) {			// chord name
-	    var	dc, i, l,
-		d = abc2svg.diag.cd[nm]		// definition of the diagram
+	    var	dc, i, l, x,
+		d = abc2svg.diag["cd" + n][nm]	// definition of the diagram
+
 		if (!d)
 			return		// no diagram of this chord
+		nm = n + nm
 		d = d.split(' ')
-//fixme: fb<n> n = d[2].length (4,5,6)
+		x = 2 - 2 * n
 		dc = '<g id="' + nm + '">\n\
-<use xlink:href="#fb"/>\n'
+<use xlink:href="#fb' + n + '"/>\n'
 		l = d[1].split(',')	// label,position
 		if (!l[0] || l[0].slice(-1) == l[1])
-			dc += '<use xlink:href="#nut"/>\n'
+			dc += '<use xlink:href="#nut' + n + '"/>\n'
 		if (l[0])
-			dc += '<text x="-20" y="' + ((l[1] || 1) * 6 - 35)
+			dc += '<text x="' + (x - 10).toString()
+				+ '" y="' + ((l[1] || 1) * 6 - 35)
 				+ '" class="frn">' + l[0] + '</text>\n'
 		decos[nm] = "3 " + nm + " 40 " + (l[0] ? "30" : "10") + " 0"
 		// fingers
-		dc += '<text x="-12,-8,-4,0,4,8" y="-36" class="fng">'
+		dc += '<text x="' + (n == 6 ? '-12,-8,-4,0,4,8'
+					: '-8,-4,0,4')
+				+ '" y="-36" class="fng">'
 				+ d[2].replace(/[y0]/g, ' ')
 				+ '</text>\n'
 		// dots
-		for (i = 0; i < d[0].length; i++) {
+		for (i = 0; i < n; i++) {
 			l = d[0][i]
 			if (l && l != 'x' && l != '0')
-				dc += '<use x="' + (i * 4 - 10)
+				dc += '<use x="' + (i * 4 + x)
 					+ '" y="' + (l * 6 - 37)
 					+ '" xlink:href="#ddot"/>\n'
 		}
@@ -162,7 +186,7 @@ M-10.2 -34.5h20.4"/>';
 			l = d[3].match(/barre=(\d)-(\d)/)
 			if (l)
 				dc += '<path id="barre" class="stroke"\
- stroke-width="1.4" d="M' + ((6 - l[1]) * 4 - 12)
+ stroke-width="1.4" d="M' + ((n - l[1]) * 4 + x - 2)
 					+ ' -31h' + ((l[1] - l[2]) * 4 + 4) + '"/>'
 		}
 		dc += '</g>'
@@ -179,33 +203,41 @@ M-10.2 -34.5h20.4"/>';
 			if (!gch || gch.type != 'g' || gch.capo)
 				continue
 			nm = ch_cnv(gch.text)
-			if (!decos[nm])		// if no decoration yet
+			if (!decos[n + nm])	// if no decoration yet
 				diag_add(nm)
-			this.deco_put(nm, s)	// insert diag as decoration
+			this.deco_put(n + nm, s) // insert diag as decoration
 		}
 	}
     }, // do_diag()
 
     output_music: function(of) {
-	if (this.cfmt().diag)
-		abc2svg.diag.do_diag.call(this)
+    var	n = this.cfmt().diag
+	if (n)
+		abc2svg.diag.do_diag.call(this, n)
 	of()
     },
 
     set_fmt: function(of, cmd, param) {
-    var	a, d,
+    var	a, d, n,
 	cfmt = this.cfmt()
 
 	switch (cmd) {
 	case "diagram":
-		cfmt.diag = param
+		n = param
+		if (n != '0' && n != '4')
+			n = '6'
+		cfmt.diag = n
 		return
 	case "setdiag":
+		n = cfmt.diag
+		if (!n)
+			n = "6"		// default = 6 strings guitar
 		a = param.match(/(\S*)\s+(.*)/)
 		if (a && a.length == 3) {
 			d = a[2].split(' ')
 			if (d && d.length >= 3) {
-				abc2svg.diag.cd[a[1].replace('/', '.')] = a[2]
+				abc2svg.diag["cd" + n][a[1].replace('/', '.')]
+					= a[2]
 				return
 			}
 		}
