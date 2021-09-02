@@ -329,38 +329,43 @@ function d_arp(de) {
 function d_cresc(de) {
 	if (de.ldst)			// skip start of deco
 		return
-    var	s, dd2, up, x, dx, x2, i,
-		s2 = de.s,
-		de2 = de.start,		/* start of the deco */
-		de2_prev, de_next;
-
-	s = de2.s;
-	x = s.x + 3;
-	i = de2.ix
-	if (i > 0)
-		de2_prev = a_de[i - 1];
+    var	dd2, up, dx, x2, i, de3,
+	s2 = de.s,
+	de2 = de.start,			// start of the deco
+	s = de2.s,
+	x = s.x + 3			// x left
 
 	de.st = s2.st;
 	de.lden = false;		/* old behaviour */
 	de.has_val = true;
 	if (de.dd.ty == '^')
 		up = 1
-	else if (de.dd.ty == '_')
-		;
-	else
+	else if (de.dd.ty != '_')
 		up = up6(s2, s2.pos.dyn)
 	if (up)
 		de.up = true
 
-	// shift the starting point if any dynamic mark on the left
-	if (de2_prev && de2_prev.s == s
-	 && ((de.up && !de2_prev.up)
-	  || (!de.up && de2_prev.up))) {
-		dd2 = de2_prev.dd
-		if (f_staff[dd2.func]) {	// if dynamic mark
-			x2 = de2_prev.x + de2_prev.val + 4
+	// shift the starting point if any dynamic mark on this symbol
+	i = de2.ix
+	while (--i >= 0) {
+		de3 = a_de[i]
+		if (!de3 || de3.s != s)
+			break
+	}
+	while (1) {
+		i++
+		if (i == de2.ix)
+			continue
+		de3 = a_de[i]
+		if (!de3 || de3.s != s)
+			break
+		if (!(de.up ^ de3.up)
+		 && f_staff[de3.dd.func]) {	// if dynamic mark
+//			x2 = de3.x + de3.val + 4
+			x2 = de3.x + de3.dd.wr + 2
 			if (x2 > x)
 				x = x2
+			break
 		}
 	}
 
@@ -372,16 +377,26 @@ function d_cresc(de) {
 		}
 	} else {
 
-		// shift the ending point if any dynamic mark on the right
-		x2 = s2.x;
-		de_next = a_de[de.ix + 1]
-		if (de_next
-		 && de_next.s == s
-		 && ((de.up && !de_next.up)
-		  || (!de.up && de_next.up))) {
-			dd2 = de_next.dd
-			if (f_staff[dd2.func])	// if dynamic mark
-				x2 -= 5
+		// shift the ending point if any dynamic mark
+		x2 = s2.x
+		i = de.ix
+		while (--i > 0) {
+			de3 = a_de[i]
+			if (!de3 || de3.s != s2)
+				break
+		}
+		while (1) {
+			i++
+			if (i == de.ix)
+				continue
+			de3 = a_de[i]
+			if (!de3 || de3.s != s2)
+				break
+			if (!(de.up ^ de3.up)
+			 && f_staff[de3.dd.func]) {	// if dynamic mark
+				x2 -= de3.dd.wl
+				break
+			}
 		}
 		dx = x2 - x - 4
 		if (dx < 20) {
