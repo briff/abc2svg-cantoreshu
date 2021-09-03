@@ -276,6 +276,8 @@ function soffs(r, c) {
 
 // select a source ABC element on error
 function gotoabc(l, c) {
+    var	s = elt_ref.source
+
 	selsrc(0)
 	c = soffs(l, Number(c))
 	s.focus();
