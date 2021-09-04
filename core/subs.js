@@ -137,12 +137,11 @@ var strwh = typeof document != "undefined" ?
 			return str.wh
 		}
 
-		str = str.replace(/<|>|&[^&]*?;|&|  /g, function(c){
+		str = str.replace(/<|>|&[^&]*?;|&/g, function(c){
 			switch (c) {
 			case '<': return "&lt;"
 			case '>': return "&gt;"
 			case '&': return "&amp;"
-			case "  ": return '  '	// space + nbspace
 			}
 			return c		// &xxx;
 		})
@@ -244,12 +243,11 @@ function str2svg(str) {
 		return '<tspan\n\tclass="' + cl + '">'
 	} // tspan()
 
-	o = str.replace(/<|>|&[^&]*?;|&|  |\$./g, function(c){
+	o = str.replace(/<|>|&[^&]*?;|&|\$./g, function(c){
 			switch (c) {
 			case '<': return "&lt;"
 			case '>': return "&gt;"
 			case '&': return "&amp;"
-			case '  ': return '  '	// space + nbspace
 			default:
 				if (c[0] != '$')
 					break

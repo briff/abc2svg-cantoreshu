@@ -245,14 +245,13 @@ Abc.prototype.gch_build = function(s) {
 	for (ix = 0; ix < s.a_gch.length; ix++) {
 		gch = s.a_gch[ix]
 		if (gch.type == 'g') {
-			gch.text = gch.text.replace(/##|#|=|bb|b|  /g,
+			gch.text = gch.text.replace(/##|#|=|bb|b/g,
 				function(x) {
 					switch (x) {
 					case '##': return "&#x1d12a;"
 					case '#': return "\u266f"
 					case '=': return "\u266e"
 					case 'b': return "\u266d"
-					case '  ': return '  '
 					}
 					return "&#x1d12b;"
 				});
