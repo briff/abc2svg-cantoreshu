@@ -1242,11 +1242,7 @@ function svg_flush() {
 	head += fulldefs
 
 	if (style || font_style)
-		head += '<style>\n.' +
-				font_class(font) +	// for fill color
-					' text,tspan{fill:currentColor}' +
-			font_style + style +
-			'\n</style>\n'
+		head += '<style>' + font_style + style + '\n</style>\n'
 
 	if (defs)
 		head += '<defs>' + defs + '\n</defs>\n'
