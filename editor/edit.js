@@ -279,7 +279,8 @@ function gotoabc(l, c) {
     var	s = elt_ref.source
 
 	selsrc(0)
-	c = soffs(l, Number(c))
+	if (l >= 0)
+		c = soffs(l, Number(c))
 	s.focus();
 	s.setSelectionRange(c, syms[c] ? syms[c].iend : c + 1)
 }
