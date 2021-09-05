@@ -786,7 +786,8 @@ Abc.prototype.draw_hl = function(s) {
 	p_staff = staff_tb[st]
 
 	// check if any helper line
-	if (!p_staff.hll)
+	if (!p_staff.hll
+	 || s.invis)
 		return			// no helper line (no line)
 	for (i = 0; i <= s.nhd; i++) {
 		note = s.notes[i]
