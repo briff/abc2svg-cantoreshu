@@ -1847,8 +1847,8 @@ function get_key(parm) {
 			memo_kv_parm('*', a)
 		if (!glovar.ulen)
 			glovar.ulen = C.BLEN / 8;
-		parse.state = 2;		// in tune header after K:
-		return
+//		parse.state = 2;		// in tune header after K:
+//		return
 	case 2:					// K: at start of tune body
 		goto_tune(true)
 		break
@@ -2059,7 +2059,7 @@ function get_voice(parm) {
 
 	curvoice = new_voice(vs[0])
 
-	// if many voice, memorize the start of sequence
+	// if many voices, memorize the start of sequence
 	if (vs.length > 1) {
 		vs.shift()
 		curvoice.clone = {
