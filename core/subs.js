@@ -680,7 +680,7 @@ var info_font_init = {
 function write_headform(lwidth) {
 	var	c, font, font_name, align, x, y, sz,
 		info_val = {},
-		info_font = clone(info_font_init),
+		info_font = Object.create(info_font_init),
 		info_sz = {
 			A: cfmt.infospace,
 			C: cfmt.composerspace,
