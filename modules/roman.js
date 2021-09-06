@@ -1,5 +1,5 @@
 // abc2svg - roman.js - convert the chord symbols to the RNN
-//			(Roman Numerical Notation)
+//			(Roman Numeral Notation)
 //
 // Copyright (C) 2021 Jean-Francois Moine
 //
@@ -46,14 +46,10 @@ abc2svg.roman = {
 		csa = []
 
 		i = p.indexOf('/')		// get the bass if any
-		if (i > 0) {
-			while (1) {
-				if (p[i -1] != '<')
-					break
-				i = p.indexOf('/', i + 1)
-				if (i < 0)
-					break
-			}
+		while (i > 0) {
+			if (p[i - 1] != '<')	// if not </tag
+				break
+			i = p.indexOf('/', i + 1)
 		}
 		if (i < 0) {
 			csa.push(p)
