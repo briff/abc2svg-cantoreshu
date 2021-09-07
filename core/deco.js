@@ -714,10 +714,12 @@ function d_upstaff(de) {
 		}
 	}
 
-	if (y >= stafft)
-		y_set(s.st, 1, x - dd.wl, w, y + dd.h)
-	else if (y <= staffb)
-		y_set(s.st, 0, x - dd.wl, w, y - dd.hd)
+	if (dd.func != 6) {			// if not d_pf
+		if (y >= stafft)
+			y_set(s.st, 1, x - dd.wl, w, y + dd.h)
+		else if (y <= staffb)
+			y_set(s.st, 0, x - dd.wl, w, y - dd.hd)
+	}
 
 	de.x = x;
 	de.y = y
