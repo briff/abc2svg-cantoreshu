@@ -1296,6 +1296,8 @@ Abc.prototype.draw_all_deco = function() {
 //					y_set(st, de.up, de.x, de.val,
 //						(de.up ? y + dd.h : y)
 //							- staff_tb[st].y)
+					if (stv_g.scale != 1)
+						y += stv_g.dy / 2
 				}
 			}
 		}
