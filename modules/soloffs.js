@@ -41,7 +41,7 @@ abc2svg.soloffs = {
 //				soloffs[C.BAR] = v
 //				break
 			case 'part':
-				soloffs[C.PART] = v + 10	// see deco.js
+				soloffs[C.PART] = v		// see deco.js
 				break
 			case 'tempo':
 				soloffs[C.TEMPO] = v + 16	// see deco.js
@@ -60,7 +60,7 @@ abc2svg.soloffs = {
     },
 
     set_sym_glue: function(of, width) {
-    var	s, t,
+    var	s,
 	tsfirst = this.get_tsfirst(),
 	soloffs = this.cfmt().soloffs;
 
@@ -68,11 +68,12 @@ abc2svg.soloffs = {
 	if (!soloffs)
 		return
 	for (s = tsfirst; s; s = s.ts_next) {
-		if (s.dur)
+		if (s.time != tsfirst.time)
 			break
-		t = s.part ? abc2svg.C.PART : s.type
-		if (soloffs[t] != undefined)
+		if (soloffs[s.type] != undefined)
 			s.x = soloffs[t]
+		if (s.part && soloffs[abc2svg.C.PART] != undefined)
+			s.part.x = soloffs[abc2svg.C.PART]
 	}
     }, // set_sym_glue()
 

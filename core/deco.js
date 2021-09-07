@@ -2055,8 +2055,10 @@ function draw_partempo(st, top) {
 			h = gene.curfont.size + 2 +
 				gene.curfont.pad * 2
 		}
+		if (s2.x == undefined)
+			s2.x = s.x - 10
 		w = strwh(s2.text)[0]
-		y = y_get(st, true, s.x - 10, w + 3)
+		y = y_get(st, true, s2.x, w + 3)
 		if (ymin < y)
 			ymin = y
 	}
@@ -2077,7 +2079,7 @@ function draw_partempo(st, top) {
 				s.ymx = s.ymn + h;
 				anno_start(s)
 			}
-			xy_str(s.x - 10, 2 - ht - h, s2.text)
+			xy_str(s2.x, 2 - ht - h, s2.text)
 			anno_stop(s)
 		}
 	}
