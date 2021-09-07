@@ -892,7 +892,7 @@ function out_arp(x, y, val) {
 	g_close()
 }
 function out_cresc(x, y, val, defl) {
-	x += val;
+	x += val * stv_g.scale
 	val = -val;
 	out_XYAB('<path class="stroke"\n\
 	d="mX YlA ', x, y + 5, val)
