@@ -354,11 +354,11 @@ function d_cresc(de) {
 	}
 	while (1) {
 		i++
-		if (i == de2.ix)
-			continue
 		de3 = a_de[i]
 		if (!de3 || de3.s != s)
 			break
+		if (de3 == de || de3 == de2)
+			continue
 		if (!(de.up ^ de3.up)
 		 && f_staff[de3.dd.func]) {	// if dynamic mark
 //			x2 = de3.x + de3.val + 4
@@ -387,11 +387,11 @@ function d_cresc(de) {
 		}
 		while (1) {
 			i++
-			if (i == de.ix)
-				continue
 			de3 = a_de[i]
 			if (!de3 || de3.s != s2)
 				break
+			if (de3 == de || de3 == de2)
+				continue
 			if (!(de.up ^ de3.up)
 			 && f_staff[de3.dd.func]) {	// if dynamic mark
 				x2 -= de3.dd.wl
