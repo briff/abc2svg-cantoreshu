@@ -2068,8 +2068,9 @@ function draw_partempo(st, top) {
 	}
 	if (some_part) {
 		set_sscale(-1)
-		if (top + dy < ymin + h + ht)
-			dy = ymin + h + ht - top
+		ht += h
+		if (top + dy < ymin + ht)
+			dy = ymin + ht - top
 
 		for (s = some_part; s; s = s.ts_next) {
 			s2 = s.part
@@ -2079,13 +2080,13 @@ function draw_partempo(st, top) {
 				w = strwh(s2.text)[0]
 				s.wl = 0;
 				s.wr = w;
-				s.ymn = -ht - h;
+				s.ymn = -ht
 				s.ymx = s.ymn + h;
 				anno_start(s)
 			}
-			xy_str(s2.x, 2 - ht - h, s2.text)
+			xy_str(s2.x, 2 - ht, s2.text)
 			anno_stop(s)
 		}
 	}
-	return dy
+	return dy /= staff_tb[0].staffscale
 }
