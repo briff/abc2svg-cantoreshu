@@ -71,7 +71,7 @@ abc2svg.soloffs = {
 		if (s.time != tsfirst.time)
 			break
 		if (soloffs[s.type] != undefined)
-			s.x = soloffs[t]
+			s.x = soloffs[s.type]
 		if (s.part && soloffs[abc2svg.C.PART] != undefined)
 			s.part.x = soloffs[abc2svg.C.PART]
 	}
