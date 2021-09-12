@@ -265,8 +265,6 @@ function new_block(subtype) {
 			dur: 0
 		}
 
-	if (parse.state == 2)
-		goto_tune()
 	if (subtype.slice(0, 4) != "midi")	// if not a play command
 		curvoice = voice_tb[0]		// set the block in the first voice
 	sym_link(s)
@@ -709,7 +707,7 @@ function new_key(param) {
 			s.k_map[(note.pit + 19) % 7] = note.acc
 		}
 	} else {
-		s.k_map = s.k_bagpipe && sf == 0
+		s.k_map = s.k_bagpipe && !sf
 			? abc2svg.keys[9]		// implicit F# and C#
 			: abc2svg.keys[sf + 7]
 
@@ -873,7 +871,7 @@ function new_meter(p) {
 	if (parse.state != 3) {
 		info.M = p;
 		glovar.meter = s
-		if (parse.state >= 1) {
+		if (parse.state) {
 
 			/* in the tune header, change the unit note length */
 			if (!glovar.ulen) {
@@ -982,16 +980,13 @@ function new_tempo(text) {
 		}
 	}
 
-	if (parse.state != 3) {
-		if (parse.state == 1) {			// tune header
-			info.Q = txt
-			glovar.tempo = s
-			return
-		}
-		goto_tune()
+	if (parse.state != 3) {			// if in tune header
+		info.Q = txt
+		glovar.tempo = s
+		return
 	}
 	sym_link(s)
-	if (glovar.tempo && curvoice.time == 0)
+	if (glovar.tempo && !curvoice.time)
 		glovar.tempo.invis = true
 }
 
@@ -1011,9 +1006,6 @@ function do_info(info_type, text) {
 		self.do_pscom(text)
 		break
 	case 'L':
-//fixme: ??
-		if (parse.state == 2)
-			goto_tune();
 		a = text.match(/^1\/(\d+)(=(\d+)\/(\d+))?$/)
 		if (a) {
 			d1 = Number(a[1])
@@ -1033,7 +1025,7 @@ function do_info(info_type, text) {
 			syntax(1, "Bad L: value")
 			break
 		}
-		if (parse.state < 2) {
+		if (parse.state <= 1) {
 			glovar.ulen = d1
 		} else {
 			curvoice.ulen = d1;
@@ -1049,14 +1041,12 @@ function do_info(info_type, text) {
 
 	// fields in tune header or tune body
 	case 'P':
-		if (parse.state == 0)
+		if (!parse.state)
 			break
 		if (parse.state == 1) {
 			info.P = text
 			break
 		}
-		if (parse.state == 2)
-			goto_tune()
 		if (!parse.part)
 			parse.part = {}
 		if (parse.part[curvoice.time])	// P: already defined
@@ -1070,7 +1060,7 @@ function do_info(info_type, text) {
 		parse.part[curvoice.time] = s
 		break
 	case 'Q':
-		if (parse.state == 0)
+		if (!parse.state)
 			break
 		new_tempo(text)
 		break
@@ -1134,7 +1124,7 @@ function adjust_dur(s) {
 	fac = curvoice.wmeasure / auto_time
 
 	/* remove the invisible rest at start of tune */
-	if (time == 0) {
+	if (!time) {
 		while (s2 && !s2.dur)
 			s2 = s2.next
 		if (s2 && s2.type == C.REST
@@ -1339,7 +1329,7 @@ function new_bar() {
 				// when no shift is needed
 				if ((bar_type == "["
 				 && !s2.text
-				 && (curvoice.st == 0
+				 && (!curvoice.st
 				  || (par_sy.staves[curvoice.st - 1].flags & STOP_BAR)
 				  || s.norepbra))
 				 || s2.bar_type == "|") {	// "|" + "|:" => "|:"
@@ -2894,11 +2884,8 @@ function parse_music_line() {
 		}
 	} // parse_seq()
 
-	if (parse.state != 3) {		// if not in tune body
-		if (parse.state != 2)
-			return
-		goto_tune()
-	}
+	if (parse.state != 3)		// if not in tune body
+		return
 
 	if (parse.tp) {
 		tp = parse.tp

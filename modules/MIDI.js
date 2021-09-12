@@ -128,8 +128,6 @@ abc2svg.MIDI = {
 	case "gchordoff":	// %%MIDI gchordoff
 		if (!cfmt.chord)
 			cfmt.chord = {}
-		if (abc.parse.state == 2)
-			abc.goto_tune()
 		if (abc.parse.state >= 2
 		 && abc.get_curvoice()) {
 			s = abc.new_block("midigch")

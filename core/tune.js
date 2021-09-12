@@ -227,7 +227,7 @@ function sort_all() {
 
 // adjust some voice elements
 function voice_adj(sys_chg) {
-	var p_voice, s, s2, v
+    var	p_voice, s, s2, v, sl
 
 	// set the duration of the notes under a feathered beam
 	function set_feathered_beam(s1) {
@@ -281,8 +281,7 @@ function voice_adj(sys_chg) {
 	// if Q: from tune header, put it at start of the music
 	// (after the staff system)
 	s = glovar.tempo
-	if (s && staves_found <= 0) {	// && !s.invis) {	- play problem
-					//fixme: which play problem?
+	if (s && staves_found <= 0) {
 		v = par_sy.top_voice;
 		p_voice = voice_tb[v];
 		if (p_voice.sym
@@ -308,8 +307,7 @@ function voice_adj(sys_chg) {
 		if (!sys_chg) {			// if not %%score
 			delete p_voice.eoln
 			while (1) {		// set the end of slurs
-			    var	sl = p_voice.sls.shift()
-
+				sl = p_voice.sls.shift()
 				if (!sl)
 					break
 				s = sl.note.s
@@ -875,9 +873,6 @@ Abc.prototype.do_pscom = function(text) {
 		return
 	}
 
-	if (cmd.slice(0, 5) == "title" && parse.state == 2)
-		goto_tune()
-
 	switch (cmd) {
 	case "center":
 		set_font("text")
@@ -892,8 +887,6 @@ Abc.prototype.do_pscom = function(text) {
 		return
 	case "clef":
 		if (parse.state >= 2) {
-			if (parse.state == 2)
-				goto_tune();
 			s = new_clef(param)
 			if (s)
 				get_clef(s)
@@ -923,8 +916,6 @@ Abc.prototype.do_pscom = function(text) {
 		break
 	case "multicol":
 		if (parse.state >= 2) {
-			if (parse.state == 2)
-				goto_tune()
 			curvoice = voice_tb[0]
 			s = new_block("mc_" + param)
 			break
@@ -970,11 +961,8 @@ Abc.prototype.do_pscom = function(text) {
 		}
 		return
 	case "ottava":
-		if (parse.state != 3) {
-			if (parse.state != 2)
-				return
-			goto_tune()
-		}
+		if (parse.state != 3)
+			return
 		n = parseInt(param)
 		if (isNaN(n) || n < -2 || n > 2) {
 			syntax(1, errs.bad_val, "%%ottava")
@@ -1065,16 +1053,11 @@ Abc.prototype.do_pscom = function(text) {
 			syntax(1, "Bad %%setbarnb value")
 			break
 		}
-		if (parse.state == 2)
-			goto_tune()
 		glovar.new_nbar = val
 		return
 	case "staff":
-		if (parse.state != 3) {
-			if (parse.state != 2)
-				return
-			goto_tune()
-		}
+		if (parse.state != 3)
+			return
 		val = parseInt(param)
 		if (isNaN(val)) {
 			syntax(1, "Bad %%staff value '$1'", param)
@@ -1094,11 +1077,8 @@ Abc.prototype.do_pscom = function(text) {
 		curvoice.cst = st
 		return
 	case "staffbreak":
-		if (parse.state != 3) {
-			if (parse.state != 2)
-				return
-			goto_tune()
-		}
+		if (parse.state != 3)
+			return
 		s = {
 			type: C.STBRK,
 			dur:0
@@ -1316,9 +1296,6 @@ function generate(in_mc) {
 		syntax(1, "No end of voice overlay");
 		get_vover(vover.bar ? '|' : ')')
 	}
-
-	if (parse.state < 3)		// if empty tune
-		goto_tune()		// output the tune header
 
 	voice_adj();
 	sort_all()			/* define the time / vertical sequences */
@@ -1829,8 +1806,7 @@ function get_key(parm) {
 
 	a = a[1]
 
-	switch (parse.state) {
-	case 1:				// in tune header (first K:)
+	if (parse.state == 1) {		// in tune header (first K:)
 		if (s_key.k_sf == undefined && !s_key.k_a_acc) { // empty K:
 			s_key.k_sf = 0;
 			s_key.k_none = true
@@ -1847,11 +1823,8 @@ function get_key(parm) {
 			memo_kv_parm('*', a)
 		if (!glovar.ulen)
 			glovar.ulen = C.BLEN / 8;
-//		parse.state = 2;		// in tune header after K:
-//		return
-	case 2:					// K: at start of tune body
-		goto_tune(true)
-		break
+		goto_tune()
+		parse.state = 3			// in tune body
 	}
 	if (a.length)
 		set_kv_parm(a)
@@ -2072,8 +2045,6 @@ function get_voice(parm) {
 	}
 
 	set_kv_parm(a)
-	if (parse.state == 2)			// if first voice
-		goto_tune();
 	set_transp();
 
 	v = curvoice.v
@@ -2102,9 +2073,9 @@ function get_voice(parm) {
 	}
 }
 
-// change state from 'tune header after K:' to 'in tune body'
+// change state from 'tune header' to 'in tune body'
 // curvoice is defined when called from get_voice()
-function goto_tune(is_K) {
+function goto_tune() {
 	var	v, p_voice,
 		s = {
 			type: C.STAVES,
@@ -2121,8 +2092,6 @@ function goto_tune(is_K) {
 		gene.nbar = 1
 	}
 
-	parse.state = 3;			// in tune body
-
 	// if no voice yet, create the default voice
 	if (!voice_tb.length) {
 		get_voice("1");
@@ -2132,11 +2101,6 @@ function goto_tune(is_K) {
 		curvoice.default = true
 	} else if (!curvoice) {
 		curvoice = voice_tb[staves_found < 0 ? 0 : par_sy.top_voice]
-	}
-
-	if (!curvoice.init && !is_K) {
-		set_kv_parm([])
-		set_transp()
 	}
 
 	// update some voice parameters
