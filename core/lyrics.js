@@ -354,7 +354,7 @@ function ly_set(s) {
 	// set the left space
 	while (!s3.seqst)
 		s3 = s3.ts_prev
-	if (s3.ts_prev.bar_type)
+	if (s3.ts_prev && s3.ts_prev.bar_type)
 		wl -= 4			// don't move too much the measure bar
 	if (s3.wl < wl) {
 		s3.shrink += wl - s3.wl
