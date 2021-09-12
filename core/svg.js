@@ -895,7 +895,7 @@ function out_cresc(x, y, val, defl) {
 	x += val * stv_g.scale
 	val = -val;
 	out_XYAB('<path class="stroke"\n\
-	d="mX YlA ', x, y + 5, val)
+	d="mX YlF ', x, y + 5, val)
 	if (defl.nost)
 		output += '-2.2m0 -3.6l' + (-val).toFixed(1) + ' -2.2"/>\n'
 	else
@@ -904,7 +904,7 @@ function out_cresc(x, y, val, defl) {
 }
 function out_dim(x, y, val, defl) {
 	out_XYAB('<path class="stroke"\n\
-	d="mX YlA ', x, y + 5, val)
+	d="mX YlF ', x, y + 5, val)
 	if (defl.noen)
 		output += '-2.2m0 -3.6l' + (-val).toFixed(1) + ' -2.2"/>\n'
 	else
