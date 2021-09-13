@@ -1267,6 +1267,8 @@ Abc.prototype.do_begin_end = function(type,
 		if (!action)
 			action = cfmt.textoption
 		set_font("text")
+		if (text.indexOf('\\') >= 0)
+			text = cnv_escape(text)
 		if (parse.state > 1) {
 			s = new_block(type);
 			s.text = text
