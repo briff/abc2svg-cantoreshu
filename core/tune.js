@@ -147,22 +147,21 @@ function sort_all() {
 	vn = [],			// voice indexed by range
 	sy = cur_sy
 
-	for (v = 0; v < nv; v++)
-		vtb.push(voice_tb[v].sym)
-
-	// set the first symbol
+	// set the first symbol of each voice
 	for (v = 0; v < nv; v++) {
+		s = voice_tb[v].sym
+		if (s.type == C.STAVES) {	// first symbol by time
+			tsfirst = prev = s
+			s = s.next
+		}
+		vtb.push(s)
 		if (!sy.voices[v])
 			continue
 		vn[sy.voices[v].range] = v
 	}
-	v = vn[0]
-	tsfirst = prev = vtb[v]
-	if (!tsfirst)
+	if (!prev)
 		return				// no music
-	vtb[v] = tsfirst.next
 	prev.seqst = true
-	fl = !w_tb[prev.type] || tsfirst.type == tsfirst.next
 
 	// loop on the symbols of all voices
 	while (1) {
@@ -1268,7 +1267,7 @@ Abc.prototype.do_begin_end = function(type,
 		if (!action)
 			action = cfmt.textoption
 		set_font("text")
-		if (parse.state >= 2) {
+		if (parse.state > 1) {
 			s = new_block(type);
 			s.text = text
 			s.opt = action
@@ -2117,8 +2116,9 @@ function goto_tune() {
 
 	// initialize the voices when no %%staves/score	
 	if (staves_found < 0) {
-		nstaff = voice_tb.length - 1
-		for (v = 0; v <= nstaff; v++) {
+		v = voice_tb.length
+		nstaff = v - 1
+		while (--v >= 0) {
 			p_voice = voice_tb[v];
 			delete p_voice.new;		// old voice
 			p_voice.st = p_voice.cst = v;
@@ -2135,8 +2135,6 @@ function goto_tune() {
 	}
 
 	// link the first %%score in the top voice
-	p_voice = curvoice;
 	curvoice = voice_tb[par_sy.top_voice];
 	sym_link(s)
-	curvoice = p_voice
 }
