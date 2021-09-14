@@ -137,7 +137,7 @@ var strwh = typeof document != "undefined" ?
 			return str.wh
 		}
 
-		str = str.replace(/<|>|&[^&]*?;|&/g, function(c){
+		str = str.replace(/<|>|&[^&\s]*?;|&/g, function(c){
 			switch (c) {
 			case '<': return "&lt;"
 			case '>': return "&gt;"
@@ -204,6 +204,8 @@ var strwh = typeof document != "undefined" ?
 				h = font.size
 			continue
 		case '&':
+			if (str[i + 1] == ' ')
+				break		// normal '&'
 			j = str.indexOf(';', i)
 			if (j > 0 && j - i < 10) {
 				i = j;
@@ -243,7 +245,7 @@ function str2svg(str) {
 		return '<tspan\n\tclass="' + cl + '">'
 	} // tspan()
 
-	o = str.replace(/<|>|&[^&]*?;|&|\$./g, function(c){
+	o = str.replace(/<|>|&[^&\s]*?;|&|\$./g, function(c){
 			switch (c) {
 			case '<': return "&lt;"
 			case '>': return "&gt;"
