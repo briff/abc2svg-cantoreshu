@@ -149,16 +149,14 @@ function sort_all() {
 
 	// set the first symbol of each voice
 	for (v = 0; v < nv; v++) {
-		if (!sy.voices[v])
-			continue
 		s = voice_tb[v].sym
-		if (!s)
+		vtb[v] = s
+		if (!s || !sy.voices[v])
 			continue
 		if (s.type == C.STAVES) {	// first symbol by time
 			tsfirst = prev = s
-			s = s.next
+			vtb[v] = s.next
 		}
-		vtb[v] = s
 		vn[sy.voices[v].range] = v
 	}
 	if (!prev)
