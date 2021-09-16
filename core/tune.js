@@ -333,7 +333,7 @@ function voice_adj(sys_chg) {
 		for ( ; s; s = s.next) {
 			switch (s.type) {
 			case C.GRACE:
-				// with w_tb[C.BAR] = 2,
+				// with w_tb[C.BAR] = 4 and w_tb[C.GRACE] = 3,
 				// the grace notes go after the bar;
 				// if before a bar, change the grace time
 				if (s.next && s.next.type == C.BAR)
@@ -1410,7 +1410,7 @@ function get_staves(cmd, parm) {
 	st, range,
 	nv = voice_tb.length,
 	maxtime = 0,
-	no_sym = true
+	no_sym = 1
 
 	if (parm) {
 		a_vf = parse_staves(parm)	// => array of [vid, flags]
@@ -1427,12 +1427,13 @@ function get_staves(cmd, parm) {
 		if (p_voice.time > maxtime)
 			maxtime = p_voice.time
 		if (p_voice.sym)
-			no_sym = false
+			no_sym = 0
 	}
 	if (no_sym				/* if first %%staves */
 	 || (!maxtime && staves_found < 0)) {
 		par_sy.staves = []
 		par_sy.voices = []
+		no_sym = 1			// update the staff of the symbols
 	} else {
 
 		/*
@@ -1611,6 +1612,13 @@ function get_staves(cmd, parm) {
 		if (st > 0 && !p_voice.norepbra
 		 && !(par_sy.staves[st - 1].flags & STOP_BAR))
 			p_voice.norepbra = true
+
+		// if first staff system,
+		// update the staff of the symbols with no space
+		if (no_sym) {
+			for (s = p_voice.sym; s; s = s.next)
+				s.st = st
+		}
 	}
 
 	curvoice = parse.state >= 2 ? voice_tb[par_sy.top_voice] : null
