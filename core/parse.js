@@ -980,14 +980,12 @@ function new_tempo(text) {
 		}
 	}
 
-	if (parse.state != 3) {			// if in tune header
+	if (parse.state < 2) {			// if in tune header
 		info.Q = txt
 		glovar.tempo = s
 		return
 	}
 	sym_link(s)
-	if (glovar.tempo && !curvoice.time)
-		glovar.tempo.invis = true
 }
 
 // treat the information fields which may embedded

@@ -151,13 +151,15 @@ function sort_all() {
 	for (v = 0; v < nv; v++) {
 		s = voice_tb[v].sym
 		vtb[v] = s
-		if (!s || !sy.voices[v])
-			continue
-		if (s.type == C.STAVES) {	// first symbol by time
-			tsfirst = prev = s
-			vtb[v] = s.next
+		if (s) {
+			if (!s.time
+			 && s.type == C.STAVES) {	// first symbol by time
+				tsfirst = prev = s
+				vtb[v] = s.next
+			}
+			if (sy.voices[v])
+				vn[sy.voices[v].range] = v
 		}
-		vn[sy.voices[v].range] = v
 	}
 	if (!prev)
 		return				// no music
@@ -283,11 +285,8 @@ function voice_adj(sys_chg) {
 	if (s && staves_found <= 0) {
 		v = par_sy.top_voice;
 		p_voice = voice_tb[v];
-		if (p_voice.sym
-		 && p_voice.sym.type != C.TEMPO
-		 && (!p_voice.sym.next
-		  || p_voice.sym.next.type != C.TEMPO)) {
-			s = clone(s);
+		if (!p_voice.sym.next
+		  || p_voice.sym.next.type != C.TEMPO) {
 			s.v = v;
 			s.p_v = p_voice;
 			s.st = p_voice.st;
@@ -296,8 +295,9 @@ function voice_adj(sys_chg) {
 			s.next = p_voice.sym.next
 			if (s.next)
 				s.next.prev = s
-			p_voice.sym.next = s
+			s.prev.next = s
 			s.fmt = cfmt
+			glovar.tempo = null
 		}
 	}
 
@@ -1406,11 +1406,10 @@ function acc_same_pitch(s, pit) {
 
 /* -- get staves definition (%%staves / %%score) -- */
 function get_staves(cmd, parm) {
-    var	s, p_voice, p_voice2, i, flags, v, vid, a_vf,
+    var	s, p_voice, p_voice2, i, flags, v, vid, a_vf, no_sym,
 	st, range,
 	nv = voice_tb.length,
-	maxtime = 0,
-	no_sym = 1
+	maxtime = 0
 
 	if (parm) {
 		a_vf = parse_staves(parm)	// => array of [vid, flags]
@@ -1418,24 +1417,20 @@ function get_staves(cmd, parm) {
 			return
 	}
 
-	if (nv)					// if many voices
-		voice_adj(true);
-
 	/* create a new staff system */
 	for (v = 0; v < nv; v++) {
 		p_voice = voice_tb[v]
 		if (p_voice.time > maxtime)
 			maxtime = p_voice.time
-		if (p_voice.sym)
-			no_sym = 0
 	}
-	if (no_sym				/* if first %%staves */
-	 || (!maxtime && staves_found < 0)) {
+	if (!maxtime) {				// if first %%staves
 		par_sy.staves = []
 		par_sy.voices = []
 		no_sym = 1			// update the staff of the symbols
 	} else {
 
+		if (nv)					// if many voices
+			voice_adj(true)
 		/*
 		 * create a new staff system and
 		 * link the 'staves' symbol in a voice which is seen from
@@ -1595,6 +1590,36 @@ function get_staves(cmd, parm) {
 	nv = voice_tb.length
 	for (v = 0; v < nv; v++) {
 		p_voice = voice_tb[v]
+		st = p_voice.st
+
+		// if first staff system,
+		// - move the first %%staves to the top voice
+		// - update the staff of the symbols with no width
+		if (no_sym) {
+			s = p_voice.sym
+			if (s && s.type == C.STAVES
+			 && v != par_sy.top_voice) {
+				p_voice.sym = s.next
+				if (s.next)
+					s.next.prev = null
+				else
+					p_voice.last_sym = null
+				p_voice2 = voice_tb[par_sy.top_voice]
+				s.next = p_voice2.sym
+				if (s.next)
+					s.next.prev = s
+				else
+					p_voice2.last_sym = s
+				p_voice2.sym = s
+				s.st = p_voice2.st
+				s.v = p_voice2.v
+				s.p_v = p_voice2
+				s = p_voice.sym
+			}
+			for ( ; s; s = s.next)
+				s.st = st
+		}
+
 		if (!par_sy.voices[v])
 			continue
 
@@ -1612,13 +1637,6 @@ function get_staves(cmd, parm) {
 		if (st > 0 && !p_voice.norepbra
 		 && !(par_sy.staves[st - 1].flags & STOP_BAR))
 			p_voice.norepbra = true
-
-		// if first staff system,
-		// update the staff of the symbols with no space
-		if (no_sym) {
-			for (s = p_voice.sym; s; s = s.next)
-				s.st = st
-		}
 	}
 
 	curvoice = parse.state >= 2 ? voice_tb[par_sy.top_voice] : null
