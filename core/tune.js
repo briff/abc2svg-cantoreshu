@@ -1590,7 +1590,10 @@ function get_staves(cmd, parm) {
 	nv = voice_tb.length
 	for (v = 0; v < nv; v++) {
 		p_voice = voice_tb[v]
-		st = p_voice.st
+		if (par_sy.voices[v])
+			st = p_voice.st
+		else
+			p_voice.st = st	// (this avoids later crashes)
 
 		// if first staff system,
 		// - move the first %%staves to the top voice
