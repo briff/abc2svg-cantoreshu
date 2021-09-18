@@ -109,7 +109,7 @@ user.textrans = {
 	"No accidental after 'exp'": "Manca l'alterazione dopo 'exp'",
 	"No end of decoration": "Decorazione non terminata",
 	"No end of grace note sequence": "Sequenza di note di abbellimento non terminata",
-	"No end of guitar chord": "Accordo di accompagnamento non terminato",
+	"No end of chord symbol/annotation": "Accordo di accompagnamento non terminato",
 	"No end of repeat string": "Stringa di ripetizione non terminata",
 	"No end of tuplet": "Gruppo irregolare non terminato",
 	"No end of tuplet in this music line":
@@ -135,6 +135,8 @@ user.textrans = {
 	"Note too long": "Durata della nota troppo lunga",
 	"Note too short": "Durata della nota troppo corta",
 	"s: without music": "s: senza musica",
+	"There cannot be chord symbols on measure bars":
+			"There cannot be chord symbols on measure bars",
 	"Too many elements in symbol line": "Troppi elementi nella linea s:",
 	"Too many include levels": "Troppi livelli di inclusione di file",
 	"Too many ties": "Troppi simboli di legato",

@@ -47,7 +47,7 @@ function parse_gchord(type) {
 		while (1) {
 			j = line.buffer.indexOf('"', i)
 			if (j < 0) {
-				syntax(1, "No end of guitar chord")
+				syntax(1, "No end of chord symbol/annotation")
 				return
 			}
 			if (line.buffer[j - 1] != '\\')
@@ -218,6 +218,19 @@ function gch_transp(s) {
 // parser: add the parsed list of chord symbols and annotations
 //	to the symbol (note, rest or bar)
 function csan_add(s) {
+    var	i, gch
+
+	// there cannot be chord symbols on measure bars
+	if (s.type == C.BAR) {
+		for (i = 0; i < a_gch.length; i++) {
+			if (a_gch[i].type == 'g') {
+				syntax(1,
+				       "There cannot be chord symbols on measure bars")
+				a_gch.splice(i)
+			}
+		}
+	}
+
 	if (s.a_gch)
 		s.a_gch = s.a_gch.concat(a_gch)
 	else

@@ -101,7 +101,7 @@ user.textrans = {
     "No accidental after 'exp'": "kein Vorzeichen nach 'exp'",
     "No end of decoration": "kein Ende der Dekoration",
 	"No end of grace note sequence": "kein Ende der Vorschlagnoten",
-    "No end of guitar chord": "kein Ende des Akkordsymbols",
+    "No end of chord symbol/annotation": "kein Ende des Akkordsymbols",
     "No end of repeat string": "kein Ende des Wiederholungszeichens",
     "No end of tuplet": "kein Ende des Tuplets",
     "No end of tuplet in this music line":
@@ -127,6 +127,8 @@ user.textrans = {
 	"s: without music": "s: ohne Musik",
 	"Too many elements in symbol line": "zu viele elemente in einer Symbolzeile",
 	"Too many include levels": "Verschachtelung für include zu tief",
+	"There cannot be chord symbols on measure bars":
+			"There cannot be chord symbols on measure bars",
     "Too many ties": "zu viele Haltebogen",
     "Too many words in lyric line": "zu viele Worte in Liedtextzeile",
     "Unknown bagpipe-like key": "unbekante Dudelsackartige Tonart",

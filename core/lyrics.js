@@ -71,7 +71,7 @@ function get_sym(p, cont) {
 			if (i < 0) {
 				syntax(1, c == '!' ?
 					"No end of decoration" :
-					"No end of guitar chord");
+					"No end of chord symbol/annotation");
 				i = p.length
 				continue
 			}
