@@ -197,8 +197,8 @@ There are many ways to install abc2svg:
   each release of a new version (many thanks, Guido!).  
   You can just download and unzip this archive. **abc2svg** should
   run immediately in your machine without connecting to my site.  
-  In the same page, you can also find some binaries for the fastest
-  javascript interpreter (QuickJS - see below).
+  In the same page, you can also find some binaries of QuickJS,
+  a fast javascript interpreter (see below).
 
 - tarball  
   From the timeline in the [chisel repository][13], you can get a tarball
@@ -208,7 +208,7 @@ There are many ways to install abc2svg:
   The disadvantage of this approach is that if you want
   to use an other or newer version you need to download a new tarball.
 
-[13]: https://chiselapp.com/user/moinejf/repository/abc2svg/timeline)
+[13]: https://chiselapp.com/user/moinejf/repository/abc2svg/timeline
 
 - fossil clone  
   If you can get the fossil program (one binary) for your system,
