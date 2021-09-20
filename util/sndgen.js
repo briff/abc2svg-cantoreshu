@@ -453,7 +453,8 @@ abc2svg.play_next = function(po) {
 	    var	i, note,
 		C = abc2svg.C,
 		v = s.v,
-		end_time = s.time + s.dur
+		end_time = s.time + s.dur,
+		repv = po.repv
 
 		// search the end of the tie
 		while (1) {
@@ -469,13 +470,14 @@ abc2svg.play_next = function(po) {
 					}
 				}
 				if (s.rep_s) {
-					if (!s.rep_s[po.repv + 1])
+					if (!s.rep_s[repv])
 						return d
-					s = s.rep_s[po.repv + 1]
+					s = s.rep_s[repv++]
 					end_time = s.time
 				}
 				while (s.ts_next && !s.ts_next.dur)
 					s = s.ts_next
+				break
 			}
 			if (s.time > end_time)
 				return d
