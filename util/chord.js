@@ -24,7 +24,7 @@
 //	string = list of 2 characters
 //		1st character = note (see abc2svg.letmid)
 //		2nd character = octave ('+', ' ', '-')
-abc2svg.chordnames = {
+abc2svg.ch_names = {
 	'':	["C-E G C+", "E-C G C+", "G-C E G "],
 	m:	["C-e G C+", "e-C G C+", "G-C e G "],
 	'7':	["C-b-E G ", "E-C G b ", "G-E b C+", "b-E G C+"],
@@ -50,7 +50,7 @@ abc2svg.chordnames = {
 	'7sus4': ["C-b-F G ", "F-C G b ", "G-F b C+", "b-C F G "],
 	'7sus9': ["C-b-D G ", "D-C G b ", "G-D b C+", "b-C D G "],
 	'5':	["C-G C+", "G-G C+"]
-} // chordnames
+} // ch_names
 
 abc2svg.midlet = "CdDeEFgGaAbB"		// MIDI pitch -> letter
 abc2svg.letmid = {			// letter -> MIDI pitch
@@ -181,7 +181,7 @@ abc2svg.chord = function(first,		// first symbol in time
 
 	// set the chordnames defined by %%MIDI chordname
 	if (cfmt.chord.names) {
-		chnm = Object.create(abc2svg.chordnames)
+		chnm = Object.create(abc2svg.ch_names)
 		for (k in cfmt.chord.names) {
 			vch = ""
 			for (i = 0; i < cfmt.chord.names[k].length; i++) {
@@ -194,7 +194,7 @@ abc2svg.chord = function(first,		// first symbol in time
 			chnm[k] = [ vch ]
 		}
 	} else {
-		chnm = abc2svg.chordnames
+		chnm = abc2svg.ch_names
 	}
 
 	// create the chord voice
