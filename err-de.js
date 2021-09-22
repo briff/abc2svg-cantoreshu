@@ -66,6 +66,8 @@ user.textrans = {
     "Bar in repeat sequence": "Taktstrich in Wiederholungssequenz",
     "Cannot have !$1! on a head": "!$1! im Kopfbereich nicht erlaubt",
     "Cannot have '$1' inside a tune": "'$1' innerhalb einer Stimme nicht erlaubt",
+	"Cannot have %%beginml with %%pageheight":
+				"Cannot have %%beginml with %%pageheight",
     "Cannot have a bar in grace notes": "Taktstrich in Vorschlagnote nicht erlaubt",
 	"Cannot have a broken rhythm in grace notes": "gebrochener Rythmus in Ziernoten nicht erlaubt",
     "Cannot have V:* in tune body": "V:* im Notenbereich nicht erlaubt",

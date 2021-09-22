@@ -61,13 +61,13 @@ function sym_link(s) {
 
 	if (!s.fname)
 		set_ref(s)
-		parse.last_sym = s;
-		s.prev = curvoice.last_sym
-		if (curvoice.last_sym)
-			curvoice.last_sym.next = s
-		else
-			curvoice.sym = s;
-		curvoice.last_sym = s
+	parse.last_sym = s
+	s.prev = curvoice.last_sym
+	if (curvoice.last_sym)
+		curvoice.last_sym.next = s
+	else
+		curvoice.sym = s
+	curvoice.last_sym = s
 	s.v = curvoice.v;
 	s.p_v = curvoice;
 	s.st = curvoice.cst;
@@ -279,12 +279,31 @@ function voice_adj(sys_chg) {
 		do_cloning()
 	}
 
+	// insert the first staff system if not done yet
+	v = par_sy.top_voice
+	p_voice = voice_tb[v]
+	if (p_voice.sym.type != C.STAVES) {
+		s = {
+			type: C.STAVES,
+			dur: 0,
+			v: v,
+			p_v: p_voice,
+			time: 0,
+			sy: par_sy,
+			next: p_voice.sym,
+			fmt: cfmt
+		}
+		p_voice.sym = s
+		if (s.next)
+			s.next.prev = s
+		else
+			p_voice.last_sym = s
+	}
+
 	// if Q: from tune header, put it at start of the music
 	// (after the staff system)
 	s = glovar.tempo
-	if (s && staves_found <= 0) {
-		v = par_sy.top_voice;
-		p_voice = voice_tb[v];
+	if (s) {
 		if (!p_voice.sym.next
 		  || p_voice.sym.next.type != C.TEMPO) {
 			s.v = v;
@@ -295,6 +314,8 @@ function voice_adj(sys_chg) {
 			s.next = p_voice.sym.next
 			if (s.next)
 				s.next.prev = s
+			else
+				p_voice.last_sym = s
 			s.prev.next = s
 			s.fmt = cfmt
 			glovar.tempo = null
@@ -392,12 +413,12 @@ function voice_adj(sys_chg) {
 
 /* -- create a new staff system -- */
 function new_syst(init) {
-	var	st, v,
-		sy_new = {
-			voices: [],
-			staves: [],
-			top_voice: 0
-		}
+    var	st, v, sy_staff, p_voice,
+	sy_new = {
+		voices: [],
+		staves: [],
+		top_voice: 0
+	}
 
 	if (init) {				/* first staff system */
 		cur_sy = par_sy = sy_new
@@ -408,8 +429,8 @@ function new_syst(init) {
 	for (v = 0; v < voice_tb.length; v++) {
 	    if (par_sy.voices[v]) {
 		st = par_sy.voices[v].st
-		var	sy_staff = par_sy.staves[st],
-			p_voice = voice_tb[v]
+		sy_staff = par_sy.staves[st]
+		p_voice = voice_tb[v]
 
 		sy_staff.staffnonote = p_voice.staffnonote
 		if (p_voice.staffscale)
@@ -1226,6 +1247,10 @@ Abc.prototype.do_begin_end = function(type,
 		js_inject(text)
 		break
 	case "ml":
+		if (cfmt.pageheight) {
+			syntax(1, "Cannot have %%beginml with %%pageheight")
+			break
+		}
 		if (parse.state >= 2) {
 			s = new_block(type);
 			s.text = text
@@ -1588,6 +1613,7 @@ function get_staves(cmd, parm) {
 	}
 
 	nv = voice_tb.length
+	st = 0
 	for (v = 0; v < nv; v++) {
 		p_voice = voice_tb[v]
 		if (par_sy.voices[v])
@@ -1595,31 +1621,10 @@ function get_staves(cmd, parm) {
 		else
 			p_voice.st = st	// (this avoids later crashes)
 
-		// if first staff system,
-		// - move the first %%staves to the top voice
+		// if first %%staves
 		// - update the staff of the symbols with no width
 		if (no_sym) {
-			s = p_voice.sym
-			if (s && s.type == C.STAVES
-			 && v != par_sy.top_voice) {
-				p_voice.sym = s.next
-				if (s.next)
-					s.next.prev = null
-				else
-					p_voice.last_sym = null
-				p_voice2 = voice_tb[par_sy.top_voice]
-				s.next = p_voice2.sym
-				if (s.next)
-					s.next.prev = s
-				else
-					p_voice2.last_sym = s
-				p_voice2.sym = s
-				s.st = p_voice2.st
-				s.v = p_voice2.v
-				s.p_v = p_voice2
-				s = p_voice.sym
-			}
-			for ( ; s; s = s.next)
+			for (s = p_voice.sym; s; s = s.next)
 				s.st = st
 		}
 
@@ -2106,12 +2111,7 @@ function get_voice(parm) {
 // change state from 'tune header' to 'in tune body'
 // curvoice is defined when called from get_voice()
 function goto_tune() {
-	var	v, p_voice,
-		s = {
-			type: C.STAVES,
-			dur: 0,
-			sy: par_sy
-		}
+    var	v, p_voice
 
 	set_page();
 	write_heading();
@@ -2129,7 +2129,7 @@ function goto_tune() {
 		curvoice.clef.iend = curvoice.key.iend;
 //		nstaff = 0;
 		curvoice.default = true
-	} else if (!curvoice) {
+	} else {
 		curvoice = voice_tb[staves_found < 0 ? 0 : par_sy.top_voice]
 	}
 
@@ -2164,8 +2164,4 @@ function goto_tune() {
 		}
 		par_sy.nstaff = nstaff
 	}
-
-	// link the first %%score in the top voice
-	curvoice = voice_tb[par_sy.top_voice];
-	sym_link(s)
 }

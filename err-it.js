@@ -69,6 +69,8 @@ user.textrans = {
 	"Bar in repeat sequence": "Stanghetta in sequenza ripetuta",
 	"Cannot have !$1! on a head": "!$1! non è consentito su una nota",
 	"Cannot have '$1' inside a tune": "'$1' non è consentito entro il brano",
+	"Cannot have %%beginml with %%pageheight":
+				"Cannot have %%beginml with %%pageheight",
 	"Cannot have a bar in grace notes":
 			"Stanghette non consentite nelle note di abbellimento",
 	"Cannot have a broken rhythm in grace notes":

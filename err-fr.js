@@ -69,6 +69,8 @@ user.textrans = {
 	"Bar in repeat sequence": "Barre dans la séquence à répéter",
 	"Cannot have !$1! on a head": "!$1! ne peut pas être sur une tête de note",
 	"Cannot have '$1' inside a tune": "'$1' ne peut pas être dans un morceau",
+	"Cannot have %%beginml with %%pageheight":
+			"On ne peut pas avoir %%beginml avec %%pageheight",
 	"Cannot have a bar in grace notes":
 			"Il ne peut pas y avoir de barre dans les notes d'agrément",
 	"Cannot have a broken rhythm in grace notes":
