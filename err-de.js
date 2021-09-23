@@ -126,6 +126,7 @@ user.textrans = {
     "Not enough notes/rests for %%repeat": "nicht genug Noten/Pausen für %%repeat",
     "Note too long": "Note zu lang",
     "Note too short": "Note zu kurz",
+	"Start of slur without note": "Start of slur without note",
 	"s: without music": "s: ohne Musik",
 	"Too many elements in symbol line": "zu viele elemente in einer Symbolzeile",
 	"Too many include levels": "Verschachtelung für include zu tief",

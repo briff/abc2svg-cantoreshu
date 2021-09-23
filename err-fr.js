@@ -137,6 +137,7 @@ user.textrans = {
 				 "Pas assez de notes/silences pour %%repeat",
 	"Note too long": "Durée de note trop longue",
 	"Note too short": "Durée de note trop courte",
+	"Start of slur without note": "Début de liaison sans note",
 	"s: without music": "s: sans musique",
 	"There cannot be chord symbols on measure bars":
 		"On ne peut pas mettre d'indication d'accord sur une barre de mesure",
