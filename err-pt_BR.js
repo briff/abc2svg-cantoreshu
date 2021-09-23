@@ -2,7 +2,7 @@
 //			Tradução dos códigos de erro para português brasileiro
 // Adicione este arquivo na linha de comando para obter as
 // mensagens de erro em português do Brasil.
-// (Hudson Lacerda - 11/dez/2016 - 22/jan/2018)
+// (Hudson Lacerda - 11/dez/2016 - 23/set/2021)
 
 user.textrans = {
 	"+: lyric without music": "+: palavras sem música",
@@ -49,15 +49,15 @@ user.textrans = {
 	"Bad controller number in %%MIDI": "Número inválido do controlador em %%MIDI",
 	"Bad controller value in %%MIDI": "Valor incorreto para controlador em %%MIDI",
 	"Bad duration '$1' in M:": "Duração '$1' incorreta em M:",
-	"Bad integer value": "Número inteiro incorreto",
+	"Bad integer value": "Número inteiro inválido",
 	"Bad instr= value": "Valor incorreto para instr=",
 	"Bad L: value": "Valor incorreto de L:",
-	"Bad measure duration": "Bad measure duration",
+	"Bad measure duration": "Compasso com duração incorreta",
 	"Bad note in %%map": "Nota incorreta em %%map",
 	"Bad page width": "Largura de página incorreta",
 	"Bad program in %%MIDI": "Valor incorreto de instrumento %%MIDI",
 	"Bad scale value in %%font": "Tamanho incorreto em %%font",
-	"Bad tempo value": "Bad tempo value",
+	"Bad tempo value": "tempo inválido",
 	"Bad tie": "Ligadura de prolongamento incorreta",
 	"Bad transpose value": "Valor incorreto de transposição",
 	"Bad user character '$1'": "Caráter ilegal '$1' em U:/%%user",
@@ -69,7 +69,7 @@ user.textrans = {
 	"Cannot have !$1! on a head": "!$1! não pode estar em cabeça de nota",
 	"Cannot have '$1' inside a tune": "'$1' não pode estar dentro de uma música",
 	"Cannot have %%beginml with %%pageheight":
-				"Cannot have %%beginml with %%pageheight",
+				"Não pode haver %%beginml com %%pageheight",
 	"Cannot have a bar in grace notes":
 			"Não pode haver barra de compasso em grupo de notinhas ornamentais",
 	"Cannot have a broken rhythm in grace notes":
@@ -79,7 +79,7 @@ user.textrans = {
 	"Decoration ignored": "Decoração ignorada",
 	"Empty line in tune header - ignored":
 				"Linha em branco no cabeçalho da música - ignorada",
-	"End of slur without start": "End of slur without start",
+	"End of slur without start": "Fim de ligadura sem início",
 	"Erroneous end of voice overlay": "Terminação incorreta de superposição de vozes",
 	"Error loading the module $1": "Error loading the module $1",
 	"Incorrect 1st value in %%repeat": "Primeiro valor incorreto em %%repeat",
@@ -89,8 +89,8 @@ user.textrans = {
 	"Invalid note duration $1": "Duração de nota $1 inválida",
 	"Lack of ']'": "']' faltando",
 	"Lack of bar after multi-measure rest":
-				"Lack of bar after multi-measure rest",
-	"Lack of ending slur(s)": "Lack of ending slur(s)",
+				"Falta barra de compasso após pausa de múltiplos compassos",
+	"Lack of ending slur(s)": "Falta fim de ligadura(s)",
 	'Lack of starting [, ! or " in U: / %%user':
 				'U: / %%user não começou com [, ! ou "',
 	"Line split problem - adjust maxshrink and/or breaklimit":
@@ -136,7 +136,7 @@ user.textrans = {
 	"Note too short": "Duração muito curta",
 	"s: without music": "s: sem música",
 	"There cannot be chord symbols on measure bars":
-			"There cannot be chord symbols on measure bars",
+			"Não pode haver cifra de acorde em barra de compasso",
 	"Too many elements in symbol line": "Excesso de elementos na linha de símbolos",
 	"Too many include levels": "Excessivos níveis de inclusão de arquivos",
 	"Too many ties": "Excesso de ligaduras de prolongamento",
