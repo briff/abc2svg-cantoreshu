@@ -282,6 +282,8 @@ function voice_adj(sys_chg) {
 	// insert the first staff system if not done yet
 	v = par_sy.top_voice
 	p_voice = voice_tb[v]
+	if (!p_voice.sym)
+		return				// no symbol
 	if (p_voice.sym.type != C.STAVES) {
 		s = {
 			type: C.STAVES,
