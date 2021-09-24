@@ -22,6 +22,8 @@ user.textrans = {
 	"!$1! must be on the last of a couple of notes":
 				"!$1! deveria estar na segunda nota de um par de notas",
 	"!beamon! must be on a bar": "!beamon! deveria estar em uma barra de compasso",
+	"%%combinevoices is deprecated - use %%voicecombine instead":
+			"%%combinevoices é obsoleto - substitua-o por %%voicecombine",
 	"%%deco: abnormal h/wl/wr value '$1'":
 				"%%deco: '$1' é um valor anormal para h/wl/wr",
 	"%%deco: bad C function index '$1'":
@@ -41,6 +43,7 @@ user.textrans = {
 				"Número incorreto $1 em %%staff (atual $2, máximo $3)",
 	"Bad %%staff value '$1'": "Valor incorreto '$1' em %%staff",
 	"Bad %%stafflines value": "Valor incorreto em %%stafflines",
+	"Bad %%staffnonote value": "Valor incorreto em %%staffnonote",
 	"Bad %%staffscale value": "Valor incorreto em %%staffscale",
 	"Bad char '$1' in M:": "Caráter inválido '$1' em M:",
 	"Bad character '$1'": "Caráter inválido '$1'",
@@ -52,12 +55,14 @@ user.textrans = {
 	"Bad integer value": "Número inteiro inválido",
 	"Bad instr= value": "Valor incorreto para instr=",
 	"Bad L: value": "Valor incorreto de L:",
+	"Bad length of the macro sequence": "Duração incorreta em sequência de macro",
 	"Bad measure duration": "Compasso com duração incorreta",
 	"Bad note in %%map": "Nota incorreta em %%map",
 	"Bad page width": "Largura de página incorreta",
 	"Bad program in %%MIDI": "Valor incorreto de instrumento %%MIDI",
 	"Bad scale value in %%font": "Tamanho incorreto em %%font",
 	"Bad tempo value": "tempo inválido",
+	"Bad strings in tablature": "Cordas inválidas em tablatura",
 	"Bad tie": "Ligadura de prolongamento incorreta",
 	"Bad transpose value": "Valor incorreto de transposição",
 	"Bad user character '$1'": "Caráter ilegal '$1' em U:/%%user",
@@ -77,16 +82,20 @@ user.textrans = {
 	"Cannot have V:* in tune body": "Não pode haver V:* no corpo da música",
 	"Cannot read file '$1'": "Arquivo '$1' não pôde ser aberto ou não existe",
 	"Decoration ignored": "Decoração ignorada",
+	"Decoration without symbol": "Decoração sem símbolo",
+	"Double voice in %%score": "Voz duplicada em %%score",
 	"Empty line in tune header - ignored":
 				"Linha em branco no cabeçalho da música - ignorada",
 	"End of slur without start": "Fim de ligadura sem início",
 	"Erroneous end of voice overlay": "Terminação incorreta de superposição de vozes",
+	"Error in %%pos": "Erro em %%pos",
 	"Error loading the module $1": "Error loading the module $1",
 	"Incorrect 1st value in %%repeat": "Primeiro valor incorreto em %%repeat",
 	"Incorrect 2nd value in %%repeat": "Segundo valor incorreto em %%repeat",
 	"Invalid 'r' in tuplet": "'r' inválido em quiáltera",
 	"Invalid decoration '$1'": "Decoração '$1' inválida",
 	"Invalid note duration $1": "Duração de nota $1 inválida",
+	"K:P is deprecated": "K:P é obsoleto",
 	"Lack of ']'": "']' faltando",
 	"Lack of bar after multi-measure rest":
 				"Falta barra de compasso após pausa de múltiplos compassos",
@@ -109,11 +118,14 @@ user.textrans = {
 	"No accidental after 'exp'": "Falta acidente após 'exp'",
 	"No end of decoration": "Decoração sem término",
 	"No end of grace note sequence": "Grupo de notinhas ornamentais não terminado",
-	"No end of chord symbol/annotation": "Acorde cifrado sem término",
+	"No end of chord symbol/annotation": "Acorde cifrado/anotação sem término",
 	"No end of repeat string": "Cadeia de repetição não terminada",
+	"No end of string in font family":
+			"Cadeia de caracteres incompleta em família de fonte",
 	"No end of tuplet": "Quiáltera incompleta",
 	"No end of tuplet in this music line":
 				"Falta terminar quiáltera nesta linha de música",
+	"No end of url in font family": "URL incompleta em família de fonte",
 	"No end of voice overlay": "Falta fim de divisão de vozes",
 	"No function for decoration '$1'": "Falta função para decoração '$1'",
 	"No note before '-'": "Falta nota antes de '-'",
