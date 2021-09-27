@@ -985,7 +985,10 @@ function new_tempo(text) {
 		glovar.tempo = s
 		return
 	}
-	sym_link(s)
+	if (!curvoice.time)
+		glovar.tempo = s
+	else
+		sym_link(s)
 }
 
 // treat the information fields which may embedded

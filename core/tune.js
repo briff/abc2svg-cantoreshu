@@ -140,30 +140,61 @@ var w_tb = new Uint8Array([
 ])
 
 function sort_all() {
-    var	s, s2, p_voice, v, time, w, wmin, ir,
-	prev, fl, new_sy,
+    var	s, s2, time, w, wmin, ir,
+	fl, new_sy,
 	nv = voice_tb.length,
 	vtb = [],
 	vn = [],			// voice indexed by range
-	sy = cur_sy
+	sy = cur_sy,			// first staff system
+	v = sy.top_voice,
+	p_voice = voice_tb[v],		// top voice
+	prev = {			// symbol defining the first staff system
+		type: C.STAVES,
+		dur: 0,
+		v: v,
+		p_v: p_voice,
+		time: 0,
+		st: 0,
+		sy: sy,
+		next: p_voice.sym,
+		seqst: true,
+		fmt: cfmt
+	}
 
 	// set the first symbol of each voice
 	for (v = 0; v < nv; v++) {
 		s = voice_tb[v].sym
 		vtb[v] = s
-		if (s) {
-			if (!s.time
-			 && s.type == C.STAVES) {	// first symbol by time
-				tsfirst = prev = s
-				vtb[v] = s.next
-			}
-			if (sy.voices[v])
-				vn[sy.voices[v].range] = v
-		}
+		if (sy.voices[v])
+			vn[sy.voices[v].range] = v
 	}
-	if (!prev)
-		return				// no music
-	prev.seqst = true
+
+	// insert the first staff system in the top voice
+	p_voice.sym = tsfirst = s = prev
+	if (s.next)
+		s.next.prev = s
+	else
+		p_voice.last_sym = s
+
+	// if Q: from tune header, put it at start of the music
+	// (after the staff system)
+	s = glovar.tempo
+	if (s) {
+		s.v = v = p_voice.v
+		s.p_v = p_voice
+		s.st = 0
+		s.time = 0
+		s.prev = prev
+		s.next = prev.next
+		if (s.next)
+			s.next.prev = s
+		else
+			p_voice.last_sym = s
+		s.prev.next = s
+		s.fmt = cfmt
+		glovar.tempo = null
+		vtb[v] = s
+	}
 
 	// loop on the symbols of all voices
 	while (1) {
@@ -277,51 +308,6 @@ function voice_adj(sys_chg) {
 	if (curvoice && curvoice.clone) {
 		parse.istart = parse.eol
 		do_cloning()
-	}
-
-	// insert the first staff system if not done yet
-	v = par_sy.top_voice
-	p_voice = voice_tb[v]
-	if (!p_voice.sym)
-		return				// no symbol
-	if (p_voice.sym.type != C.STAVES) {
-		s = {
-			type: C.STAVES,
-			dur: 0,
-			v: v,
-			p_v: p_voice,
-			time: 0,
-			sy: par_sy,
-			next: p_voice.sym,
-			fmt: cfmt
-		}
-		p_voice.sym = s
-		if (s.next)
-			s.next.prev = s
-		else
-			p_voice.last_sym = s
-	}
-
-	// if Q: from tune header, put it at start of the music
-	// (after the staff system)
-	s = glovar.tempo
-	if (s) {
-		if (!p_voice.sym.next
-		  || p_voice.sym.next.type != C.TEMPO) {
-			s.v = v;
-			s.p_v = p_voice;
-			s.st = p_voice.st;
-			s.time = 0;
-			s.prev = p_voice.sym
-			s.next = p_voice.sym.next
-			if (s.next)
-				s.next.prev = s
-			else
-				p_voice.last_sym = s
-			s.prev.next = s
-			s.fmt = cfmt
-			glovar.tempo = null
-		}
 	}
 
 	for (v = 0; v < voice_tb.length; v++) {
@@ -1433,7 +1419,7 @@ function acc_same_pitch(s, pit) {
 
 /* -- get staves definition (%%staves / %%score) -- */
 function get_staves(cmd, parm) {
-    var	s, p_voice, p_voice2, i, flags, v, vid, a_vf, no_sym,
+    var	s, p_voice, p_voice2, i, flags, v, vid, a_vf,
 	st, range,
 	nv = voice_tb.length,
 	maxtime = 0
@@ -1453,7 +1439,6 @@ function get_staves(cmd, parm) {
 	if (!maxtime) {				// if first %%staves
 		par_sy.staves = []
 		par_sy.voices = []
-		no_sym = 1			// update the staff of the symbols
 	} else {
 
 		if (nv)					// if many voices
@@ -1481,7 +1466,9 @@ function get_staves(cmd, parm) {
 		// if no parameter, duplicate the current staff system
 		// and do a voice re-synchronization
 		if (!parm) {
-			par_sy = s.sy = clone(par_sy, 1)
+			s.sy = clone(par_sy, 1)
+			par_sy.next = s.sy
+			par_sy = s.sy
 			staves_found = maxtime
 			for (v = 0; v < nv; v++)
 				voice_tb[v].time = maxtime
@@ -1624,8 +1611,8 @@ function get_staves(cmd, parm) {
 			p_voice.st = st	// (this avoids later crashes)
 
 		// if first %%staves
-		// - update the staff of the symbols with no width
-		if (no_sym) {
+		// update the staff of the symbols with no time
+		if (!maxtime) {
 			for (s = p_voice.sym; s; s = s.next)
 				s.st = st
 		}
@@ -1648,6 +1635,8 @@ function get_staves(cmd, parm) {
 		 && !(par_sy.staves[st - 1].flags & STOP_BAR))
 			p_voice.norepbra = true
 	}
+	if (!maxtime && nv)		// if first staff system and many voices
+		voice_adj(true)
 
 	curvoice = parse.state >= 2 ? voice_tb[par_sy.top_voice] : null
 }
@@ -2150,7 +2139,8 @@ function goto_tune() {
 	// initialize the voices when no %%staves/score	
 	if (staves_found < 0) {
 		v = voice_tb.length
-		nstaff = v - 1
+		par_sy.nstaff =
+			nstaff = v - 1
 		while (--v >= 0) {
 			p_voice = voice_tb[v];
 			delete p_voice.new;		// old voice
@@ -2164,6 +2154,5 @@ function goto_tune() {
 				staffscale: 1
 			}
 		}
-		par_sy.nstaff = nstaff
 	}
 }
