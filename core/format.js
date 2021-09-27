@@ -837,7 +837,7 @@ function use_font(font) {
  src:" + font.src + "}")
 		if (font == cfmt.musicfont)	// add more music font style
 			add_fstyle(".f" + font.fid
-				+ ' text,tspan{fill:currentColor}')
+				+ ' text,tspan{fill:currentColor;white-space:pre}')
 	}
 }
 
