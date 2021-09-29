@@ -337,6 +337,10 @@ abc2svg.jianpu = {
 				if (m == 0 && s.nflags > 0)
 					ym -= 2.5 * s.nflags
 				out_mus(x - 1, ym, dot)
+				if (note.jo < 1) {
+					ym -= 3
+					out_mus(x - 1, ym, dot)
+				}
 			}
 			y += 20
 		}
