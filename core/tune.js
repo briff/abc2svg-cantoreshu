@@ -1845,15 +1845,13 @@ function get_key(parm) {
 			p_voice.ckey = clone(s_key)
 		}
 		parse.ckey = s_key
-		if (a.length)
-			memo_kv_parm('*', a)
 		if (!glovar.ulen)
 			glovar.ulen = C.BLEN / 8;
 		goto_tune()
 		parse.state = 3			// in tune body
 	}
-	if (a.length)
-		set_kv_parm(a)
+
+	set_kv_parm(a)
 
 	if (!curvoice.ckey.k_bagpipe && !curvoice.ckey.k_drum
 	 && (cfmt.transp != undefined
