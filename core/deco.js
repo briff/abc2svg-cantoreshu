@@ -57,8 +57,8 @@ var	dd_tb = {},		// definition of the decorations
 
 // decorations - populate with standard decorations
 var decos = {
-	dot: "0 stc 5 1 1",
-	tenuto: "0 emb 5 3 3",
+	dot: "0 stc 6 1 1",
+	tenuto: "0 emb 6 3 3",
 	slide: "1 sld 3 7 0",
 	arpeggio: "2 arp 12 10 0",
 	roll: "3 roll 3,3 6 6",
