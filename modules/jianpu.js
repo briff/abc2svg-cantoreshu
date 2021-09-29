@@ -160,7 +160,10 @@ abc2svg.jianpu = {
 		p_v.key.k_a_acc = []	// no accidental
 
 		// no (visible) clef
-		p_v.clef.invis = true
+		s = p_v.clef
+		s.invis = true
+		s.clef_type = 't'
+		s.clef_line = 2
 
 		// scan the voice
 		for (s = p_v.sym; s; s = s.next) {
@@ -168,6 +171,8 @@ abc2svg.jianpu = {
 			switch (s.type) {
 			case C.CLEF:
 				s.invis = true
+				s.clef_type = 't'
+				s.clef_line = 2
 //				continue
 			default:
 				continue
