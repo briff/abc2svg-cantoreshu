@@ -113,8 +113,9 @@ abc2svg.chord = function(first,		// first symbol in time
 			notes: []
 		}
 
-		if (a)
-			r = abc2svg.letmid[a[1]]	// root
+		if (!a)
+			return
+		r = abc2svg.letmid[a[1]]		// root
 		if (r == undefined) {
 			if (a[1] != "N")
 				return
