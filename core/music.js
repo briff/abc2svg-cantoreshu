@@ -76,7 +76,7 @@ function identify_note(s, dur_o) {
 	dur /= 12			/* see C.BLEN for values */
 	if (!dur)
 		error(1, s, "Note too short")
-	for (flags = 5; dur != 0; dur >>= 1, flags--) {
+	for (flags = 5; dur; dur >>= 1, flags--) {
 		if (dur & 1)
 			break
 	}
@@ -346,13 +346,13 @@ error(2, s, "Bad linkage")
 	s.seqst = !s.ts_prev
 		|| s.time != s.ts_prev.time
 		|| (w_tb[s.ts_prev.type] != w_tb[s.type]
-		 && w_tb[s.ts_prev.type] != 0)
+		 && w_tb[s.ts_prev.type])
 		|| s.ts_prev.v >= s.v		// case cut bar
 	if (!next)
 		return
 	next.seqst = next.time != s.time ||
 			(w_tb[s.type] != w_tb[next.type]
-			 && w_tb[s.type] != 0)
+			 && w_tb[s.type])
 	if (next.seqst) {
 		self.set_width(next)
 		if (next.a_ly)
@@ -554,10 +554,8 @@ function set_graceoffs(s) {
 		x += dx;
 		g.x = x
 
-		if (g.nflags <= 0) {
-			g.beam_st = true;
-			g.beam_end = true
-		}
+		if (g.nflags <= 0)
+			g.beam_st = g.beam_end = true
 		next = g.next
 		if (!next) {
 			g.beam_end = true
@@ -695,7 +693,7 @@ Abc.prototype.set_width = function(s) {
 		if (s.xmx > 0)
 			s.wr += s.xmx + 4;
 		for (s2 = s.prev; s2; s2 = s2.prev) {
-			if (w_tb[s2.type] != 0)
+			if (w_tb[s2.type])
 				break
 		}
 		if (s2) {
@@ -861,7 +859,7 @@ Abc.prototype.set_width = function(s) {
 
 			/* if preceeded by a grace note sequence, adjust */
 			for (s2 = s.prev; s2; s2 = s2.prev) {
-				if (w_tb[s2.type] != 0) {
+				if (w_tb[s2.type]) {
 					if (s2.type == C.GRACE)
 						s.wl -= 8
 					break
@@ -1784,7 +1782,7 @@ function set_nl(s) {			// s = start of line
 			if (s.ts_prev.type == C.BAR)
 				break
 			while (s.ts_next) {
-				if (w_tb[s.ts_next.type] != 0
+				if (w_tb[s.ts_next.type]
 				 && s.ts_next.type != C.CLEF)
 					break
 				s = s.ts_next
@@ -3041,7 +3039,7 @@ if (st > nst) {
 
 				/* if 3 voices, and vertical space enough,
 				 * have stems down for the middle voice */
-				if (i != 0 && i + 2 == st_v.length) {
+				if (i && i + 2 == st_v.length) {
 					if (st_v[i].ymn - s.fmt.stemheight
 							>= st_v[i + 1].ymx)
 						s.multi = -1;
@@ -3568,8 +3566,7 @@ function set_words(p_voice) {
 					lastnote = null
 				}
 				if (nflags <= 0) {
-					s.beam_st = true;
-					s.beam_end = true
+					s.beam_st = s.beam_end = true
 				} else if (s.type == C.NOTE || s.beam_on) {
 					s.beam_st = true;
 					start_flag = false
