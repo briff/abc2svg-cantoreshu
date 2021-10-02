@@ -2270,7 +2270,7 @@ function mrest_expand() {
 
 		// change the multi-rest into a single rest
 		s.type = C.REST
-		s.dur = s.dur_orig = dur
+		s.notes[0].dur = s.dur = s.dur_orig = dur
 		s.nflags = -2
 		s.head = C.FULL
 
