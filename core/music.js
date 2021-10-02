@@ -347,7 +347,9 @@ error(2, s, "Bad linkage")
 		|| s.time != s.ts_prev.time
 		|| (w_tb[s.ts_prev.type] != w_tb[s.type]
 		 && w_tb[s.ts_prev.type])
-		|| s.ts_prev.v >= s.v		// case cut bar
+//fixme: why was needed the voice order?
+//		|| s.ts_prev.v >= s.v		// case cut bar
+		|| s.ts_prev.v == s.v
 	if (!next)
 		return
 	next.seqst = next.time != s.time ||
