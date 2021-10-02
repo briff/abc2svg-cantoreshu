@@ -317,6 +317,9 @@ They are:
   Note, only one tune may be translated from ABC to MEI (multi-tunes ABC
   generates bad MEI).
 
+- `tonotes.js`  
+  This script outputs a list of the MIDI events.
+
 - `toodt.js`  
   This script creates an Open Document (ODT+SVG) which can be read by most
   word processors (abiword, libreoffice...).  
