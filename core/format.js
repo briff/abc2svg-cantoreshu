@@ -391,12 +391,16 @@ var textopt = {
 	center: 'c',
 	fill: 'f',
 	justify: 'j',
+	obeylines: 'l',
 	ragged: 'f',
 	right: 'r',
 	skip: 's'
 }
-function get_textopt(param) {
-	return textopt[param]
+function get_textopt(v) {
+    var	i = v.indexOf(' ')
+	if (i > 0)
+		v = v.slice(0, i)
+	return textopt[v]
 }
 
 /* -- position of a voice element -- */
