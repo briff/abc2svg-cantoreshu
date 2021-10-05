@@ -154,6 +154,8 @@ user.textrans = {
 	"Unsecure code": "Unsicherer Code",
     "Unterminated string": "nicht abgeschlossene Zeichenkette",
     "Unterminated string in Q:": "nicht abgeschlossene Zeichenkette in Q:",
+	"Variant ending on a left repeat bar":
+				"Variant ending on a left repeat bar",
     "Voice overlay already started": "Stimmüberlagerung bereits gestartet",
 	"w: without music": "w: ohne Noten",
 	"Wrong duration in voice overlay": "fehlerhafte Notenwerte in Stimmüberlagerung"

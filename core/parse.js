@@ -1231,10 +1231,8 @@ function new_bar() {
 		line.index--;
 		c = '['
 	}
-	if (bar_type.slice(-1) == ':')		// left repeat
-		s.rbstop = 2			// with bracket end
 
-	// check if repeat bar
+	// check if a repeat variant
 	if (c > '0' && c <= '9') {
 		s.text = c
 		while (1) {
@@ -1243,8 +1241,6 @@ function new_bar() {
 				break
 			s.text += c
 		}
-		s.rbstop = 2;
-		s.rbstart = 2
 	} else if (c == '"' && bar_type.slice(-1) == '[') {
 		s.text = ""
 		while (1) {
@@ -1259,8 +1255,6 @@ function new_bar() {
 			}
 			s.text += c
 		}
-		s.rbstop = 2;
-		s.rbstart = 2
 	}
 
 	// ']' as the first character indicates a repeat bar stop
@@ -1274,16 +1268,24 @@ function new_bar() {
 
 	s.iend = parse.bol + line.index
 
-	if (s.rbstart
-	 && curvoice.norepbra
-	 && !curvoice.second)
-		s.norepbra = true
+	if (s.text
+	 && bar_type.slice(-1) == '['
+	 && bar_type != '[')
+		bar_type = bar_type.slice(0, -1)
+
+	// there cannot be variants on a left repeat bar
+	if (bar_type.slice(-1) == ':') {	// left repeat
+		s.rbstop = 2			// stop the bracket
+		if (s.text) {
+			syntax(1, "Variant ending on a left repeat bar")
+			delete s.text
+		}
+	}
 
 	// handle the accidentals (ties and repeat)
 	if (s.text) {
-		if (bar_type.slice(-1) == '['
-		 && bar_type != '[')
-			bar_type = bar_type.slice(0, -1)
+		s.rbstop = 2;
+		s.rbstart = 2
 		if (s.text[0] == '1') {
 			if (curvoice.tie_s)
 				curvoice.tie_s_rep = curvoice.tie_s
@@ -1306,6 +1308,12 @@ function new_bar() {
 				curvoice.acc_tie = curvoice.acc_tie_rep.slice()
 		}
 	}
+
+	if (s.rbstart
+	 && curvoice.norepbra
+	 && !curvoice.second)
+		s.norepbra = true
+
 	if (curvoice.ulen < 0)			// L:auto
 		adjust_dur(s);
 

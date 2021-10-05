@@ -163,6 +163,8 @@ user.textrans = {
 	"Unsecure code": "Código inseguro",
 	"Unterminated string": "Cadeia de caracteres não terminada",
 	"Unterminated string in Q:": "Cadeia de caracteres não terminada em Q:",
+	"Variant ending on a left repeat bar":
+				"Variant ending on a left repeat bar",
 	"Voice overlay already started": "Divisão de vozes já se iniciou",
 	"w: without music": "w: sem música",
 	"Wrong duration in voice overlay":
