@@ -1910,16 +1910,17 @@ function get_key(parm) {
 
 // get / create a new voice
 function new_voice(id) {
-	var	p_voice, v, p_v_sav,
-		n = voice_tb.length
+    var	v, p_v_sav,
+	p_voice = voice_tb[0],
+	n = voice_tb.length
 
 	// if first explicit voice and no music, replace the default V:1
 	if (n == 1
-	 && voice_tb[0].default) {
-		delete voice_tb[0].default
-		if (!voice_tb[0].time) {
-			p_voice = voice_tb[0];
+	 && p_voice.default) {
+		delete p_voice.default
+		if (!p_voice.time) {		// if no symbol yet
 			p_voice.id = id
+			delete p_voice.init	// reload the global attributes
 			if (cfmt.transp	// != undefined
 			 && parse.state >= 2) {
 				p_v_sav = curvoice;
