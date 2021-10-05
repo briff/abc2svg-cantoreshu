@@ -1847,6 +1847,10 @@ function get_key(parm) {
 		parse.ckey = s_key
 		if (!glovar.ulen)
 			glovar.ulen = C.BLEN / 8;
+		if (a.length) {
+			memo_kv_parm('*', a)
+			a = ''
+		}
 		goto_tune()
 		parse.state = 3			// in tune body
 	}
