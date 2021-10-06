@@ -3538,7 +3538,8 @@ function draw_systems(indent) {
 			bar_set()
 			continue
 		case C.BAR:		// display the bars after the staves
-			if (s.invis || !s.bar_type)
+			if (s.invis || !s.bar_type
+			 || !cur_sy.st_print[s.st])
 				break
 			if (s.second
 			 && (!s.ts_prev
