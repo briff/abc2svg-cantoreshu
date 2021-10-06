@@ -185,8 +185,8 @@ function cnv_escape(src, flag) {
 			}
 			break
 		}
-		if (flag == 'w')
-			dst += '\\'
+		if (flag == 'w')	// if lyrics line (w:)
+			dst += '\\'	// keep the backslash
 		dst += c
 		j = i + 1
 	}
@@ -492,7 +492,7 @@ function tosvg(in_fname,		// file name
 				}
 				self.do_begin_end(b, uncomment(a[2]),
 					file.slice(eol + 1, i)
-						.replace(/^%?%/gm,''))
+						.replace(/^%%/gm,''))
 				parse.eol = file.indexOf('\n', i + 6)
 				if (parse.eol < 0)
 					parse.eol = eof
