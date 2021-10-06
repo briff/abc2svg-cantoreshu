@@ -271,10 +271,8 @@ function str2svg(str) {
 			}
 			return c		// &xxx;
 		})
-	if (c_font != o_font) {
+	if (c_font != o_font)
 		o += "</tspan>"
-		gene.curfont = c_font	// keep current font for next paragraph
-	}
 
 	// convert to String and memorize the string width and height
 	o = new String(o)
@@ -282,6 +280,9 @@ function str2svg(str) {
 		strwh(o)		// browser
 	else
 		o.wh = strwh(str)	// CLI
+
+	gene.curfont = c_font	// keep the current font for the next paragraph
+
 	return o
 } // str2svg()
 
@@ -519,12 +520,9 @@ function put_words(words) {
 
 	// output a line of words after tune
 	function put_wline(p, x) {
-		var i = 0, j, k
+	    var i = 0,
+		k = 0
 
-		if (p[i] == '$' && p[i +  1] >= '0' && p[i + 1] <= '9')
-			i += 2;
-		k = 0;
-		j = i
 		if ((p[i] >= '0' && p[i] <= '9') || p[i + 1] == '.') {
 			while (i < p.length) {
 				i++
@@ -539,7 +537,7 @@ function put_words(words) {
 		}
 
 		if (k != 0)
-			xy_str(x, 0, p.slice(j, k), 'r')
+			xy_str(x, 0, p.slice(0, k), 'r')
 		if (i < p.length)
 			xy_str(x + 5, 0, p.slice(i), 'l')
 	} // put_wline()
