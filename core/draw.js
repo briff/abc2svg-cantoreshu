@@ -2802,9 +2802,9 @@ function draw_all_ties(p_voice) {
  *   - tuplets and slurs
  * - not scaled
  *   - chord symbols
- *   - staff decorations
- *   - lyrics
  *   - measure numbers
+ *   - lyrics
+ *   - staff decorations
  * The buffer output is delayed until the definition of the staff system
  */
 function draw_sym_near() {
@@ -3022,7 +3022,6 @@ function draw_sym_near() {
 		}
 	}
 
-	draw_deco_staff();
 	if (cfmt.measurenb >= 0)
 		draw_measnb();
 
@@ -3036,6 +3035,8 @@ function draw_sym_near() {
 			break
 		}
 	}
+
+	draw_deco_staff()
 
 	set_dscale(-1);
 	output = output_sav
