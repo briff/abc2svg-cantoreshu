@@ -2456,9 +2456,9 @@ function set_auto_clef(st, s_start, clef_type_start) {
 			 && s2.notes[0].pit >= 19)	/* F */
 				continue
 		} else {
-			if (s.notes[0].pit < 12		/* F, */
+			if (s.notes[0].pit <= 12	/* F, */
 			 || s.notes[s.nhd].pit < 20) {	/* G */
-				if (s.notes[s.nhd].pit < 12)
+				if (s.notes[s.nhd].pit <= 12)
 					s_last_chg = s
 				continue
 			}
