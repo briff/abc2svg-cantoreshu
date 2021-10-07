@@ -1656,6 +1656,7 @@ function set_nl(s) {			// s = start of line
 				delete s1.text
 				delete s1.rbstart
 			}
+			delete s1.part
 			delete s2.a_dd
 		    }
 			s1 = s1.ts_next
@@ -1735,6 +1736,7 @@ function set_nl(s) {			// s = start of line
 					s3.space = set_space(s3, s3.ts_prev.time)
 					s3.next.shrink = s3.wr + s3.next.wl
 				}
+				delete s3.part
 				continue
 			}
 			if (w_tb[s2.type])
