@@ -347,9 +347,6 @@ error(2, s, "Bad linkage")
 		|| s.time != s.ts_prev.time
 		|| (w_tb[s.ts_prev.type] != w_tb[s.type]
 		 && w_tb[s.ts_prev.type])
-//fixme: why was needed the voice order?
-//		|| s.ts_prev.v >= s.v		// case cut bar
-		|| s.ts_prev.v == s.v
 	if (!next)
 		return
 	next.seqst = next.time != s.time ||
@@ -1585,7 +1582,7 @@ function set_nl(s) {			// s = start of line
 	// divide the left repeat (|:) or variant bars (|1)
 	// the new bars go in the next line
 	function bardiv(so) {		// start of next line
-	    var s, s1, s2, t1, t2, i
+	    var s, s1, s2, t1, t2, i, noseq
 
 	    function new_type(s) {
 	    var	t = s.bar_type.match(/(:*)([^:]*)(:*)/)
@@ -1631,6 +1628,9 @@ function set_nl(s) {			// s = start of line
 			}
 			break
 		}
+		if (s.bar_type)
+			noseq = 1
+
 		while (s1 != so) {
 		    if (s1.bar_type
 		     && (s1.bar_type.slice(-1) == ':'
@@ -1644,11 +1644,16 @@ function set_nl(s) {			// s = start of line
 			lkvsym(s2, s1.next)	// voice
 			while (1) {
 				if (s.type != C.BAR
+//fixme: pb if inverted voices
 				 || s.v > s2.v)
 					break
 				s = s.ts_next
 			}
 			lktsym(s2, s)		// time
+			if (!noseq) {
+				s2.seqst = true
+				noseq = 1
+			}
 			if (s == so)
 				so = s2
 			if (s1.text) {
@@ -1717,8 +1722,6 @@ function set_nl(s) {			// s = start of line
 				s3 = clone(s2)		// duplicate the K:/M:/clef
 
 				lktsym(s3, s1.ts_next)	// time link
-				if (s3.ts_next == s)
-					s.seqst = true	// (M: eol M:)
 
 				s1 = s3
 				while (1) {
