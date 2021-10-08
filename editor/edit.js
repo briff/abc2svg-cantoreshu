@@ -589,12 +589,8 @@ function play_tune(what) {
 		// not reached
 	}
 
-	function gsot(si) {	// go to the first playable symbol of a tune
-	    var	s = syms[si].p_v.sym
-
-		while (s.ts_prev)		// go back to the first symbol
-			s = s.ts_prev
-		return gnrn(s)
+	function gsot(si) {		// go to the first symbol of a tune
+		return syms[si].p_v.sym
 	}
 	function get_se(si) {			// get the starting symbol
 	    var	sym = syms[si]
