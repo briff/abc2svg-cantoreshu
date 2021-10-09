@@ -243,6 +243,12 @@ svg {display:block}\n\
 p {' + set_pstyle() + 'margin-top:0}\n\
 p span {line-height:' + ((cfmt.lineskipfac * 100) | 0).toString() + '%}\n' +
 			((header || footer) ? media_f : media_s))
+// important for chrome and --headless (abctopdf)
+		if (abc.page)
+			abc2svg.print('@page{size:' +
+				(cfmt.pagewidth / 96).toFixed(2) + 'in ' +
+				(cfmt.pageheight / 96).toFixed(2) + 'in;margin:0}')
+
 		abc2svg.print('</style>\n\
 <title> ' + abc.parse.fname.replace(/.*\//, '')
 			+ '</title>\n\
