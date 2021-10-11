@@ -102,6 +102,8 @@ user.textrans = {
 		"Probleme beim Aufteilen der Zeile - justiere maxshrink und/oder breaklimit",
     "Line too much shrunk $1 $2 $3": "Zeile zu stark geschrumpft $1 $2 $3",
     "Line underfull ($1pt of $2pt)": "Zeile nicht voll genug ($1pt of $2pt)",
+	"Microtone transposition not coded":
+				"Microtone transposition not coded",
     "Misplaced '$1' in %%score": "'$1' fehlerhaft platziert in %%score",
     "Misplaced dot": "fehlerhaft platzierter Punkt",
 	"Mix of old and new transposition syntaxes":

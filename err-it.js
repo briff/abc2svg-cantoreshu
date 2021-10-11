@@ -108,6 +108,8 @@ user.textrans = {
 		"Problema di linea divisa - modificare maxshrink e/o breaklimit",
 	"Line too much shrunk $1 $2 $3": "Linea troppo compressa $1 $2 $3",
 	"Line underfull ($1pt of $2pt)": "Linea troppo vuota ($1pt di $2pt)",
+	"Microtone transposition not coded":
+				"Microtone transposition not coded",
 	"Misplaced '$1' in %%score": "'$1' in posizione errata in %%score",
 	"Misplaced dot": "Punto in posizione errata",
 	"Mix of old and new transposition syntaxes":

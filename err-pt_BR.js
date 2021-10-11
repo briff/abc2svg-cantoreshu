@@ -106,6 +106,8 @@ user.textrans = {
 		"Problema de quebra de linha - ajuste maxshrink e/ou breaklimit",
 	"Line too much shrunk $1 $2 $3": "Linha muito encolhida $1 $2 $3",
 	"Line underfull ($1pt of $2pt)": "Linha muito espaçada ($1pt de $2pt)",
+	"Microtone transposition not coded":
+				"Microtone transposition not coded",
 	"Misplaced '$1' in %%score": "'$1' deslocado em %%score",
 	"Misplaced dot": "Ponto fora de lugar",
 	"Mix of old and new transposition syntaxes":

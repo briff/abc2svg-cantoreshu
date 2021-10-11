@@ -732,6 +732,14 @@ function note_transp(s, sk, note) {
 	n = note.pit,
 	a = note.acc
 
+	if (typeof a == "object") {
+		d = a[1]
+		a = a[0]
+		if (d != 2) {
+			error(1, s, "Microtone transposition not coded")
+			return
+		}
+	}
 	if (!a && sk.k_a_acc)			// if accidental list
 		a = sk.k_map[(n + 19) % 7]	// invisible accidental
 
@@ -766,7 +774,56 @@ function note_transp(s, sk, note) {
 	} else {
 		return			// same accidental (in the key)
 	}
-	note.acc = an
+	if (d && an != a) {
+		switch (Number(a)) {
+		case -3:
+			switch (an) {
+			case -2:
+				an = -1
+				break
+			case 3:			// natural
+				an = -3
+				note.pit++
+				break
+			case 2:
+				an = -1
+				break
+			}
+			break
+		case -1:
+			switch (an) {
+			case -2:
+				an = -3
+				break
+			case 3:			// natural
+				an = 1
+				break
+			}
+			break
+		case 1:
+			switch (an) {
+			case 3:			// natural
+				an = -1
+				break
+			case 2:
+				an = 3
+				break
+			}
+			break
+		case 3:
+			switch (an) {
+			case -1:
+				an = 1
+				break
+			case 1:
+				an = 1
+				note.pit++
+				break
+			}
+			break
+		}
+	}
+	note.acc = d ? [an, d] : an
 }
 
 // adjust the pitches according to the transposition(s)
