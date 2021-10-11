@@ -84,6 +84,8 @@ abc2svg.strtab = {
 		if (s.type == C.NOTE) {
 			for (m = 0; m <= s.nhd; m++) {
 				not = s.notes[m]
+				if (not.nb < 0)
+					continue
 				x = s.x - 3
 				if (not.nb >= 10)
 					x -= 3
@@ -139,15 +141,19 @@ abc2svg.strtab = {
 
 	// set a string (pitch) and a fret number
 	function set_pit(p_v, s, nt, i) {
-	    var	st = s.st,
-		n = (p_v.diafret ? nt.pit : nt.midi) - p_v.tab[i]
+	    var	st = s.st
 
-		if (p_v.diafret && nt.acc)
-			n += '+'
+		if (i >= 0) {
+			nt.nb = (p_v.diafret ? nt.pit : nt.midi) - p_v.tab[i]
+			if (p_v.diafret && nt.acc)
+				n += '+'
+			nt.pit = i * 2 + 18
+		} else {
+			nt.nb = -1
+			nt.pit = 18
+		}
 		nt.acc = 0
 		nt.invis = true
-		nt.pit = i * 2 + 18
-		nt.nb = n
 		strss[i] = s.time + s.dur
 		if (s.nflags >= -1 && !s.stemless) {
 			if (!lstr[st])
@@ -231,6 +237,7 @@ abc2svg.strtab = {
 
 			// search the best string
 			bn = 100
+			bi = -1
 			i = p_v.tab.length
 			while (--i >= 0) {
 				if (strss[i] && strss[i] > s.time)
