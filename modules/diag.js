@@ -224,7 +224,9 @@ M-10.2 -34.5h20.4"/>'
 	switch (cmd) {
 	case "diagram":
 		n = param
-		if (n != '0' && n != '4')
+		if (n == '0')
+			n = ''
+		else if (n != '4')
 			n = '6'
 		cfmt.diag = n
 		return
