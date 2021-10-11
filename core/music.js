@@ -1565,7 +1565,7 @@ function custos_add(s) {
 
 	new_s.nhd = s2.nhd;
 	new_s.notes = []
-	for (i = 0; i < s.notes.length; i++) {
+	for (i = 0; i < s2.notes.length; i++) {
 		new_s.notes[i] = {
 			pit: s2.notes[i].pit,
 			shhd: 0,
