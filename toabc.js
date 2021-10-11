@@ -452,7 +452,7 @@ break
 	} // meter_dump()
 
 	function note_dump(s, note, tie_ch) {
-	    var	p, j, sl, s2
+	    var	p, j, sl, s2, a, d
 		if (note.sls) {
 			for (j = 0; j < note.sls.length; j++) {
 				sl = note.sls[j];
@@ -468,20 +468,25 @@ break
 			deco_dump(note.a_dd)
 		if (note.color)
 			line += "!" + note.color + "!"
-		switch (note.acc) {
-		case -2: line += '__'; break
-		case -1: line += '_'; break
-		case 1: line += '^'; break
-		case 2: line += '^^'; break
-		case 3: line += '='; break
-		}
-		if (note.micro_n) {
-			if (s.p_v.uscale)
-				line += note.micro_n
-			else
-				line += dur_dump(C.BLEN / 4 *
-							note.micro_n / note.micro_d,
-						true)
+		a = note.acc
+		if (typeof a == "object") {
+			d = a[1]
+			a = a[0]
+			if (a > 0) {
+				line += '^'
+			} else {
+				line += '_'
+				a = -a
+			}
+			dur_dump(C.BLEN / 4 * a / d, true)
+		} else {
+			switch (a) {
+			case -2: line += '__'; break
+			case -1: line += '_'; break
+			case 1: line += '^'; break
+			case 2: line += '^^'; break
+			case 3: line += '='; break
+			}
 		}
 		p = note.pit
 		if (p >= 23) {
