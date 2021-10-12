@@ -802,6 +802,9 @@ function note_transp(s, sk, note) {
 			break
 		case 1:
 			switch (an) {
+			case -1:
+				an = -3
+				break
 			case 3:			// natural
 				an = -1
 				break
