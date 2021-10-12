@@ -1198,17 +1198,14 @@ Abc.prototype.do_pscom = function(text) {
 		val = get_transp(param)
 		if (val == undefined) {		// accept note interval
 			val = get_interval(param)
-			if (val == undefined) {
-				syntax(1, errs.bad_transp)
+			if (val == undefined)
 				return
-			}
 		}
 		switch (parse.state) {
 		case 0:
 			cfmt.transp = 0
 			// fall thru
 		case 1:
-		case 2:
 			cfmt.transp = (cfmt.transp || 0) + val
 			return
 		}

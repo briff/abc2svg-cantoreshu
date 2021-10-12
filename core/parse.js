@@ -145,6 +145,10 @@ function get_interval(param, score) {
 			}
 			pit[i] = 242			// 'c' (C5)
 		} else {
+			if (typeof note.acc == "object") {
+				syntax(1, errs.bad_transp)
+				return
+			}
 			pit[i] = abc2svg.pab40(note.pit, note.acc)
 		}
 	}
@@ -327,12 +331,19 @@ Abc.prototype.set_vp = function(a) {
 			item = a.shift()
 			val = item.indexOf('/')
 			if (val < 0) {
+				val = get_interval('c' + item)
+				if (val == undefined)
+					break
+				curvoice.sndtran = val
 				val = 0
-				curvoice.sndtran = get_interval('c' + item)
 			} else {
-				curvoice.sndtran = get_interval('c' +
-							item.slice(val + 1))
+				val = get_interval('c' + item.slice(val + 1))
+				if (val == undefined)
+					break
+				curvoice.sndtran = val
 				val = get_interval(item.replace('/', ''))
+				if (val == undefined)
+					break
 			}
 			curvoice.transp = cfmt.sound ? curvoice.sndtran : val
 			break
@@ -385,14 +396,18 @@ Abc.prototype.set_vp = function(a) {
 			item = a.shift()
 			if (cfmt.sound)
 				break
-			curvoice.transp = get_interval(item, true)
+			val = get_interval(item, true)
+			if (val != undefined)
+				curvoice.transp = val
 			break
 		case "shift=":
 			if (cfmt.nedo) {
 				syntax(1, errs.notransp)
 				break
 			}
-			curvoice.shift = curvoice.sndsh = get_interval(a.shift())
+			val = get_interval(a.shift())
+			if (val != undefined)
+				curvoice.shift = curvoice.sndsh = val
 			break
 		case "sound=":
 			if (cfmt.nedo) {
@@ -402,9 +417,12 @@ Abc.prototype.set_vp = function(a) {
 // concert-score display: apply sound=
 // sounding-score display: apply sound= only if M != c/C
 // sound: apply sound=
-			curvoice.sndtran = get_interval(a.shift())
+			val = get_interval(a.shift())
+			if (val == undefined)
+				break
+			curvoice.sndtran = val
 			if (cfmt.sound)
-				curvoice.transp = curvoice.sndtran
+				curvoice.transp = val
 			break
 		case "subname=":
 		case "sname=":
