@@ -592,15 +592,21 @@ abc2svg.play_next = function(po) {
 			}
 			if (s.bar_type.slice(-1) == ':') // left repeat
 				po.repv = 1
-			while (s.ts_next && !s.ts_next.seqst)
+
+		    if (!s.part1) {
+			while (s.ts_next && !s.ts_next.seqst) {
 				s = s.ts_next
+				if (s.part1)
+					break
+			}
 			if (!s.part1)
 				break
+		    }
 			// fall thru
 		default:
 			if (s.part1				// if end of part
 			 && po.i_p != undefined) {
-				s2 = s.part1.p_s[po.i_p++]	// next part
+				s2 = s.part1.p_s[++po.i_p]	// next part
 				if (s2) {
 					po.stim += (s.ptim - s2.ptim) / po.conf.speed
 					s = s2
@@ -608,6 +614,7 @@ abc2svg.play_next = function(po) {
 				} else {
 					s = po.s_end
 				}
+				po.repv = 1
 			}
 			break
 		}
@@ -691,7 +698,7 @@ abc2svg.play_next = function(po) {
     var	s, i, s_p
 	for (s = po.s_cur; s; s = s.ts_prev) {
 		if (s.parts) {
-			po.i_p = 0
+			po.i_p = -1
 			return
 		}
 		s_p = s.part1
