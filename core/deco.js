@@ -2073,15 +2073,15 @@ function draw_partempo(st, top) {
 			if (!s2 || s2.invis)
 				continue
 			if (user.anno_start || user.anno_stop) {
-				w = strwh(s2.text)[0]
-				s.wl = 0;
-				s.wr = w;
-				s.ymn = -ht
-				s.ymx = s.ymn + h;
-				anno_start(s)
+				s2.type = C.PART
+				s2.st = s2.wl = 0
+				s2.wr = strwh(s2.text)[0]
+				s2.ymn = -ht
+				s2.ymx = s2.ymn + h
+				anno_start(s2)
 			}
 			xy_str(s2.x, 2 - ht, s2.text)
-			anno_stop(s)
+			anno_stop(s2)
 		}
 	}
 	return dy /= staff_tb[0].staffscale

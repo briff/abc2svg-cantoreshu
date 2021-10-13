@@ -1074,6 +1074,7 @@ function do_info(info_type, text) {
 			text: text,
 			time: curvoice.time
 		}
+		set_ref(s)
 		if (cfmt.writefields.indexOf(info_type) < 0)
 			s.invis = true
 		parse.part[curvoice.time] = s
