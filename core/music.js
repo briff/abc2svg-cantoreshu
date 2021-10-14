@@ -1563,6 +1563,8 @@ function custos_add(s) {
 		new_s.shrink = 8 + 4;
 	new_s.space = s2.space;
 
+	new_s.head = C.FULL
+	new_s.stem = s2.stem
 	new_s.nhd = s2.nhd;
 	new_s.notes = []
 	for (i = 0; i < s2.notes.length; i++) {
