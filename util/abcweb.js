@@ -68,7 +68,7 @@ var	abc, new_page, src,
 		}
 	},
 	page,				// document source
-	tune_lst,		// array of [tsfirst, voice_tb, info, cfmt] per tune
+	tune_lst= [],	// array of [tsfirst, voice_tb, info, cfmt] per tune
 	jsdir = document.currentScript ?
 		    document.currentScript.src.match(/.*\//) :
 		    (function() {
@@ -136,14 +136,13 @@ function clean_txt(txt) {
 			abcplay = AbcPlay(playconf);
 		}
 
-		// if first time, get the tunes references
-		// and generate the play data of all tunes
-		if (!tune_lst) {
-			tune_lst = abc.tunes
-			for (j = 0; j < tune_lst.length; j++)
-				abcplay.add(tune_lst[j][0],
-					tune_lst[j][1],
-					tune_lst[j][3])
+		// if not done yet,
+		// generate the play data of the tune
+		if (!tune_lst[i]) {
+			tune_lst[i] = abc.tunes[i]
+			abcplay.add(tune_lst[i][0],
+					tune_lst[i][1],
+					tune_lst[i][3])
 		}
 
 		// check if click on a music symbol

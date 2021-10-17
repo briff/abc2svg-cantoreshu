@@ -79,7 +79,7 @@ function dom_loaded() {
 			playing = false
 		}
 	},
-	tune_lst,		// array of [tsfirst, voice_tb, info, cfmt] per tune
+	tune_lst= [],	// array of [tsfirst, voice_tb, info, cfmt] per tune
 	jsdir = document.currentScript ?
 		    document.currentScript.src.match(/.*\//) :
 		    (function() {
@@ -471,14 +471,13 @@ onclick="abc2svg.do_render(\'.*\')">' + tt +
 			return
 		c = c[1]			// tune number
 
-		// if a new generation, get the tunes references
-		// and generate the play data of all tunes
-		if (tune_lst != abc.tunes) {
-			tune_lst = abc.tunes
-			for (j = 0; j < tune_lst.length; j++)
-				abcplay.add(tune_lst[j][0],
-					tune_lst[j][1],
-					tune_lst[j][3])
+		// if not done yet,
+		// generate the play data of the tune
+		if (!tune_lst[c]) {
+			tune_lst[c] = abc.tunes[c]
+			abcplay.add(tune_lst[c][0],
+					tune_lst[c][1],
+					tune_lst[c][3])
 		}
 
 		// start playing from the clicked symbol
