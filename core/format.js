@@ -175,7 +175,7 @@ function get_font_scale(param) {
 
 	if (a.length <= 1)
 		return
-	var scale = parseFloat(a[a.length - 1])
+	var scale = +a[a.length - 1]
 
 	if (isNaN(scale) || scale <= 0.5) {
 		syntax(1, "Bad scale value in %%font")
@@ -235,7 +235,7 @@ function param_set_font(xxxfont, p) {
 	}
 	a = p.match(/\s+padding=([\d.]+)(\s|$)/)
 	if (a) {				// if padding
-		font.pad = a[1] ? Number(a[1]) : 0
+		font.pad = a[1] ? +a[1] : 0
 		p = p.replace(a[0], a[2])
 	}
 
@@ -268,7 +268,7 @@ function param_set_font(xxxfont, p) {
 	a = p.match(/\s+([0-9.]+|\*)$/)
 	if (a) {
 		if (a[1] != "*")
-			font.size = Number(a[1])
+			font.size = +a[1]
 		p = p.replace(a[0], "")
 	}
 
@@ -350,7 +350,7 @@ function get_unit(param) {
 	if (!v)
 		return NaN
 
-	v[1] = Number(v[1])
+	v[1] = +v[1]
 	switch (v[2]) {
 	case "cm":
 		return v[1] * CM
@@ -521,9 +521,8 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "scale":
 	case "slurheight":
 	case "stemheight":
-	case "stretchlast":
 	case "tieheight":
-		f = parseFloat(param)
+		f = +param
 		if (isNaN(f)) {
 			syntax(1, errs.bad_val, '%%' + cmd)
 			break
@@ -662,14 +661,14 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "gracespace":
 		v = param.split(/\s+/)
 		for (i = 0; i < 3; i++)
-			if (isNaN(Number(v[i]))) {
+			if (isNaN(+v[i])) {
 				syntax(1, errs.bad_val, "%%gracespace")
 				break
 			}
 		if (parse.ufmt)
 			cfmt[cmd] = new Float32Array(3)
 		for (i = 0; i < 3; i++)
-			cfmt[cmd][i] = Number(v[i])
+			cfmt[cmd][i] = +v[i]
 		break
 	case "tuplets":
 		cfmt[cmd] = param.split(/\s+/);
@@ -684,11 +683,11 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "notespacingfactor":
 		v = param.match(/([.\d]+)[,\s]*(\d+)?/)
 		if (v) {
-			f = parseFloat(v[1])
+			f = +v[1]
 			if (isNaN(f) || f < 1 || f > 2) {
 				f = 0
 			} else if (v[2]) {
-				f2 = Number(v[2])
+				f2 = +v[2]
 				if (isNaN(f))
 					f = 0
 			} else {
@@ -753,12 +752,18 @@ Abc.prototype.set_format = function(cmd, param) {
 		cfmt[cmd] = get_textopt(param)
 		break
 	case "dynalign":
+	case "stretchlast":
 	case "titletrim":
-		v = Number(param)
+		v = +param
 		if (isNaN(v))
-			cfmt[cmd] = get_bool(param)
-		else
-			cfmt[cmd] = v
+			v = get_bool(param) ? 0 : 1
+		if (cmd[0] == 's') {		// stretchlast
+			if (v < 0 || v > 1) {
+				syntax(1, errs.bad_val, '%%' + cmd)
+				break
+			}
+		}
+		cfmt[cmd] = v
 		break
 	case "combinevoices":
 		syntax(1, "%%combinevoices is deprecated - use %%voicecombine instead")

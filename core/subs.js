@@ -348,7 +348,7 @@ function trim_title(title, is_subtitle) {
 		i = title.lastIndexOf(", ")
 		if (i < 0 || title[i + 2] < 'A' || title[i + 2] > 'Z') {
 			i = 0
-		} else if (cfmt.titletrim == true) {	// compatibility
+		} else if (cfmt.titletrim == 1) {	// (true) compatibility
 			if (i < title.length - 7
 			 || title.indexOf(' ', i + 3) >= 0)
 				i = 0
