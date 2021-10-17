@@ -62,6 +62,7 @@ function Audio5(i_conf) {
 	errmsg,
 	ac,			// audio context
 	gain,			// global gain
+	model,			// device model (for iPad|iPhone|iPod)
 
 	// instruments/notes
 	parser,			// SF2 parser
@@ -451,6 +452,15 @@ function Audio5(i_conf) {
 	if (!conf.sfu)
 		conf.sfu = "Scc1t2"	// set the default soundfont location
 
+	// get the device model
+	if (navigator.userAgentData)
+		navigator.userAgentData.getHighEntropyValues(['model'])
+			.then(ua => {
+				model = ua.model
+			})
+	else
+		model = navigator.userAgent
+
     // public methods
     return {
 
@@ -483,7 +493,7 @@ function Audio5(i_conf) {
 			if (!ac) {
 				conf.ac = ac = new (window.AudioContext ||
 							window.webkitAudioContext)
-				if (/iPad|iPhone|iPod/.test(navigator.userAgent))
+				if (/iPad|iPhone|iPod/.test(model))
 					play_unlock()
 			}
 			gain = ac.createGain()
