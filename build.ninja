@@ -168,7 +168,7 @@ rule version
 	tag=`ag -Q '"version"' package.json|cut -d'"' -f4`;$
 	fossil commit -m "New release v$$tag" -tag v$$tag;$
 	$tool -v;$
-	npm publish
+	echo 'do "npm publish --otp <authy_code>"'
 build minor: version
 build patch: version
 
