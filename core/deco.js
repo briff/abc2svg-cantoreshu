@@ -2074,6 +2074,8 @@ function draw_partempo(st, top) {
 				continue
 			if (user.anno_start || user.anno_stop) {
 				s2.type = C.PART
+				s2.p_v = s.p_v
+				s2.v = s.v
 				s2.st = s2.wl = 0
 				s2.wr = strwh(s2.text)[0]
 				s2.ymn = -ht
