@@ -1096,6 +1096,8 @@ function set_space(s, ptime) {
 		switch (s.type) {
 		case C.BAR:
 			// (hack to have quite the same note widths between measures)
+			if (!s.next)
+				space *= .75
 			return space * .9 - 7
 		case C.CLEF:
 			return space - s.wl - s.wr
@@ -1216,7 +1218,7 @@ function add_end_bar(s) {
 
 	b.seqst = true
 	b.invis = true
-	b.time = s.time + s.dur / 2
+	b.time = s.time + s.dur
 	b.wl = 0
 	b.wr = 0
 	b.ts_prev = s
@@ -1229,7 +1231,7 @@ function add_end_bar(s) {
 //	if (s.ts_next)
 		s.ts_next.ts_prev = b
 	s.next = s.ts_next = b
-	b.space = set_space(b, s.time)
+	b.space = set_space(b, s.time + s.dur * .3)
 	return b
 }
 
