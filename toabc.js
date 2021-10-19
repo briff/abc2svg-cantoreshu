@@ -913,6 +913,11 @@ break
 
 	// loop by time
 	for (s = tsfirst; s; s = s.ts_next) {
+		v = s.v
+		if (s.soln && s.seqst) {
+			vo[v] += '$'
+			voice_out()
+		}
 		if (s.part) {			// new part
 			voice_out()
 			q = s.part
@@ -926,12 +931,6 @@ break
 			}
 			font_def("parts", q.text)
 			abc2svg.print('P:' + q.text)
-			continue
-		}
-		v = s.v
-		if (s.soln && s.seqst) {
-			vo[v] += '$'
-			voice_out();
 		}
 		line = "";
 
