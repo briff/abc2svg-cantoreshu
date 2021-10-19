@@ -316,7 +316,8 @@ function build_grid(s, font) {
 		wm = voice_tb[0].meter.wmeasure,
 		cur_beat = 0,
 		beat_i = 0,
-		wmx = 0
+		wmx = 0,
+		some_chord = 0
 
 		// scan the music symbols
 		bars.push('|')
@@ -363,6 +364,8 @@ function build_grid(s, font) {
 					chords.push(chord)
 					bars.push(bt)
 				}
+				if (chord.length)
+					some_chord++
 				chord = []
 				cur_beat = s.time	// synchronize in case of error
 				beat_i = 0
@@ -382,7 +385,7 @@ function build_grid(s, font) {
 			bars.push('')
 			chords.push(chord)
 		}
-		if (!chords.length)
+		if (!some_chord)
 			return			// no chord in this tune
 
 		wmx += abc.strwh(rep ? '    ' : '  ')[0]
