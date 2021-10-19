@@ -350,6 +350,7 @@ function build_grid(s, font) {
 				}
 				break
 			case C.BAR:
+				i = s.bar_num		// check if normal measure bar
 				bt = s.bar_type
 				while (s.ts_next && s.ts_next.time == s.time
 				    && s.ts_next.type == C.BAR) {
@@ -360,6 +361,8 @@ function build_grid(s, font) {
 					if (s.bar_type.slice(-1) == ':'
 					 && bt.slice(-1) != ':')
 						bt += ':'
+					if (s.bar_num)
+						i = s.bar_num
 				}
 				if (grid.norep)
 					bt = '|'
@@ -371,7 +374,7 @@ function build_grid(s, font) {
 						bars[0] = bt
 					}
 				} else {
-					if (!s.bar_num)		// if not normal measure bar
+					if (!i)		// if not normal measure bar
 						break
 					chords.push(chord)
 					bars.push(bt)
