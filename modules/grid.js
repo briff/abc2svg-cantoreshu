@@ -350,7 +350,19 @@ function build_grid(s, font) {
 				}
 				break
 			case C.BAR:
-				bt = grid.norep ? '|' : s.bar_type
+				bt = s.bar_type
+				while (s.ts_next && s.ts_next.time == s.time
+				    && s.ts_next.type == C.BAR) {
+					s = s.ts_next
+					if (s.bar_type[0] == ':'
+					 && bt[0] != ':')
+						bt = ':' + bt
+					if (s.bar_type.slice(-1) == ':'
+					 && bt.slice(-1) != ':')
+						bt += ':'
+				}
+				if (grid.norep)
+					bt = '|'
 				if (s.time < wm) {		// if anacrusis
 					if (chord.length) {
 						chords.push(chord)
@@ -371,8 +383,6 @@ function build_grid(s, font) {
 				beat_i = 0
 				if (bt.indexOf(':') >= 0)
 					rep = true	// some repeat
-				while (s.ts_next && s.ts_next.type == C.BAR)
-					s = s.ts_next
 				break
 			case C.METER:
 				beat = get_beat(s)
