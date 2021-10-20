@@ -102,9 +102,15 @@ abc2svg.combine = {
 function do_combine(s) {
 	var s2, nhd, nhd2, type
 
-	while (1) {
+		s2 = s.ts_next
+
+		// there may be more voices
+		if (!s.in_tuplet
+		 && s2.combine != undefined && s2.combine >= 0
+		 && may_combine.call(this, s2))
+			do_combine.call(this, s2)
+
 		nhd = s.nhd;
-		s2 = s.ts_next;
 		nhd2 = s2.nhd
 		if (s.type != s2.type) {	// if note and rest
 			if (s2.type != C.REST) {
@@ -142,11 +148,6 @@ function do_combine(s) {
 		delsym.push({s: s2, r: s});
 
 		this.unlksym(s2)			// remove the next symbol
-
-		// there may be more voices
-		if (s.in_tuplet || !may_combine.call(this, s))
-			break
-	}
 } // do_combine()
 
     // replace tie endings
@@ -186,11 +187,6 @@ function do_combine(s) {
 
 		if (!s.beam_st)
 			continue
-		if (s.beam_end) {
-			if (may_combine.call(this, s))
-				do_combine.call(this, s)
-			continue
-		}
 
 		s2 = s
 		while (1) {
