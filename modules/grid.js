@@ -47,7 +47,7 @@ abc2svg.grid = {
 
 // generate the grid
 function build_grid(s, font) {
-    var	i, k, l, nr, bar, w, hr, x0, x, y, yl,
+    var	i, k, l, nr, bar, w, hr, x0, x, y, yl, ps,
 	lc = '',
 	chords = s.chords,
 	bars = s.bars,
@@ -139,6 +139,8 @@ function build_grid(s, font) {
 	} else {				// with list of mesure numbers
 		bar = bars;
 		bars = [ ]
+		ps = parts
+		parts = []
 		for (i = 0; i < grid.ls.length; i++) {
 			l = grid.ls[i]
 			if (l.indexOf('-') < 0)
@@ -150,6 +152,7 @@ function build_grid(s, font) {
 					break
 				cells.push(chords[k]);
 				bars.push(bar[k])
+				parts.push(ps[k])
 			}
 		}
 		bars.push(bar[k])		// ending bar
@@ -363,6 +366,8 @@ function build_grid(s, font) {
 						bt += ':'
 					if (s.bar_num)
 						i = s.bar_num
+					if (s.part)
+						parts[chords.length + 1] = s.part.text
 				}
 				if (grid.norep)
 					bt = '|'
