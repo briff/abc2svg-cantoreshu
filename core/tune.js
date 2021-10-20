@@ -140,7 +140,7 @@ var w_tb = new Uint8Array([
 ])
 
 function sort_all() {
-    var	s, s2, time, w, wmin, ir,
+    var	s, s2, time, w, wmin, ir, fmt,
 	fl, new_sy,
 	nv = voice_tb.length,
 	vtb = [],
@@ -148,7 +148,6 @@ function sort_all() {
 	sy = cur_sy,			// first staff system
 	v = sy.top_voice,
 	p_voice = voice_tb[v],		// top voice
-	fmt = p_voice.sym.fmt,		// starting format
 	prev = {			// symbol defining the first staff system
 		type: C.STAVES,
 		dur: 0,
@@ -158,9 +157,13 @@ function sort_all() {
 		st: 0,
 		sy: sy,
 		next: p_voice.sym,
-		seqst: true,
-		fmt: fmt
+		seqst: true
 	}
+
+	if (!p_voice.sym)
+		return
+
+	prev.fmt = fmt = p_voice.sym.fmt	// starting format
 
 	// set the first symbol of each voice
 	for (v = 0; v < nv; v++) {
