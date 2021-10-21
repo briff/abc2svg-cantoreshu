@@ -278,7 +278,7 @@ function new_block(subtype) {
 // set the voice parameters
 // (possible hook)
 Abc.prototype.set_vp = function(a) {
-    var	s, item, pos, val, clefpit
+    var	s, item, pos, val, clefpit, tr_p
 
 	while (1) {
 		item = a.shift()
@@ -346,6 +346,7 @@ Abc.prototype.set_vp = function(a) {
 					break
 			}
 			curvoice.transp = cfmt.sound ? curvoice.sndtran : val
+			tr_p = 1
 			break
 		case "map=":			// %%voicemap
 			curvoice.map = a.shift()
@@ -397,8 +398,10 @@ Abc.prototype.set_vp = function(a) {
 			if (cfmt.sound)
 				break
 			val = get_interval(item, true)
-			if (val != undefined)
+			if (val != undefined) {
 				curvoice.transp = val
+				tr_p = 1
+			}
 			break
 		case "shift=":
 			if (cfmt.nedo) {
@@ -406,8 +409,10 @@ Abc.prototype.set_vp = function(a) {
 				break
 			}
 			val = get_interval(a.shift())
-			if (val != undefined)
+			if (val != undefined) {
 				curvoice.shift = curvoice.sndsh = val
+				tr_p = 1
+			}
 			break
 		case "sound=":
 			if (cfmt.nedo) {
@@ -423,6 +428,7 @@ Abc.prototype.set_vp = function(a) {
 			curvoice.sndtran = val
 			if (cfmt.sound)
 				curvoice.transp = val
+			tr_p = 1
 			break
 		case "subname=":
 		case "sname=":
@@ -466,6 +472,7 @@ Abc.prototype.set_vp = function(a) {
 				curvoice.sndtran = val
 				if (cfmt.sound)
 					curvoice.transp = val
+				tr_p = 1
 			}
 			break
 		default:
@@ -502,6 +509,8 @@ Abc.prototype.set_vp = function(a) {
 			get_clef(s)
 		}
 	}
+	if (tr_p)
+		set_transp()
 } // set_vp()
 
 // set the K: / V: parameters

@@ -2135,7 +2135,6 @@ function get_voice(parm) {
 	}
 
 	set_kv_parm(a)
-	set_transp();
 
 	v = curvoice.v
 	if (curvoice.new) {			// if new voice
