@@ -1844,8 +1844,6 @@ function get_vover(type) {
 function is_voice_sig() {
 	var s
 
-	if (!curvoice.sym)
-		return true	// new voice (may appear in the middle of a tune)
 	if (curvoice.time)
 		return false
 	for (s = curvoice.last_sym; s; s = s.prev)
