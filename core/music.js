@@ -1203,10 +1203,13 @@ function _bar(s) {
 		p_v: s.p_v,
 		st: s.st,
 		dur: 0,
+		time: s.time + (s.dur || 0),
 		nhd: 0,
 		notes: [{
 			pit: s.notes ? s.notes[0].pit : 22
 		}],
+		seqst: true,
+		invis: true,
 		prev: s,
 		fmt: s.fmt
 	}
@@ -1216,9 +1219,6 @@ function _bar(s) {
 function add_end_bar(s) {
     var b = _bar(s)
 
-	b.seqst = true
-	b.invis = true
-	b.time = s.time + s.dur
 	b.wl = 0
 	b.wr = 0
 	b.ts_prev = s
@@ -3459,6 +3459,8 @@ function init_music_line() {
 
 	// update the spacing before the first old time sequence
 	shr = 0
+	if (last_s.type == C.BAR && s2.type == C.CLEF)
+		shl += 4		// (see set_width)
 	do {
 		self.set_width(s)
 		if (s.a_ly)
@@ -3479,9 +3481,6 @@ function check_end_bar() {
 		s = s.ts_next
 	if (s.type != C.BAR) {
 		s2 = _bar(s)
-		s2.seqst = true
-		s2.invis = true
-		s2.time = s.time + (s.dur || 0)
 		s2.ts_prev = s
 
 		s.next = s.ts_next = s2
