@@ -292,8 +292,8 @@ function selsvg(evt) {
 
 	play.loop = false;
 
-	evt.stopImmediatePropagation();
-	evt.preventDefault()
+//	evt.stopImmediatePropagation();
+//	evt.preventDefault()
 
 	// remove the context menu if active
 	if (ctxMenu && ctxMenu.style.display == "block") {
@@ -685,6 +685,7 @@ function play_tune(what) {
 
 // set the version and initialize the playing engine
 function edit_init() {
+    var	a, i, e
 
 	// loop until abc2svg is fully loaded
 	if (typeof abc2svg != "object"
@@ -745,9 +746,9 @@ function edit_init() {
 		'abc2svg-' + abc2svg.version + ' (' + abc2svg.vdate + ')'
 
 	// keep references on the page elements
-	var a = ["diverr", "source", "src1", "s0", "s1", "target"]
-	for (var i = 0; i < a.length; i++) {
-		var e = a[i];
+	a = ["diverr", "source", "src1", "s0", "s1", "target"]
+	for (i = 0; i < a.length; i++) {
+		e = a[i]
 		elt_ref[e] = document.getElementById(e)
 	}
 
@@ -792,13 +793,14 @@ function edit_init() {
 				(play.abcplay.set_vol() * 10).toFixed(2))
 		});
 
-		var e = elt_ref.target;
-		e.oncontextmenu = function(evt) {
+		// display the play menu
+		// This function is called on non left click
+		function show_menu(evt) {
 		    var	x, y,
 			elt = evt.target,
-			cl = elt.getAttribute('class');
+			cl = elt.getAttribute('class')
 
-			evt.stopImmediatePropagation();
+//			evt.stopImmediatePropagation();
 			evt.preventDefault()
 
 			// if right click on an element, select it
@@ -820,8 +822,13 @@ function edit_init() {
 			y = evt.pageY + elt_ref.target.parentNode.scrollTop;
 			ctxMenu.style.left = (x - 30) + "px";
 			ctxMenu.style.top = (y - 10) + "px"
-			return false
-		} // oncontextmenu
+		} // showmenu
+
+		e = elt_ref.target
+		e.onauxclick = show_menu	// right or middle buttons
+		e.oncontextmenu = function(ev) {
+			ev.preventDefault()
+		}
 	}
 	set_pref()	// set the preferences from local storage
 }
