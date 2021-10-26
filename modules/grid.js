@@ -335,22 +335,21 @@ function build_grid(s, font) {
 			switch (s.type) {
 			case C.NOTE:
 			case C.REST:
-				if (!s.a_gch)
+				if (!s.a_gch || chord[beat_i])
 					break
-
-				// search a chord symbol
+				bt = abc2svg.cs_filter(s.a_gch,
+							abc.cfmt().altchord)
+				if (!bt)
+					break
+				chord[beat_i] = bt
 				for (i = 0; i < s.a_gch.length; i++) {
-					if (s.a_gch[i].type == 'g') {
-						if (!chord[beat_i]) {
-							chord[beat_i] = s.a_gch[i].text
-							abc.set_font(s.a_gch[i].font)
-							w = abc.strwh(chord[beat_i])[0]
-							if (w > wmx)
-								wmx = w
-						}
+					if (s.a_gch[i].type == 'g')
 						break
-					}
 				}
+				abc.set_font(s.a_gch[i].font)
+				w = abc.strwh(bt)[0]
+				if (w > wmx)
+					wmx = w
 				break
 			case C.BAR:
 				i = s.bar_num		// check if normal measure bar

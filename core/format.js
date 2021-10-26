@@ -544,6 +544,7 @@ Abc.prototype.set_format = function(cmd, param) {
 		param_set_font(cmd.replace("box", "font"),	// font
 			"* * " + (get_bool(param) ? "box" : "nobox"))
 		break
+	case "altchord":
 	case "bstemdown":
 	case "breakoneoln":
 	case "cancelkey":
@@ -783,7 +784,7 @@ Abc.prototype.set_format = function(cmd, param) {
 			cfmt["abc-version"] = "2.2"
 		break
 	default:		// memorize all global commands
-		if (parse.state == 0)		// (needed for modules)
+		if (!parse.state)		// (needed for modules)
 			cfmt[cmd] = param
 		break
 	}

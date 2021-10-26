@@ -178,6 +178,23 @@ abc2svg.ch_alias = {
 	"7sus": "7sus4"
 } // ch_alias
 
+// extract one of the chord symbols
+// With chords as "xxx(yyy)" or "[yyy];xxx"
+// (!sel - default) returns "xxx" and (sel) returns "yyy"
+abc2svg.cs_sel0 = /[\[(].*[\])]/g
+abc2svg.cs_sel1 = /.*[\[(]|[\])].*/g
+abc2svg.cs_filter = function(a_cs, sel) {
+    var	i, cs,
+	tcs = ""
+
+	for (i = 0; i < a_cs.length; i++) {
+		cs = a_cs[i]
+		if (cs.type == 'g')
+			tcs += cs.text
+	}
+	return tcs.replace(sel ? abc2svg.cs_sel1 : abc2svg.cs_sel0, '')
+} // cs_filter()
+
 // simplify a rational number n/d
 abc2svg.rat = function(n, d) {
     var	a, t,
