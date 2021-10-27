@@ -66,7 +66,7 @@ abc2svg.letmid = {			// letter -> MIDI pitch
 	A: 9,
 	b: 10,
 	B: 11
-} // midsca
+} // letmid
 
 abc2svg.chord = function(first,		// first symbol in time
 			 voice_tb,	// table of the voices
@@ -98,11 +98,23 @@ abc2svg.chord = function(first,		// first symbol in time
 		return r
 	} // chcr()
 
+	// (quite the same as abc2svg.cs_filter() but with otext)
+	function filter(a_cs, sel) {
+	    var	i, cs,
+		tcs = ""
+
+		for (i = 0; i < a_cs.length; i++) {
+			cs = a_cs[i]
+			if (cs.type == 'g')
+				tcs += cs.otext
+		}
+		return tcs.replace(sel ? abc2svg.cs_sel1 : abc2svg.cs_sel0, '')
+	} // filter()
+
 	// generate a chord
-	function gench(sb, gch) {
+	function gench(sb) {
 	    var	r, ch, b, m, n, not,
-		a = gch.otext.
-//			replace(/\$./,'').
+		a = filter(sb.a_gch, cfmt.altchord).
 			match(/([A-G])([#♯b♭]?)([^/]*)\/?(.*)/),
 			// a[1] = note, a[2] = acc, a[3] = type, a[4] = bass
 		s = {
@@ -248,7 +260,7 @@ abc2svg.chord = function(first,		// first symbol in time
 			if (gch.type != 'g')
 				continue
 			vch.last_sym.dur = s.time - vch.last_sym.time
-			gench(s, gch)
+			gench(s)
 			break
 		}
 	}
