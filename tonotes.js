@@ -107,8 +107,8 @@ abc2svg.abc_end = function() {
 		if (!e)
 			break
 
-		dvn(e[1])
 		audio.add(e[0], e[1], e[3])	// generate the music
+		dvn(e[1])
 
 		t = (e[2].T || '(no title)').replace('\n', ' / ')
 		abc2svg.print('# ------- tune ' +
