@@ -102,7 +102,7 @@ function new_clef(clef_def) {
 		return //undefined
 	}
 	if (clef_def[i] >= '1' && clef_def[i] <= '9') {
-		s.clef_line = Number(clef_def[i]);
+		s.clef_line = +clef_def[i]
 		i++
 	}
 
@@ -249,7 +249,7 @@ function get_st_lines(param) {
 	if (/^[\]\[|.-]+$/.test(param))
 		return param.replace(/\]/g, '[')
 
-    var	n = parseInt(param)
+    var	n = +param
 	switch (n) {
 	case 0: return "..."
 	case 1: return "..|"
@@ -315,7 +315,7 @@ Abc.prototype.set_vp = function(a) {
 			syntax(1, errs.bad_val, item)
 			break
 		case "octave=":
-			val = parseInt(a.shift())
+			val = +a.shift()
 			if (isNaN(val))
 				syntax(1, errs.bad_val, item)
 			else
@@ -381,7 +381,7 @@ Abc.prototype.set_vp = function(a) {
 			pos[item[0]] = val
 			break
 		case "scale=":			// %%voicescale
-			val = parseFloat(a.shift())
+			val = +a.shift()
 			if (isNaN(val) || val < .5 || val > 2)
 				syntax(1, errs.bad_val, "%%voicescale")
 			else
@@ -447,14 +447,14 @@ Abc.prototype.set_vp = function(a) {
 				curvoice.stafflines = val
 			break
 		case "staffnonote=":
-			val = parseInt(a.shift())
+			val = +a.shift()
 			if (isNaN(val))
 				syntax(1, "Bad %%staffnonote value")
 			else
 				curvoice.staffnonote = val
 			break
 		case "staffscale=":
-			val = parseFloat(a.shift())
+			val = +a.shift()
 			if (isNaN(val) || val < .3 || val > 2)
 				syntax(1, "Bad %%staffscale value")
 			else
@@ -863,12 +863,12 @@ function new_meter(p) {
 						break
 					meter.top += p[i++]
 				}
-				m1 = parseInt(meter.top)
+				m1 = +meter.top
 				break
 			}
 			if (!in_parenth) {
 				if (meter.bot)
-					m2 = parseInt(meter.bot);
+					m2 = +meter.bot
 				wmeasure += m1 * C.BLEN / m2
 			}
 			s.a_meter.push(meter);
@@ -937,9 +937,9 @@ function new_tempo(text) {
 		nd = p.match(/(\d+)\/(\d+)/)
 
 		if (nd) {
-			d = Number(nd[2])
+			d = +nd[2]
 			if (d && !isNaN(d) && !(d & (d - 1))) {
-				n = Number(nd[1])
+				n = +nd[1]
 				if (!isNaN(n))
 					return C.BLEN * n / d
 			}
@@ -999,7 +999,7 @@ function new_tempo(text) {
 				return
 			s.new_beat = nd
 		} else {
-			s.tempo = Number(text)
+			s.tempo = +text
 			if (!s.tempo || isNaN(s.tempo)) {
 				syntax(1, "Bad tempo value")
 				return
@@ -1036,13 +1036,13 @@ function do_info(info_type, text) {
 	case 'L':
 		a = text.match(/^1\/(\d+)(=(\d+)\/(\d+))?$/)
 		if (a) {
-			d1 = Number(a[1])
+			d1 = +a[1]
 			if (!d1 || (d1 & (d1 - 1)) != 0)
 				break
 			d1 = C.BLEN / d1
 			if (a[2]) {		// if '='
-				d2 = Number(a[4])
-				d2 = d2 ? Number(a[3]) / d2 * C.BLEN : 0
+				d2 = +a[4]
+				d2 = d2 ? +a[3] / d2 * C.BLEN : 0
 			} else {
 				d2 = d1
 			}
@@ -1330,6 +1330,7 @@ function new_bar() {
 						clone(curvoice.tie_s.notes[m])
 					curvoice.tie_s.notes[m].s =
 						curvoice.tie_s
+					curvoice.tie_s.notes[m].tie_n = null
 				}
 			}
 			if (curvoice.acc_tie_rep)
@@ -1916,12 +1917,10 @@ function do_ties(s, tie_s) {
 			for (i = 0; i <= tie_s.nhd; i++) {
 				if (!tie_s.notes[i].tie_ty)
 					continue
-				// (tie_s.notes[i].tie_n may exist
-				//  on repeat restart)
-				if (tie_s.notes[i].midi == mid) {
+				if (tie_s.notes[i].midi == mid
+				 && !tie_s.notes[i].tie_n) {	// (if unison)
 					tie_s.notes[i].tie_n = note
-					note.s = s
-					tie_s.tie_s = s
+					note.s = tie_s.tie_s = s
 					break
 				}
 			}
