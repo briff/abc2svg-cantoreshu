@@ -1308,6 +1308,7 @@ function new_bar() {
 			syntax(1, "Variant ending on a left repeat bar")
 			delete s.text
 		}
+		curvoice.tie_s_rep = null	// no tie anymore on new variant
 	}
 
 	// handle the accidentals (ties and repeat)
@@ -1322,17 +1323,12 @@ function new_bar() {
 			else if (curvoice.acc_tie_rep)
 				curvoice.acc_tie_rep = null
 		} else {
-			if (curvoice.tie_s_rep) {
-				curvoice.tie_s = clone(curvoice.tie_s_rep)
-				curvoice.tie_s.notes = clone(curvoice.tie_s.notes)
-				for (var m = 0; m <= curvoice.tie_s.nhd; m++) {
-					curvoice.tie_s.notes[m] =
-						clone(curvoice.tie_s.notes[m])
-					curvoice.tie_s.notes[m].s =
-						curvoice.tie_s
-					curvoice.tie_s.notes[m].tie_n = null
-				}
-			}
+			if (curvoice.tie_s) {
+				curvoice.tie_s.tie_s = s	// no tie end
+				curvoice.tie_s = null
+ 			}
+			if (curvoice.tie_s_rep)
+				curvoice.tie_s = curvoice.tie_s_rep
 			if (curvoice.acc_tie_rep)
 				curvoice.acc_tie = curvoice.acc_tie_rep.slice()
 		}
@@ -1907,6 +1903,8 @@ function pit2mid(pit, acc) {
 } // pit2mid()
 
 // handle the ties
+// @s = tie ending smbol
+// @tei_s = tie starting symbol
 function do_ties(s, tie_s) {
     var	i, m, note, mid, s2
 
@@ -1970,13 +1968,13 @@ Abc.prototype.new_note = function(grace, sls) {
 	if (curvoice.color)
 		s.color = curvoice.color
 
-	if (curvoice.tie_s) {		// if tie from previous note / grace note
-		tie_s = curvoice.tie_s
-		curvoice.tie_s = null
-	}
 	if (grace) {
 		s.grace = true
 	} else {
+		if (curvoice.tie_s) {	// if tie from previous note / grace note
+			tie_s = curvoice.tie_s
+			curvoice.tie_s = null
+		}
 		if (a_gch)
 			csan_add(s)
 		if (parse.repeat_n) {

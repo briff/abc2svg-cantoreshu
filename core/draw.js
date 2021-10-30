@@ -626,8 +626,6 @@ function draw_beams(bm) {
 
 /* -- draw the left side of the staves -- */
 function draw_lstaff(x) {
-//	if (cfmt.alignbars)
-//		return
     var	i, j, yb, h, fl,
 		nst = cur_sy.nstaff,
 		l = 0
@@ -2584,7 +2582,8 @@ function draw_note_ties(not1, job) {
 
 	switch (job) {
 	case 0:
-		p = (not1.pit & 1) ? not1.pit : not2.pit
+		if (p < not2.pit || dir < 0)
+			p = not1.pit
 		break
 	case 3:				/* clef or staff change */
 		dir = -dir
@@ -2593,7 +2592,6 @@ function draw_note_ties(not1, job) {
 		x1 = s1.x
 		if (x1 > x2 - 20)
 			x1 = x2 - 20
-		p = not2.pit
 		st = s2.st
 		break
 /*	case 2:				 * no ending note */
@@ -2641,8 +2639,7 @@ function draw_ties(k1, k2,
 				// 1: no starting note
 				// 2: no ending note
 				// 3: no start for clef or staff change
-    var	k3, i, j, not1, not3, time, pit, pit2,
-	mhead3 = [],
+    var	k3, i, j, not1, time, pit, pit2,
 	nh1 = k1.nhd
 
 	/* half ties from last note in line or before new repeat */
@@ -2659,26 +2656,20 @@ function draw_ties(k1, k2,
 		return
 	}
 
-	// draw the ties or memorize the ones without ending
+	// draw the other ties
 	for (i = 0; i <= nh1; i++) {
 		not1 = k1.notes[i]
 		if (!not1.tie_ty)
 			continue
-		if (!not1.s)
-			not1.s = k1
-		if (not1.tie_n)
-			draw_note_ties(not1, job)
-		else
-			mhead3.push(not1)	/* no match */
+		if (job == 1)		// if no start
+			not1.tie_n.s.x = k2.x
+		draw_note_ties(not1, job)
 	}
-
-	if (mhead3.length)
-		error(1, k1, "Bad tie")
 }
 
 /* -- draw all ties between neighboring notes -- */
 function draw_all_ties(p_voice) {
-    var s, s1, s2, clef_chg, time, x, dx, s_next, m
+    var s, s1, s2, clef_chg, time, x, dx, s_next
 
 	function draw_ties_g(s1, s2, job) {
 		if (s1.type == C.GRACE) {
