@@ -1,6 +1,6 @@
 // abc2svg - mei.js - MEI front-end
 //
-// Copyright (C) 2019-2020 Jean-Francois Moine
+// Copyright (C) 2019-2021 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -1195,7 +1195,8 @@ return true
 
 	// tie
 	tie: function(tag) {
-	    var	s1 = get_ref(tag),
+	    var	m1, m2, not1, not2,
+		s1 = get_ref(tag),
 		s2 = get_ref(tag, s1),
 		ty = C.SL_AUTO
 
@@ -1209,29 +1210,27 @@ return true
 		case "dashed":
 		case "dotted": ty |= C.SL_DOTTED; break
 		}
-		if (s1.s) {
-			s1.tie_ty = ty
-			if (s2.s) {			// note - note
-				s1.s.tie_s = s2.s
-				s1.tie_n = s2
-				s2.s.ti2 = s1.s
-			} else {			// note - single note
-				s1.s.tie_s = s2
-				s1.tie_n = s2.notes[0]
-				s2.ti2 = s1.s
-			}
-		} else {
-			s1.notes[0].tie_ty = ty
-			if (s2.s) {			// single note - note
-				s1.tie_s = s2.s
-				s1.notes[0].tie_n = s2
-				s2.s.ti2 = s1
-			} else {			// single note - single note
-				s1.tie_s = s2
-				s1.notes[0].tie_n = s2.notes[0]
-				s2.ti2 = s1
-			}
+		if (s1.s) {			// note - note
+			not1 = s1
+			s1 = s1.s
+			not2 = s2
+			s2 = s2.s
+			not1.tie_ty = ty
+			not1.tie_e = not2
+			not2.tie_s = not1
+		} else {			// chord - chord
+			for (m1 = 0; m1 <= s1.nhd; m1++) {
+				not1 = s1.notes[m1]
+				for (m2 = 0; m2 <= s2.nhd; m2++) {
+					not2 = s2.notes[m2]
+					if (not1.pit == not2.pit) {
+						not1.tie_ty = ty
+						not1.tie_e = not2
+						not2.tie_s = not1
+					}
+				}
 		}
+		s1.ti1 = s2.ti2 = true
 	}, // tie()
 
 	trill: function(tag) {

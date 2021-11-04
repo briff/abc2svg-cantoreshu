@@ -27,8 +27,7 @@ abc2svg.combine = {
     // function called at start of the generation when multi-voices
     comb_v: function() {
     var	C = abc2svg.C,
-	sy,
-	delsym = []		// deleted symbols for slurs and ties
+	sy
 
     // check if voice combine may occur
     function may_combine(s) {
@@ -123,8 +122,10 @@ function do_combine(s) {
 				delete s.invis
 		} else {
 			combine_notes.call(this, s, s2)
-			if (s2.tie_s)
-				s.tie_s = s2.tie_s
+			if (s2.ti1)
+				s.ti1 = true
+			if (s2.ti2)
+				s.ti2 = true
 		}
 
 		if (s2.sls) {
@@ -144,24 +145,8 @@ function do_combine(s) {
 				Array.prototype.push.apply(s.a_dd, s2.a_dd)
 		}
 
-		// memorize the deleted symbol: it may support slur or tie endings
-		delsym.push({s: s2, r: s});
-
 		this.unlksym(s2)			// remove the next symbol
 } // do_combine()
-
-    // replace tie endings
-    function tie_repl(s) {
-    var	s1 = s.tie_s,
-	i = delsym.length
-
-	while (--i >= 0) {
-		if (delsym[i].s == s1) {
-			s.tie_s = delsym[i].r
-			break
-		}
-	}
-    } // tie_repl()
 
 	// code of comb_v()
 	var s, s2, g, i, r
@@ -213,12 +198,6 @@ function do_combine(s) {
 				s2 = s2.next
 			} while (s2.type != C.NOTE && s2.type != C.REST)
 		}
-	}
-
-	// replace the tie endings
-	for (s = this.get_tsfirst(); s; s = s.ts_next) {
-		if (s.tie_s)
-			tie_repl(s)
 	}
     }, // comb_v()
 

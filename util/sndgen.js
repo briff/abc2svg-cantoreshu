@@ -449,8 +449,10 @@ function ToAudio() {
 abc2svg.play_next = function(po) {
 
 	// handle a tie
-	function do_tie(s, midi, d) {
-	    var	i, note,
+	function do_tie(note, d) {
+	    var	i,
+		s = note.s,
+		midi = note.midi,
 		C = abc2svg.C,
 		v = s.v,
 		end_time = s.time + s.dur,
@@ -459,10 +461,9 @@ abc2svg.play_next = function(po) {
 		// search the end of the tie
 		while (1) {
 			s = s.ts_next
-			if (!s)
-				return d
-			switch (s.type) {
-			case C.BAR:
+			if (!s || s.time > end_time)
+				break
+			if (s.type == C.BAR) {
 				if (s.rep_p) {
 					if (!po.repn) {
 						s = s.rep_p
@@ -471,26 +472,24 @@ abc2svg.play_next = function(po) {
 				}
 				if (s.rep_s) {
 					if (!s.rep_s[repv])
-						return d
+						break
 					s = s.rep_s[repv++]
 					end_time = s.time
 				}
 				while (s.ts_next && !s.ts_next.dur)
 					s = s.ts_next
-				break
 			}
-			if (s.time > end_time)
-				return d
-			if (s.type == C.NOTE && s.v == v)
-				break
-		}
-		i = s.notes.length
-		while (--i >= 0) {
-			note = s.notes[i]
-			if (note.midi == midi) {
-				note.ti2 = true		// the sound is generated
-				d += s.pdur / po.conf.speed
-				return note.tie_ty ? do_tie(s, midi, d) : d
+			if (s.type != C.NOTE)
+				continue
+
+			i = s.notes.length
+			while (--i >= 0) {
+				note = s.notes[i]
+				if (note.midi == midi) {
+					note.ti2 = true	// the sound is generated
+					d += s.pdur / po.conf.speed
+					return note.tie_ty ? do_tie(note, d) : d
+				}
 			}
 		}
 
@@ -651,7 +650,7 @@ abc2svg.play_next = function(po) {
 					note.midi,
 					t,
 					note.tie_ty ?
-						do_tie(s, note.midi, d) : d)
+						do_tie(note, d) : d)
 			}
 		    }
 

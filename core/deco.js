@@ -863,9 +863,14 @@ function do_ctie(nm, s, nt1) {
 		nt1 = cross[nm2]
 	}
 	cross[nm2] = null
-	nt1.tie_ty = C.SL_AUTO
-	nt1.tie_n = nt2
-	nt1.s.tie_s = nt2.s
+	if (nt1.midi != nt2.midi) {
+		error(1, s, "Bad tie")
+	} else {
+		nt1.tie_ty = C.SL_AUTO
+		nt1.tie_e = nt2
+		nt2.tie_s = nt1
+		nt1.s.ti1 = nt2.s.ti2 = true
+	}
 } // do_ctie()
 
 // get/create the definition of a decoration
@@ -1769,12 +1774,9 @@ function draw_deco_staff() {
 			if (!s.next		// 2nd ending at end of line
 			 && !s.rbstop
 			 && !p_voice.bar_start) { // continue on next line
-				p_voice.bar_start = clone(s);
-				p_voice.bar_start.type = C.BAR;
+				p_voice.bar_start = _bar(s)
 				p_voice.bar_start.bar_type = ""
-				delete p_voice.bar_start.text;
 				p_voice.bar_start.rbstart = 1
-				delete p_voice.bar_start.a_gch
 			}
 			if (s1.text)
 				xy_str(x + 4, y2 - gene.curfont.size - 3,
