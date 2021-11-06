@@ -523,6 +523,13 @@ function put_words(words) {
 	    var i = 0,
 		k = 0
 
+		if (p[0] == '$'		// if font change
+		 && p[1] >= '0' && p[1] <= '9') {
+			gene.curfont = p[1] == '0' ? gene.deffont
+						: get_font("u" + p[1])
+			p = p.slice(2)
+		}
+
 		if ((p[i] >= '0' && p[i] <= '9') || p[i + 1] == '.') {
 			while (i < p.length) {
 				i++
