@@ -272,33 +272,7 @@ function param_set_font(xxxfont, p) {
 		p = p.replace(a[0], "")
 	}
 
-	a = p.match(/[- ]?[nN]ormal/)
-	if (a) {
-		font.normal = true
-		p = p.replace(a[0], '')
-	}
-
-	a = p.match(/[- ]?[bB]old/)
-	if (a) {
-		font.weight = "bold"
-		p = p.replace(a[0], '')
-	}
-	a = p.match(/[- ]?[iI]talic/)
-	if (a) {
-		font.style = "italic"
-		p = p.replace(a[0], '')
-	}
-	a = p.match(/[- ]?[oO]blique/)
-	if (a) {
-		font.style = "oblique"
-		p = p.replace(a[0], '')
-	}
-	if (font.size)
-		set_font_fac(font)
-	else
-		font.swfac = 0
-
-	// get the font family
+	// accept url(...) as the font name
 	if (p[0] == 'u' && p.slice(0, 4) == "url(") {
 		n = p.indexOf(')', 1)
 		if (n < 0) {
@@ -306,41 +280,71 @@ function param_set_font(xxxfont, p) {
 			return
 		}
 		p = p.slice(0, n + 1)
-	} else if (p[0] == '"') {
-		n = p.indexOf('"', 1)
-		if (n < 0) {
-			syntax(1, "No end of string in font family")
-			return
-		}
-		p = p.slice(1, n)
-	} else {
-		n = p.indexOf(' ', 1)
-		if (n >= 0)
-			p = p.slice(0, n)
-	}
 
-	switch (p) {
-	case "":
-	case "*": return
-	case "Times-Roman":
-	case "Times":	p = "serif"; break
-	case "Helvetica": p = "sans-serif"; break
-	case "Courier": p = "monospace"; break
-	case "music": p = cfmt.musicfont.name; break
-	default:
-//hack: the font "Figurato" is used for figured bass
-		if (p.indexOf("Fig") > 0)
-			font.figb = true
-		break
-	}
-
-	// accept url(...) as the font name
-	if (p[3] == '(') {
 		font.src = p
 		font.fid = font_tb.length
 		font_tb.push(font)
+		font.normal = true
 		p = 'ft' + font.fid
+	} else {
+
+		// extract the font attributes
+		a = p.match(/[- ]?[nN]ormal/)
+		if (a) {
+			font.normal = true
+			p = p.replace(a[0], '')
+		}
+
+		a = p.match(/[- ]?[bB]old/)
+		if (a) {
+			font.weight = "bold"
+			p = p.replace(a[0], '')
+		}
+		a = p.match(/[- ]?[iI]talic/)
+		if (a) {
+			font.style = "italic"
+			p = p.replace(a[0], '')
+		}
+		a = p.match(/[- ]?[oO]blique/)
+		if (a) {
+			font.style = "oblique"
+			p = p.replace(a[0], '')
+		}
+
+		// get the font family
+		if (p[0] == '"') {
+			n = p.indexOf('"', 1)
+			if (n < 0) {
+				syntax(1, "No end of string in font family")
+				return
+			}
+			p = p.slice(1, n)
+		} else {
+			n = p.indexOf(' ', 1)
+			if (n >= 0)
+				p = p.slice(0, n)
+		}
+
+		switch (p) {
+		case "":
+		case "*": return
+		case "Times-Roman":
+		case "Times":	p = "serif"; break
+		case "Helvetica": p = "sans-serif"; break
+		case "Courier": p = "monospace"; break
+		case "music": p = cfmt.musicfont.name; break
+		default:
+//hack: the font "Figurato" is used for figured bass
+			if (p.indexOf("Fig") > 0)
+				font.figb = true
+			break
+		}
 	}
+	if (font.size)
+		set_font_fac(font)
+	else
+		font.swfac = 0
+
 	font.name = p
 }
 
@@ -878,8 +882,8 @@ function get_font(fn) {
 			if (font.style)
 				font2.style = font.style
 		}
-//		if (font.class)
-//			font2.class = font.class
+		if (font.src)
+			font2.src = font.src
 		if (font.size)
 			font2.size = font.size
 		st = st_font(font2)
