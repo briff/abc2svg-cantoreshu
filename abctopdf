@@ -12,7 +12,7 @@
 # Copyright (C) 2019-2021 Jean-François Moine - License GPL3+
 
 # set a browser
-if [ x$BROWSER = x ]; then
+if [ "x$BROWSER" = "x" ]; then
 	BROWSER=chromium
 fi
 
@@ -86,11 +86,11 @@ for a do
 done
 
 # check if some chromium-based browser is available
-for c in $BROWSER chromium-browser vivaldi opera brave-browser epic google-chrome; do
-	if command -v $c >/dev/null 2>&1; then
+for c in "$BROWSER" chromium-browser vivaldi opera brave-browser epic google-chrome; do
+	if command -v "$c" >/dev/null 2>&1; then
 		echo "and $c"
 		command $abcscr "$@" > /tmp/o.html
-		$c --headless --disable-gpu\
+		"$c" --headless --disable-gpu\
 			--print-to-pdf=$out --print-to-pdf-no-header /tmp/o.html
 		rm /tmp/o.html
 		exit 0
