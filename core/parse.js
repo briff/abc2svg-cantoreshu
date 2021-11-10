@@ -2865,6 +2865,8 @@ function parse_music_line() {
 					dur: 0,
 					multi: 0
 				}
+				if (curvoice.color)
+					grace.color = curvoice.color
 				switch (curvoice.pos.gst & 0x07) {
 				case C.SL_ABOVE: grace.stem = 1; break
 				case C.SL_BELOW: grace.stem = -1; break
