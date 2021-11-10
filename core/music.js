@@ -4686,6 +4686,7 @@ Abc.prototype.block_gen = function(s) {
 		break
 	case "text":
 		set_font(s.font)
+		use_font(s.font)
 		write_text(s.text, s.opt)
 		break
 	case "title":
