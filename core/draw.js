@@ -3659,51 +3659,6 @@ function draw_all_sym() {
     var	p_voice, v,
 	n = voice_tb.length
 
-	// draw all the helper/ledger lines
-	function draw_all_hl() {
-	    var	st, p_st
-
-		function hlud(hla, d) {
-		    var	hl, hll, i, xp, dx2, x2,
-			n = hla.length
-
-			if (!n)
-				return
-			for (i = 0; i < n; i++) {	// for all lines
-				hll = hla[i]
-				if (!hll || !hll.length)
-					continue
-				xp = sx(hll[0][0])	// previous x
-				output +=
-				    '<path class="stroke" stroke-width="1" d="M' +
-					xp.toFixed(1) + ' ' +
-					sy(p_st.y + d * i).toFixed(1)
-				dx2 = 0
-				while (1) {
-					hl = hll.shift()
-					if (!hl)
-						break
-					x2 = sx(hl[0])
-					output += 'm' +
-						(x2 - xp + hl[1] - dx2).toFixed(2) +
-						' 0h' + (-hl[1] + hl[2]).toFixed(2)
-					xp = x2
-					dx2 = hl[2]
-				}
-				output += '"/>\n'
-			}
-		} // hlud()
-
-		for (st = 0; st <= nstaff; st++) {
-			p_st = staff_tb[st]
-			if (!p_st.hlu)
-				continue	// (staff not yet displayed)
-			set_sscale(st)
-			hlud(p_st.hlu, 6)
-			hlud(p_st.hld, -6)
-		}
-	} // draw_all_hl()
-
 	for (v = 0; v < n; v++) {
 		p_voice = voice_tb[v]
 		if (p_voice.sym
@@ -3716,7 +3671,6 @@ function draw_all_sym() {
 	}
 
 	self.draw_all_deco()
-	draw_all_hl()
 	glout()			// output the symbols
 	anno_put()		// before outputting the symbol annotations
 	set_sscale(-1)				/* restore the scale */
