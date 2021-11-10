@@ -946,17 +946,6 @@ Abc.prototype.do_pscom = function(text) {
 	}
 
 	switch (cmd) {
-	case "center":
-		set_font("text")
-		if (parse.state >= 2) {
-			s = new_block("text");
-			s.text = param
-			s.opt = 'c'
-			s.font = cfmt.textfont
-			return
-		}
-		write_text(param, 'c')
-		return
 	case "clef":
 		if (parse.state >= 2) {
 			s = new_clef(param)
@@ -1188,16 +1177,18 @@ Abc.prototype.do_pscom = function(text) {
 		}
 		get_staves(cmd, param)
 		return
+	case "center":
 	case "text":
+		k = cmd[0] == 'c' ? 'c' : cfmt.textoption
 		set_font("text")
 		if (parse.state >= 2) {
-			s = new_block(cmd);
+			s = new_block("text")
 			s.text = param
-			s.opt = cfmt.textoption
+			s.opt = k
 			s.font = cfmt.textfont
 			return
 		}
-		write_text(param, cfmt.textoption)
+		write_text(param, k)
 		return
 	case "transpose":		// (abcm2ps compatibility)
 		if (cfmt.sound)
