@@ -559,17 +559,7 @@ function xypath(x, y, fill) {
 }
 Abc.prototype.xypath = xypath
 
-// output the list of glyphs and the stems
-// [0] = x glyph
-// [1] = y glyph
-// [2] = glyph code
-// [3] = x, y, h of stem (3 values per stem)
-var gla = [[], [], "", [], [], []]
-function glout() {
-    var	e,
-	v = []
-
-	// draw all the helper/ledger lines
+// draw all the helper/ledger lines
 	function draw_all_hl() {
 	    var	st, p_st
 
@@ -608,12 +598,21 @@ function glout() {
 			p_st = staff_tb[st]
 			if (!p_st.hlu)
 				continue	// (staff not yet displayed)
+			set_sscale(st)
 			hlud(p_st.hlu, 6)
 			hlud(p_st.hld, -6)
 		}
 	} // draw_all_hl()
 
-   draw_all_hl()
+// output the list of glyphs and the stems
+// [0] = x glyph
+// [1] = y glyph
+// [2] = glyph code
+// [3] = x, y, h of stem (3 values per stem)
+var gla = [[], [], "", [], [], []]
+function glout() {
+    var	e,
+	v = []
 
 	// glyphs (notes, accidentals...)
     if (gla[0].length) {

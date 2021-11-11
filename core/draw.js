@@ -992,6 +992,37 @@ function nrep_out(x, y, n) {
 	}
 } // nrep_out()
 
+// if rest alone in the measure or measure repeat,
+// change the head and center
+function center_rest(s) {
+    var	s2, x
+	
+	if (s.dur < C.BLEN * 2)
+		s.nflags = -2		// semibreve / whole
+	else if (s.dur < C.BLEN * 4)
+		s.nflags = -3
+	else
+		s.nflags = -4
+	s.dots = 0
+
+	/* don't use next/prev: there is no bar in voice overlay */
+	s2 = s.ts_next
+	while (s2.time != s.time + s.dur
+	    && s2.ts_next)
+		s2 = s2.ts_next
+	x = s2.x - s2.wl
+	s2 = s
+	while (!s2.seqst)
+		s2 = s2.ts_prev
+	s2 = s2.ts_prev
+	x = (x + s2.x + s2.wr) / 2
+
+	/* center the associated decorations */
+	if (s.a_dd)
+		deco_update(s, x - s.x)
+	s.x = x
+} // center_rest()
+
 /* -- draw a rest -- */
 /* (the staves are defined) */
 var rest_tb = [
@@ -1000,46 +1031,13 @@ var rest_tb = [
 	"r2", "r1", "r0", "r00"]
 
 function draw_rest(s) {
-    var	s2, i, j, x, y, yb, bx,
-	p_staff = staff_tb[s.st]
+    var	s2, i, j, y, bx,
+	p_staff = staff_tb[s.st],
+	yb = p_staff.y,			// bottom of staff
+	x = s.x
 
-	// if rest alone in the measure or measure repeat,
-	// change the head and center
-	if (s.dur_orig == s.p_v.meter.wmeasure
-	 || (s.rep_nb && s.rep_nb >= 0)) {
-		if (s.dur < C.BLEN * 2)
-			s.nflags = -2		// semibreve / whole
-		else if (s.dur < C.BLEN * 4)
-			s.nflags = -3
-		else
-			s.nflags = -4;
-		s.dots = 0;
-
-		/* don't use next/prev: there is no bar in voice overlay */
-		s2 = s.ts_next
-		while (s2.time != s.time + s.dur
-		    && s2.ts_next)
-			s2 = s2.ts_next
-		x = s2.x - s2.wl
-		s2 = s
-		while (!s2.seqst)
-			s2 = s2.ts_prev;
-		s2 = s2.ts_prev;
-		x = (x + s2.x + s2.wr) / 2
-
-		/* center the associated decorations */
-		if (s.a_dd)
-			deco_update(s, x - s.x);
-		s.x = x
-	} else {
-		x = s.x
-		if (s.notes[0].shhd)
-			x += s.notes[0].shhd * stv_g.scale
-	}
-	if (s.invis)
-		return
-
-	yb = p_staff.y			// bottom of staff
+	if (s.notes[0].shhd)
+		x += s.notes[0].shhd * stv_g.scale
 
 	if (s.rep_nb) {
 		set_sscale(s.st);
@@ -1078,39 +1076,6 @@ function draw_rest(s) {
 	if (!s.notes[0].invis)		// if not head replacement
 		xygl(x, y + yb, rest_tb[i])
 
-	/* output ledger line(s) when greater than minim */
-	if (i >= 6) {
-		j = y / 6
-		switch (i) {
-		default:
-			switch (p_staff.stafflines[j + 1]) {
-			case '|':
-			case '[':
-				break
-			default:
-				set_hl(p_staff, j + 1, x, -7, 7)
-				break
-			}
-			if (i == 9) {			/* longa */
-				y -= 6;
-				j--
-			}
-			break
-		case 7:					/* semibreve */
-			y += 6;
-			j++
-		case 6:					/* minim */
-			break
-		}
-		switch (p_staff.stafflines[j]) {
-		case '|':
-		case '[':
-			break
-		default:
-			set_hl(p_staff, j, x, -7, 7)
-			break
-		}
-	}
 	if (s.dots) {
 		x += 8;
 		y += yb + 3
@@ -1478,7 +1443,6 @@ function draw_note(s,
 
 	if (s.dots)
 		setdoty(s, y_tb)
-	self.draw_hl(s)
 
 	/* draw the stem and flags */
 	if (!s.stemless) {
@@ -3382,6 +3346,53 @@ function draw_systems(indent) {
 				+ '"/>\n'
 	} // out_bars()
 
+	// set the helper lines of rests
+	function hl_rest(s) {
+	    var	j,
+		p_st = staff_tb[s.st],
+		i = 5 - s.nflags,		// rest_tb index (5 = C_XFLAGS)
+		x = s.x,
+		y = s.y
+
+		if (i < 6)	// no ledger line if rest smaller than minim
+			return
+
+		if (i == 7 && y == 12
+		 && p_st.stafflines.length <= 2)
+			y -= 6			// semibreve a bit lower
+
+		j = y / 6
+		switch (i) {
+		default:
+			switch (p_st.stafflines[j + 1]) {
+			case '|':
+			case '[':
+				break
+			default:
+				set_hl(p_st, j + 1, x, -7, 7)
+				break
+			}
+			if (i == 9) {		// longa
+				y -= 6
+				j--
+			}
+			break
+		case 7:				// semibreve
+			y += 6
+			j++
+		case 6:				// minim
+			break
+		}
+		switch (p_st.stafflines[j]) {
+		case '|':
+		case '[':
+			break
+		default:
+			set_hl(p_st, j, x, -7, 7)
+			break
+		}
+	} // hl_rest()
+
 	// ---- draw_systems() ----
 
 	/* draw the staff, skipping the staff breaks */
@@ -3496,6 +3507,21 @@ function draw_systems(indent) {
 				xstaff[st] = s.x
 			}
 			break
+		case C.GRACE:
+			for (s2 = s.extra; s2; s2 = s2.next)
+				self.draw_hl(s2)
+			break
+		case C.NOTE:
+			if (!s.invis)
+				self.draw_hl(s)
+			break
+		case C.REST:
+			if (s.dur_orig == s.p_v.meter.wmeasure
+			 || (s.rep_nb && s.rep_nb >= 0))
+				center_rest(s)
+			if (!s.invis)
+				hl_rest(s)
+			break
 //		default:
 //fixme:does not work for "%%staves K: M: $" */
 //removed for K:/M: in empty staves
@@ -3514,6 +3540,9 @@ function draw_systems(indent) {
 			continue
 		draw_staff(st, x, realwidth)
 	}
+
+	// the ledger lines
+	draw_all_hl()
 
 	// and the bars
 	out_bars()
