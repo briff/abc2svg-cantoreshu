@@ -287,6 +287,14 @@ function param_set_font(xxxfont, p) {
 		font.normal = true
 		p = 'ft' + font.fid
 	} else {
+		if (p[0] == '"') {
+			n = p.indexOf('"', 1)
+			if (n < 0) {
+				syntax(1, "No end of string in font family")
+				return
+			}
+			p = p.slice(1, n)
+		}
 
 		// extract the font attributes
 		a = p.match(/[- ]?[nN]ormal/)
@@ -295,11 +303,13 @@ function param_set_font(xxxfont, p) {
 			p = p.replace(a[0], '')
 		}
 
-		a = p.match(/[- ]?[bB]old/)
+		// font weight
+		a = p.match(abc2svg.ft_re)
 		if (a) {
-			font.weight = "bold"
+			font.weight = abc2svg.ft_w[a[0].replace(/[ -]/, '')]
 			p = p.replace(a[0], '')
 		}
+
 		a = p.match(/[- ]?[iI]talic/)
 		if (a) {
 			font.style = "italic"
@@ -311,19 +321,8 @@ function param_set_font(xxxfont, p) {
 			p = p.replace(a[0], '')
 		}
 
-		// get the font family
-		if (p[0] == '"') {
-			n = p.indexOf('"', 1)
-			if (n < 0) {
-				syntax(1, "No end of string in font family")
-				return
-			}
-			p = p.slice(1, n)
-		} else {
-			n = p.indexOf(' ', 1)
-			if (n >= 0)
-				p = p.slice(0, n)
-		}
+		// here is the font family
+		p = p.replace(/-.*/, '').trim()
 
 		switch (p) {
 		case "":
