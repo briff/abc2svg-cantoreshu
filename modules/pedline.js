@@ -78,7 +78,7 @@ abc2svg.pedline = {
 
     set_fmt: function(of, cmd, param) {
 	if (cmd == "pedline")
-		this.cfmt().pedline = param
+		this.cfmt().pedline = this.get_bool(param)
 	else
 		of(cmd, param)
     }, // set_fmt()
