@@ -354,9 +354,17 @@ function build_grid(s, font) {
 			case C.BAR:
 				i = s.bar_num		// check if normal measure bar
 				bt = s.bar_type
-				while (s.ts_next && s.ts_next.time == s.time
-				    && s.ts_next.type == C.BAR) {
+				while (s.ts_next && s.ts_next.time == s.time) {
+					if (s.ts_next.dur)
+						break
 					s = s.ts_next
+					if (s.type == C.METER) {
+						beat = get_beat(s)
+						wm = s.wmeasure
+						continue
+					}
+					if (s.type != C.BAR)
+						continue
 					if (s.bar_type[0] == ':'
 					 && bt[0] != ':')
 						bt = ':' + bt
