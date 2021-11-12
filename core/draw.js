@@ -227,9 +227,12 @@ Abc.prototype.calculate_beam = function(bm, s1) {
 	if (a == undefined)
 		a = (s2.ys + staff_tb[s2.st].y - y) / (s2.xs - s1.xs)
 
-	if (a != 0)
+	if (a != 0) {
 		a = s1.fmt.beamslope * a /
 			(s1.fmt.beamslope + Math.abs(a)) // max steepness for beam
+		if (a > -.04 && a < .04)
+			a = 0				// slope too low
+	}
 
 	// pivot around the middle of the beam
 	b = (y + s2.ys + staff_tb[s2.st].y) / 2 - a * (s2.xs + s1.xs) / 2
