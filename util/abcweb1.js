@@ -197,7 +197,8 @@ function dom_loaded() {
 	abc2svg.src_edit = function() {
 		// offer a textarea with the ABC source and 2 buttons
 		document.body.innerHTML = '\
-<textarea id="ta" rows="50" cols="80">' + page + '</textarea>\
+<textarea id="ta" rows="50" cols="80" style="overflow:scroll">'
+			+ page + '</textarea>\
 <br/>\
 <a href="#" onclick="abc2svg.src_upd()"> Apply </a> - \
 <a href="#" onclick="abc2svg.get_sel()"> Cancel </a>'
