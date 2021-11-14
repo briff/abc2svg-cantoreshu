@@ -306,7 +306,8 @@ function param_set_font(xxxfont, p) {
 		// font weight
 		a = p.match(abc2svg.ft_re)
 		if (a) {
-			font.weight = abc2svg.ft_w[a[0].replace(/[ -]/, '')]
+			font.weight = abc2svg.ft_w[a[0].replace(/[ -]/, '')
+					.toLowerCase()]
 			p = p.replace(a[0], '')
 		}
 
