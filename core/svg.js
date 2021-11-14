@@ -1212,12 +1212,12 @@ function tempo_build(s) {
 
 // output a tempo
 function writempo(s, x, y) {
-    var	bx
+    var	bh
 
 	set_font("tempo")
 	if (gene.curfont.box) {
 		gene.curfont.box = false
-		bx = x
+		bh = gene.curfont.size + 4
 	}
 
 //fixme: xy_str() cannot be used because <tspan> in s.tempo_str
@@ -1227,11 +1227,10 @@ function writempo(s, x, y) {
 	out_sxsy(x, '" y="', y + gene.curfont.size * .2)
 	output += '">' + s.tempo_str + '</text>\n'
 
-	if (bx) {
+	if (bh) {
 		gene.curfont.box = true
-		bh = gene.curfont.size + 4;
 		output += '<rect class="stroke" x="'
-		out_sxsy(bx - 2, '" y="', y + bh - 1)
+		out_sxsy(x - 2, '" y="', y + bh - 1)
 		output += '" width="' + (s.tempo_wh[0] + 2).toFixed(1) +
 			'" height="' + bh.toFixed(1) +
 			'"/>\n'
