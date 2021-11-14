@@ -195,6 +195,28 @@ abc2svg.cs_filter = function(a_cs, sel) {
 	return tcs.replace(sel ? abc2svg.cs_sel1 : abc2svg.cs_sel0, '')
 } // cs_filter()
 
+// font weight
+// reference:
+//	https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight
+abc2svg.ft_w = {
+	thin: 100,
+	extraLight: 200,
+	light: 300,
+	regular: 400,
+	medium:  500,
+	semi: 600,
+	demi: 600,
+	semiBold: 600,
+	demiBold: 600,
+	bold: 700,
+	extraBold: 800,
+	ultraBold: 800,
+	black: 900,
+	heavy: 900
+}
+abc2svg.ft_re =
+ /Thin|Extra Light|Light|Regular|Medium|Demi|Demi|Semi[ -]?Bold|Demi[ -]?Bold|Bold|Extra[ -]?Bold|Ultra[ -]?Bold|Black|Heavy/i;
+
 // simplify a rational number n/d
 abc2svg.rat = function(n, d) {
     var	a, t,
