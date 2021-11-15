@@ -3792,45 +3792,13 @@ function set_beams(sym) {
 			} else if (s.beam_st && !s.beam_end) {	// beam start
 				beam = true;
 
-				// count the number of notes above the mid-line
-				n = pu = 0
-				for (g = s; g; g = g.next) {
-					if (g.type != C.NOTE) {
-//						if (g.beam_end)
-//							break
-						continue
-					}
-					if (g.stem || g.multi) { // if forced direction
-						s.stem = g.stem || g.multi
-						break
-					}
-					n += g.nhd + 1
-					for (m = 0; m <= g.nhd; m++) {
-						if (g.notes[m].pit >= mid_p)
-							pu++
-					}
-					if (g.beam_end)
-						break
-				}
-
-				if (!s.stem) {
-					pu *= 2
-					if (pu > n) {
-						s.stem = -1
-					} else if (pu < n) {
-						s.stem = 1
-
-					// same number of note above and below the mid-line
-					// get the highest and lowest pitches
-					} else {
+				// the stem direction is the one of the note
+				// farthest from the middle line
 						pu = s.notes[s.nhd].pit;
 						pd = s.notes[0].pit
 						for (g = s.next; g; g = g.next) {
-							if (g.type != C.NOTE) {
-//								if (g.beam_end)
-//									break
+							if (g.type != C.NOTE)
 								continue
-							}
 							if (g.notes[g.nhd].pit > pu)
 								pu = g.notes[g.nhd].pit
 							if (g.notes[0].pit < pd)
@@ -3844,13 +3812,10 @@ function set_beams(sym) {
 							} else if (pu + pd > mid_p * 2) {
 								s.stem = -1
 							} else {
-//--fixme: equal: check all notes of the beam
 								if (s.fmt.bstemdown)
 									s.stem = -1
 							}
 						}
-					}
-				}
 				if (!s.stem)
 					s.stem = laststem
 			} else {				// no beam
