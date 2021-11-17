@@ -4999,8 +4999,8 @@ Abc.prototype.set_sym_glue = function(width) {
 		}
 		spf_last = spf
 	} else {			// shorter line
-		spf = (width - xs - xse) / xx
-		if (spf_last < spf)
+		spf = (width - xs - xse) / (xx + xs) * (1 - cfmt.maxshrink)
+		if (spf_last && spf_last < spf)
 			spf = spf_last
 		for ( ; s; s = s.ts_next) {
 			if (s.seqst)
@@ -5135,7 +5135,7 @@ Abc.prototype.output_music = function() {
 	while (--v >= 0)
 		voice_tb[v].osym = voice_tb[v].sym
 
-	spf_last = 1.2				// last spacing factor
+	spf_last = 0				// last spacing factor
 	while (1) {				/* loop per music line */
 		set_piece();
 		self.set_sym_glue(lwidth - indent)
