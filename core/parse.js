@@ -108,20 +108,21 @@ function new_clef(clef_def) {
 
 	// handle the octave (+/-8 - ^/_8)
 	delete curvoice.snd_oct
-	if (clef_def[i + 1] != '8')
+	if (clef_def[i + 1] != '8'
+	 && clef_def[i + 1] != '1')
 		return s
 	switch (clef_def[i]) {			// octave
 	case '^':
 		s.clef_oct_transp = true
 	case '+':
-		s.clef_octave = 7
+		s.clef_octave = clef_def[i + 1] == '8' ? 7 : 14
 		if (!s.clef_oct_transp)
 			curvoice.snd_oct = 12	// MIDI higher octave
 		break
 	case '_':
 		s.clef_oct_transp = true
 	case '-':
-		s.clef_octave = -7
+		s.clef_octave = clef_def[i + 1] == '8' ? -7 : -14
 		if (!s.clef_oct_transp)
 			curvoice.snd_oct = -12	// MIDI lower octave
 		break

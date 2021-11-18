@@ -73,6 +73,7 @@ var tgls = {
   scclef: {x:-8, y:0, c:"\ue07b"},
   sbclef: {x:-7, y:0, c:"\ue07c"},
   oct: {x:0, y:2, c:"\ue07d"},		// 8 for clefs
+  oct2: {x:0, y:2, c:"\ue07e"},		// 15 for clefs
   mtr0: {x:0, y:0, c:"\ue080"},		// meters
   mtr1: {x:0, y:0, c:"\ue081"},
   mtr2: {x:0, y:0, c:"\ue082"},

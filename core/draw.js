@@ -3559,7 +3559,7 @@ function draw_systems(indent) {
 // (possible hook)
 Abc.prototype.draw_symbols = function(p_voice) {
 	var	bm = {},
-		s, g, x, y, st;
+		s, x, y, st;
 
 //	bm.s2 = undefined
 	for (s = p_voice.sym; s; s = s.next) {
@@ -3626,7 +3626,9 @@ Abc.prototype.draw_symbols = function(p_voice) {
 					if (s.clef_small)
 						y += 1
 				}
-				xygl(x - 2, y, "oct")
+				xygl(x - 2, y, (s.clef_octave == 7
+						|| s.clef_octave == -7)
+					? "oct" : "oct2")
 			}
 			anno_a.push(s)
 			break
