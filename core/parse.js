@@ -116,15 +116,15 @@ function new_clef(clef_def) {
 		s.clef_oct_transp = true
 	case '+':
 		s.clef_octave = clef_def[i + 1] == '8' ? 7 : 14
-		if (!s.clef_oct_transp)
-			curvoice.snd_oct = 12	// MIDI higher octave
+		if (!s.clef_oct_transp)		// MIDI higher octave
+			curvoice.snd_oct = clef_def[i + 1] == 8 ? 12 : 24
 		break
 	case '_':
 		s.clef_oct_transp = true
 	case '-':
 		s.clef_octave = clef_def[i + 1] == '8' ? -7 : -14
-		if (!s.clef_oct_transp)
-			curvoice.snd_oct = -12	// MIDI lower octave
+		if (!s.clef_oct_transp)		// MIDI lower octave
+			curvoice.snd_oct = clef_def[i + 1] == 8 ? -12 : -24
 		break
 	}
 	return s
