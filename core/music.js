@@ -3799,6 +3799,8 @@ function set_beams(sym) {
 						for (g = s.next; g; g = g.next) {
 							if (g.type != C.NOTE)
 								continue
+							if (g.stem || g.multi) // if forced direction
+								s.stem = g.stem || g.multi
 							if (g.notes[g.nhd].pit > pu)
 								pu = g.notes[g.nhd].pit
 							if (g.notes[0].pit < pd)
@@ -3806,7 +3808,7 @@ function set_beams(sym) {
 							if (g.beam_end)
 								break
 						}
-						if (g.beam_end) {
+					if (!s.stem && g.beam_end) {
 							if (pu + pd < mid_p * 2) {
 								s.stem = 1
 							} else if (pu + pd > mid_p * 2) {
