@@ -4914,12 +4914,11 @@ function set_piece() {
 /* -- position the symbols along the staff -- */
 // (possible hook)
 Abc.prototype.set_sym_glue = function(width) {
-    var	s, g, ll,
+    var	s, g, ll, x,
 	some_grace,
 	spf,			// spacing factor
 	xmin = 0,		// sigma shrink = minimum spacing
 	xx = 0,			// sigma natural spacing
-	x = 0,			// sigma expandable elements
 	xs = 0,			// sigma unexpandable elements with no space
 	xse = 0			// sigma unexpandable elements with space
 
@@ -5001,13 +5000,15 @@ Abc.prototype.set_sym_glue = function(width) {
 		}
 		spf_last = spf
 	} else {			// shorter line
-		spf = (width - xs - xse) / (xx + xs) * (1 - cfmt.maxshrink)
-		if (spf_last && spf_last < spf)
+		spf = 1 - cfmt.maxshrink
+		if (spf_last && xx * spf_last + xs < width)
 			spf = spf_last
+		x = 0
 		for ( ; s; s = s.ts_next) {
 			if (s.seqst)
-				x += s.space * spf <= s.shrink ?
-						s.shrink : s.space * spf
+				x += s.space <= s.shrink ?
+					s.shrink :
+					s.shrink * (1 - spf) + s.space * spf
 			s.x = x
 		}
 	}
