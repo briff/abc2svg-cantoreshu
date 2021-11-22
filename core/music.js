@@ -5000,7 +5000,7 @@ Abc.prototype.set_sym_glue = function(width) {
 		}
 		spf_last = spf
 	} else {			// shorter line
-		spf = 1 - cfmt.maxshrink
+		spf = width * (1 - s.fmt.maxshrink) / xx
 		if (spf_last && xx * spf_last + xs < width)
 			spf = spf_last
 		x = 0
