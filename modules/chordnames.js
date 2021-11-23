@@ -20,9 +20,15 @@
 // This module is loaded by %%chordnames.
 //
 // Parameters
-//	%%chordnames <comma separated list of chord names>
-// Each name replace one chord. The order is:
-//	CDEFGAB<N.C.>
+// 1st syntax:
+//		%%chordnames <comma separated list of chord names>
+//	Each name replace one chord. The order is:
+//		CDEFGAB<N.C.>
+// 2nd syntax:
+//		%%chordnames <comma separated list of key ':' value>
+//	The key may be a chord letter ('A') with/or an accidental
+//	Example:
+//		%%chordnames Bb:B,B:H,b:s	% German chords
 
 abc2svg.chordnames = {
 
@@ -36,31 +42,40 @@ abc2svg.chordnames = {
 			t = gch.text
 			if (gch.type != 'g' || !t)
 				continue
-			if (t[0].toUpperCase() == "N") {
-				if (cfmt.chordnames.N)
-					gch.text = cfmt.chordnames.N
-			} else {
-				gch.text = t.replace(/[A-G]/g,
-					function(c){return cfmt.chordnames[c] || c})
-				if (cfmt.chordnames.B == 'H')	// if german 'H'
-					gch.text = gch.text.replace(/Hb/g, 'Bb')
-			}
+			if (t[0] == 'n' || t[0] == 'N')
+				t = 'N'
+			gch.text = t.replace(cfmt.chordnames.re,
+				function(c){return cfmt.chordnames.o[c]})
 		}
 	}
 	of(s)
     }, // gch_build()
 
+    gimpl: 'CDEFGABN',
     set_fmt: function(of, cmd, parm) {
-    var	i,
+    var	i, v,
+	re = [],
+	o = {},
 	cfmt = this.cfmt()
 
 	if (cmd == "chordnames") {
 		parm = parm.split(',')
-		cfmt.chordnames = {}
-		for (i = 0; i < parm.length; i++) {
-			if (parm[i])
-				cfmt.chordnames['CDEFGABN'[i]] = parm[i]
+		if (parm[0].indexOf(':') > 0) {	// by object
+			for (i = 0; i < parm.length; i++) {
+				v = parm[i].split(':')
+				if (!v[1])	// (no ':')
+					continue
+				o[v[0]] = v[1]
+				re.push(v[0])
+			}
+		} else {			// implicit
+			for (i = 0; i < parm.length; i++) {
+				v = abc2svg.chordnames.gimpl[i]
+				o[v] = parm[i]
+				re.push(v)
+			}
 		}
+		cfmt.chordnames = {re: new RegExp(re.join('|'), 'g'), o: o}
 		return
 	}
 	of(cmd, parm)
