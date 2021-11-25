@@ -101,22 +101,12 @@ done
 if command -v weasyprint >/dev/null 2>&1; then
 	echo "and weasyprint"
 
-	rm -f /tmp/abc*.svg
+	rm -f /tmp/abc*.svg /tmp/abc.html
 
 # generate a (HTML+SVG) file
 # then, extract the SVG images (pages) to /tmp/ and build a file.html
-	cat > /tmp/abc.html <<EOF
-<!DOCTYPE html>
-<meta charset="utf-8"/>
-<style>
-@page {
- size: A4;
- margin: 0;
-}
-</style>
-<body>
-EOF
-n=0
+	touch /tmp/abc.html
+	n=0
 command $abcscr --pageheight 29.7cm --fullsvg 1 --musicfont abc2svg "$@" | while read v; do
 	case "$v" in
 	"<svg"*)
@@ -128,6 +118,9 @@ command $abcscr --pageheight 29.7cm --fullsvg 1 --musicfont abc2svg "$@" | while
 	"</svg"*)
 		echo $v >> $fn
 		fn=
+		;;
+	"<body>")
+		echo '<body bgcolor="white">' >> /tmp/abc.html
 		;;
 	"</body"*)
 		break;;
