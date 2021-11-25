@@ -25,6 +25,11 @@
 //	%%MIDI control k v
 //	%%MIDI drummap ABC_note MIDI_pitch
 //	%%MIDI temperamentequal nedo
+//	%%MIDI chordname <chord_type> <list of MIDI pitches>
+//	%%MIDI chordprog <#MIDI program> [octave=<n>]
+//	%%MIDI chordvol <volume>
+//	%%MIDI gchordon
+//	%%MIDI gchordoff
 
 // Using %%MIDI drummap creates a voicemap named "MIDIdrum".
 // This name must be used if some print map is required:
