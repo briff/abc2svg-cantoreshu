@@ -453,9 +453,10 @@ function Audio5(i_conf) {
 		conf.sfu = "Scc1t2"	// set the default soundfont location
 
 	// get the device model
-	if (navigator.userAgentData)
+	if (navigator.userAgentData
+	 && navigator.userAgentData.getHighEntropyValues)
 		navigator.userAgentData.getHighEntropyValues(['model'])
-			.then(ua => {
+			.then(function(ua) {
 				model = ua.model
 			})
 	else
