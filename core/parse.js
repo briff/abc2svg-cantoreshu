@@ -2955,9 +2955,8 @@ function parse_music_line() {
 			grace.prev.next = null
 	}
 	if (!no_eol && !cfmt.barsperstaff
-	 && char_tb['\n'.charCodeAt(0)] == '\n') {
+	 && char_tb['\n'.charCodeAt(0)] == '\n')
 		curvoice.eoln = true
-		if (cfmt.breakoneoln && curvoice.last_note)
-			curvoice.last_note.beam_end = true
-	}
+	if (curvoice.eoln && cfmt.breakoneoln && curvoice.last_note)
+		curvoice.last_note.beam_end = true
 }
