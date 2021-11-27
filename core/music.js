@@ -1876,10 +1876,9 @@ function set_lines(	s,		/* first symbol */
 			next,		/* symbol of the next line / null */
 			lwidth,		/* w - (clef & key sig) */
 			indent) {	/* for start of tune */
-    var	first, s2, s3, x, xmin, xmid, xmax, wwidth, shrink, space, ws,
+    var	first, s2, s3, s4, x, xmin, xmid, xmax, wwidth, shrink, space,
 	nlines,
-	last = next ? next.ts_prev : null
-
+	last = next ? next.ts_prev : null,
 	ws = get_width(s, next)		// 2 widths: nice and shrinked
 
 	// take care of big key signatures at end of line
@@ -1919,6 +1918,7 @@ function set_lines(	s,		/* first symbol */
 			if (s.x >= xmin)
 				break
 		}
+		s4 = s			// keep first symbol with x greater than xmin
 //fixme: can this occur?
 		if (s == next) {
 			if (next)
@@ -1949,16 +1949,19 @@ function set_lines(	s,		/* first symbol */
 
 		// no bar, try to avoid to cut a beam or a tuplet */
 		if (!s3) {
-			var	beam = 0,
-				bar_time = s2.time;
+			s = s4			// restart after xmin
+
+		    var	beam = 0,
+			bar_time = s2.time
 
 			xmax -= 8; // (left width of the inserted bar in set_allsymwidth)
-			s = s2;			// restart from start or last bar
 			for ( ; s != next; s = s.ts_next) {
-				if (s.beam_st)
-					beam++
-				if (s.beam_end && beam > 0)
-					beam--
+				if (s.dur) {
+					if (!s.beam_end)
+						beam |= 1 << s.v
+					else
+						beam &= ~(1 << s.v)
+				}
 				x = s.x
 				if (!x)
 					continue
@@ -1966,41 +1969,33 @@ function set_lines(	s,		/* first symbol */
 					break
 				if (beam || s.in_tuplet)
 					continue
-//fixme: this depends on the meter
-				if ((s.time - bar_time) % (C.BLEN / 4) == 0) {
-					s3 = s
-					continue
-				}
-				if (!s3 || s.x < xmid) {
-					s3 = s
-					continue
-				}
-				if (s3 > xmid)
+				if (s3 && s.x >= xmid) {
+					if (xmid - s3.x > s.x - xmid
+					 || (s.dur
+					  && (s.time + s.dur - bar_time)
+							% (C.BLEN / 4) == 0))
+						s3 = s
 					break
-				if (xmid - s3.x < s.x - xmid)
-					break
+				}
 				s3 = s
-				break
 			}
 		}
 
 		// cut anyhere
 		if (!s3) {
-			s3 = s = s2
+			s3 = s = s4
 			for ( ; s != next; s = s.ts_next) {
 				x = s.x
 				if (!x)
 					continue
-				if (s.x < xmid) {
-					s3 = s
-					continue
+				if (x + s.wr >= xmax)
+					break
+				if (s3 && s.x >= xmid) {
+					if (xmid - s3.x > s.x - xmid)
+						s3 = s
+					break
 				}
-				if (s3 > xmid)
-					break
-				if (xmid - s3.x < s.x - xmid)
-					break
 				s3 = s
-				break
 			}
 		}
 		s = s3
