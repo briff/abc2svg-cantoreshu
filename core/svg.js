@@ -146,7 +146,7 @@ var tgls = {
   r32: {x:-4, y:0, c:"\ue4e8"},
   r64: {x:-4, y:0, c:"\ue4e9"},
   r128: {x:-4, y:0, c:"\ue4ea"},
-  mrest: {x:-10, y:0, c:"\ue4ee"},
+//  mrest: {x:-10, y:0, c:"\ue4ee"},
   mrep: {x:-6, y:0, c:"\ue500"},
   mrep2: {x:-9, y:0, c:"\ue501"},
   p: {x:-4, y:-6, c:"\ue520"},

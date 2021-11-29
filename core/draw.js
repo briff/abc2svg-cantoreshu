@@ -1093,6 +1093,28 @@ function draw_rest(s) {
 	anno_a.push(s)
 }
 
+// -- draw a multi-measure rest --
+// (the staves are defined)
+function draw_mrest(s) {
+    var	x1, x2,
+	p_st = staff_tb[s.st],
+	y = p_st.y + (p_st.topbar + p_st.botbar) / 2,
+	p = s.nmes.toString()
+
+	set_scale(s)
+	x1 = s.prev.x + 20
+	x2 = s.next.x - 20
+	s.x = (x1 + x2) / 2
+	anno_start(s)
+	out_XYAB('<path d="mX Y', x1 + .6, y - 2.7)
+	output += 'v2.7h-1.4v-10.8h1.4v2.7h'
+		+ (x2 - x1 - 2.8).toFixed(1)
+		+ 'v-2.7h1.4v10.8h-1.4v-2.7z"/>\n'
+	out_XYAB('<text x ="X" y="Y" text-anchor="middle">A</text>\n',
+		s.x, y + 22, m_gl(p))
+	anno_a.push(s)
+} // draw_mrest()
+
 function grace_slur(s) {
     var	yy, x0, y0, x3, y3, bet1, bet2, dy1, dy2, last, below,
 	so = s,
@@ -3655,14 +3677,7 @@ Abc.prototype.draw_symbols = function(p_voice) {
 			anno_a.push(s)
 			break
 		case C.MREST:
-			set_scale(s);
-			x += 32;
-			anno_start(s);
-			xygl(x, staff_tb[s.st].y + 12, "mrest");
-			out_XYAB('<text style="font:bold 15px text,serif"\n\
-	x ="X" y="Y" text-anchor="middle">A</text>\n',
-				x, staff_tb[s.st].y + 28, s.nmes);
-			anno_a.push(s)
+			draw_mrest(s)
 			break
 		case C.GRACE:
 			set_scale(s);
