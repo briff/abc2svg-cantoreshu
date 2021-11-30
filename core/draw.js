@@ -1101,6 +1101,10 @@ function draw_mrest(s) {
 	y = p_st.y + (p_st.topbar + p_st.botbar) / 2,
 	p = s.nmes.toString()
 
+	if (!s.next) {
+		error(1, s, "Lack of bar after multi-measure rest")
+		return
+	}
 	set_scale(s)
 	x1 = s.prev.x + 20
 	x2 = s.next.x - 20

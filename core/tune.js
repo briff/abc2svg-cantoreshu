@@ -368,33 +368,6 @@ function voice_adj(sys_chg) {
 					break
 				}
 				continue
-			case C.MREST:
-				for (s2 = s.next; s2; s2 = s2.next) {
-					switch (s2.type) {
-					case C.BAR:
-					case C.GRACE:
-						break
-					default:
-						if (s2.dur)
-							break
-						continue
-					}
-					break
-				}
-				if (!s2 || s2.type != C.BAR) {
-					error(1, s,
-						"Lack of bar after multi-measure rest")
-					s2 = clone(s)
-					s2.type = C.BAR
-					s2.bar_type = '|'
-					s2.dur = 0
-					s2.time = s.next.time
-					s2.prev = s
-					s2.next = s.next
-					s2.next.prev = s2
-					s.next = s2
-				}
-				continue
 			}
 
 			if (s.feathered_beam)
