@@ -2639,7 +2639,7 @@ function parse_music_line() {
 				}
 				c = line.next_char()
 				if (c == ')') {
-					get_vover(')')
+					get_vover(c)	// full overlay stop
 					break
 				}
 				get_vover('&')
@@ -2954,7 +2954,7 @@ function parse_music_line() {
 		if (grace.prev)
 			grace.prev.next = null
 	}
-	if (!no_eol && !cfmt.barsperstaff
+	if (!no_eol && !cfmt.barsperstaff && !vover
 	 && char_tb['\n'.charCodeAt(0)] == '\n')
 		curvoice.eoln = true
 	if (curvoice.eoln && cfmt.breakoneoln && curvoice.last_note)
