@@ -703,6 +703,9 @@ Abc.prototype.set_width = function(s) {
 			case C.METER:
 				wlnote += 3
 				break
+			case C.STBRK:
+				wlnote += 8
+				break
 			}
 		}
 		for (m = 0; m <= s.nhd; m++) {
@@ -860,7 +863,9 @@ Abc.prototype.set_width = function(s) {
 			for (s2 = s.prev; s2; s2 = s2.prev) {
 				if (w_tb[s2.type]) {
 					if (s2.type == C.GRACE)
-						s.wl -= 8
+						s.wl -= 6
+					if (s2.type == C.STBRK)
+						s.wl -= 12
 					break
 				}
 			}
@@ -886,6 +891,10 @@ Abc.prototype.set_width = function(s) {
 		}
 		s.wl = s.clef_small ? 11 : 12
 		s.wr = s.clef_small ? 10 : 12
+		if (s.prev && s.prev.type == C.STBRK) {
+			s.wl -= 6
+			delete s.next.clef_small
+		}
 		if (s.next && s.next.type == C.BAR)
 			s.wr -= 4
 		return
@@ -989,12 +998,7 @@ Abc.prototype.set_width = function(s) {
 		return
 	case C.STBRK:
 		s.wl = s.xmx
-		if (s.next && s.next.type == C.CLEF) {
-			s.wr = 2
-			delete s.next.clef_small	/* big clef */
-		} else {
-			s.wr = 8
-		}
+		s.wr = 8
 		return
 	case C.CUSTOS:
 		s.wl = s.wr = 4
@@ -1097,7 +1101,7 @@ function set_space(s, ptime) {
 		case C.BAR:
 			// (hack to have quite the same note widths between measures)
 			if (!s.next)
-				space *= .75
+				space *= .9
 			return space * .9 - 7
 		case C.CLEF:
 			return space - s.wl - s.wr
@@ -1231,7 +1235,7 @@ function add_end_bar(s) {
 //	if (s.ts_next)
 		s.ts_next.ts_prev = b
 	s.next = s.ts_next = b
-	b.space = set_space(b, s.time + s.dur * .3)
+	b.space = set_space(b, s.time + s.dur * .4)
 	return b
 }
 
@@ -4995,7 +4999,7 @@ Abc.prototype.set_sym_glue = function(width) {
 		}
 		spf_last = spf
 	} else {			// shorter line
-		spf = width * (1 - s.fmt.maxshrink) / xx
+		spf = 1 - s.fmt.maxshrink
 		if (spf_last && xx * spf_last + xs < width)
 			spf = spf_last
 		x = 0
