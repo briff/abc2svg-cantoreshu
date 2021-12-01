@@ -85,7 +85,7 @@ H "History: "',
 	measurenb: -1,
 	musicfont: {name: "music", src: musicfont, size: 24},
 	musicspace: 6,
-//	notespacingfactor: "1.33, 35",
+//	notespacingfactor: "1.3, 38",
 	partsfont: {name: txt_ff, size: 15},
 	parskipfac: .4,
 	partsspace: 8,
@@ -99,10 +99,11 @@ H "History: "',
 	scale: 1,
 	slurheight: 1.0,
 	spatab: 	// spacing table (see "notespacingfactor" and set_space())
-		new Float32Array([	// default = "1.33, 35"
-			8.4, 11.2, 14.9, 19.8, 26.3,
-			35,
-			46.6, 61.9, 82.3, 109.5
+		new Float32Array([	// default = "1.3, 38"
+			10.2, 13.3, 17.3, 22.48, 29.2,
+			38,
+			49.4, 64.2, 83.5, 108.5
+, 61.9, 82.3, 109.5
 	]),
 	staffsep: 46,
 	stemheight: 21,			// one octave
