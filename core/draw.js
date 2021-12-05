@@ -2623,7 +2623,8 @@ function draw_tie(not1, not2,
 
 /* -- draw all ties between neighboring notes -- */
 function draw_all_ties(p_voice) {
-    var s, s1, s2, clef_chg, x, dx, m, not1, not2, tim2
+    var s, s1, s2, clef_chg, x, dx, m, not1, not2,
+	tim2 = 0
 
 	/* search the start of ties */
 //	clef_chg = false
