@@ -324,7 +324,7 @@ function param_set_font(xxxfont, p) {
 		}
 
 		// here is the font family
-		p = p.replace(/-.*/, '').trim()
+		p = p.trim()
 
 		switch (p) {
 		case "":
