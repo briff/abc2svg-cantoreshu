@@ -79,7 +79,7 @@ function dom_loaded() {
 			playing = false
 		}
 	},
-	tune_lst= [],	// array of [tsfirst, voice_tb, info, cfmt] per tune
+	tune_lst,	// array of [tsfirst, voice_tb, info, cfmt] per tune
 	jsdir = document.currentScript ?
 		    document.currentScript.src.match(/.*\//) :
 		    (function() {
@@ -313,6 +313,7 @@ onclick="abc2svg.do_render(\'.*\')">' + tt +
 		if (typeof follow == "function")
 			user.anno_stop = function(){}
 
+		tune_lst = []
 		abc = new abc2svg.Abc(user)
 		new_page = ""
 
