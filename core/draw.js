@@ -2585,16 +2585,15 @@ function draw_tie(not1, not2,
 		dir = -dir
 	case 1:				/* no starting note */
 		x1 = s2.prev ? (s2.prev.x + s2.wr) : s1.x
-		if (s1.st != s2.st) {
+		if (s1.st != s2.st)
 			st = s2.st
-			x1 += (x2 - x1) * .4
-		}
+		x1 += (x2 - x1) * .4
 		if (x1 > x2 - 20)
 			x1 = x2 - 20
 		break
 	case 2:				 // no ending note
 		x2 = s1.next ? s1.next.x : realwidth
-		if (s1.st != s2.st)
+		if (x2 != realwidth)
 			x2 -= (x2 - x1) * .4
 		if (x2 < x1 + 16)
 			x2 = x1 + 16
