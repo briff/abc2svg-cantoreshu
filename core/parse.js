@@ -356,7 +356,7 @@ Abc.prototype.set_vp = function(a) {
 		case "nm=":
 			curvoice.nm = a.shift()
 			if (curvoice.nm[0] == '"')
-				curvoice.nm = curvoice.nm.slice(1, -1);
+				curvoice.nm = cnv_escape(curvoice.nm.slice(1, -1))
 			curvoice.new_name = true
 			break
 		case "stem=":			// compatibility
