@@ -544,11 +544,11 @@ function set_graceoffs(s) {
 	g.beam_st = true
 	for ( ; ; g = g.next) {
 		set_head_shift(g)
-		acc_shift(g.notes, 7);
+		acc_shift(g.notes, 6.5)
 		dx = 0
 		for (m = g.nhd; m >= 0; m--) {
-			if (g.notes[m].shac > dx)
-				dx = g.notes[m].shac
+			if (g.notes[m].shac - 2 > dx)
+				dx = g.notes[m].shac - 2
 		}
 		x += dx;
 		g.x = x
