@@ -58,7 +58,7 @@ var cfmt = {
 	footerfont: { name: txt_ff, size: 16 },
 	fullsvg: '',
 	gchordfont: { name: "text,sans-serif", size: 12 },
-	gracespace: new Float32Array([4, 8, 11]), // left, inside, right
+	gracespace: new Float32Array([6, 8, 11]),	// left, inside, right
 	graceslurs: true,
 	headerfont: { name: txt_ff, size: 16 },
 	historyfont: { name: txt_ff, size: 16 },
