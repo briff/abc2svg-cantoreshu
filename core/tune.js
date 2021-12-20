@@ -456,6 +456,7 @@ Abc.prototype.set_bar_num = function() {
 			continue
 		switch (s.type) {
 		case C.METER:
+		    if (wmeasure != 1)		// if not M:none
 			bar_num += (s.time - bar_tim) / wmeasure
 			bar_tim = s.time
 			wmeasure = s.wmeasure
