@@ -62,23 +62,18 @@ var decos = {
 	slide: "1 sld 3 7 0",
 	arpeggio: "2 arp 12 10 0",
 	roll: "3 roll 3,3 6 6",
-	fermata: "3 hld 5,5 7 7",
 	emphasis: "3 accent 3.5,3.5 4 4",
 	lowermordent: "3 lmrd 4,4 5 5",
-	coda: "3 coda 24 10 10",
 	uppermordent: "3 umrd 4,4 5 5",
-	segno: "3 sgno 22 8 8",
 	trill: "3 trl 14 5 5",
 	upbow: "3 upb 10 5 5",
 	downbow: "3 dnb 9 5 5",
 	gmark: "3 grm 6 5 5",
 	wedge: "0 wedge 7,1 3 3",	// (staccatissimo or spiccato)
-	turnx: "3 turnx 5,5 6 6",
-	breath: "3 brth 0 1 20",
 	longphrase: "3 lphr 0 1 1",
 	mediumphrase: "3 mphr 0 1 1",
 	shortphrase: "3 sphr 0 1 1",
-	invertedfermata: "3 hld 5,5 7 7",
+	turnx: "3 turnx 5,5 6 6",
 	invertedturn: "3 turn 5,5 6 6",
 	invertedturnx: "3 turnx 5,5 6 6",
 	"0": "3 fng 5,5 3 3 0",
@@ -97,18 +92,31 @@ var decos = {
 	open: "3 opend 10 3 3",
 	snap: "3 snap 14 3 3",
 	thumb: "3 thumb 14 3 3",
-	dacapo: "3 dacs 16 20 20 Da Capo",
-	dacoda: "3 dacs 16 20 20 Da Coda",
-	"D.C.": "3 dcap 16 10 10",
-	"D.S.": "3 dsgn 16 10 10",
-	"D.C.alcoda": "3 dacs 16 38 38 D.C. al Coda",
-	"D.S.alcoda": "3 dacs 16 38 38 D.S. al Coda",
-	"D.C.alfine": "3 dacs 16 38 38 D.C. al Fine",
-	"D.S.alfine": "3 dacs 16 38 38 D.S. al Fine",
-	fine: "3 dacs 16 10 10 Fine",
 	turn: "3 turn 5,5 6 6",
 	"trill(": "3 ltr 8 4 0",
 	"trill)": "3 ltr 8 4 0",
+	"8va(": "5 8va 10 0 0",
+	"8va)": "5 8va 10 0 0",
+	"8vb(": "7 8vb 10 0 0",
+	"8vb)": "7 8vb 10 0 0",
+	"15ma(": "5 15ma 10 0 0",
+	"15ma)": "5 15ma 10 0 0",
+	"15mb(": "7 15mb 10 0 0",
+	"15mb)": "7 15mb 10 0 0",
+	breath: "5 brth 0 1 20",
+	coda: "5 coda 24 10 10",
+	dacapo: "5 dacs 16 20 20 Da Capo",
+	dacoda: "5 dacs 16 20 20 Da Coda",
+	"D.C.": "5 dcap 16 10 10",
+	"D.S.": "5 dsgn 16 10 10",
+	"D.C.alcoda": "5 dacs 16 38 38 D.C. al Coda",
+	"D.S.alcoda": "5 dacs 16 38 38 D.S. al Coda",
+	"D.C.alfine": "5 dacs 16 38 38 D.C. al Fine",
+	"D.S.alfine": "5 dacs 16 38 38 D.S. al Fine",
+	fermata: "5 hld 12 7 7",
+	fine: "5 dacs 16 10 10 Fine",
+	invertedfermata: "7 hld 12 7 7",
+	segno: "5 sgno 22 8 8",
 	f: "6 f 18 4 4",
 	ff: "6 ff 18 6 6",
 	fff: "6 fff 18 9 9",
@@ -137,14 +145,6 @@ var decos = {
 	"-)": "8 gliss 0 0 0",
 	"~(": "8 glisq 0 0 0",
 	"~)": "8 glisq 0 0 0",
-	"8va(": "3 8va 10 0 0",
-	"8va)": "3 8va 10 0 0",
-	"8vb(": "4 8vb 10 0 0",
-	"8vb)": "4 8vb 10 0 0",
-	"15ma(": "3 15ma 10 0 0",
-	"15ma)": "3 15ma 10 0 0",
-	"15mb(": "4 15mb 10 0 0",
-	"15mb)": "4 15mb 10 0 0",
 // internal
 //	color: "10 0 0 0 0",
 	invisible: "32 0 0 0 0",
@@ -184,13 +184,13 @@ var decos = {
 	f_note = [
 		null, null, null,
 		d_upstaff,	// 3 - tied to note
-		d_upstaff,	// 4 (below the staff)
-		d_trill	// 5
+		d_upstaff	// 4 (below the staff)
 	],
 	f_staff = [
-		null, null, null, null, null, null,
+		null, null, null, null, null,
+		d_upstaff,	// 5 (above the staff)
 		d_pf,		// 6 - tied to staff (dynamic marks)
-		d_cresc		// 7
+		d_upstaff	// 7 (below the staff)
 	]
 
 /* -- get the max/min vertical offset -- */
@@ -329,7 +329,8 @@ function d_arp(de) {
 function d_cresc(de) {
 	if (de.ldst)			// skip start of deco
 		return
-    var	dd2, up, dx, x2, i, de3,
+    var	up, dx, x2, i, de3,
+	dd = de.dd,
 	s2 = de.s,
 	de2 = de.start,			// start of the deco
 	s = de2.s,
@@ -338,9 +339,9 @@ function d_cresc(de) {
 	de.st = s2.st;
 	de.lden = false;		/* old behaviour */
 	de.has_val = true;
-	if (de.dd.ty == '^')
+	if (dd.ty == '^')
 		up = 1
-	else if (de.dd.ty != '_')
+	else if (dd.ty != '_')
 		up = up6(s2, s2.pos.dyn)
 	if (up)
 		de.up = true
@@ -409,7 +410,9 @@ function d_cresc(de) {
 	de.x = x;
 	de.y = y_get(de.st, up, x, dx)
 	if (!up)
-		de.y -= de.dd.h
+		de.y -= dd.h
+	else
+		de.y += dd.hd
 	/* (y_set is done later in draw_deco_staff) */
 }
 
@@ -506,6 +509,8 @@ function d_pf(de) {
 	de.y = y_get(s.st, up, x, de.val)
 	if (!up)
 		de.y -= dd.h
+	else
+		de.y += dd.hd
 	/* (y_set is done later in draw_deco_staff) */
 }
 
@@ -634,7 +639,7 @@ function d_trill(de) {
 		s.ymn = s2.ymn = y
 }
 
-/* 3, 4: above (or below) the staff */
+/* 3, 4, 5, 7: above (or below) the staff */
 function d_upstaff(de) {
 
 	// don't treat here the long decorations
@@ -673,12 +678,10 @@ function d_upstaff(de) {
 
 	if (s.nhd)
 		x += s.notes[s.stem >= 0 ? 0 : s.nhd].shhd;
-	up = dd.func == 4 ? 0
+	de.up = up = (dd.func == 4 || dd.func == 7) ? 0
 			: dd.func == 6 ? up6(s, de.pos)
 					: up3(s, de.pos)
 
-	if (dd.name.indexOf("invert") == 0)
-		de.inv = 1
 	switch (dd.ty) {
 	case '@':
 	case '<':
@@ -687,7 +690,7 @@ function d_upstaff(de) {
 		break
 	}
 	if (y == undefined) {
-		if (up && dd.name != "invertedfermata") {
+		if (up) {
 			y = y_get(s.st, true, x - dd.wl, w)
 					+ dd.hd
 			if (y < stafft)
@@ -771,10 +774,10 @@ function deco_def(nm, nmd) {
 		error(1, null, "%%deco: bad C function index '$1'", c_func)
 		return //undefined
 	}
-	if (c_func == 5)			// old !trill(!
-		c_func = 3
-	if (c_func == 7)			// old !cresc(!
-		c_func = 6
+//	if (c_func == 5)			// old !trill(!
+//		c_func = 3
+//	if (c_func == 7)			// old !cresc(!
+//		c_func = 6
 
 	if (h.indexOf(',') > 0) {
 		h = h.split(',')
@@ -962,8 +965,6 @@ function deco_cnv(s, prev) {
 				note.a_dd.push(dd)
 			}
 			continue
-		default:
-			break
 		case 10:		/* color */
 			if (s.notes) {
 				for (j = 0; j <= s.nhd; j++)
@@ -1068,6 +1069,8 @@ function deco_cnv(s, prev) {
 		case 44:		// cross-voice ties
 			do_ctie(nm, s, s.notes[0])	// (only one note for now)
 			continue
+//		default:
+//			break
 		}
 
 		// add the decoration in the symbol
@@ -1323,6 +1326,7 @@ Abc.prototype.draw_all_deco = function() {
 //			x = y = 0
 //		} else
 		if (de.inv) {
+			y = y + dd.h - dd.hd
 			g_open(x, y, 0, 1, -1);
 			x = y = 0
 		}
@@ -1405,6 +1409,8 @@ function draw_deco_near() {
 				break
 			case 3:				/* d_upstaff */
 			case 4:
+			case 5:				// after slurs
+			case 7:
 				pos = s.pos.orn
 				break
 			case 6:				/* d_pf */
@@ -1455,6 +1461,8 @@ function draw_deco_near() {
 				pos: pos
 //				dy: 0
 			}
+			if (dd.name.indexOf("invert") == 0)
+				de.inv = 1
 			if (s.type == C.BAR && !dd.ty)
 				de.x -= s.wl / 2 - 2
 			a_de.push(de)
@@ -1835,9 +1843,10 @@ function draw_deco_staff() {
 		if (dd.dd_en		// if start
 		 || !f_staff[dd.func])
 			continue
-		if ((de.pos & C.SL_ALI_MSK) == C.SL_ALIGN
-		 || ((de.pos & C.SL_ALI_MSK) == 0
-		  && de.s.fmt.dynalign > 0)) {	// if align
+		if (dd.func == 6
+		 &&((de.pos & C.SL_ALI_MSK) == C.SL_ALIGN
+		  || ((de.pos & C.SL_ALI_MSK) == 0
+		   && de.s.fmt.dynalign > 0))) {	// if align
 			if (de.up)
 				y = minmax[de.st].ymax
 			else

@@ -134,7 +134,7 @@ var tgls = {
   emb: {x:-4, y:-2, c:"\ue4a4"},
   wedge: {x:-1, y:0, c:"\ue4a8"},
   marcato: {x:-3, y:-2, c:"\ue4ac"},
-  hld: {x:-7, y:2, c:"\ue4c0"},		// fermata
+  hld: {x:-7, y:-2, c:"\ue4c0"},	// fermata
   brth: {x:0, y:0, c:"\ue4ce"},
   r00: {x:-1.5, y:0, c:"\ue4e1"},
   r0: {x:-1.5, y:0, c:"\ue4e2"},
@@ -160,7 +160,7 @@ var tgls = {
   fff: {x:-9, y:-6, c:"\ue530"},
   ffff: {x:-12, y:-6, c:"\ue531"},
   sfz: {x:-9, y:-6, c:"\ue539"},
-  trl: {x:-4, y:-4, c:"\ue566"},	// trill
+  trl: {x:-4, y:-2, c:"\ue566"},	// trill
   turn: {x:-5, y:3, c:"\ue567"},
   turnx: {x:-5, y:3, c:"\ue569"},
   umrd: {x:-7, y:2, c:"\ue56c"},
