@@ -119,18 +119,18 @@ function sym_add(p_voice, type) {
 /* -- sort all symbols by time and vertical sequence -- */
 // weight of the symbols !! depends on the symbol type !!
 var w_tb = new Uint8Array([
-	4,	// bar
+	5,	// bar
 	1,	// clef
 	8,	// custos
 	0,	// (free)
-	3,	// grace
-	5,	// key
-	6,	// meter
+	4,	// grace
+	2,	// key
+	3,	// meter
 	9,	// mrest
 	9,	// note
 	0,	// part
 	9,	// rest
-	3,	// space
+	4,	// space
 	0,	// staves
 	7,	// stbrk
 	0,	// tempo
