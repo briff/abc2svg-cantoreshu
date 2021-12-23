@@ -3545,7 +3545,7 @@ function draw_systems(indent) {
 				self.draw_hl(s)
 			break
 		case C.REST:
-			if (s.dur_orig == s.p_v.meter.wmeasure
+			if (s.fmr		// if full measure rest
 			 || (s.rep_nb && s.rep_nb >= 0))
 				center_rest(s)
 			if (!s.invis)

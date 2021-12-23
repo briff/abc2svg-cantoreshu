@@ -2281,6 +2281,7 @@ function mrest_expand() {
 		s.notes[0].dur = s.dur = s.dur_orig = dur
 		s.nflags = -2
 		s.head = C.FULL
+		s.fmr = 1			// full measure rest
 
 		/* add the bar(s) and rest(s) */
 		tim = s.time + dur

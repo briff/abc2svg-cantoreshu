@@ -2009,6 +2009,7 @@ Abc.prototype.new_note = function(grace, sls) {
 		if (s.nmes == 1) {
 			s.type = C.REST;
 			s.dur_orig = s.dur;
+			s.fmr = 1		// full measure rest
 			s.notes = [{
 				pit: 18,
 				dur: s.dur
@@ -2041,6 +2042,8 @@ Abc.prototype.new_note = function(grace, sls) {
 					C.BLEN :
 					curvoice.ulen) * nd[0] / nd[1];
 		s.dur = s.dur_orig * curvoice.dur_fact;
+		if (s.dur == curvoice.wmeasure)
+			s.fmr = 1		// full measure rest
 		s.notes = [{
 			pit: 18,
 			dur: s.dur_orig
