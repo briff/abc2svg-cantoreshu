@@ -59,9 +59,26 @@ abc2svg.page = {
 		'" text-anchor="middle">',
 		'" text-anchor="end">' ]
 
+	// replace <>& by XML character references
+	function clean_txt(txt) {
+		return txt.replace(/<|>|&.*?;|&/g, function(c) {
+			switch (c) {
+			case '<': return "&lt;"
+			case '>': return "&gt;"
+			case '&': return "&amp;"
+			}
+			return c
+		})
+	} // clean_txt()
+
+	// clear a field if $x said so
+	function clr(str) {
+		return str.indexOf('\u00ff') >= 0 ? '' : str
+	} //clr()
+
 	// create the text of a header or a footer
 	function header_footer(o_font, str) {
-	    var	c, i, k, t, n_font,
+	    var	c, d, i, k, t, n_font, s,
 		c_font = o_font,
 		nl = 1,
 		j = 0,
@@ -69,94 +86,58 @@ abc2svg.page = {
 
 		if (str[0] == '"')
 			str = str.slice(1, -1)
-		if (str.indexOf('\t') < 0)		// if no TAB
-			str = '\t' + str		// center
-
-		for (i = 0; i < str.length; i++) {
-			c = str[i]
-			switch (c) {
-			case '>':
-				r[j] += "&gt;"
-				continue
-			case '<':
-				r[j] += "&lt;"
-				continue
-			case '&':
-				for (k = i + 1; k < i + 8; k++) {
-					if (!str[k] || str[k] == '&'
-					 || str[k] == ';')
-						break
-				}
-				r[j] += str[k] == ';' ? "&" : "&amp;"
-				continue
-			case '\t':
-				if (j < 2)
-					j++		// next column
-				continue
-			case '\\':			// hope '\n'
-				if (c_font != o_font) {
-					r[j] += "</tspan>"
-//					c_font = o_font
-				}
-				for (j = 0; j < 3; j++)
-					r[j] += '\n';
-				nl++;
-				j = 0;
-				i++
-				continue
-			default:
-				r[j] += c
-				continue
-			case '$':
+		while (1) {
+			i = str.indexOf('$', j)
+			if (i < 0)
 				break
-			}
 			c = str[++i]
+			s = '$' + c		// string to replace
 			switch (c) {
 			case 'd':
 				if (!abc2svg.get_mtime)
 					break // cannot know the change time of the file
-				t = abc2svg.get_mtime(page.abc.parse.fname)
+				d = abc2svg.get_mtime(abc.parse.fname)
 				// fall thru
 			case 'D':
 				if (c == 'D')
-					t = new Date()
+					d = new Date()
 				if (cfmt.dateformat[0] == '"')
 					cfmt.dateformat = cfmt.dateformat.slice(1, -1)
-				r[j] += strftime(cfmt.dateformat, t)
+				d = strftime(cfmt.dateformat, d)
 				break
 			case 'F':
-				r[j] += page.abc.parse.fname
+				d = page.abc.parse.fname
 				break
 			case 'I':
 				c = str[++i]
+				s += c
+				// fall thru
 			case 'T':
 				t = page.abc.info()[c]
-				if (t)
-					r[j] += t.split('\n', 1)[0]
+				d = t ? t.split('\n', 1)[0] : ''
 				break
-			case 'P':
-			case 'Q':
+			case 'P':			// current page number
+			case 'Q':			// absolute page number
 				t = c == 'P' ? page.pn : page.pna
 				switch (str[i + 1]) {
 				case '0':
-					i++
-					if (!(t & 1))
-						r[j] += t
+					s += '0'
+					d = (t & 1) ? '\u00ff' : t
 					break
 				case '1':
-					i++
-					if (t & 1)
-						r[j] += t
+					s += '1'
+					d = (t & 1) ? t : '\u00ff'
 					break
 				default:
-					r[j] += t
+					d = t
 					break
 				}
 				break
 			case 'V':
-				r[j] += "abc2svg-" + abc2svg.version
+				d = "abc2svg-" + abc2svg.version
 				break
 			default:
+				d = ''
 				if (c == '0')
 					n_font = o_font
 				else if (c >= '1' && c < '9')
@@ -168,19 +149,36 @@ abc2svg.page = {
 				if (n_font == c_font)
 					break
 				if (c_font != o_font)
-					r[j] += "</tspan>";
+					d += "</tspan>"
 				c_font = n_font
 				if (c_font == o_font)
 					break
-				r[j] += '<tspan class="' +
-						font_class(n_font) + '">'
+				d += '<tspan class="' +
+					font_class(n_font) + '">'
 				break
 			}
+			str = str.replace(s, d)
+			j = i
 		}
 		if (c_font != o_font)
-			r[j] += "</tspan>";
+			str += "</tspan>";
 
-		r[4] = nl		// number of lines
+		str = str.split('\n')
+		r[4] = str.length		// number of lines
+		for (j = 0; j < str.length; j++) {
+			if (j != 0)
+				for (i = 0; i < 3; i++)
+					r[i] += '\n'
+			t = str[j].split('\t')
+			if (t.length == 1) {
+				r[1] += clr(t[0])
+			} else {
+				for (i = 0; i < 3; i++) {
+					if (t[i])
+						r[i] += clr(t[i])
+				}
+			}
+		}
 		return r
 	} // header_footer()
 
@@ -198,7 +196,7 @@ abc2svg.page = {
 		str = str.slice(1)
 	}
 
-	a = header_footer(font, str)
+	a = header_footer(font, clean_txt(str))
 	y0 = font.size * .8
 	for (i = 0; i < 3; i++) {
 		str = a[i]

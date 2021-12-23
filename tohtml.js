@@ -48,59 +48,62 @@ function get_date() {
 } // get_date()
 
 function header_footer(str) {
-    var	c, i, t,
+    var	c, d, i, t,
 	j = 0,
 	r = ["", "", ""]
 
 	if (str[0] == '"')
 		str = str.slice(1, -1)
-	if (str.indexOf('\t') < 0)		// if no TAB
-		str = '\t' + str		// center
-
-	for (i = 0; i < str.length; i++) {
-		c = str[i]
-		switch (c) {
-		case '\t':
-			if (j < 2)
-				j++		// next column
-			continue
-		case '\n':
-			for (j = 0; j < 3; j++)
-				r[j] += '<br/>'
-			j = 0
-			continue
-		default:
-			r[j] += c
-			continue
-		case '$':
+	while (1) {
+		i = str.indexOf('$', j)
+		if (i < 0)
 			break
-		}
 		c = str[++i]
 		switch (c) {
 		case 'd':
 			if (!abc2svg.get_mtime)
 				break // cannot know the modification date of the file
-			r[j] += abc2svg.get_mtime(abc.parse.fname)
+			d = abc2svg.get_mtime(abc.parse.fname)
 			break
 		case 'D':
-			r[j] += get_date()
+			d = get_date()
 			break
 		case 'F':
-			r[j] += abc.parse.fname
+			d = abc.parse.fname
 			break
 		case 'I':
-			c = str[++i]
+			str = str.replace('$', '')
+			d = str[i]
 		case 'T':
 			t = abc.info()[c]
-			if (t)
-				r[j] += t.split('\n', 1)[0]
+			d = t ? t.split('\n', 1)[0] : ''
 			break
 		case 'P':
-			r[j] += '\x0c'	// form feed
+			d = '\x0c'	// form feed
 			break
 		case 'V':
-			r[j] += "abc2svg-" + abc2svg.version
+			d = "abc2svg-" + abc2svg.version
 			break
+		default:
+			d = ''
+			break
+		}
+		str = str.replace('$' + c, d)
+		j = i
+	}
+	str = str.split('\n')
+	for (j = 0; j < str.length; j++) {
+		if (j != 0)
+			for (i = 0; i < 3; i++)
+				r[i] += '<br>'
+		t = str[j].split('\t')
+		if (t.length == 1) {
+			r[1] += t[0]
+		} else {
+			for (i = 0; i < 3; i++) {
+				if (t[i])
+					r[i] += t[i]
+			}
 		}
 	}
 	return r
@@ -154,14 +157,12 @@ abc2svg.abc_init = function() {
 	    var	i, page,
 		lcr = ["l", "c", "r"],
 //fixme: handle font changes?
-//		a = header_footer(clean_txt(str))
-		a = header_footer(str)
+		a = header_footer(clean_txt(str))
 
 		abc2svg.print('<table class="' + type + '" width="100%"><tr>')
 		for (i = 0; i < 3; i++) {
 			str = a[i]
 			if (!str)
-//				continue
 				str = '&nbsp;'
 //fixme
 			if (str.indexOf('\x0c') >= 0) {

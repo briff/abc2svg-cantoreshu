@@ -104,7 +104,7 @@ function cnv_escape(src, flag) {
 			j = i + 5
 			continue
 		case 't':			// TAB
-			dst += ' ';
+			dst += '\t';
 			j = i + 1
 			continue
 		case 'n':			// new line (voice name)
