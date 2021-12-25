@@ -972,6 +972,10 @@ Abc.prototype.out_lped = function(x, y, val, defl) {
 		xygl(x + val + 6, y, "pedoff")
 }
 function out_8va(x, y, val, defl) {
+	if (val < 18) {
+		val = 18
+		x -= 4
+	}
 	if (!defl.nost) {
 		out_XYAB('<text x="X" y="Y" \
 style="font:italic bold 12px text,serif">8\
@@ -979,8 +983,6 @@ style="font:italic bold 12px text,serif">8\
 			x - 8, y);
 		x += 12;
 		val -= 12
-	} else {
-		val -= 5
 	}
 	y += 6;
 	out_XYAB('<path class="stroke" stroke-dasharray="6,6" d="mX YhF"/>\n',
@@ -989,6 +991,10 @@ style="font:italic bold 12px text,serif">8\
 		out_XYAB('<path class="stroke" d="mX Yv6"/>\n', x + val, y)
 }
 function out_8vb(x, y, val, defl) {
+	if (val < 18) {
+		val = 18
+		x -= 4
+	}
 	if (!defl.nost) {
 		out_XYAB('<text x="X" y="Y" \
 style="font:italic bold 12px text,serif">8\
@@ -996,8 +1002,6 @@ style="font:italic bold 12px text,serif">8\
 			x - 8, y);
 		x += 10
 		val -= 10
-	} else {
-		val -= 5
 	}
 //	y -= 2;
 	out_XYAB('<path class="stroke" stroke-dasharray="6,6" d="mX YhF"/>\n',
@@ -1006,6 +1010,10 @@ style="font:italic bold 12px text,serif">8\
 		out_XYAB('<path class="stroke" d="mX Yv-6"/>\n', x + val, y)
 }
 function out_15ma(x, y, val, defl) {
+	if (val < 22) {
+		val = 22
+		x -= 4
+	}
 	if (!defl.nost) {
 		out_XYAB('<text x="X" y="Y" \
 style="font:italic bold 12px text,serif">15\
@@ -1013,8 +1021,6 @@ style="font:italic bold 12px text,serif">15\
 			x - 10, y);
 		x += 20;
 		val -= 20
-	} else {
-		val -= 5
 	}
 	y += 6;
 	out_XYAB('<path class="stroke" stroke-dasharray="6,6" d="mX YhF"/>\n',
@@ -1023,6 +1029,10 @@ style="font:italic bold 12px text,serif">15\
 		out_XYAB('<path class="stroke" d="mX Yv6"/>\n', x + val, y)
 }
 function out_15mb(x, y, val, defl) {
+	if (val < 20) {
+		val = 20
+		x -= 4
+	}
 	if (!defl.nost) {
 		out_XYAB('<text x="X" y="Y" \
 style="font:italic bold 12px text,serif">15\
@@ -1030,8 +1040,6 @@ style="font:italic bold 12px text,serif">15\
 			x - 10, y);
 		x += 18
 		val -= 18
-	} else {
-		val -= 5
 	}
 //	y -= 2;
 	out_XYAB('<path class="stroke" stroke-dasharray="6,6" d="mX YhF"/>\n',
