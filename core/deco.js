@@ -95,14 +95,14 @@ var decos = {
 	turn: "3 turn 5,5 6 6",
 	"trill(": "3 ltr 8 4 0",
 	"trill)": "3 ltr 8 4 0",
-	"8va(": "5 8va 10 0 0",
-	"8va)": "5 8va 10 0 0",
-	"8vb(": "7 8vb 10 0 0",
-	"8vb)": "7 8vb 10 0 0",
-	"15ma(": "5 15ma 10 0 0",
-	"15ma)": "5 15ma 10 0 0",
-	"15mb(": "7 15mb 10 0 0",
-	"15mb)": "7 15mb 10 0 0",
+	"8va(": "5 8va 12 6 6",
+	"8va)": "5 8va 12 6 6",
+	"8vb(": "7 8vb 12 6 6",
+	"8vb)": "7 8vb 12 6 6",
+	"15ma(": "5 15ma 12 9 9",
+	"15ma)": "5 15ma 12 9 9",
+	"15mb(": "7 15mb 12 9 9",
+	"15mb)": "7 15mb 12 9 9",
 	breath: "5 brth 0 1 20",
 	coda: "5 coda 24 10 10",
 	dacapo: "5 dacs 16 20 20 Da Capo",
@@ -564,19 +564,20 @@ function d_trill(de) {
 	}
 	de.st = st
 
-	if (dd.func != 4) {		// if not below
-		switch (dd.glyph) {
-		case "8va":
-		case "15ma":
-			up = 1
-			break
-		default:
+	switch (dd.func) {
+	case 5:
+		up = 1
+		break
+	case 4:
+	case 7:
+		break
+	case 3:			// tied to note
+	case 6:			// dynamic mark
 			if (dd.func == 6)
 				up = up6(s, de.pos)
 			else
 				up = up3(s, de.pos)
 			break
-		}
 	}
 	if (dd.ty == '^')
 		up = 1
@@ -630,6 +631,7 @@ function d_trill(de) {
 	de.val = w;
 	de.x = x;
 	de.y = y
+	de.up = up
 	if (up)
 		y += dd.h;
 	y_set(st, up, x, w, y)
@@ -1272,7 +1274,7 @@ Abc.prototype.draw_all_deco = function() {
 
 		/* center the dynamic marks between two staves */
 /*fixme: KO when deco on other voice and same direction*/
-		} else if (f_staff[dd.func]
+		} else if (dd.func == 6
 			&& ((de.pos & C.SL_ALI_MSK) == C.SL_CENTER
 			 || ((de.pos & C.SL_ALI_MSK) == 0
 			  && !s.fmt.dynalign))
@@ -1589,8 +1591,10 @@ function draw_deco_near() {
 			de2.start = de;
 			de2.defl.nost = de.defl.nost
 
-			// handle same decoration type at a same time
-			if (i > 0
+			// handle same numbered decoration at a same time
+			j = dd.name.slice(-1)
+			if (j >= '0' && j <= '9'
+			 && i > 0
 			 && a_de[i - 1].s.time == de.s.time
 			 && a_de[i - 1].dd.name.slice(0, -2) ==
 					dd.name.slice(0, -2))

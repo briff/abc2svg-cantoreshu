@@ -998,7 +998,7 @@ function out_8vb(x, y, val, defl) {
 	if (!defl.nost) {
 		out_XYAB('<text x="X" y="Y" \
 style="font:italic bold 12px text,serif">8\
-<tspan dy=".5" style="font-size:10px">va</tspan></text>\n',
+<tspan dy=".5" style="font-size:10px">vb</tspan></text>\n',
 			x - 8, y);
 		x += 10
 		val -= 10
@@ -1010,9 +1010,9 @@ style="font:italic bold 12px text,serif">8\
 		out_XYAB('<path class="stroke" d="mX Yv-6"/>\n', x + val, y)
 }
 function out_15ma(x, y, val, defl) {
-	if (val < 22) {
-		val = 22
-		x -= 4
+	if (val < 25) {
+		val = 25
+		x -= 6
 	}
 	if (!defl.nost) {
 		out_XYAB('<text x="X" y="Y" \
@@ -1029,14 +1029,14 @@ style="font:italic bold 12px text,serif">15\
 		out_XYAB('<path class="stroke" d="mX Yv6"/>\n', x + val, y)
 }
 function out_15mb(x, y, val, defl) {
-	if (val < 20) {
-		val = 20
-		x -= 4
+	if (val < 24) {
+		val = 24
+		x -= 5
 	}
 	if (!defl.nost) {
 		out_XYAB('<text x="X" y="Y" \
 style="font:italic bold 12px text,serif">15\
-<tspan dy="-.5" style="font-size:10px">ma</tspan></text>\n',
+<tspan dy=".5" style="font-size:10px">mb</tspan></text>\n',
 			x - 10, y);
 		x += 18
 		val -= 18
