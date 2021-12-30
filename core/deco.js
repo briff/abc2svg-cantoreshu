@@ -69,7 +69,7 @@ var decos = {
 	upbow: "3 upb 10 5 5",
 	downbow: "3 dnb 9 5 5",
 	gmark: "3 grm 6 5 5",
-	wedge: "0 wedge 7,1 3 3",	// (staccatissimo or spiccato)
+	wedge: "0 wedge 8 3 3",	// (staccatissimo or spiccato)
 	longphrase: "3 lphr 0 1 1",
 	mediumphrase: "3 mphr 0 1 1",
 	shortphrase: "3 sphr 0 1 1",
@@ -442,10 +442,10 @@ function d_near(de) {
 	if (up) {
 		y += dd.hd
 		s.ymx = y + dd.h
-	} else if (dd.name[0] == 'w') {		// wedge
+	} else if (dd.name[0] == 'w') {		// wedge (no descent)
 		de.inv = true
-		y -= dd.hd
-		s.ymn = y - dd.h
+		y -= dd.h
+		s.ymn = y
 	} else {
 		y -= dd.h
 		s.ymn = y - dd.hd
