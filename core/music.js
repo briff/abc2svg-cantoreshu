@@ -3289,6 +3289,9 @@ function init_music_line() {
 			case C.METER:
 				s.p_v.meter = s
 				insert_meter = cfmt.writefields.indexOf('M') >= 0
+					&& s.a_meter.length
+				if (!insert_meter && s.part)
+					s.next.part = s.part
 				break
 			}
 			unlksym(s)
@@ -3374,8 +3377,8 @@ function init_music_line() {
 			s2 = p_voice.meter
 			if (!cur_sy.voices[v]
 			 || cur_sy.voices[v].second
-			 || !cur_sy.st_print[cur_sy.voices[v].st]
-			 || !s2.a_meter.length)
+			 || !cur_sy.st_print[cur_sy.voices[v].st])
+//			 || !s2.a_meter.length)
 				continue
 			s = clone(s2)
 			new_sym(s, p_voice, last_s)
