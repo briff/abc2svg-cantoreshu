@@ -750,7 +750,8 @@ function new_key(param) {
 
 // M: meter
 function new_meter(p) {
-	var	s = {
+    var	p_v,
+	s = {
 			type: C.METER,
 			dur: 0,
 			a_meter: []
@@ -920,6 +921,10 @@ function new_meter(p) {
 			curvoice.meter = s
 		else
 			sym_link(s)
+
+		// set the meter of the overlay voices
+		for (p_v = curvoice.voice_down; p_v; p_v = p_v.voice_down)
+			p_v.wmeasure = wmeasure
 	}
 }
 
