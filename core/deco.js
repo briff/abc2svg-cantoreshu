@@ -60,7 +60,7 @@ var decos = {
 	dot: "0 stc 6 1 1",
 	tenuto: "0 emb 6 3 3",
 	slide: "1 sld 3 7 0",
-	arpeggio: "2 arp 12 10 0",
+	arpeggio: "2 arp 12 10 2",
 	roll: "3 roll 3,3 6 6",
 	emphasis: "3 accent 3.5,3.5 4 4",
 	lowermordent: "3 lmrd 4,4 5 5",
@@ -291,14 +291,14 @@ function d_arp(de) {
 	var	m, h, dx,
 		s = de.s,
 		dd = de.dd,
-		xc = 5
+		xc = dd.wr
 
 	if (s.type == C.NOTE) {
 		for (m = 0; m <= s.nhd; m++) {
 			if (s.notes[m].acc) {
-				dx = 5 + s.notes[m].shac
+				dx = s.notes[m].shac
 			} else {
-				dx = 6 - s.notes[m].shhd
+				dx = 1 - s.notes[m].shhd
 				switch (s.head) {
 				case C.SQUARE:
 					dx += 3.5
@@ -322,7 +322,7 @@ function d_arp(de) {
 	de.val = h;
 //	de.x = s.x - xc;
 	de.x -= xc;
-	de.y = 3 * (s.notes[0].pit - 18) - 3
+	de.y = 3 * ((s.notes[0].pit + s.notes[s.nhd].pit) / 2 - 18) - h / 2 - 3
 }
 
 // special case for long dynamic decorations
