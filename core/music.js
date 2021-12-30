@@ -1659,8 +1659,10 @@ function set_nl(s) {			// s = start of line
 			}
 			lktsym(s2, s)		// time
 			if (!noseq) {
-				s2.seqst = true
 				noseq = 1
+				s2.seqst = true
+				s2.shrink = s2.wl + s2.prev.wr
+				s2.space = 0
 			}
 			if (s == so)
 				so = s2
