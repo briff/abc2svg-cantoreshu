@@ -332,6 +332,8 @@ function lkvsym(s, next) {	// voice linkage
 	next.prev = s
 }
 function lktsym(s, next) {	// time linkage
+    var	old_wl
+
 	s.ts_next = next
 	if (next) {
 		s.ts_prev = next.ts_prev
@@ -353,12 +355,17 @@ error(2, s, "Bad linkage")
 			(w_tb[s.type] != w_tb[next.type]
 			 && w_tb[s.type])
 	if (next.seqst) {
+		old_wl = next.wl
 		self.set_width(next)
 		if (next.a_ly)
 			ly_set(next)
-		next.shrink = next.wl
-		if (next.prev)
-			next.shrink += next.prev.wr
+		if (!next.shrink) {
+			next.shrink = next.wl
+			if (next.prev)
+				next.shrink += next.prev.wr
+		} else {
+			next.shrink += next.wl - old_wl
+		}
 		next.space = 0
 	}
 }
@@ -1619,6 +1626,8 @@ function set_nl(s) {			// s = start of line
 			s = s.ts_prev
 			if (s.bar_type)
 				s1 = s		// first previous bar
+			if (s.type == C.GRACE)
+				so = s		// keep the grace notes in the next line
 		}
 		if (!s1)
 			return so
@@ -1626,9 +1635,9 @@ function set_nl(s) {			// s = start of line
 		// search the insertion point in the new line
 		for (s = so; ; s = s.ts_next) {
 			switch (s.type) {
-			default:
-				if (w_tb[s.type])
-					break
+//			default:
+//				if (w_tb[s.type])
+//					break
 			case C.KEY:
 			case C.METER:
 			case C.CLEF:
@@ -1764,15 +1773,7 @@ function set_nl(s) {			// s = start of line
 	do_warn(s)
 
 	/* if normal symbol, cut here */
-	switch (s.ts_prev.type) {
-	case C.STAVES:
-		break
-	case C.GRACE:			/* don't cut on a grace note */
-		s = s.next
-		if (!s)
-			return s
-		/* fall thru */
-	default:
+	if (s.ts_prev.type != C.STAVES) {
 		set_eol(s)
 		return s
 	}

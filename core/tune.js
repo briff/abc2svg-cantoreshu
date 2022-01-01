@@ -1797,7 +1797,7 @@ function get_vover(type) {
 	if (vover.bar && vover.time) {
 		sym_link({
 			type: C.BAR,
-			bar_type: '|',
+			bar_type: s.bar_type,
 			invis: 1,
 			dur: 0,
 			multi: 0
