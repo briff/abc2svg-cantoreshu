@@ -1770,17 +1770,17 @@ function get_vover(type) {
 	p_voice2.acc = []			// no accidental
 
 	if (!vover) {				/* first '&' in a measure */
-		vover = {
-			bar: true,
-			p_voice: curvoice
-		}
 		time = p_voice2.time
 		for (s = curvoice.last_sym; /*s*/; s = s.prev) {
 			if (s.type == C.BAR
 			 || s.time <= time)	/* (if start of tune) */
 				break
 		}
-		vover.time = s.time
+		vover = {
+			bar: (s && s.bar_type) ? s.bar_type : '|',
+			p_voice: curvoice,
+			time: s.time
+		}
 	} else {
 		if (curvoice != vover.p_voice
 		 && curvoice.time != vover.p_voice.time) {
@@ -1797,7 +1797,7 @@ function get_vover(type) {
 	if (vover.bar && vover.time) {
 		sym_link({
 			type: C.BAR,
-			bar_type: s.bar_type,
+			bar_type: vover.bar,
 			invis: 1,
 			dur: 0,
 			multi: 0
