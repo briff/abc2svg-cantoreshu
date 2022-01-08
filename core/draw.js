@@ -1,6 +1,6 @@
 // abc2svg - draw.js - draw functions
 //
-// Copyright (C) 2014-2021 Jean-Francois Moine
+// Copyright (C) 2014-2022 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -2175,7 +2175,7 @@ function draw_slurs(s, last) {
  * for the value of 'tp.f' */
 function draw_tuplet(s1) {
     var	s2, s3, g, upstaff, nb_only,
-	x1, x2, y1, y2, xm, ym, a, s0, yy, yx, dy, a, dir, r,
+	x1, x2, y1, y2, xm, ym, a, s0, yy, yx, dy, a, dir, r, w,
 	tp = s1.tp.shift()		// tuplet parameters
 
 	if (!s1.tp.length)
@@ -2431,7 +2431,8 @@ function draw_tuplet(s1) {
 			yy = ym + (s3.x - xm) * a
 			if (s3.ymx < yy)
 				s3.ymx = yy
-			y_set(upstaff, true, s3.x, s3.next.x - s3.x, yy)
+			w = s3.next.x - s3.x - 10
+			y_set(upstaff, true, s3.x - w, w * 2, yy)
 		}
 		if (s3 == s2)
 			break
@@ -2509,8 +2510,9 @@ function draw_tuplet(s1) {
 			yy = ym + (s3.x - xm) * a
 			if (s3.ymn > yy)
 				s3.ymn = yy;
+			w = s3.next.x - s3.x - 10
 			if (s3.next)
-				y_set(upstaff, false, s3.x, s3.next.x - s3.x, yy)
+				y_set(upstaff, false, s3.x - w, w * 2, yy)
 		}
 		if (s3 == s2)
 			break
@@ -2706,10 +2708,11 @@ function draw_all_ties(p_voice) {
  *   - decorations tied to the notes
  *   - tuplets and slurs
  * - not scaled
- *   - chord symbols
  *   - measure numbers
  *   - lyrics
  *   - staff decorations
+ *   - chord symbols
+ *   - repeat brackets
  * The buffer output is delayed until the definition of the staff system
  */
 function draw_sym_near() {
