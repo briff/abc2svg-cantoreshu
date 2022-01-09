@@ -224,17 +224,17 @@ abc2svg.strtab = {
 			nt = s.notes[m]
 			if (nt.nb != undefined)
 				continue
-			if (nt.a_dcn) {
-				i = nt.a_dcn.length
+			if (nt.a_dd) {
+				i = nt.a_dd.length
 				while (--i >= 0) {
-					bi = strnum(nt.a_dcn[i])
+					bi = strnum(nt.a_dd[i].name)
 					if (bi >= 0) {
 						set_pit(p_v, s, nt, bi)
-						delete nt.a_dcn
+						delete nt.a_dd
 						continue ls
 					}
 				}
-				delete nt.a_dcn
+				delete nt.a_dd
 			}
 
 			// search the best string
