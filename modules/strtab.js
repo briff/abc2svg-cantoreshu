@@ -1,6 +1,6 @@
 // abc2svg - strtab.js - tablature for string instruments
 //
-// Copyright (C) 2020-2021 Jean-Francois Moine
+// Copyright (C) 2020-2022 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -204,6 +204,8 @@ abc2svg.strtab = {
 			break
 		}
 
+		s.stem = -1			// down stems
+
 		// handle the fret numbers as chord decoration
 		if (!s.nhd && s.a_dd) {
 			i = s.a_dd.length
@@ -363,7 +365,6 @@ abc2svg.strtab = {
 			a.splice(i, 1)
 			i--
 			ok = true
-			p_v.pos.stm = abc2svg.C.SL_BELOW
 			break
 		case "strings=":
 			strs = a[++i]
