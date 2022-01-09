@@ -399,6 +399,8 @@ abc2svg.strtab = {
 			tab = p_v.diafret ?
 				[10, 14, 17] :		// dulcimer
 				[40, 45, 50, 55, 59, 64] // guitar strings
+		} else {
+			tab = p_v.tab
 		}
 	}
 	if (ok) {
