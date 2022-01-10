@@ -1,6 +1,6 @@
 // jianpu.js - module to output jiănpŭ (简谱) music sheets
 //
-// Copyright (C) 2020-2021 Jean-Francois Moine
+// Copyright (C) 2020-2022 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -99,6 +99,8 @@ abc2svg.jianpu = {
 			n = 1
 		else
 			n = 2
+		s.dur = s.dur_orig = C.BLEN / 4
+		delete s.fmr
 		while (--n >= 0) {
 			s2 = {
 				type: C.REST,
@@ -147,7 +149,6 @@ abc2svg.jianpu = {
 				break
 			    }
 			}
-
 			s = s2
 		}
 	} // slice()
@@ -317,7 +318,7 @@ abc2svg.jianpu = {
 	} // out_mus()
 
 	function out_txt(x, y, p) {
-		out_svg('<text class="bn" x="')
+		out_svg('<text class="fj" x="')
 		out_sxsy(x, '" y="', y)
 		out_svg('">' + p + '</text>\n')
 	} // out_txt()
@@ -479,7 +480,7 @@ abc2svg.jianpu = {
 	abc.get_glyphs().gstc = '<circle id="gstc" cx="0" cy="-3" r="2"/>'
 	abc.get_decos().gstc = "0 gstc 5 1 1"
 
-	abc.add_style("\n.bn {font-family:sans-serif; font-size:15px}")
+	abc.add_style("\n.fj{font:15px sans-serif}")
     } // set_hooks()
 } // jianpu
 
