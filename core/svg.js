@@ -1,6 +1,6 @@
 // abc2svg - svg.js - svg functions
 //
-// Copyright (C) 2014-2021 Jean-Francois Moine
+// Copyright (C) 2014-2022 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -56,9 +56,9 @@ var	output = "",		// output buffer
 var tgls = {
  "mtr ": {x:0, y:0, c:"\u0020"},	// space
   brace: {x:0, y:0, c:"\ue000"},
-  lphr: {x:0, y:24, c:"\ue030"},
-  mphr: {x:0, y:24, c:"\ue038"},
-  sphr: {x:0, y:27, c:"\ue039"},
+  lphr: {x:0, y:23, c:"\ue030"},
+  mphr: {x:0, y:23, c:"\ue038"},
+  sphr: {x:0, y:26, c:"\ue039"},
   rdots: {x:-1, y:0, c:"\ue043"},	// repeat dots
   dsgn: {x:-4, y:-4, c:"\ue045"},	// D.S.
   dcap: {x:-4, y:-4, c:"\ue046"},	// D.C.

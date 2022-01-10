@@ -1,6 +1,6 @@
 // abc2svg - deco.js - decorations
 //
-// Copyright (C) 2014-2021 Jean-Francois Moine
+// Copyright (C) 2014-2022 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -666,7 +666,7 @@ function d_upstaff(de) {
 	case "lphr":
 	case "mphr":
 	case "sphr":
-		y = stafft + 1
+		y = stafft
 		if (dd.glyph == "brth" && y < s.ymx)
 			y = s.ymx
 		for (s = s.ts_next; s; s = s.ts_next)
