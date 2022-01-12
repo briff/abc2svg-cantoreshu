@@ -1,6 +1,6 @@
 // abc2svg - gchord.js - chord symbols
 //
-// Copyright (C) 2014-2021 Jean-Francois Moine
+// Copyright (C) 2014-2022 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -333,6 +333,8 @@ Abc.prototype.gch_build = function(s) {
 // (unscaled delayed output)
 // (possible hook)
 Abc.prototype.draw_gchord = function(i, s, x, y) {
+	if (s.invis && s.play)	// play sequence: no chord nor annotation
+		return
     var	y2,
 	an = s.a_gch[i],
 	h = an.text.wh[1],

@@ -1529,6 +1529,8 @@ function draw_deco_near() {
 
 	// create all decorations of a note (chord and heads)
 	function create_all(s) {
+		if (s.invis && s.play)	// play sequence: no decoration
+			return
 		if (s.a_dd)
 			create_deco(s)
 		if (s.notes) {
