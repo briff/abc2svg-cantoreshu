@@ -1,6 +1,6 @@
 // abc2svg - music.js - music generation
 //
-// Copyright (C) 2014-2021 Jean-Francois Moine
+// Copyright (C) 2014-2022 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -1657,6 +1657,7 @@ function set_nl(s) {			// s = start of line
 			s2 = clone(s1)
 			s1.bar_type = t1
 			delete s1.rbstop
+			delete s1.a_gch
 			s2.bar_type = t2
 			lkvsym(s2, s1.next)	// voice
 			while (1) {
