@@ -235,6 +235,18 @@ function render2() {
 
 //	document.body.style.cursor = "wait";
 	syms = []
+
+	// insert the file default.abc if loaded
+	if (abc2svg.a_inc && abc2svg.a_inc["default.abc"]) {
+		try {
+			abc.tosvg("default.abc", abc2svg.a_inc["default.abc"])
+		} catch(e) {
+			alert(e.message + '\nabc2svg tosvg bug - stack:\n' + e.stack)
+			return
+		}
+	}
+
+	// render the textarea
 	try {
 		abc.tosvg(abc_fname[0], content)
 	} catch(e) {
