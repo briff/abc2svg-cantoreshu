@@ -1809,6 +1809,8 @@ function get_vover(type) {
 function is_voice_sig() {
 	var s
 
+	if (!curvoice.last_sym)
+		return true
 	if (curvoice.time)
 		return false
 	for (s = curvoice.last_sym; s; s = s.prev)
