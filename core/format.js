@@ -102,9 +102,7 @@ H "History: "',
 		new Float32Array([	// default = "1.3, 38"
 			10.2, 13.3, 17.3, 22.48, 29.2,
 			38,
-			49.4, 64.2, 83.5, 108.5
-, 61.9, 82.3, 109.5
-	]),
+			49.4, 64.2, 83.5, 108.5]),
 	staffsep: 46,
 	stemheight: 21,			// one octave
 	stretchlast: .25,
