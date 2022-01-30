@@ -166,7 +166,7 @@ abc2svg.gamelan = {
 
 	function set_sym(p_v) {
 	    var s, s2, note, pit, nn, p, a, m, i,
-		sf = p_v.key.k_sf
+		sf = p_v.key.k_sf,
 		delta = abc2svg.gamelan.cgd2cde[sf + 7] - 2
 
 		p_v.key.k_a_acc = []	// no accidental
