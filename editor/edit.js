@@ -1,6 +1,6 @@
 // edit.js - file used in the abc2svg editor
 //
-// Copyright (C) 2014-2021 Jean-Francois Moine
+// Copyright (C) 2014-2022 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -214,10 +214,11 @@ function render() {
 	render2()
 }
 function render2() {
-    var	content = elt_ref.source.value
+    var	content = elt_ref.source.value,
+	def = (abc2svg.a_inc && abc2svg.a_inc["default.abc"]) || ''
 
 	// load the required modules
-	if (!abc2svg.modules.load(content + elt_ref.src1.value, render2))
+	if (!abc2svg.modules.load(content + elt_ref.src1.value + def, render2))
 		return
 
 	// if page formatting, define a function to get the modification date
@@ -877,9 +878,12 @@ function drop(evt) {
 	// check if file
 	data = evt.dataTransfer.files	// FileList object.
 	if (data.length) {
-		var reader = new FileReader();
+	    var reader = new FileReader(),
+		s = srcidx == 0 ? "source" : "src1"
+
+		elt_ref["s" + srcidx].value = abc_fname[srcidx] = data[0].name
 		reader.onload = function(evt) {
-			elt_ref.source.value = evt.target.result;
+			elt_ref[s].value = evt.target.result
 			src_change()
 		}
 		reader.readAsText(data[0],"UTF-8")
