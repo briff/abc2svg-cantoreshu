@@ -33,6 +33,13 @@ abc2svg.jianpu = {
   acc2: new Int8Array([-2, -1, 3, 1, 2]),
   acc_tb: ["\ue264", "\ue260", , "\ue262", "\ue263", "\ue261"],
 
+// don't calculate the beams
+  calc_beam: function(of, bm, s1) {
+	if (!abc.cfmt().jianpu)
+		return of(bm, s1)
+//	return 0
+  }, // calc_beam()
+
 // change %%staves and %%score
   do_pscom: function(of, p) {
 	switch (p.match(/\w+/)[0]) {
@@ -370,6 +377,8 @@ abc2svg.jianpu = {
 			if (s.nflags >= 0 && s.dots)
 				out_mus(x + 8, y + 13, dot)
 			if (s.nflags > 0) {
+				if (s.time == p_voice.sym.time)
+					s.beam_st = 1	// beam continuation
 //fixme: ko with rests because no beam_st /_end
 				if (s.beam_st || s.type == C.REST) {
 					nl = s.nflags
@@ -469,6 +478,7 @@ abc2svg.jianpu = {
     }, // set_width()
 
     set_hooks: function(abc) {
+	abc.calculate_beam = abc2svg.jianpu.calc_beam.bind(abc, abc.calculate_beam)
 	abc.do_pscom = abc2svg.jianpu.do_pscom.bind(abc, abc.do_pscom)
 	abc.draw_symbols = abc2svg.jianpu.draw_symbols.bind(abc, abc.draw_symbols)
 	abc.output_music = abc2svg.jianpu.output_music.bind(abc, abc.output_music)
