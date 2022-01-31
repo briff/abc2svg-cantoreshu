@@ -19,7 +19,7 @@
 
 // convert the xml source into a tree
 function xml2tree(xml) {
-    var	i, j, item, n, no, an,
+    var	i, j, item, n, no,
 	e = 0,
 	stack = [],
 	root = {
@@ -68,27 +68,31 @@ function xml2tree(xml) {
 				error(1, null, 'No start tag "' + item + '"')
 			continue
 		}
-		item = xml.slice(i + 1, e)
-		n = item.match(/(\w+)[\s]*([^]*)/)
+		item = xml.slice(i + 1, e).trim()
 		no = {
-			name: n[1],
+			name: item.match(/[\w-]+/)[0],
 			ix: i
 		}
 		if (!o.children)
 			o.children = []
 		o.children.push(no)
-		if (n[2].slice(-1) != '/') {	// if some content
+		if (item.slice(-1) != '/') {	// if some content
 			stack.push(o)
 			o = no
 		} else {
-			n[2] = n[2].slice(0, -1)
+			item = item.slice(0, -1).trim()
 		}
-		if (!n[2])
+		item = item.replace(/[^\s]*\s*/, '')
+		if (!item)
 			continue
-		n = n[2].match(/[^\s"=]+=?|".*?"/g)	// "
-		for (j = 0; j < n.length; j += 2) {
-			an = n[j].slice(0, -1)
-			no[an] = n[j + 1].slice(1, -1)
+		n = item.match(/=|[^\s"=]+|".*?"/g)	// "
+		for (j = 0; j < n.length; j += 3) {
+			if (n[j + 1] != '='
+			 || !n[j + 2]) {
+				mus.error(1, null, 'Bad key=value in "' + item + '"')
+				break
+			}
+			no[n[j]] = n[j + 2].slice(1, -1)
 		}
 	}
 	return root
