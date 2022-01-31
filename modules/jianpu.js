@@ -35,13 +35,14 @@ abc2svg.jianpu = {
 
 // don't calculate the beams
   calc_beam: function(of, bm, s1) {
-	if (!abc.cfmt().jianpu)
+	if (!this.cfmt().jianpu)
 		return of(bm, s1)
 //	return 0
   }, // calc_beam()
 
 // change %%staves and %%score
   do_pscom: function(of, p) {
+    if (this.cfmt().jianpu)
 	switch (p.match(/\w+/)[0]) {
 	case 'staves':
 	case 'score':
