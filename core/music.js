@@ -3266,8 +3266,10 @@ function init_music_line() {
 
 		/* move the voice to a printed staff */
 		st = cur_sy.voices[v].st
-		while (st < nstaff && !cur_sy.st_print[st])
-			st++;
+		while (st <= nstaff && !cur_sy.st_print[st])
+			st++
+		if (st > nstaff)
+			continue		// no printed staff
 		p_voice.st = st
 		if (!p_voice.second) {
 			staff_tb[st].key = p_voice.ckey
