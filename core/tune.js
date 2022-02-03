@@ -1,6 +1,6 @@
 // abc2svg - tune.js - tune generation
 //
-// Copyright (C) 2014-2021 Jean-Francois Moine
+// Copyright (C) 2014-2022 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -1341,6 +1341,10 @@ function generate(in_mc) {
 	sort_all()			/* define the time / vertical sequences */
 	if (!tsfirst)
 		return
+	if (user.anno_start)
+		anno_start = a_start
+	if (user.anno_stop)
+		anno_stop = a_stop
 	self.set_bar_num()
 	pit_adj()
 

@@ -431,8 +431,9 @@ function a_stop(s, t) {
 }
 function empty_function() {
 }
-var	anno_start = user.anno_start ? a_start : empty_function,
-	anno_stop = user.anno_stop ? a_stop : empty_function
+	// the values are updated on generate()
+    var	anno_start = empty_function,
+	anno_stop = empty_function
 
 // output the stop user annotations
 function anno_put() {
