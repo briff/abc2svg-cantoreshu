@@ -11,7 +11,7 @@ editing, displaying, printing, playing the music files and
 converting them to other formats such as ABC and MEI notations.
 
 The **abc2svg** core is based on the
-[abcm2ps](https://github.com/leesavide/abcm2ps) C code
+[abcm2ps](https://github.com/lewdlime/abcm2ps) C code
 which requires compilation on every operating system. 
 The **abc2svg** scripts can run in any system with no compilation on
 any platform that contains an internet browser. This includes MS-Windows,
