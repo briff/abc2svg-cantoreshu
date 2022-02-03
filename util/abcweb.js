@@ -60,6 +60,7 @@ var	abc, src,
 	a_inc = {},
 	new_page = '',
 	errtxt = '',
+	html,			// set if some pure HTML in the file
 	app = "abcweb",
 	glopar = '',		// global parameters from URL
 	playing,
@@ -218,13 +219,26 @@ function render() {
 
 		res = re.exec(page)
 		if (!res) {
+
+			// alert about bad print
+			if (abc2svg.page && html) {
+				new_page += '\
+<pre class="nop" style="background:#ff8080">\
+Printing may be bad because the file contains pure HTML and %%pageheight\
+</pre>\n'
+				errtxt = ""
+			}
+
 			document.body.innerHTML = new_page // browser page update
 				+ page.slice(ss)	// HTML end
 			window.onclick = abc2svg.playseq	// prepare for play on click
 			return				// done
 		}
 		i = re.lastIndex - res[0].length	// start of music sequence
-		new_page += page.slice(ss, i)		// HTML copy
+		if (i > ss) {
+			new_page += page.slice(ss, i)		// HTML copy
+			html = 1
+		}
 		t = res[2]
 		if (t[0] == '<') {
 			t = t.slice(1, 4)
