@@ -1,6 +1,6 @@
 // abc2svg - jazzchord.js - Adds jazz chord styling to chord symbols
 //
-// Copyright (C) 2020-2021 Jean-Francois Moine
+// Copyright (C) 2020-2022 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -53,11 +53,12 @@ abc2svg.jazzchord = {
 			})
 		}
 
-		t = t.replace(/-|°|º|ᵒ|0|6\/9|\^/g, function(x) {
+//		t = t.replace(/-|°|º|ᵒ|0|6\/9|\^/g, function(x) {
+		t = t.replace(/-|°|º|ᵒ|0|\^/g, function(x) {
 			switch (x) {
 			case '-': return "–"
 			case '0': return "ø"
-			case '6/9': return "⁶⁄₉"
+//			case '6/9': return "⁶⁄₉"
 			case '^': return "∆"
 			default: return "o"
 			}
