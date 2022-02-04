@@ -50,7 +50,9 @@ window.onerror = function(msg, url, line) {
 	return false
 }
 
-    var user
+    var	user,
+	abcplay
+
 if (typeof abc2svg == "undefined")
     var abc2svg = {}
 
@@ -64,7 +66,6 @@ var	abc, src,
 	app = "abcweb",
 	glopar = '',		// global parameters from URL
 	playing,
-	abcplay,
 	playconf = {
 		onend: function() {
 			playing = false
