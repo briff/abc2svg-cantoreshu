@@ -770,12 +770,12 @@ break
 					}
 				}
 			}
-			tie_ch = true
+			tie_ch = s.ti1
 			if (s.notes.length == 1) {
 				note_dump(s, s.notes[0], tie_ch)
 			} else {
 				for (i = 0; i < s.notes.length; i++) {
-					if (!s.notes[i].tie_n) {
+					if (!s.notes[i].tie_ty) {
 						tie_ch = false
 						break
 					}
@@ -800,7 +800,7 @@ break
 					tmp /= 2;
 				dur_dump(tmp)
 			}
-			if (s.tie_s && tie_ch)
+			if (tie_ch)
 				slti_dump(s.notes[0].tie_ty, '-');
 			tmp = s.sl2
 			while (tmp) {
