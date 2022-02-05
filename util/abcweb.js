@@ -215,7 +215,6 @@ function render() {
 	// extract a music sequence
 	// @re is the regular expression starting a music sequence
 	function extract() {
-
 	    var	i, j, k, t
 
 		res = re.exec(page)
@@ -320,7 +319,7 @@ console.log('error i/j '+i+' '+j)
 	else if (/<[^>]* class="[^"]*abc[^"]*/.test(page))	// "
 		re = '<[^>]* class="[^"]*abc[^"]*'
 	else
-		re = '%abc-\d|X:\s*\d'
+		re = '%abc-\\d|X:\\s*\\d'
 
 	re = new RegExp('(^|\n)(' + re + ')', 'g')
 
