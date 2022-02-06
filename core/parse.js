@@ -1018,10 +1018,12 @@ function new_tempo(text) {
 		glovar.tempo = s
 		return
 	}
-	if (!glovar.tempo)
+	if (!curvoice.time)
 		glovar.tempo = s
 	else
 		sym_link(s)
+	if (!glovar.tempo)
+		syntax(0, "No previous tempo")
 }
 
 // treat the information fields which may embedded
