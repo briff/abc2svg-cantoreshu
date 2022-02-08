@@ -81,7 +81,7 @@ abc2svg.jazzchord = {
 			if (a[3])
 				t += "$8" + a[3]
 			if (a[4])
-				t += "/$9" + a[4]
+				t += "$0/$9" + a[4]
 			t += "$0"
 		}
 		if (gch.text[0] == '(')
