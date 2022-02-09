@@ -290,17 +290,17 @@ console.log('error i/j '+i+' '+j)
 		}
 
 		re.lastIndex = ss		// new HTML start
-		src = page.slice(i, j)		// music sequence
-		if (abc2svg.modules.load(src, render1))
-			render1()
-	} // extract()
+//		src = page.slice(i, j)		// music sequence
+//		if (abc2svg.modules.load(src, render1))
+//			render1()
+//	} // extract()
 
 	// render one text music sequence
 	// @page is the content of the page
 	// @ss and @se are the start and end indexes of the music sequence
-	// src is the music sequence
-	function render1() {
-		abc.tosvg(app, src)
+	// i,j are the start and stop of the music inside the page source
+//	function render1() {
+		abc.tosvg(app, page, i, j)
 		abc2svg.abc_end()	// close the page if %%pageheight
 
 		if (errtxt) {
@@ -404,7 +404,10 @@ console.log('error i/j '+i+' '+j)
 
 	// load the included files if any
 	page = document.body.innerHTML		// initial page
-	include()
+
+	// load the required modules and the include files before rendering
+	if (abc2svg.modules.load(page, include))
+		include()
 } // dom_loaded()
 
 // wait for the scripts to be loaded
