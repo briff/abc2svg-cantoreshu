@@ -1,6 +1,6 @@
 {
   "name": "abc2svg",
-  "version": "1.21.5",
+  "version": "1.21.6",
   "description": "ABC music notation translator",
   "files": [
     "COPYING",
