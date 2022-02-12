@@ -59,6 +59,8 @@ var tgls = {
   lphr: {x:0, y:23, c:"\ue030"},
   mphr: {x:0, y:23, c:"\ue038"},
   sphr: {x:0, y:26, c:"\ue039"},
+  short: {x:0, y:32, c:"\ue038"},
+  tick: {x:0, y:29, c:"\ue039"},
   rdots: {x:-1, y:0, c:"\ue043"},	// repeat dots
   dsgn: {x:-4, y:-4, c:"\ue045"},	// D.S.
   dcap: {x:-4, y:-4, c:"\ue046"},	// D.C.
@@ -136,6 +138,7 @@ var tgls = {
   marcato: {x:-3, y:-2, c:"\ue4ac"},
   hld: {x:-7, y:-2, c:"\ue4c0"},	// fermata
   brth: {x:0, y:0, c:"\ue4ce"},
+  caes: {x:0, y:8, c:"\ue4d1"},
   r00: {x:-1.5, y:0, c:"\ue4e1"},
   r0: {x:-1.5, y:0, c:"\ue4e2"},
   r1: {x:-3.5, y:-6, c:"\ue4e3"},

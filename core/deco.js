@@ -104,6 +104,9 @@ var decos = {
 	"15mb(": "7 15mb 12 9 9",
 	"15mb)": "7 15mb 12 9 9",
 	breath: "5 brth 0 1 20",
+	caesura: "5 caes 0 1 10",
+	short: "5 short 0 1 4",
+	tick: "5 tick 0 1 4",
 	coda: "5 coda 24 10 10",
 	dacapo: "5 dacs 16 20 20 Da Capo",
 	dacoda: "5 dacs 16 20 20 Da Coda",
@@ -663,16 +666,23 @@ function d_upstaff(de) {
 	// glyphs inside the staff
 	switch (dd.glyph) {
 	case "brth":
+	case "caes":
 	case "lphr":
 	case "mphr":
 	case "sphr":
+	case "short":
+	case "tick":
 		y = stafft
+		if (s.type == C.BAR) {
+			s.invis = 1
+		} else {
 		if (dd.glyph == "brth" && y < s.ymx)
-			y = s.ymx
-		for (s = s.ts_next; s; s = s.ts_next)
-			if (s.seqst)
-				break
-		x += ((s ? s.x : realwidth) - x) * .45
+				y = s.ymx
+			for (s = s.ts_next; s; s = s.ts_next)
+				if (s.seqst)
+					break
+			x += ((s ? s.x : realwidth) - x) * .45
+		}
 		de.x = x
 		de.y = y
 		return
