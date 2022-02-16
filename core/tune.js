@@ -1825,7 +1825,8 @@ function is_voice_sig() {
 
 // treat a clef found in the tune body
 function get_clef(s) {
-	if (is_voice_sig()) {
+	if (!curvoice.time		// (force a clef when new voice)
+	 && is_voice_sig()) {
 		curvoice.clef = s
 		s.fmt = cfmt
 		return
