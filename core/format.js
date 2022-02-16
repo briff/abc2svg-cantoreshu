@@ -449,7 +449,9 @@ function set_writefields(parm) {
 // set a voice specific parameter
 function set_v_param(k, v) {
 	k = [k + '=', v]
-	if (curvoice)
+	if (parse.state < 3)
+		memo_kv_parm(curvoice ? curvoice.id : '*', k)
+	else if (curvoice)
 		set_kv_parm(k)
 	else
 		memo_kv_parm('*', k)
