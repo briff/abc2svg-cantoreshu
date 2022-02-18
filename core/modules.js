@@ -21,7 +21,7 @@
 if (!abc2svg.loadjs) {
     abc2svg.loadjs = function(fn, onsuccess, onerror) {
 	if (onerror)
-		onerror()
+		onerror(fn)
     }
 }
 
@@ -113,7 +113,7 @@ abc2svg.modules = {
 			this.nreq++
 			abc2svg.loadjs(fn + "-1.js",
 					load_end,
-					function() {load_ko(fn)})
+					load_ko)
 		}
 		return this.nreq == nreq_i
 	}

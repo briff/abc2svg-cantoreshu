@@ -73,15 +73,17 @@ function clean_txt(txt) {
 
 // function to load javascript files
 	abc2svg.loadjs = function(fn, relay, onerror) {
-		var s = document.createElement('script');
+		var s = document.createElement('script')
 		if (/:\/\//.test(fn))
 			s.src = fn		// absolute URL
 		else
-			s.src = jsdir + fn;
-		if (relay)
-			s.onload = relay;
-		s.onerror = onerror || function() {
-			alert('error loading ' + fn)
+			s.src = jsdir + fn
+		s.onload = relay
+		s.onerror = function() {
+			if (onerror)
+				onerror(fn)
+			else
+				alert('error loading ' + fn)
 		}
 		document.head.appendChild(s)
 	}

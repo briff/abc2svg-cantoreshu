@@ -222,10 +222,12 @@ function dom_loaded() {
 			s.src = fn		// absolute URL
 		else
 			s.src = jsdir + fn
-		if (relay)
-			s.onload = relay
-		s.onerror = onerror || function() {
-			alert('error loading ' + fn)
+		s.onload = relay
+		s.onerror = function() {
+			if (onerror)
+				onerror(fn)
+			else
+				alert('error loading ' + fn)
 		}
 		document.head.appendChild(s)
 	} // loadjs()
