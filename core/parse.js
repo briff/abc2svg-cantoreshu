@@ -724,6 +724,13 @@ function new_key(param) {
 		}
 	}
 
+	if (sf < -7 || sf > 7) {
+		syntax(1, "Key with double sharps/flats")
+		if (sf > 7)
+			sf -= 12
+		else
+			sf += 12
+	}
 	s.k_sf = sf;
 
 	// set the map of the notes with accidentals

@@ -96,6 +96,7 @@ user.textrans = {
 	"Invalid decoration '$1'": "Decoração '$1' inválida",
 	"Invalid note duration $1": "Duração de nota $1 inválida",
 	"K:P is deprecated": "K:P é obsoleto",
+	"Key with double sharps/flats": "Key with double sharps/flats",
 	"Lack of ']'": "']' faltando",
 	"Lack of bar after multi-measure rest":
 				"Falta barra de compasso após pausa de múltiplos compassos",
