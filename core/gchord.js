@@ -204,14 +204,14 @@ var	note_names = "CDEFGAB",
 		return csa.join('/')
 	} // gch_tr1
 
-function gch_transp(s) {
+function gch_transp(s, sk) {
     var	gch,
 	i = s.a_gch.length
 
 	while (--i >= 0) {
 		gch = s.a_gch[i]
 		if (gch.type == 'g')
-			gch.text = gch_tr1(gch.text, curvoice.vtransp)
+			gch.text = gch_tr1(gch.text, sk.k_transp)
 	}
 }
 
@@ -236,9 +236,6 @@ function csan_add(s) {
 	else
 		s.a_gch = a_gch
 	a_gch = null
-
-	if (curvoice.vtransp)
-		gch_transp(s)
 } // csan_add
 
 // generator: build the chord symbols / annotations

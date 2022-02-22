@@ -847,6 +847,8 @@ function pit_adj() {
 				case C.NOTE:
 					for (i = 0; i <= s.nhd; i++)
 						note_transp(s, sk, s.notes[i])
+					if (s.a_gch)
+						gch_transp(s, sk)
 					continue
 				case C.KEY:
 					if (sk)
