@@ -338,15 +338,10 @@ They are:
 `abctopdf` is a shell script which converts ABC to PDF using one of the
 previous shell scripts and, either a chrome/chromium compatible web browser
 (settable by the environment variable 'BROWSER'),
-or the program [weasyprint](https://weasyprint.org/) or
-the program `rsvg-convert`.
+or the program [weasyprint](https://weasyprint.org/).
 
-With `rsvg-convert`, the used music font must be installed and defined by
-`%%musicfont <fontname>`.
-
-Note also that, with `weasyprint` or `rsvg-convert`, the paper size is
-forced to A4. Instructions for changing this size may be found in the
-script source.
+Note also that, with `weasyprint`, the paper size is forced to A4.
+Instructions for changing this size may be found in the script source.
 
 The output PDF document may be specified by the command line argument `-o`
 (default `abc.pdf`).
