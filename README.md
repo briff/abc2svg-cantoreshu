@@ -262,11 +262,11 @@ As you have seen, printing the music can be done easily with any web browser.
 You can automate the process of creating music sheets
 with **abc2svg** using shell scripts running a Javascript interpreter.
 
-The interfaces to the various scripts are different. Below you will
-find various scripts that I had to built.
+The interfaces to the various interpreters are different. Below you will
+find the scripts I had to built.
 
 - `abcqjs` with `qjs` [QuickJS by Fabrice Bellard and Charlie Gordon][10]
-- `abcmjs` with `js78`, `js68`, `js60`, `js52` or `js24` (Mozilla JavaScript shell)
+- `abcmjs` with `js78`, `js60`, `js52` or `js24` (Mozilla JavaScript shell)
 - `abcjsc` with `jsc` (webkit2gtk)
 - `abcnode` with `node` (nodeJS without module)
 - `abc2svg` with `node` (nodeJS with modules)
