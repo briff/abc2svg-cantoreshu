@@ -1339,6 +1339,7 @@ function to_rest(so) {
 	s.type = C.REST
 // just keep nl and seqst
 	delete s.in_tuplet
+	delete s.tp
 	delete s.sl1
 	delete s.a_dd
 	delete s.a_gch
