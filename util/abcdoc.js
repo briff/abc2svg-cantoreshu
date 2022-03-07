@@ -100,10 +100,6 @@ function clean_txt(txt) {
 	else
 		re = /\n%abc|\nX:/g
 
-	abc.tosvg('abcdoc', '%%bgcolor white\n\
-%%rightmargin 0.8cm\n\
-%%leftmargin 0.8cm\n\
-%%topspace 0')
 	for (;;) {
 
 		// get the start of a ABC sequence
