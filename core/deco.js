@@ -1553,7 +1553,7 @@ function draw_deco_near() {
 
 	// link the long decorations
 	function ll_deco() {
-		var	i, j, de, de2, dd, dd2, v, s, st,
+	    var	i, j, de, de2, de3, dd, dd2, v, s, st,
 			n_de = a_de.length
 
 		// add ending decorations
@@ -1603,14 +1603,19 @@ function draw_deco_near() {
 			de2.start = de;
 			de2.defl.nost = de.defl.nost
 
-			// handle same numbered decoration at a same time
-			j = dd.name.slice(-1)
-			if (j >= '0' && j <= '9'
-			 && i > 0
-			 && a_de[i - 1].s.time == de.s.time
-			 && a_de[i - 1].dd.name.slice(0, -2) ==
-					dd.name.slice(0, -2))
-				de2.prev = a_de[i - 1]
+			// handle same decoration ending at a same time
+			j = i
+			while (--j >= 0) {
+				de3 = a_de[j]
+				if (!de3.start)
+					continue
+				if (de3.s.time < s.time)
+					break
+				if (de3.dd.name == de2.dd.name) {
+					de2.prev = de3
+					break
+				}
+			}
 		}
 
 		// add starting decorations
