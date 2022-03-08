@@ -249,7 +249,7 @@ Printing may be bad because the file contains pure HTML and %%pageheight\
 				i = page.indexOf('>', i)
 				i = page.indexOf('\n', i) + 1
 				j = page.indexOf('</script>', i)
-				ss = j + 10
+				ss = j + 9
 				break
 			default:			// < .. class="abc"
 				j = i
