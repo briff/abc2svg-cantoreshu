@@ -48,7 +48,8 @@ abc2svg.grid2 = {
 			// set all notes
 				s.invis = true;	//  as invisible
 				delete s.sl1;	//  with no slur
-				delete s.tie_s	//  and no tie
+				delete s.ti1	//  and no tie
+				delete s.ti2
 				for (ix = 0; ix <= s.nhd; ix++)
 					delete s.notes[ix].tie_ty
 				if (s.tf)	// don't show the tuplets
