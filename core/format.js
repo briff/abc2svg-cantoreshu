@@ -185,7 +185,7 @@ function get_font_scale(param) {
 
 // set the width factor of a font
 function set_font_fac(font) {
-    var scale = font_scale_tb[font.name]
+    var scale = font_scale_tb[font.fname || font.name]
 
 	if (!scale)
 		scale = 1.1;
@@ -271,6 +271,8 @@ function param_set_font(xxxfont, p) {
 		p = p.replace(a[0], "")
 	}
 
+	font.fname = p			// full name for scale factor
+
 	// accept url(...) as the font name
 	if (p[0] == 'u' && p.slice(0, 4) == "url(") {
 		n = p.indexOf(')', 1)
@@ -339,12 +341,12 @@ function param_set_font(xxxfont, p) {
 			break
 		}
 	}
+	font.name = p
+
 	if (font.size)
 		set_font_fac(font)
 	else
 		font.swfac = 0
-
-	font.name = p
 }
 
 // get a length with a unit - return the number of pixels
