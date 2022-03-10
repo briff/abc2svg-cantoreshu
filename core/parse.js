@@ -2398,8 +2398,8 @@ function get_deco() {
 	while (1) {
 		c = line.next_char()
 		if (!c) {
+			line.index = i
 			syntax(1, "No end of decoration")
-			line.index = i;
 			return
 		}
 		if (c == '!')
