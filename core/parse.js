@@ -1831,11 +1831,6 @@ function slur_add(enote, e_is_note) {
 		}
 	}
 
-	if (enote.grace) {
-		error(1, enote.s, errs.bad_slur_end)
-		return
-	}
-
 	// the lack of a starting slur may be due to a repeat
 	for (s = enote.s.prev; s; s = s.prev) {
 		if (s.type == C.BAR
