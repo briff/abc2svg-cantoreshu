@@ -1,6 +1,6 @@
 // abc2svg - parse.js - ABC parse
 //
-// Copyright (C) 2014-2021 Jean-Francois Moine
+// Copyright (C) 2014-2022 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -1848,7 +1848,15 @@ function slur_add(enote, e_is_note) {
 			return
 		}
 	}
-	syntax(1, "End of slur without start")
+//	syntax(1, "End of slur without start")
+	s = enote.s
+	if (!s.sls)
+		s.sls = [];
+	s.sls.push({
+		note: enote,
+		ty: C.SL_AUTO,
+		loc: 'i'			// no slur start
+	})
 }
 
 // convert a diatonic pitch and accidental to a MIDI pitch with cents

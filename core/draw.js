@@ -2012,13 +2012,52 @@ function draw_slurs(s, last) {
 	function draw_sls(s,		// start symbol
 			sl,		// stop note
 			snote) {	// optional start note
-	    var	k, v, i, dir,
+	    var	k, v, i, dir, s3,
 		path = [],
 		enote = sl.note,
 		s2 = enote.s			// end of slur
 
 		if (last && s2.time > last.time)
 			return			// will be drawn next time
+
+		// handle slurs without start or end
+		switch (sl.loc) {
+		case 'i':			// no start
+			s3 = s.ts_prev
+			for (s = s3; s; s = s.ts_prev) {
+				if (s.dur) {
+					if (s.v == s2.v) {
+						s3 = s
+						break
+					}
+					if (s.st == s2.st) {
+						s3 = s
+						continue
+					} else if (!s3) {
+						s3 = s
+					}
+				} else if (!s3) {
+					s3 = s
+				}
+			}
+			s = s3
+			break
+		case 'o':			// no end
+			for (s3 = s; s3.ts_next; s3 = s3.ts_next)
+				;
+			s2 = s3
+			for (; s3; s3 = s3.ts_prev) {
+				if (s3.v == s.v) {
+					s2 = s3
+					break
+				}
+				if (s3.st == s.st)
+					s2 = s3
+				if (s3.ts_prev.time != s2.time)
+					break
+			}
+			break
+		}
 
 		// if the slur continues on the next music line,
 		// stop it on the invisible bar at end of current line

@@ -335,7 +335,14 @@ function voice_adj(sys_chg) {
 						note: {s: s2}
 					})
 				} else {
-					error(1, s, "Lack of ending slur(s)")
+//					error(1, s, "Lack of ending slur(s)")
+					if (!s.sls)
+						s.sls = []
+					s.sls.push({
+						ty: sl.ty,
+						note: {s: s2},
+						loc: 'o'	// no slur end
+					})
 				}
 			}
 		} // not %%score
