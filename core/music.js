@@ -3353,6 +3353,7 @@ function init_music_line() {
 				delete last_s.seqst
 		}
 		delete s.clef_small;
+		delete s.part
 		s.second = cur_sy.voices[v].second
 // (fixme: needed for sample5 X:3 Fugue & staffnonote.xhtml)
 		if (!cur_sy.st_print[st])
@@ -3372,6 +3373,7 @@ function init_music_line() {
 			s = clone(s2)
 			new_sym(s, p_voice, last_s)
 			delete s.invis
+			delete s.part
 			s.k_old_sf = s2.k_sf	// no key cancel
 			s.fmt = fmt
 		}
@@ -3389,6 +3391,7 @@ function init_music_line() {
 				continue
 			s = clone(s2)
 			new_sym(s, p_voice, last_s)
+			delete s.part
 			s.fmt = fmt
 		}
 		insert_meter = false		// no meter any more
