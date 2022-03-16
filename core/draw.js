@@ -2991,7 +2991,7 @@ function draw_sym_near() {
 
 /* -- draw the name/subname of the voices -- */
 function draw_vname(indent, stl) {
-    var	p_voice, n, st, v, a_p, p, y, name_type, h, h2,
+    var	p_voice, n, st, v, a_p, p, y, h, h2,
 	staff_d = []
 
 	for (st = stl.length; st >= 0; st--) {
@@ -3001,7 +3001,6 @@ function draw_vname(indent, stl) {
 	if (st < 0)
 		return
 
-	// check if full or sub names
 	for (v = 0; v < voice_tb.length; v++) {
 		p_voice = voice_tb[v]
 		if (!p_voice.sym || !cur_sy.voices[v])
@@ -3009,25 +3008,7 @@ function draw_vname(indent, stl) {
 		st = cur_sy.voices[v].st
 		if (!stl[st])
 			continue
-		if (p_voice.new_name) {
-			name_type = 2
-			break
-		}
-		if (p_voice.snm)
-			name_type = 1
-	}
-	if (!name_type)
-		return
-	for (v = 0; v < voice_tb.length; v++) {
-		p_voice = voice_tb[v]
-		if (!p_voice.sym || !cur_sy.voices[v])
-			continue
-		st = cur_sy.voices[v].st
-		if (!stl[st])
-			continue
-		if (p_voice.new_name)
-			delete p_voice.new_name;
-		p = name_type == 2 ? p_voice.nm : p_voice.snm
+		p = p_voice.vn			// voice name/subname
 		if (!p)
 			continue
 		if (!staff_d[st])

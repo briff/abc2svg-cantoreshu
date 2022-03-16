@@ -2049,9 +2049,8 @@ function cut_tune(lwidth, indent) {
 
 	// take care of the voice subnames
 	if (indent) {
-		i = set_indent()
-		lwidth -= i;
-		indent -= i;
+		lwidth -= indent
+		indent -= indent
 	}
 
 	/* adjust the line width according to the starting clef
@@ -3727,10 +3726,15 @@ function set_indent(first) {
 		st = cur_sy.voices[v].st
 //		if (!cur_sy.st_print[st])
 //			continue
-		p = ((first || p_voice.new_name) && p_voice.nm) ?
-			p_voice.nm : p_voice.snm
+		if (p_voice.new_name) {
+			p = p_voice.nm
+			delete p_voice.new_name
+		} else {
+			p = (first && p_voice.nm) ? p_voice.nm : p_voice.snm
+		}
 		if (!p)
 			continue
+		p_voice.vn = p			// voice name/subname
 		if (!font) {
 			set_font("voice");
 			font = gene.curfont
