@@ -3732,8 +3732,10 @@ function set_indent(first) {
 		} else {
 			p = (first && p_voice.nm) ? p_voice.nm : p_voice.snm
 		}
-		if (!p)
+		if (!p) {
+			delete p_voice.vn
 			continue
+		}
 		p_voice.vn = p			// voice name/subname
 		if (!font) {
 			set_font("voice");
