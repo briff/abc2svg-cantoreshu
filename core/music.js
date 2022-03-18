@@ -3260,20 +3260,9 @@ function init_music_line() {
 		if (!cur_sy.voices[v])
 			continue
 		p_voice = voice_tb[v];
+		p_voice.st = cur_sy.voices[v].st
 		p_voice.second = cur_sy.voices[v].second;
 		p_voice.last_sym = p_voice.sym;
-
-		/* move the voice to a printed staff */
-		st = cur_sy.voices[v].st
-		while (st <= nstaff && !cur_sy.st_print[st])
-			st++
-		if (st > nstaff)
-			continue		// no printed staff
-		p_voice.st = st
-		if (!p_voice.second) {
-			staff_tb[st].key = p_voice.ckey
-			staff_tb[st].meter = p_voice.meter
-		}
 	}
 
 	// move the first clefs, key signatures and time signatures
@@ -3715,28 +3704,41 @@ function set_global() {
 
 /* -- return the left indentation of the staves -- */
 function set_indent(first) {
-	var	st, v, w, p_voice, p, i, j, font,
+	var	st, v, w, p_voice, p, i, j, font, vnt,
 		nv = voice_tb.length,
 		maxw = 0
 
+	// check if full or sub names of (all) the voices
+	if (first) {
+		vnt = 2
+	} else {				// not the first time
+		for (v = 0; v < nv; v++) {
+			p_voice = voice_tb[v]
+			if (!cur_sy.voices[v]
+			 || !gene.st_print[p_voice.st])
+				continue
+			if (p_voice.new_name) {
+				delete p_voice.new_name
+				vnt = 2		// full name
+				break
+			}
+			if (p_voice.snm)
+				vnt = 1		// subname
+		}
+	}
+	gene.vnt = vnt				// voice name type
+	if (!vnt)
+		return 0			// no voice name
+
 	for (v = 0; v < nv; v++) {
 		p_voice = voice_tb[v]
-		if (!cur_sy.voices[v])
+		if (!first
+		 && (!cur_sy.voices[v]
+		  || !gene.st_print[p_voice.st]))
 			continue
-		st = cur_sy.voices[v].st
-//		if (!cur_sy.st_print[st])
-//			continue
-		if (p_voice.new_name) {
-			p = p_voice.nm
-			delete p_voice.new_name
-		} else {
-			p = (first && p_voice.nm) ? p_voice.nm : p_voice.snm
-		}
-		if (!p) {
-			delete p_voice.vn
+		p = vnt == 2 ? p_voice.nm : p_voice.snm
+		if (!p)
 			continue
-		}
-		p_voice.vn = p			// voice name/subname
 		if (!font) {
 			set_font("voice");
 			font = gene.curfont
@@ -3771,7 +3773,7 @@ function set_indent(first) {
 	}
 	maxw += w
 
-	if (first)			// if %%indent
+	if (vnt)			// if %%indent
 		maxw += cfmt.indent
 	return maxw
 }
@@ -4588,19 +4590,6 @@ Abc.prototype.set_stems = function() {
 	}
 }
 
-/* -- move the symbols of an empty staff to the next one -- */
-function sym_staff_move(st) {
-	for (var s = tsfirst; s; s = s.ts_next) {
-		if (s.nl)
-			break
-		if (s.st == st
-		 && s.type != C.CLEF) {
-			s.st++;
-			s.invis = true
-		}
-	}
-}
-
 // generate a block symbol
 var blocks = []		// array of delayed block symbols
 
@@ -4743,10 +4732,6 @@ function set_piece() {
 			p_staff.hlu = []	// above the staff
 			p_staff.hld = []	// under the staff
 
-			if (!non_empty_gl[st]) {
-				p_staff.botbar = p_staff.topbar = 0
-				continue
-			}
 			l = p_staff.stafflines.length;
 			p_staff.topbar = 6 * (l - 1)
 
@@ -4769,6 +4754,8 @@ function set_piece() {
 					continue	// no helper line
 				}
 			}
+			if (!non_empty_gl[st])
+				continue
 
 			// define the helper lines
 			p_staff.hll = 17 + i * 2	// pitch of lowest note
@@ -4883,17 +4870,6 @@ function set_piece() {
 
 	/* define the offsets of the measure bars */
 	set_top_bot()
-
-	/* move the symbols of the empty staves to the next staff */
-//fixme: could be optimized (use a old->new staff array)
-	for (st = 0; st < nstaff; st++) {
-		if (!non_empty_gl[st])
-			sym_staff_move(st)
-	}
-
-	/* let the last empty staff have a full height */
-	if (!non_empty_gl[nstaff])
-		staff_tb[nstaff].topbar = 0;
 
 	/* initialize the music line */
 	init_music_line();
@@ -5160,6 +5136,7 @@ Abc.prototype.output_music = function() {
 	spf_last = 0				// last spacing factor
 	while (1) {				/* loop per music line */
 		set_piece();
+		indent = set_indent()
 		self.set_sym_glue(lwidth - indent)
 		if (realwidth) {
 			if (indent)
@@ -5192,7 +5169,6 @@ Abc.prototype.output_music = function() {
 		tsfirst.ts_prev = null;
 		set_sym_line();
 		lwidth = get_lwidth()	// the image size may have changed
-		indent = set_indent()
 	}
 
 	// restore for play

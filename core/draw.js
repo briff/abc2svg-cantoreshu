@@ -3008,7 +3008,9 @@ function draw_vname(indent, stl) {
 		st = cur_sy.voices[v].st
 		if (!stl[st])
 			continue
-		p = p_voice.vn			// voice name/subname
+		if (!gene.vnt)
+			continue
+		p = gene.vnt == 2 ? p_voice.nm : p_voice.snm
 		if (!p)
 			continue
 		if (!staff_d[st])
@@ -3082,11 +3084,6 @@ function set_staff() {
 	/* draw the parts and tempo indications if any */
 	y += draw_partempo(st, y)
 
-	if (!gene.st_print[st]) {
-		p_staff.y = -y
-		return y
-	}
-
 	/* set the vertical offset of the 1st staff */
 	y *= p_staff.staffscale;
 	staffsep = fmt.staffsep * .5 +
@@ -3098,7 +3095,11 @@ function set_staff() {
 	p_staff.y = -y;
 
 	/* set the offset of the other staves */
-	prev_staff = st
+	for (prev_staff = 0; prev_staff < st; prev_staff++)
+		staff_tb[prev_staff].y = -y
+	if (!gene.st_print[st])		// no staff
+		return y
+
 	var sy_staff_prev = sy.staves[prev_staff]
 	for (st++; st <= nstaff; st++) {
 		if (!gene.st_print[st])
@@ -3134,7 +3135,8 @@ function set_staff() {
 		y += dy;
 		p_staff.y = -y;
 
-		prev_staff = st;
+		while (!gene.st_print[++prev_staff])
+			staff_tb[prev_staff].y = -y
 		while (1) {
 			sy_staff_prev = sy.staves[prev_staff]
 			if (sy_staff_prev)
