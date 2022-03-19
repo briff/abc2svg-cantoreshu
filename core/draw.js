@@ -3644,7 +3644,7 @@ Abc.prototype.draw_symbols = function(p_voice) {
 				bm.s2 = null
 			break
 		case C.REST:
-			if (!staff_tb[st].topbar)
+			if (!gene.st_print[st])
 				break
 			draw_rest(s);
 			break

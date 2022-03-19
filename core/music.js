@@ -4871,6 +4871,10 @@ function set_piece() {
 	/* define the offsets of the measure bars */
 	set_top_bot()
 
+	// set a null height if the last staff is empty
+	if (!non_empty_gl[nstaff])
+		staff_tb[nstaff].topbar = 0
+
 	/* initialize the music line */
 	init_music_line();
 
