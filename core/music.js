@@ -5150,7 +5150,9 @@ Abc.prototype.output_music = function() {
 			draw_systems(indent);
 			draw_all_sym();
 			delayed_update();
-			vskip(line_height)
+//fixme: KO if at start of tune (the header is generated)
+			if (output)			// if some music
+				vskip(line_height)
 			if (indent)
 				posx -= indent;
 			while (blocks.length)
