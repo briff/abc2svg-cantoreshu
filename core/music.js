@@ -3706,12 +3706,15 @@ function set_global() {
 function set_indent(first) {
 	var	st, v, w, p_voice, p, i, j, font, vnt,
 		nv = voice_tb.length,
-		maxw = 0
+		maxw = gene.vnt == undefined	// if 1st music line
+			? cfmt.indent		// set %%indent
+			: 0
 
 	// check if full or sub names of (all) the voices
 	if (first) {
 		vnt = 2
 	} else {				// not the first time
+		vnt = 0
 		for (v = 0; v < nv; v++) {
 			p_voice = voice_tb[v]
 			if (!cur_sy.voices[v]
@@ -3724,9 +3727,10 @@ function set_indent(first) {
 			if (p_voice.snm)
 				vnt = 1		// subname
 		}
+		gene.vnt = vnt			// voice name type for draw
+		if (!vnt)
+			return maxw		// no voice name
 	}
-	if (!vnt)
-		return 0			// no voice name
 
 	for (v = 0; v < nv; v++) {
 		p_voice = voice_tb[v]
@@ -3771,14 +3775,7 @@ function set_indent(first) {
 		if (cur_sy.staves[st].flags & (OPEN_BRACE | OPEN_BRACKET))
 			w = 6
 	}
-	maxw += w
-
-	if (gene.vnt == undefined)		// if 1st music line
-		maxw += cfmt.indent		// set %%indent
-
-	if (!first)
-		gene.vnt = vnt			// voice name type for draw
-	return maxw
+	return maxw + w
 }
 
 /* -- decide on beams and on stem directions -- */
