@@ -3718,7 +3718,6 @@ function set_indent(first) {
 			 || !gene.st_print[p_voice.st])
 				continue
 			if (p_voice.new_name) {
-				delete p_voice.new_name
 				vnt = 2		// full name
 				break
 			}
@@ -3726,7 +3725,6 @@ function set_indent(first) {
 				vnt = 1		// subname
 		}
 	}
-	gene.vnt = vnt				// voice name type
 	if (!vnt)
 		return 0			// no voice name
 
@@ -3736,6 +3734,8 @@ function set_indent(first) {
 		 && (!cur_sy.voices[v]
 		  || !gene.st_print[p_voice.st]))
 			continue
+		if (!first)
+			delete p_voice.new_name
 		p = vnt == 2 ? p_voice.nm : p_voice.snm
 		if (!p)
 			continue
@@ -3773,8 +3773,11 @@ function set_indent(first) {
 	}
 	maxw += w
 
-	if (vnt)			// if %%indent
-		maxw += cfmt.indent
+	if (gene.vnt == undefined)		// if 1st music line
+		maxw += cfmt.indent		// set %%indent
+
+	if (!first)
+		gene.vnt = vnt			// voice name type for draw
 	return maxw
 }
 
