@@ -450,6 +450,8 @@ onclick="abc2svg.do_render(\'.*\')">' + tt +
 			return
 
 		c = c.getAttribute('class')
+		if (!c)
+			return
 
 		// if click in the menu button, show the menu
 		if (c == "db") {
