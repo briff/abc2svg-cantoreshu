@@ -34,9 +34,27 @@ abc2svg.strtab = {
 
     // draw the tablature
     draw_symbols: function(of, p_v) {
-    var	s, m, not, stb, x, y,
+    var	s, m, not, stb, x, y, g,
 	C = abc2svg.C,
 	abc = this
+
+	function draw_heads(stb, s) {
+	    var	m, not, x, y
+
+		for (m = 0; m <= s.nhd; m++) {
+			not = s.notes[m]
+			if (not.nb < 0)
+				continue
+			x = s.x - 3
+			if (not.nb >= 10)
+				x -= 3
+			y = 3 * (not.pit - 18)
+			abc.out_svg('<text class="bg' + abc.bgn +
+				'" x="')
+			abc.out_sxsy(x, '" y="', stb + y - 2.5)
+			abc.out_svg('">' + not.nb + '</text>\n')
+		}
+	} // draw_heads()
 
 	if (!p_v.tab) {
 		of(p_v)
@@ -67,6 +85,11 @@ abc2svg.strtab = {
 		case C.REST:
 			s.invis = true
 			break
+		case C.GRACE:
+			for (g = s.extra; g; g = g.next) {
+				if (!g.stemless)
+					g.ys = -10
+			}
 		case C.NOTE:
 			if (!s.stemless)
 				s.ys = -10
@@ -81,20 +104,14 @@ abc2svg.strtab = {
 	stb = abc.get_staff_tb()[p_v.st].y
 	abc.out_svg('<g class="bn">\n')
 	for (s = p_v.sym; s; s = s.next) {
-		if (s.type == C.NOTE) {
-			for (m = 0; m <= s.nhd; m++) {
-				not = s.notes[m]
-				if (not.nb < 0)
-					continue
-				x = s.x - 3
-				if (not.nb >= 10)
-					x -= 3
-				y = 3 * (not.pit - 18)
-				abc.out_svg('<text class="bg' + abc.bgn +
-					'" x="')
-				abc.out_sxsy(x, '" y="', stb + y - 2.5)
-				abc.out_svg('">' + not.nb + '</text>\n')
-			}
+		switch (s.type) {
+		case C.GRACE:
+			for (g = s.extra; g; g = g.next)
+				draw_heads(stb, g)
+			break
+		case C.NOTE:
+			draw_heads(stb, s)
+			break
 		}
 	}
 	abc.out_svg('</g>\n')
@@ -132,7 +149,7 @@ abc2svg.strtab = {
 
     // change the notes when the global generation settings are done
     set_stems: function(of) {
-    var	p_v, i, m, nt, n, bi, bn, strss,
+    var	p_v, i, m, nt, n, bi, bn, strss, g,
 	C = abc2svg.C,
 	abc = this,
 	s = abc.get_tsfirst(),		// first symbol
@@ -166,43 +183,8 @@ abc2svg.strtab = {
 		}
 	} // set_pit()
 
-	// get the string number from the decoration
-	// format is either !<n>s! or !<n>!
-	function strnum(n) {
-		n = n.match(/^([1-9])s?$/)
-		return n ? p_v.tab.length - n[1] : -1
-	} // strnum()
-
-	// change the notes of the strings when a capo
-	p_v = abc.get_voice_tb()
-	for (n = 0; n < p_v.length; n++) {
-		if (!p_v[n].tab)
-			continue
-		m = p_v[n].capo
-		if (m) {
-			for (i = 0; i < p_v[n].tab.length; i++)
-				p_v[n].tab[i] += m
-		}
-	}
-
-	// loop on the notes of the voices with a tablature
-	for ( ; s; s = s.ts_next) {
-		p_v = s.p_v
-		if (!p_v.tab)
-			continue
-		strss = strs[s.st]
-		if (!strss)
-			strss = strs[s.st] = []
-		switch (s.type) {
-		case C.KEY:
-		case C.REST:
-		case C.TIME:
-			s.invis = true
-		default:
-			continue
-		case C.NOTE:
-			break
-		}
+	function set_notes(p_v, s) {
+	    var	i, bi, bn, nt, m, n
 
 		s.stem = -1			// down stems
 
@@ -263,6 +245,55 @@ abc2svg.strtab = {
 					lstr[i] = null
 				}
 			}
+		}
+	} // set_notes()
+
+	// get the string number from the decoration
+	// format is either !<n>s! or !<n>!
+	function strnum(n) {
+		n = n.match(/^([1-9])s?$/)
+		return n ? p_v.tab.length - n[1] : -1
+	} // strnum()
+
+	// change the notes of the strings when a capo
+	p_v = abc.get_voice_tb()
+	for (n = 0; n < p_v.length; n++) {
+		if (!p_v[n].tab)
+			continue
+		m = p_v[n].capo
+		if (m) {
+			for (i = 0; i < p_v[n].tab.length; i++)
+				p_v[n].tab[i] += m
+		}
+	}
+
+	// loop on the notes of the voices with a tablature
+	for ( ; s; s = s.ts_next) {
+		p_v = s.p_v
+		if (!p_v.tab)
+			continue
+		strss = strs[s.st]
+		if (!strss)
+			strss = strs[s.st] = []
+		switch (s.type) {
+		case C.KEY:
+		case C.REST:
+		case C.TIME:
+			s.invis = true
+		default:
+			continue
+		case C.GRACE:
+			if (p_v.pos.gst == C.SL_HIDDEN)
+				s.sappo = 0
+			for (g = s.extra; g; g = g.next) {
+				if (p_v.pos.gst == C.SL_HIDDEN)
+					g.stemless = true
+				set_notes(p_v, g)
+			}
+			break
+		case C.NOTE:
+			set_notes(p_v, s)
+			break
 		}
 	}
 	of()
@@ -372,6 +403,7 @@ abc2svg.strtab = {
 			break
 		case "nostems":
 			p_v.pos.stm = abc2svg.C.SL_HIDDEN
+			p_v.pos.gst = abc2svg.C.SL_HIDDEN
 			break
 		case "capo=":
 			p_v.capo = Number(a[++i])
