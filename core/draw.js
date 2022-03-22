@@ -1112,7 +1112,7 @@ function draw_mrest(s) {
 	anno_start(s)
 	out_XYAB('<path d="mX Y', x1 + .6, y - 2.7)
 	output += 'v2.7h-1.4v-10.8h1.4v2.7h'
-		+ (x2 - x1 - 2.8).toFixed(1)
+		+ ((x2 - x1 - 2.8) / stv_g.scale).toFixed(1)
 		+ 'v-2.7h1.4v10.8h-1.4v-2.7z"/>\n'
 	out_XYAB('<text x ="X" y="Y" text-anchor="middle">A</text>\n',
 		s.x, y + 22, m_gl(p))
