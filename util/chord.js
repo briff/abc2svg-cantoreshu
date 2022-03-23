@@ -1,6 +1,6 @@
 // chord.js - generation of accompaniment
 //
-// Copyright (C) 2020-2021 Jean-Francois Moine and Seymour Shlien
+// Copyright (C) 2020-2022 Jean-Francois Moine and Seymour Shlien
 //
 // This file is part of abc2svg.
 //
@@ -215,12 +215,12 @@ abc2svg.chord = function(first,		// first symbol in time
 		v: voice_tb.length,
 		id: "_chord",
 		time: 0,
-		sym: {			// dummy symbol to simplify chord insersion
+		sym: {			// dummy symbol to simplify chord insertion
 			type: C.REST,
 			time: 0
 		},
 		instr: cfmt.chord.prog || 0,
-		vol: cfmt.chord.vol || .7
+		vol: cfmt.chord.vol || .6	// (external default 76.2)
 	}
 	vch.last_sym = vch.sym
 	voice_tb.push(vch)
