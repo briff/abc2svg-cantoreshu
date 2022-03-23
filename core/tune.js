@@ -1368,6 +1368,14 @@ function generate(in_mc) {
 	if (user.img_out)		// if SVG generation
 		self.output_music()
 
+	// finish the generation
+	set_page()			// the page layout may have changed
+	if (info.W)
+		put_words(info.W)
+	put_history()
+	parse.state = 0			// file header
+	blk_flush()			// (force end of block)
+
 	if (tsfirst)		// if non void, keep tune data for upper layers
 		tunes.push([tsfirst, voice_tb, info, cfmt])
 
