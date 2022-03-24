@@ -3467,8 +3467,11 @@ function draw_systems(indent) {
 		}
 		switch (s.type) {
 		case C.STAVES:
-			staves_bar = s.ts_prev.type == C.BAR ? s.ts_prev.x : 0
-		    if (!staves_bar) {
+		    if (s.ts_next.type == C.CLEF) {
+			staves_bar = s.x - s.ts_next.wl
+		    } else if (s.ts_prev.type == C.BAR) {
+			staves_bar = s.ts_prev.x
+		    } else {
 			for (s2 = s.ts_next; s2; s2 = s2.ts_next) {
 				if (s2.time != s.time)
 					break
