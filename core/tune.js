@@ -1334,6 +1334,11 @@ Abc.prototype.do_begin_end = function(type,
 function generate(in_mc) {
     var s, v, p_voice;
 
+	if (a_dcn.length) {
+		syntax(1, "Decoration without symbol")
+		a_dcn = []
+	}
+
 	if (parse.tp) {
 		syntax(1, "No end of tuplet")
 		s = parse.tps

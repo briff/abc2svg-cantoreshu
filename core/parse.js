@@ -2962,10 +2962,6 @@ function parse_music_line() {
 	}
 	if (sls.length)
 		syntax(1, "Start of slur without note")
-	if (a_dcn.length) {
-		syntax(1, "Decoration without symbol")
-		a_dcn = []
-	}
 	if (grace) {
 		syntax(1, "No end of grace note sequence");
 		curvoice.last_sym = grace.prev;
