@@ -3013,6 +3013,7 @@ function draw_vname(indent, stl) {
 		p = gene.vnt == 2 ? p_voice.nm : p_voice.snm
 		if (!p)
 			continue
+		delete p_voice.new_name
 		if (!staff_d[st])
 			staff_d[st] = p
 		else

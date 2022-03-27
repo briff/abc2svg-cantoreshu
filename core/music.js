@@ -2036,7 +2036,7 @@ function set_lines(	s,		/* first symbol */
 }
 
 /* -- cut the tune into music lines -- */
-function cut_tune(lwidth, indent) {
+function cut_tune(lwidth, lsh) {
     var	s2, i,
 //fixme: not usable yet
 //		pg_sav = {
@@ -2045,13 +2045,12 @@ function cut_tune(lwidth, indent) {
 //			pagewidth: cfmt.pagewidth,
 //			scale: cfmt.scale
 //		},
+	indent = lsh[0] - lsh[1],	// extra width of the first line
 	s = tsfirst
 
-	// take care of the voice subnames
-	if (indent) {
-		lwidth -= indent
-		indent -= indent
-	}
+	lwidth -= lsh[1]		// width of the lines
+	if (cfmt.indent && cfmt.indent > lsh[0])
+		indent += cfmt.indent
 
 	/* adjust the line width according to the starting clef
 	 * and key signature */
@@ -3702,69 +3701,54 @@ function set_global() {
 	self.set_pitch(null)
 }
 
-/* -- return the left indentation of the staves -- */
-function set_indent(first) {
-	var	st, v, w, p_voice, p, i, j, font, vnt,
-		nv = voice_tb.length,
-		maxw = gene.vnt == undefined	// if 1st music line
-			? cfmt.indent		// set %%indent
-			: 0
+// get the left offsets of the first and other staff systems
+// return [lsh1, lsho]
+function get_lshift() {
+    var	st, v, p_v, p1, po, fnt, w,
+	lsh1 = 0,
+	lsho = 0, 
+	nv = voice_tb.length
 
-	// check if full or sub names of (all) the voices
-	if (first) {
-		vnt = 2
-	} else {				// not the first time
-		vnt = 0
-		for (v = 0; v < nv; v++) {
-			p_voice = voice_tb[v]
-			if (!cur_sy.voices[v]
-			 || !gene.st_print[p_voice.st])
-				continue
-			if (p_voice.new_name) {
-				vnt = 2		// full name
-				break
-			}
-			if (p_voice.snm)
-				vnt = 1		// subname
-		}
-		gene.vnt = vnt			// voice name type for draw
-		if (!vnt)
-			return maxw		// no voice name
-	}
-
-	for (v = 0; v < nv; v++) {
-		p_voice = voice_tb[v]
-		if (!first
-		 && (!cur_sy.voices[v]
-		  || !gene.st_print[p_voice.st]))
-			continue
-		if (!first)
-			delete p_voice.new_name
-		p = vnt == 2 ? p_voice.nm : p_voice.snm
-		if (!p)
-			continue
-		if (!font) {
-			set_font("voice");
-			font = gene.curfont
-		}
+	// get the max width of a voice name/subname
+	function get_wx(p, wx) {
+	    var	w, j,
 		i = 0
+
+		p += '\n'
 		while (1) {
 			j = p.indexOf("\n", i)
 			if (j < 0)
-				w = strwh(p.slice(i))
-			else
-				w = strwh(p.slice(i, j))
-			w = w[0]
-			if (w > maxw)
-				maxw = w
+				break
+			w = strwh(p.slice(i, j))[0] + 12
+			if (w > wx)
+				wx = w
 			if (j < 0)
 				break
 			i = j + 1
 		}
-	}
-	if (font)
-		maxw += 4 * cwidf(' ');
+		return wx
+	} // get_wx()
 
+	for (v = 0; v < nv; v++) {
+		p_v = voice_tb[v]
+		p1 = p_v.nm
+		po = p_v.snm
+		if ((p1 || po) && !fnt) {
+			set_font("voice")
+			fnt = gene.deffont
+		}
+		if (p1) {
+			w = get_wx(p1, lsh1)
+			if (w > lsh1)
+				lsh1 = w
+		}
+		if (po) {
+			w = get_wx(po, lsho)
+			if (w > lsho)
+				lsho = w
+		}
+	}
+	// add the width of the braces/brackets
 	w = .5				// (width of left bar)
 	for (st = 0; st <= cur_sy.nstaff; st++) {
 		if (cur_sy.staves[st].flags
@@ -3775,7 +3759,32 @@ function set_indent(first) {
 		if (cur_sy.staves[st].flags & (OPEN_BRACE | OPEN_BRACKET))
 			w = 6
 	}
-	return maxw + w
+	lsh1 += w
+	lsho += w
+	return [lsh1, lsho]
+} // get_lshift()
+
+/* -- return the left indentation of the staves -- */
+function set_indent(lsh) {
+    var	st, v, w, p_voice, p, i, j, font,
+	vnt = 0,
+	nv = voice_tb.length
+
+	// name or subname?
+	for (v = 0; v < nv; v++) {
+		p_voice = voice_tb[v]
+		if (!cur_sy.voices[v]
+		 || !gene.st_print[p_voice.st])
+			continue
+		if (p_voice.new_name) {
+			vnt = 2		// full name
+			break
+		}
+		if (p_voice.snm)
+			vnt = 1		// subname
+	}
+	gene.vnt = vnt			// voice name type for draw
+	return vnt == 2 ? lsh[0] : lsh[1]
 }
 
 /* -- decide on beams and on stem directions -- */
@@ -5094,7 +5103,7 @@ function gen_init() {
 /* -- generate the music -- */
 // (possible hook)
 Abc.prototype.output_music = function() {
-    var v, lwidth, indent, line_height, ts1st, tslast, p_v,
+    var v, lwidth, indent, lsh, line_height, ts1st, tslast, p_v,
 	nv = voice_tb.length
 
 	set_global()
@@ -5117,18 +5126,18 @@ Abc.prototype.output_music = function() {
 	}
 	set_allsymwidth();		/* set the width of all symbols */
 
-	indent = set_indent(true)
+	lsh = get_lshift()
 
 	/* if single line, adjust the page width */
 	if (cfmt.singleline) {
 		v = get_ck_width();
-		lwidth = indent + v[0] + v[1] + get_width(tsfirst, null)[0];
+		lwidth = lsh[0] + v[0] + v[1] + get_width(tsfirst, null)[0]
 		img.width = lwidth * cfmt.scale + img.lm + img.rm + 2
 	} else {
 
 	/* else, split the tune into music lines */
 		lwidth = get_lwidth();
-		cut_tune(lwidth, indent)
+		cut_tune(lwidth, lsh)
 	}
 
 	// save symbol pointers for play
@@ -5140,7 +5149,11 @@ Abc.prototype.output_music = function() {
 	spf_last = 0				// last spacing factor
 	while (1) {				/* loop per music line */
 		set_piece();
-		indent = set_indent()
+		indent = set_indent(lsh)
+		if (!line_height
+		 && cfmt.indent
+		 && indent < cfmt.indent)
+		 	indent = cfmt.indent
 		self.set_sym_glue(lwidth - indent)
 		if (realwidth) {
 			if (indent)
