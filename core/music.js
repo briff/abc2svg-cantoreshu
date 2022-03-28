@@ -1898,7 +1898,7 @@ function set_lines(	s,		/* first symbol */
 	}
 
 	// check if the symbols can enter in one line
-	if (ws[1] + indent < lwidth) {
+	if (ws[0] + indent < lwidth) {
 		if (next)
 			next = set_nl(next)
 		return next || last
