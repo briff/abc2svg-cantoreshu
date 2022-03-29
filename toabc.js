@@ -1,6 +1,6 @@
 // abc2svg - toabc.js - convert ABC to ABC
 //
-// Copyright (C) 2016-2021 Jean-Francois Moine
+// Copyright (C) 2016-2022 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -271,6 +271,9 @@ break
 			line += "//////".slice(0, d)
 	} // dur_dump()
 
+    var	ft_w = ['', 'Thin', 'ExtraLight', 'Light', 'Regular',
+		'Medium', 'Demi', 'Bold', 'ExtraBold', 'Black']
+
 	function font_def(fn, p) {
 	    var	c, f,
 		i = p.indexOf('$')
@@ -304,15 +307,35 @@ break
 			old_font[f.fid] = true
 			def = f.name || ""
 			if (f.weight)
-				def += f.weight
+				def += ft_w[(f.weight / 100) | 0]
 			if (f.style)
-				def += f.style
+				def += f.style[0].toUpperCase() + f.style.slice(1)
 			if (!def)
 				def = "*"
+			def += ' ' + (f.size || "*")
+			if (f.box)
+				def += ' box'
+			if (f.pad)
+				def += ' padding=' + f.pad.toFixed(1)
+			if (f.class)
+				def += ' class=' + f.class
+			if (f.wadj) {
+				def += ' wadj='
+				switch (f.wadj) {
+				case 'spacing':
+					def += 'space'
+					break
+				case 'spacingAndGlyphs':
+					def += 'glyph'
+					break
+				default:
+					def += 'none'
+					break
+				}
+			}
 			if (k[0] == "u")
 				k = "setfont-" + k[1]
-			abc2svg.print('%%' + k + ' ' +
-				def + ' ' + (f.size || "*"))
+			abc2svg.print('%%' + k + ' ' + def)
 		}
 	} // font_dump()
 
