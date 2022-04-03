@@ -2038,26 +2038,23 @@ function set_lines(	s,		/* first symbol */
 /* -- cut the tune into music lines -- */
 function cut_tune(lwidth, lsh) {
     var	s2, i,
-//fixme: not usable yet
-//		pg_sav = {
-//			leftmargin: cfmt.leftmargin,
-//			rightmargin: cfmt.rightmargin,
-//			pagewidth: cfmt.pagewidth,
-//			scale: cfmt.scale
-//		},
+	pg_sav = {			// save the page parameters
+		leftmargin: cfmt.leftmargin,
+		rightmargin: cfmt.rightmargin,
+		pagewidth: cfmt.pagewidth,
+		scale: cfmt.scale
+	},
 	indent = lsh[0] - lsh[1],	// extra width of the first line
+	ckw = get_ck_width(),		// width of the starting symbols
 	s = tsfirst
 
 	lwidth -= lsh[1]		// width of the lines
 	if (cfmt.indent && cfmt.indent > lsh[0])
 		indent += cfmt.indent
 
-	/* adjust the line width according to the starting clef
-	 * and key signature */
-/*fixme: may change in the tune*/
-	i = get_ck_width();
-	lwidth -= i[0];
-	indent += i[1]
+	// adjust the line width according to the starting symbols
+	lwidth -= ckw[0]
+	indent += ckw[1]
 
 	if (cfmt.custos && voice_tb.length == 1)
 		lwidth -= 12
@@ -2081,23 +2078,22 @@ function cut_tune(lwidth, lsh) {
 	/* cut at explicit end of line, checking the line width */
 	s2 = s
 	for ( ; s; s = s.ts_next) {
-//fixme: not usable yet
-//		if (s.type == C.BLOCK) {
-//			switch (s.subtype) {
-//			case "leftmargin":
-//			case "rightmargin":
-//			case "pagescale":
-//			case "pagewidth":
-//			case "scale":
-//			case "staffwidth":
-//				set_format(s.subtype, s.param)
-//				break
-//			}
-//			continue
-//		}
+		if (s.type == C.BLOCK) {
+			switch (s.subtype) {
+			case "leftmargin":
+			case "rightmargin":
+			case "pagescale":
+			case "pagewidth":
+			case "scale":
+			case "staffwidth":
+				self.set_format(s.subtype, s.param)
+				break
+			}
+			continue
+		}
 		if (!s.ts_next) {
 			s = null
-		} else if (!s.soln) {
+		} else if (!s.soln && !img.chg) {
 			continue
 		} else {
 			s.soln = false
@@ -2114,14 +2110,17 @@ function cut_tune(lwidth, lsh) {
 //		s = s2.ts_prev;		// don't miss an eoln
 		s = s2
 		indent = 0
+		set_page()
+		lwidth = get_lwidth() - lsh[1] - ckw[0]
 	}
 
-//fixme: not usable yet
-//	// restore the page parameters at start of line
-//	cfmt.leftmargin = pg_sav.leftmargin;
-//	cfmt.rightmargin = pg_sav.rightmargin;
-//	cfmt.pagewidth = pg_sav.pagewidth;
-//	cfmt.scale = pg_sav.scale
+	// restore the page parameters at start of line
+	cfmt.leftmargin = pg_sav.leftmargin
+	cfmt.rightmargin = pg_sav.rightmargin
+	cfmt.pagewidth = pg_sav.pagewidth
+	cfmt.scale = pg_sav.scale
+	img.chg = 1
+	set_page()
 }
 
 /* -- set the y values of some symbols -- */
@@ -3749,7 +3748,7 @@ function get_lshift() {
 		}
 	}
 	// add the width of the braces/brackets
-	w = .5				// (width of left bar)
+	w = 0
 	for (st = 0; st <= cur_sy.nstaff; st++) {
 		if (cur_sy.staves[st].flags
 				& (OPEN_BRACE2 | OPEN_BRACKET2)) {
