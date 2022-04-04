@@ -1025,7 +1025,7 @@ function new_tempo(text) {
 		glovar.tempo = s
 		return
 	}
-	if (!curvoice.time)
+	if (!curvoice.time && !glovar.tempo)
 		glovar.tempo = s
 	else
 		sym_link(s)
