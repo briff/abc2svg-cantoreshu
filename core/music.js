@@ -2091,11 +2091,10 @@ function cut_tune(lwidth, lsh) {
 				self.set_format(s.subtype, s.param)
 				break
 			}
-			continue
 		}
 		if (!s.ts_next) {
 			s = null
-		} else if (!s.soln && !img.chg) {
+		} else if (!s.soln) {
 			continue
 		} else {
 			s.soln = false
