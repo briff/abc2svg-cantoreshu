@@ -28,11 +28,11 @@ abc2svg.page = {
     img_out: function(page, p) {
     var	cur_img_out = user.img_out;
 
-	page.user_out(p)
+	abc2svg.page.user_out(p)
 	
 	// if user.img_out has been changed
 	if (user.img_out != cur_img_out) {
-		page.user_out = user.img_out	// save the new function
+		abc2svg.page.user_out = user.img_out	// save the new function
 		user.img_out = cur_img_out	// and restore ours
 	}
     },
@@ -40,11 +40,8 @@ abc2svg.page = {
     // function called at end of generation
     abc_end: function(of) {
     var page = this.page
-	if (page && page.in_page) {
+	if (page && page.in_page)
 		abc2svg.page.close_page(page)
-		if (user.img_out == page.img_out_sav)
-			user.img_out = page.user_out
-	}
 	of()
     }, // abc_end()
 
@@ -417,8 +414,7 @@ abc2svg.page = {
 				h: 0,		// current page height
 				pn: 0,		// page number
 				pna: 0,		// absolute page number
-				first: true,	// no skip to next page
-				user_out: user.img_out
+				first: true	// no skip to next page
 			}
 
 			// don't let the backend handle the header/footer
@@ -453,10 +449,12 @@ abc2svg.page = {
 				cfmt.dateformat = "%b %e, %Y %H:%M"
 
 			// set the hooks
+			if (!abc2svg.page.user_out) {
+				abc2svg.page.user_out = user.img_out
 			user.img_out = abc2svg.page.img_in.bind(this);
-			page.img_out_sav = user.img_out;
 			abc2svg.abc_end = abc2svg.page.abc_end.bind(this,
 								abc2svg.abc_end)
+			}
 		}
 		return
 	}
