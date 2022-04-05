@@ -1659,6 +1659,8 @@ function set_nl(s) {			// s = start of line
 			s2 = clone(s1)
 			s1.bar_type = t1
 			delete s1.a_gch
+			if (t1 == '|')
+				delete s1.rbstop // (needed for play variant)
 			s2.bar_type = t2
 			lkvsym(s2, s1.next)	// voice
 			while (1) {
