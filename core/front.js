@@ -1,6 +1,6 @@
 // abc2svg - front.js - ABC parsing front-end
 //
-// Copyright (C) 2014-2021 Jean-Francois Moine
+// Copyright (C) 2014-2022 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -486,6 +486,7 @@ function tosvg(in_fname,		// file name
 				}
 				self.do_begin_end(b, uncomment(a[2]),
 					file.slice(eol + 1, i)
+						.replace(/\n%[^%].*$/gm,'')
 						.replace(/^%%/gm,''))
 				parse.eol = file.indexOf('\n', i + 6)
 				if (parse.eol < 0)
