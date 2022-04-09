@@ -122,6 +122,11 @@ abc2svg.strtab = {
 	if (cmd == "strtab") {
 		if (!parm)
 			return
+	    var	p_v = this.get_curvoice()
+		if (!p_v) {
+			this.parse.tab = parm
+			return
+		}
 		this.set_v_param("clef", "tab")
 		if (parm.indexOf("diafret") >= 0) {
 			this.set_v_param("diafret", true)
@@ -440,6 +445,13 @@ abc2svg.strtab = {
 
 	// define the elements of the tablature
 	if (ok) {
+		if (!strs && this.parse.tab) {		// if a global definition
+			strs = this.parse.tab
+			if (strs.indexOf("diafret") >= 0) {
+				p_v.diafret = true
+				strs = strs.replace(/\s*diafret\s*/, "")
+			}
+		}
 		if (strs) {
 			if (strs[1] >= '1' && strs[1] <= '9')
 				tab = str2tab(strs.split(','))	// W.V.'s syntax
