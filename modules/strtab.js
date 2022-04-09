@@ -306,7 +306,7 @@ abc2svg.strtab = {
 
 	// convert a list of ABC notes into a list of MIDI pitches
 	function abc2tab(p) {
-	    var	i, c,
+	    var	i, c, a,
 		t = []
 
 		if (p_v.diafret) {
@@ -332,10 +332,20 @@ abc2svg.strtab = {
 		} else {
 		    for (i = 0; i < p.length; i++) {
 			c = p[i]
+			switch (c) {
+			case '^':
+			case '_':
+				a = c == '^' ? 1 : -1
+				c = p[++i]
+				break
+			default:
+				a = 0
+				break
+			}
 			c = "CCDDEFFGGAABccddeffggaab".indexOf(c)
 			if (c < 0)
 				return // null
-			c += 60
+			c += 60 + a
 			while (1) {
 				if (p[i + 1] == "'") {
 					c += 12
@@ -375,9 +385,21 @@ abc2svg.strtab = {
 			if (!str)
 				break
 			p = "CCDDEFFGGAAB".indexOf(str[0])
-			o = Number(str[1])
-			if (p < 0 || isNaN(o))
-				return // null
+			if (p < 0)
+				return // undefined
+			o = str[1]
+			switch (o) {
+			case '#':
+			case 'b':
+				p += o == '#' ? 1 : -1
+				o = Number(str[2])
+				break
+			default:
+				o = Number(str[1])
+				break
+			}
+			if (isNaN(o))
+				return // undefined
 			t.push((o + 1) * 12 + p)	// C4 = 60
 		    }
 		}
