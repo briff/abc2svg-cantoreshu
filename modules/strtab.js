@@ -453,7 +453,8 @@ abc2svg.strtab = {
 			}
 		}
 		if (strs) {
-			if (strs[1] >= '1' && strs[1] <= '9')
+			e = strs.slice(-1)
+			if (e >= '1' && e <= '9')
 				tab = str2tab(strs.split(','))	// W.V.'s syntax
 			else
 				tab = abc2tab(strs)		// ABC syntax
