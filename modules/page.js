@@ -1,6 +1,6 @@
 // page.js - module to generate pages
 //
-// Copyright (C) 2018-2021 Jean-Francois Moine
+// Copyright (C) 2018-2022 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -23,19 +23,6 @@
 //	%%pageheight <unit>
 
 abc2svg.page = {
-
-    // output a new block
-    img_out: function(page, p) {
-    var	cur_img_out = user.img_out;
-
-	abc2svg.page.user_out(p)
-	
-	// if user.img_out has been changed
-	if (user.img_out != cur_img_out) {
-		abc2svg.page.user_out = user.img_out	// save the new function
-		user.img_out = cur_img_out	// and restore ours
-	}
-    },
 
     // function called at end of generation
     abc_end: function(of) {
@@ -248,7 +235,7 @@ abc2svg.page = {
 	if (page.gutter)
 		sty += ";margin-left:" +
 			((page.pn & 1) ? page.gutter : -page.gutter).toFixed(1) + "px"
-	abc2svg.page.img_out(page, sty + '">')
+	abc2svg.page.user_out(sty + '">')
 	page.in_page = true
 
 	ht += page.topmargin
@@ -266,7 +253,7 @@ abc2svg.page = {
 		} else {
 			sty = ''
 		}
-		abc2svg.page.img_out(page,
+		abc2svg.page.user_out(
 			'<svg xmlns="http://www.w3.org/2000/svg" version="1.1"\n\
 	xmlns:xlink="http://www.w3.org/1999/xlink"\n\
 	width="' + cfmt.pagewidth.toFixed(0) +
@@ -278,7 +265,7 @@ abc2svg.page = {
 		page.hmax -= h;
 		page.hf = ''
 	} else {
-		abc2svg.page.img_out(page,
+		abc2svg.page.user_out(
 			'<svg xmlns="http://www.w3.org/2000/svg" version="1.1"\n\
 	xmlns:xlink="http://www.w3.org/1999/xlink"\n\
 	width="' + cfmt.pagewidth.toFixed(0) +
@@ -308,7 +295,7 @@ abc2svg.page = {
 	page.in_page = false
 	if (page.footer) {
 		h = page.hmax + page.fh - page.h
-		abc2svg.page.img_out(page,
+		abc2svg.page.user_out(
 			'<svg xmlns="http://www.w3.org/2000/svg" version="1.1"\n\
 	xmlns:xlink="http://www.w3.org/1999/xlink"\n\
 	width="' + cfmt.pagewidth.toFixed(0) +
@@ -318,7 +305,7 @@ abc2svg.page = {
 				(h - page.fh).toFixed(1) + ')">' +
 			page.hf + '</g>\n</svg>')
 	}
-	abc2svg.page.img_out(page, '</div>')
+	abc2svg.page.user_out('</div>')
 	page.h = 0
     }, // close_page()
 
@@ -330,7 +317,7 @@ abc2svg.page = {
 	// copy a block
 	function blkcpy(page) {
 		while (page.blk.length)
-			abc2svg.page.img_out(page, page.blk.shift())
+			abc2svg.page.user_out(page.blk.shift())
 		page.blk = null			// direct output
 	} // blkcpy()
 
@@ -377,7 +364,7 @@ abc2svg.page = {
 		if (page.blk)
 			page.blk.push(p)
 		else
-			abc2svg.page.img_out(page, p)
+			abc2svg.page.user_out(p)
 		page.h += h
 		break
 	case "</di":				// end of block
@@ -449,12 +436,11 @@ abc2svg.page = {
 				cfmt.dateformat = "%b %e, %Y %H:%M"
 
 			// set the hooks
-			if (!abc2svg.page.user_out) {
+			if (!abc2svg.page.user_out)
 				abc2svg.page.user_out = user.img_out
 			user.img_out = abc2svg.page.img_in.bind(this);
 			abc2svg.abc_end = abc2svg.page.abc_end.bind(this,
 								abc2svg.abc_end)
-			}
 		}
 		return
 	}
