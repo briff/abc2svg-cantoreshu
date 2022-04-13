@@ -1,6 +1,6 @@
 // abc2svg - tohtml.js - HTML+SVG generation
 //
-// Copyright (C) 2014-2021 Jean-Francois Moine
+// Copyright (C) 2014-2022 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -182,6 +182,11 @@ abc2svg.abc_init = function() {
 
 	// output the html header
 	user.img_out = function(str) {
+		if (init_done) {
+			abc2svg.print(str)
+			return
+		}
+
 		var	header = cfmt.header,
 			footer = cfmt.footer,
 			topmargin = cfmt.topmargin || "1cm",
@@ -273,9 +278,6 @@ p span {line-height:' + ((cfmt.lineskipfac * 100) | 0).toString() + '%}\n' +
 
 		// output the first generated string
 		abc2svg.print(str)
-
-		// change the output function
-		user.img_out = abc2svg.print
 	}
 }
 
