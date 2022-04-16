@@ -70,7 +70,7 @@ abc2svg.strtab = {
 			abc.bgn++
 		abc.bgt = m
 		abc.defs_add('\
-<filter x="-0.1" y="0.2" width="1.2" height=".8" id="bg' + abc.bgn + '">\n\
+<filter x="-0.1" y="0.1" width="1.2" height=".8" id="bg' + abc.bgn + '">\n\
 <feFlood flood-color="' + m + '"/>\n\
 <feComposite in="SourceGraphic" operator="over"/>\n\
 </filter>')
@@ -537,7 +537,7 @@ abc2svg.strtab = {
 	if (!user.nul)
 		user.nul = function() {}
 
-	abc.add_style("\n.bn{font:bold 8px sans-serif}")
+	abc.add_style("\n.bn{font:bold 7px sans-serif}")
     } // set_hooks()
 } // strtab
 
