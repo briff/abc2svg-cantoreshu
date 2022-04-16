@@ -204,8 +204,8 @@ abc2svg.strtab = {
 					break
 				}
 			}
-			delete s.a_dd
 		}
+		delete s.a_dd
 
 	ls:	for (m = 0; m <= s.nhd; m++) {
 			nt = s.notes[m]
