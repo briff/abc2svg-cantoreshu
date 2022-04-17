@@ -582,8 +582,7 @@ abc2svg.play_next = function(po) {
 					po.stim += (s.ptim - s.rep_p.ptim) /
 							po.conf.speed
 					s = s.rep_p	// left repeat
-					while (s.ts_next
-					 && !s.ts_next.dur)
+					while (!s.dur)
 						s = s.ts_next
 					t = po.stim + s.ptim / po.conf.speed
 					po.repn = true
