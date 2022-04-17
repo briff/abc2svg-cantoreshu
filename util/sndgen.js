@@ -228,6 +228,8 @@ function ToAudio() {
 				d = next.dur / 2	// no dot
 			else
 				d = next.dur / 3
+			if (s.p_v.key.k_bagpipe)
+				d /= 2
 			next.time += d
 			next.dur -= d
 		}
