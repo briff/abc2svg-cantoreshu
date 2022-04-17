@@ -161,11 +161,12 @@ function ToAudio() {
 	// handle a block symbol
 	function do_block(s) {
 	    var	v = s.v,
-		c = chn[v]
+		p_v = s.p_v,
+		c = chn[v],
+		co = c
 
 		switch (s.subtype) {
 		case "midichn":
-			chn[v] = s.chn
 			break
 		case "midictl":
 			switch (s.ctrl) {
@@ -185,12 +186,26 @@ function ToAudio() {
 				instr[9] = instr[c]	// force the channel 10
 				chn[v] = c = 9
 			}
-			s.chn = c
-			break
+			// fall thru
+		default:
+			return
 		case "midiprog":
 			instr[c] = (instr[c] & ~0x7f) | s.instr
-			s.chn = c
 			break
+		}
+		if (s.chn == undefined)
+			return			// same channel
+
+		// update the channel of the voice
+		// and the one of the overlay voices
+		chn[v] = s.chn
+		while (1) {
+			p_v = p_v.voice_down
+			if (!p_v)
+				break
+			v = p_v.v
+			if (chn[v] == undefined || chn[v] == co)
+				chn[v] = s.chn
 		}
 	} // do_block()
 
