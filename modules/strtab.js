@@ -286,6 +286,7 @@ abc2svg.strtab = {
 		case C.TIME:
 			s.invis = true
 		default:
+			delete s.a_dd
 			continue
 		case C.GRACE:
 			if (p_v.pos.gst == C.SL_HIDDEN)
