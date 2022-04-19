@@ -1110,7 +1110,7 @@ function set_space(s, ptime) {
 			// (hack to have quite the same note widths between measures)
 			if (!s.next)
 				space *= .9
-			return space * .9 - 7
+			return space * .9 - 3
 		case C.CLEF:
 			return space - s.wl - s.wr
 		case C.BLOCK:			// no space
@@ -1229,7 +1229,8 @@ function _bar(s) {
 
 // create an invisible bar for end of music lines
 function add_end_bar(s) {
-    var b = _bar(s)
+    var b = _bar(s),
+	sn = s.ts_next		// start of next line
 
 	b.wl = 0
 	b.wr = 0
@@ -1243,7 +1244,7 @@ function add_end_bar(s) {
 //	if (s.ts_next)
 		s.ts_next.ts_prev = b
 	s.next = s.ts_next = b
-	b.space = set_space(b, s.time + s.dur * .4)
+	b.space = sn.space * .9 - 3
 	return b
 }
 
