@@ -2560,40 +2560,6 @@ function set_clefs() {
 		}
 	}
 
-	// set the starting clefs of the staves
-	for (v = 0; v < voice_tb.length; v++) {
-		p_voice = voice_tb[v]
-		if (!sy.voices[v])
-			continue
-		st = sy.voices[v].st
-		if (!sy.voices[v].second) {		// main voices
-			sy.staves[st].staffnonote = p_voice.staffnonote
-			if (p_voice.staffscale)
-				sy.staves[st].staffscale = p_voice.staffscale
-			if (sy.voices[v].sep)
-				sy.staves[st].sep = sy.voices[v].sep
-			if (sy.voices[v].maxsep)
-				sy.staves[st].maxsep = sy.voices[v].maxsep;
-
-			if (!p_voice.clef.clef_auto)
-				delete staff_clef[st].autoclef
-		}
-	}
-	for (v = 0; v < voice_tb.length; v++) {
-		p_voice = voice_tb[v]
-		if (!sy.voices[v]
-		 || sy.voices[v].second)		// main voices
-			continue
-		st = sy.voices[v].st;
-		s = p_voice.clef
-		if (staff_clef[st].autoclef) {
-			s.clef_type = set_auto_clef(st,
-						tsfirst,
-						s.clef_type);
-			s.clef_line = s.clef_type == 't' ? 2 : 4
-		}
-		staff_clef[st].clef = staff_tb[st].clef = s
-	}
 	for (st = 0; st <= sy.nstaff; st++)
 		mid[st] = (sy.staves[st].stafflines.length - 1) * 3
 
