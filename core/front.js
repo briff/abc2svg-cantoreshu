@@ -420,6 +420,7 @@ function tosvg(in_fname,		// file name
 				syntax(1, "Empty line in tune header - ignored")
 			} else if (parse.state >= 2) {
 				end_tune()
+				parse.state = 0
 				if (parse.select) {	// skip to next tune
 					eol = file.indexOf('\nX:', parse.eol)
 					if (eol < 0)
