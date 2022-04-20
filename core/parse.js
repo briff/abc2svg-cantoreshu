@@ -519,10 +519,10 @@ function set_kv_parm(a) {	// array of items
 	if (!curvoice.init) {	// add the global parameters if not done yet
 		curvoice.init = true
 		if (info.V) {
-			if (info.V['*'])
-				a = info.V['*'].concat(a)
 			if (info.V[curvoice.id])
 				a = info.V[curvoice.id].concat(a)
+			if (info.V['*'])
+				a = info.V['*'].concat(a)
 		}
 	}
 	if (a.length)
