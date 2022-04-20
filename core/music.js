@@ -1251,7 +1251,7 @@ function add_end_bar(s) {
 /* -- set the width and space of all symbols -- */
 // this function is called once for the whole tune
 function set_allsymwidth() {
-    var	val, st, s_chs, stup,
+    var	val, st, s_chs, stup, itup,
 	s = tsfirst,
 	s2 = s,
 	xa = 0,
@@ -1262,6 +1262,7 @@ function set_allsymwidth() {
 
 	/* loop on all symbols */
 	while (1) {
+		itup = 0
 		do {
 			if ((s.a_gch || s.a_ly) && !s_chs)
 				s_chs = s;
@@ -1274,6 +1275,8 @@ function set_allsymwidth() {
 			val = xl[st] + wr[st] + s.wl
 			if (val > maxx)
 				maxx = val
+			if (s.dur && s2.dur != s.notes[0].dur)	// if in tuplet
+				itup = 1
 			s = s.ts_next
 		} while (s && !s.seqst);
 
@@ -1286,16 +1289,9 @@ function set_allsymwidth() {
 		 && s2.ts_prev.type == C.SPACE && s2.ts_prev.seqst)
 			s2.space = s2.ts_prev.space /= 2
 
-		if (s2.dur && s2.dur != s2.notes[0].dur) {
-			if (!stup) {
+		if (itup) {
+			if (!stup)
 				stup = s2
-				while (stup.prev
-				 && stup.prev.dur
-				 && stup.prev.dur != stup.prev.notes[0].dur)
-					stup = stup.prev
-				while (!stup.seqst)
-					stup = stup.ts_prev
-			}
 		} else if (stup && stup.v == s2.v) {
 			set_sp_tup(stup, s2)
 			stup = null
@@ -1321,6 +1317,9 @@ function set_allsymwidth() {
 			s2 = s2.ts_next
 		} while (!s2.seqst)
 	}
+
+	if (stup)
+		set_sp_tup(stup, s2)
 
 	// let the chord symbols at the same offset
 	// and adjust the spacing due to the lyrics
