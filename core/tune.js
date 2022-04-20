@@ -1354,8 +1354,11 @@ function generate(in_mc) {
 
 	voice_adj();
 	sort_all()			/* define the time / vertical sequences */
-	if (!tsfirst)
+	if (!tsfirst) {
+		parse.state = 0			// (global)
+		blk_flush()			// output the tune header
 		return
+	}
 	if (user.anno_start)
 		anno_start = a_start
 	if (user.anno_stop)
@@ -1381,8 +1384,10 @@ function generate(in_mc) {
 	parse.state = 0			// file header
 	blk_flush()			// (force end of block)
 
-	if (tsfirst)		// if non void, keep tune data for upper layers
+	if (tsfirst) {		// if non void, keep tune data for upper layers
 		tunes.push([tsfirst, voice_tb, info, cfmt])
+		tsfirst = null
+	}
 
 	// if inside multicol, reset the parser
 	if (!in_mc)
