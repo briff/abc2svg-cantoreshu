@@ -252,14 +252,12 @@ Printing may be bad because the file contains pure HTML and %%pageheight\
 				ss = j + 9
 				break
 			default:			// < .. class="abc"
-				j = i
+				i = page.indexOf('>', i) + 1	// start of ABC
+				new_page += page.slice(j, i)	// keep the element
 
-				i = res[2].index(' ', i) // get the tag
-				t = res[2].slice(1, i)
+				j = res[2].indexOf(' ')		// get the tag
+				t = res[2].slice(1, j)
 
-				i = page.indexOf('>', j)
-				i = page.indexOf('\n', i) + 1
-				new_page += page.slice(j, i) // keep the element
 				j = page.indexOf('</' + t + '>', i)
 				ss = j + t.length + 4
 				break
@@ -287,6 +285,7 @@ Printing may be bad because the file contains pure HTML and %%pageheight\
 		}
 		if (j < 0) {
 //fixme			error
+console.log('Error: no end of ABC sequence')
 console.log('error i/j '+i+' '+j)
 			return
 		}
