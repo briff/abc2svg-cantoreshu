@@ -285,7 +285,7 @@ Printing may be bad because the file contains pure HTML and %%pageheight\
 		}
 		if (j < 0) {
 //fixme			error
-console.log('Error: no end of ABC sequence')
+alert("Error: no end of ABC sequence")
 console.log('error i/j '+i+' '+j)
 			return
 		}
