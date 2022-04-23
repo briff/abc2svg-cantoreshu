@@ -669,7 +669,6 @@ function set_transp() {
 	if (cfmt.transp && curvoice.shift)	// if %%transpose and shift=
 		syntax(0, "Mix of old and new transposition syntaxes");
 
-
 	if (cfmt.transp != undefined
 	 || curvoice.transp != undefined
 	 || curvoice.shift != undefined)
@@ -2149,6 +2148,7 @@ function get_voice(parm) {
 				staffscale: 1
 			}
 		}
+		set_transp()
 	}
 
 	if (!curvoice.filtered
