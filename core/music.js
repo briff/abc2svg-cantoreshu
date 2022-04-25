@@ -821,10 +821,12 @@ Abc.prototype.set_width = function(s) {
 		// ignore the lyrics for now
 
 		/* if preceeded by a grace note sequence, adjust */
-		if (s2 && s2.type == C.GRACE)
-			s.wl = wlnote - 4.5
-		else
+		if (s.prev && s.prev.type == C.GRACE) {
+			s.prev.wl += wlnote - 4.5
+			s.wl = s.prev.wl
+		} else {
 			s.wl = wlw
+		}
 		return
 	case C.SPACE:
 		xx = s.width / 2;
@@ -868,10 +870,11 @@ Abc.prototype.set_width = function(s) {
 //			s.notes[0].shhd = (w - 5) * -.5
 
 			/* if preceeded by a grace note sequence, adjust */
-			for (s2 = s.prev; s2; s2 = s2.prev) {
+			s2 = s.prev
+			if (s2 && s2.type == C.GRACE)
+				s.wl -= 6
+			for ( ; s2; s2 = s2.prev) {
 				if (w_tb[s2.type]) {
-					if (s2.type == C.GRACE)
-						s.wl -= 6
 					if (s2.type == C.STBRK)
 						s.wl -= 12
 					break
@@ -1275,7 +1278,7 @@ function set_allsymwidth() {
 			val = xl[st] + wr[st] + s.wl
 			if (val > maxx)
 				maxx = val
-			if (s.dur && s2.dur != s.notes[0].dur)	// if in tuplet
+			if (s.dur && s.dur != s.notes[0].dur)	// if in tuplet
 				itup = 1
 			s = s.ts_next
 		} while (s && !s.seqst);
