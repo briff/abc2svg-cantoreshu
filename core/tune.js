@@ -123,7 +123,7 @@ var w_tb = new Uint8Array([
 	1,	// clef
 	8,	// custos
 	0,	// (free)
-	4,	// grace
+	0,	// grace
 	2,	// key
 	3,	// meter
 	9,	// mrest
@@ -353,12 +353,6 @@ function voice_adj(sys_chg) {
 		for ( ; s; s = s.next) {
 			switch (s.type) {
 			case C.GRACE:
-				// with w_tb[C.BAR] = 4 and w_tb[C.GRACE] = 3,
-				// the grace notes go after the bar;
-				// if before a bar, change the grace time
-				if (s.next && s.next.type == C.BAR)
-					s.time--
-
 				if (!cfmt.graceword)
 					continue
 				for (s2 = s.next; s2; s2 = s2.next) {
