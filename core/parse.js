@@ -2158,8 +2158,10 @@ Abc.prototype.new_note = function(grace, sls) {
 				}
 				note.s = s;		// link the note to the chord
 			}
-			if (a_dcn.length)
+			if (a_dcn.length) {
+				s.time = curvoice.time	// (needed for !tie)!
 				dh_cnv(s, note)
+			}
 			s.notes.push(note)
 			if (!in_chord)
 				break
