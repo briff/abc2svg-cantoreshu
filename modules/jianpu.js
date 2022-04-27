@@ -35,42 +35,49 @@ abc2svg.jianpu = {
 
 // don't calculate the beams
   calc_beam: function(of, bm, s1) {
-	if (!this.cfmt().jianpu)
+	if (!s1.p_v.jianpu)
 		return of(bm, s1)
 //	return 0
   }, // calc_beam()
 
 // change %%staves and %%score
   do_pscom: function(of, p) {
-    if (this.cfmt().jianpu)
-	switch (p.match(/\w+/)[0]) {
-	case 'staves':
-	case 'score':
-		p = p.replace(/\(|\)/g, '')
-		break
-	}
+//fixme
+//    if (this.cfmt().jianpu)
+//	switch (p.match(/\w+/)[0]) {
+//	case 'staves':
+//	case 'score':
+//		p = p.replace(/\(|\)/g, '')
+//		break
+//	}
 	of(p)
   },
 
 // adjust some symbols before the generation
   output_music: function(of) {
-    var	C = abc2svg.C,
+    var	p_v,
+	C = abc2svg.C,
 	abc = this,
 	cur_sy = abc.get_cur_sy(),
 	voice_tb = abc.get_voice_tb()
 
-	if (!abc.cfmt().jianpu) {
-		of()
-		return
-	}
-
 	// output the key and time signatures
 	function set_head() {
-	    var	tsfirst = abc.get_tsfirst(),
-		p_v = voice_tb[0],
-		mt = p_v.meter.a_meter[0],
-		sk = p_v.key,
-		s2 = voice_tb[0].sym,
+	    var	v, p_v, mt, s2, sk, s,
+		tsfirst = abc.get_tsfirst()
+
+		// search a jianpu voice
+		for (v = 0; v < voice_tb.length; v++) {
+			p_v = voice_tb[v]
+			if (p_v.jianpu)
+				break
+		}
+		if (v >= voice_tb.length)
+				return
+
+		mt = p_v.meter.a_meter[0]
+		sk = p_v.key
+		s2 = p_v.sym
 		s = {
 			type: C.BLOCK,
 			subtype: "text",
@@ -91,7 +98,7 @@ abc2svg.jianpu = {
 
 		s2.prev = s
 		s.next = s2
-		voice_tb[0].sym = s
+		p_v.sym = s
 		tsfirst.ts_prev = s
 		s.ts_next = tsfirst
 		abc.set_tsfirst(s)
@@ -269,8 +276,11 @@ abc2svg.jianpu = {
 
 	set_head()
 
-	for (v = 0; v < voice_tb.length; v++)
-		set_sym(voice_tb[v])
+	for (v = 0; v < voice_tb.length; v++) {
+		p_v = voice_tb[v]
+		if (p_v.jianpu)
+			set_sym(p_v)
+	}
 
 	of()
   }, // output_music()
@@ -285,7 +295,7 @@ abc2svg.jianpu = {
 	out_sxsy = abc.out_sxsy,
 	xypath = abc.xypath
 
-	if (!abc.cfmt().jianpu) {
+	if (!p_voice.jianpu) {
 		of(p_voice)
 		return
 	}
@@ -406,15 +416,12 @@ abc2svg.jianpu = {
 // set some parameters
     set_fmt: function(of, cmd, param) {
 	if (cmd == "jianpu") {
-	    var	cfmt = this.cfmt()
-
-		if (!this.get_bool(param))
-			return
-		cfmt.jianpu = true
-		cfmt.staffsep = 20
-		cfmt.sysstaffsep = 14
+//	    var	cfmt = this.cfmt()
+		this.set_v_param("jianpu", param)
+		this.set_v_param("staffsep", 20)
+		this.set_v_param("sysstaffsep", 14)
 		this.set_v_param("stafflines", "...")
-		cfmt.tuplets = [0, 1, 0, 1]	// [auto, slur, number, above]
+		this.set_v_param("tuplets",[0, 1, 0, 1]) // [auto, slur, number, above]
 		return
 	}
 	of(cmd, param)
@@ -423,13 +430,14 @@ abc2svg.jianpu = {
 // adjust some values
     set_pitch: function(of, last_s) {
 	of(last_s)
-	if (!last_s
-	 || !this.cfmt().jianpu)
+	if (!last_s)
 		return			// first time
 
     var	C = abc2svg.C
 	
 	for (var s = this.get_tsfirst(); s; s = s.ts_next) {
+		if (!s.p_v.jianpu)
+			continue
 		switch (s.type) {
 
 		// draw the key signature only in the first voice
@@ -453,10 +461,24 @@ abc2svg.jianpu = {
 	}
     }, // set_pitch()
 
+    set_vp: function(of, a) {
+    var	i,
+	p_v = this.get_curvoice()
+
+	for (i = 0; i < a.length; i++) {
+		if (a[i] == "jianpu=") {
+			p_v.jianpu = a[++i]
+			break
+		}
+	}
+	of(a)
+    }, // set_vp()
+
 // set the width of some symbols
     set_width: function(of, s) {
 	of(s)
-	if (!this.cfmt().jianpu)
+	if (!s.p_v			// (if voice_tb[v].clef/key/meter)
+	 || !s.p_v.jianpu)
 		return
 
     var	w, m, note,
@@ -485,6 +507,7 @@ abc2svg.jianpu = {
 	abc.output_music = abc2svg.jianpu.output_music.bind(abc, abc.output_music)
 	abc.set_format = abc2svg.jianpu.set_fmt.bind(abc, abc.set_format)
 	abc.set_pitch = abc2svg.jianpu.set_pitch.bind(abc, abc.set_pitch)
+	abc.set_vp = abc2svg.jianpu.set_vp.bind(abc, abc.set_vp)
 	abc.set_width = abc2svg.jianpu.set_width.bind(abc, abc.set_width)
 
 	// big staccato dot
