@@ -83,10 +83,6 @@ abc2svg.modules = {
 			if (--abc2svg.modules.nreq == 0)
 				abc2svg.modules.cbf()
 		}
-		function load_ko(fn) {
-			abc2svg.modules.errmsg('Error loading the module ' + fn)
-			load_end()
-		}
 
 		// test if some keyword in the file
 	    var	m, i, fn,
@@ -113,7 +109,11 @@ abc2svg.modules = {
 			this.nreq++
 			abc2svg.loadjs(fn + "-1.js",
 					load_end,
-					load_ko)
+					function () {
+						abc2svg.modules.errmsg(
+							'Error loading the module ' + fn)
+						load_end()
+					})
 		}
 		return this.nreq == nreq_i
 	}
