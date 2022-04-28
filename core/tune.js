@@ -1324,7 +1324,7 @@ Abc.prototype.do_begin_end = function(type,
 }
 
 /* -- generate a piece of tune -- */
-function generate(in_mc) {
+function generate() {
     var s, v, p_voice;
 
 	if (a_dcn.length) {
@@ -1381,24 +1381,6 @@ function generate(in_mc) {
 		tunes.push([tsfirst, voice_tb, info, cfmt])
 		tsfirst = null
 	}
-
-	// if inside multicol, reset the parser
-	if (!in_mc)
-		return
-	voice_tb = Object.create(voice_tb)
-	for (v = 0; v < voice_tb.length; v++) {
-		p_voice = voice_tb[v];
-		p_voice.time = 0;
-		p_voice.sym = p_voice.last_sym = null;
-//		p_voice.st = cur_sy.voices[v].st;
-//		p_voice.second = cur_sy.voices[v].second;
-//		p_voice.clef.time = 0;
-		delete p_voice.have_ly;
-		p_voice.sls = [];
-		p_voice.hy_st = 0;
-		delete p_voice.bar_start
-	}
-	staves_found = 0			// (for compress/dup the voices)
 }
 
 // transpose a key
