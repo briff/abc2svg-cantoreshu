@@ -3,7 +3,7 @@
 // This script permits to follow the notes while playing.
 // Scrolling the music may be disabled setting 'no_scroll' in the window object.
 //
-// Copyright (C) 2015-2020 Jean-Francois Moine
+// Copyright (C) 2015-2022 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -22,8 +22,7 @@
 
 // init
 function follow(abc, user, playconf) {
-var	ref = [],
-	keep_types = {
+    var	keep_types = {
 		note: true,
 		rest: true
 	}
@@ -31,7 +30,6 @@ var	ref = [],
 user.anno_stop = function(type, start, stop, x, y, w, h) {
 	if (!keep_types[type])
 		return
-	ref[start] = stop;		// keep the source reference
 
 	// create a rectangle
 	abc.out_svg('<rect class="abcr _' + start + '_" x="');
