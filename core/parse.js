@@ -2699,27 +2699,12 @@ function parse_music_line() {
 									3 : 2;
 					if (tpn < 0)
 						tpn = tp.length	// new tuplet
-					c = cfmt.tuplets
-					if (curvoice.pos.tup) {
-						c = Object.create(c)
-						switch (curvoice.pos.tup & 0x07) {
-						case C.SL_ABOVE:
-							c[3] = 1
-							break
-						case C.SL_BELOW:
-							c[3] = 2
-							break
-						case C.SL_HIDDEN:
-							c[2] = 1
-							break
-						}
-					}
 					tp.push({
 						p: pplet,
 						q: qplet,
 						r: rplet,
 						ro: rplet,
-						f: c
+						f: curvoice.tup || cfmt.tuplets
 					})
 					continue
 				}

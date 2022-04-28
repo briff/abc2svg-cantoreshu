@@ -1,6 +1,6 @@
 // abc2svg - format.js - formatting functions
 //
-// Copyright (C) 2014-2021 Jean-Francois Moine
+// Copyright (C) 2014-2022 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -679,11 +679,16 @@ Abc.prototype.set_format = function(cmd, param) {
 			cfmt[cmd][i] = +v[i]
 		break
 	case "tuplets":
-		cfmt[cmd] = param.split(/\s+/);
-		v = cfmt[cmd][3]
-		if (v			// if 'where'
-		 && (posval[v]))	// translate the keyword
-			cfmt[cmd][3] = posval[v]
+		v = param.split(/\s+/)
+		f = v[3]
+		if (f)			// if 'where'
+			f = posval[f]	// translate the keyword
+		if (f)
+			v[3] = f
+		if (curvoice)
+			curvoice.tup = v
+		else
+			cfmt[cmd] = v
 		break
 	case "infoname":
 		set_infoname(param)
@@ -730,6 +735,26 @@ Abc.prototype.set_format = function(cmd, param) {
 		cmd = param.match(/(\w*)\s+(.*)/)
 		if (!cmd || !cmd[2]) {
 			syntax(1, "Error in %%pos")
+			break
+		}
+		if (cmd[1].slice(0, 3) == 'tup'		// special case for %%pos tuplet
+		 && curvoice) {				// inside tune
+			if (!curvoice.tup)
+				curvoice.tup = cfmt.tuplets
+			else
+				curvoice.tup = Object.create(curvoice.tup)
+			v = posval[cmd[2]]
+			switch (v) {
+			case C.SL_ABOVE:
+				curvoice.tup[3] = 1
+				break
+			case C.SL_BELOW:
+				curvoice.tup[3] = 2
+				break
+			case C.SL_HIDDEN:
+				curvoice.tup[2] = 1
+				break
+			}
 			break
 		}
 		set_pos(cmd[1], cmd[2])
