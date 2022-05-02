@@ -3771,9 +3771,8 @@ function set_beams(sym) {
 				s_opp = s
 				continue
 			}
-			if (!s.stem
-			 && (s.stem = s.multi) == 0)
-				s.stem = 1
+			if (!s.stem)
+				s.stem = s.multi || 1
 			for (; g; g = g.next) {
 				g.stem = s.stem;
 				g.multi = s.multi
@@ -3781,8 +3780,9 @@ function set_beams(sym) {
 			continue
 		}
 
-		if (!s.stem			/* if not explicitly set */
-		 && (s.stem = s.multi) == 0) { /* and alone on the staff */
+		if (!s.stem && s.multi)
+			s.stem = s.multi
+		if (!s.stem) {			// if note alone on the staff
 			mid_p = s.mid / 3 + 18
 
 			/* notes in a beam have the same stem direction */
