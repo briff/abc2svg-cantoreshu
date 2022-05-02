@@ -343,6 +343,8 @@ Abc.prototype.calculate_beam = function(bm, s1) {
 	for (s = s1.next; ; s = s.next) {
 		switch (s.type) {
 		case C.REST:		/* cannot move rests in multi-voices */
+			if (!s.multi)
+				break
 			g = s.ts_next
 			if (!g || g.st != st
 			 || (g.type != C.NOTE && g.type != C.REST))
