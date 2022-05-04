@@ -838,9 +838,11 @@ function edit_init() {
 		} // showmenu
 
 		e = elt_ref.target
-		e.onauxclick = show_menu	// right or middle buttons
+//		e.onauxclick = show_menu	// right or middle buttons (KO in Safari)
+		e.ondblclick = show_menu	// double click
 		e.oncontextmenu = function(ev) {
 			ev.preventDefault()
+			show_menu(ev)
 		}
 	}
 	set_pref()	// set the preferences from local storage
