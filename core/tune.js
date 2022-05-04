@@ -414,7 +414,7 @@ function new_syst(init) {
 /* -- set the bar numbers -- */
 // (possible hook)
 Abc.prototype.set_bar_num = function() {
-    var	s, s2, tim, rep_tim, k, n,
+    var	s, s2, tim, rep_tim, k, n, b_typ,
 	bar_num = gene.nbar,
 	bar_tim = 0,			// time of previous repeat variant
 	ptim = 0,			// time of previous bar
@@ -453,10 +453,10 @@ Abc.prototype.set_bar_num = function() {
 
 	// set the measure number on the top bars
 	for ( ; s; s = s.ts_next) {
-		if (!s.seqst)
-			continue
 		switch (s.type) {
 		case C.METER:
+			if (s.time == bar_tim)
+				break		// already seen
 		    if (wmeasure != 1)		// if not M:none
 			bar_num += (s.time - bar_tim) / wmeasure
 			bar_tim = s.time
@@ -465,7 +465,13 @@ Abc.prototype.set_bar_num = function() {
 		case C.BAR:
 			if (s.invis)
 				break
+			if (s.time != tim)
+				b_typ = 0
 			tim = s.time
+			k = s.text ? 1 : 2		// bar type: variant or not
+			if (b_typ & k)
+				break			// bar already seen
+			b_typ |= k
 			if (s.bar_num) {
 				bar_num = s.bar_num	// (%%setbarnb)
 				ptim = bar_tim = tim
