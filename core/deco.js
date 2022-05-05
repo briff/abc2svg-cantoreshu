@@ -509,7 +509,7 @@ function d_pf(de) {
 	}
 
 	de.x = x;
-	de.y = y_get(s.st, up, x, de.val)
+	de.y = y_get(s.st, up, x - dd.wl, de.val)
 	if (!up)
 		de.y -= dd.h
 	else
