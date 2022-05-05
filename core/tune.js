@@ -1419,7 +1419,7 @@ function key_transp(sk) {
  * if it is tied from a previous note, and return the associated accidental
  */
 function acc_same_pitch(s, pit) {
-    var	i,
+    var	i, a,
 	time = s.time
 
 	for (s = s.prev; s; s = s.prev) {
@@ -1441,14 +1441,18 @@ function acc_same_pitch(s, pit) {
 			}
 			for (i = 0; i <= s.nhd; i++) {
 				if (s.notes[i].pit == pit
-				 && s.notes[i].tie_ty)
-					return s.notes[i].acc
+				 && s.notes[i].tie_ty) {
+					a = s.notes[i].acc
+					return a == undefined || a == 3
+				}
 			}
 			return //undefined
 		case C.NOTE:
 			for (i = 0; i <= s.nhd; i++) {
-				if (s.notes[i].pit == pit)
-					return s.notes[i].acc
+				if (s.notes[i].pit == pit) {
+					a = s.notes[i].acc
+					return a == undefined || a == 3
+				}
 			}
 			break
 		}
