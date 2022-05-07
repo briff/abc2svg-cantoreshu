@@ -2263,9 +2263,9 @@ function draw_tuplet(s1) {
 	dir = tp.f[3]				// 'where'
 	if (!dir) {				// if auto
 		s3 = s1
-		while (s3.type != C.NOTE)
+		while (s3 && !s3.stem)		// (may have tuplets of rests!)
 			s3 = s3.next
-		dir = s3.stem > 0 ? C.SL_ABOVE : C.SL_BELOW
+		dir = (s3 && s3.stem < 0) ? C.SL_BELOW : C.SL_ABOVE
 	}
 
 	if (s1 == s2				// tuplet with 1 note (!)
