@@ -1440,6 +1440,10 @@ function new_bar() {
 
 	s.st = curvoice.st			/* original staff */
 
+	// if space before the bar, update its time (see w_tb[])
+	if (s.prev && s.prev.type == C.SPACE)
+		s.prev.time--
+
 	/* if repeat bar and shift, add a repeat bar */
 	if (s.rbstart
 	 && bar_type != "["

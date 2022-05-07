@@ -1,6 +1,6 @@
 // abc2svg - abc2svg.js
 //
-// Copyright (C) 2014-2021 Jean-Francois Moine
+// Copyright (C) 2014-2022 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -29,6 +29,7 @@ abc2svg.C = {
 	BAR: 0,
 	CLEF: 1,
 	CUSTOS: 2,
+	SM: 3,		// sequence marker (transient)
 	GRACE: 4,
 	KEY: 5,
 	METER: 6,
@@ -63,7 +64,7 @@ abc2svg.C = {
     };
 
 // !! tied to the symbol types in abc2svg.js !!
-abc2svg.sym_name = ['bar', 'clef', 'custos', '', 'grace',
+abc2svg.sym_name = ['bar', 'clef', 'custos', 'smark', 'grace',
 		'key', 'meter', 'Zrest', 'note', 'part',
 		'rest', 'yspace', 'staves', 'Break', 'tempo',
 		'', 'block', 'remark']

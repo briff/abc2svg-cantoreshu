@@ -119,10 +119,10 @@ function sym_add(p_voice, type) {
 /* -- sort all symbols by time and vertical sequence -- */
 // weight of the symbols !! depends on the symbol type !!
 var w_tb = new Uint8Array([
-	5,	// bar
+	4,	// bar
 	1,	// clef
 	8,	// custos
-	0,	// (free)
+	5,	// sm (sequence marker)
 	0,	// grace
 	2,	// key
 	3,	// meter
@@ -130,7 +130,7 @@ var w_tb = new Uint8Array([
 	9,	// note
 	0,	// part
 	9,	// rest
-	4,	// space
+	6,	// space (after bar)
 	0,	// staves
 	7,	// stbrk
 	0,	// tempo
@@ -245,8 +245,17 @@ function sort_all() {
 			if (!s || s.time != time
 			 || w_tb[s.type] != wmin)
 				continue
-			if (s.type == C.STAVES)
+			if (s.type == C.STAVES) {
 				new_sy = s.sy
+			} else if (s.type == C.SM) {	// if a sequence marker
+				s.next.prev = s.prev	// remove it
+				if (s.prev)
+					s.prev.next = s.next
+				else
+					s.p_v.sym = s.next
+				vtb[v] = s.next
+				continue
+			}
 			if (fl) {
 				fl = 0;
 				s.seqst = true
@@ -351,6 +360,28 @@ function voice_adj(sys_chg) {
 				break
 		}
 		for ( ; s; s = s.next) {
+
+			// if the symbol has no sequence weight
+			// and if there a time skip,
+			// add a sequence marker before it
+			if (!w_tb[s.type]
+			 && (!s.prev || s.time > s.prev.time + s.prev.dur)) {
+				s2 = {
+					type: C.SM,
+					v: s.v,
+					p_v: s.p_v,
+					time: s.time,
+					dur:0,
+					next: s,
+					prev: s.prev
+				}
+				if (s.prev)
+					s.prev.next = s2
+				else
+					voice_tb[s.v].sym = s2
+				s.prev = s2
+			}
+
 			switch (s.type) {
 			case C.GRACE:
 				if (!cfmt.graceword)
@@ -1808,18 +1839,6 @@ function get_vover(type) {
 	}
 	p_voice2.time = vover.time;
 	curvoice = p_voice2
-
-	// add a bar at start of the measure overlay
-	// (needed for sort_all() in case of spaces - 'y')
-	if (vover.bar && vover.time) {
-		sym_link({
-			type: C.BAR,
-			bar_type: vover.bar,
-			invis: 1,
-			dur: 0,
-			multi: 0
-		})
-	}
 }
 
 // check if a clef, key or time signature may go at start of the current voice
