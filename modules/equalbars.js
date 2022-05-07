@@ -1,6 +1,6 @@
 // equalbars.js - module to set equal spaced measure bars
 //
-// Copyright (C) 2018-2021 Jean-Francois Moine
+// Copyright (C) 2018-2022 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -76,7 +76,7 @@ abc2svg.equalbars = {
 	}
 
 	// push the last bar if it is not the invisible bar after a key change
-	if (!s.invis || s.prev.type != C.KEY)
+	if (!s.invis || (s.prev && s.prev.type != C.KEY))
 		bars.push([s, s.time - t])
 	else
 		bars[bars.length - 1][0] = s	// replace the last bar
