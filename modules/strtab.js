@@ -88,11 +88,11 @@ abc2svg.strtab = {
 		case C.GRACE:
 			for (g = s.extra; g; g = g.next) {
 				if (!g.stemless)
-					g.ys = -10
+					g.ys = -7 * s.p_v.staffscale
 			}
 		case C.NOTE:
 			if (!s.stemless)
-				s.ys = -10
+				s.ys = -7 * s.p_v.staffscale
 			break
 		}
 	}
