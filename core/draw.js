@@ -3227,13 +3227,14 @@ function draw_systems(indent) {
 			y = 0,
 			ln = "",
 			stafflines = staff_tb[st].stafflines,
-			l = stafflines.length
+			l = stafflines.length,
+			il = 6 * staff_tb[st].staffscale // interline
 
 		if (!/[\[|]/.test(stafflines))
 			return				// no line
 		w = x2 - x1;
-		set_sscale(st);
-		ws = w / stv_g.scale
+		set_sscale(-1)
+		ws = w / staff_tb[st].staffscale
 
 		// check if default staff
 		if (cache && cache.st_l == stafflines
@@ -3241,19 +3242,19 @@ function draw_systems(indent) {
 			xygl(x1, staff_tb[st].y, 'stdef' + cfmt.fullsvg)
 			return
 		}
-		for (i = 0; i < l; i++, y -= 6) {
+		for (i = 0; i < l; i++, y -= il) {
 			if (stafflines[i] == '.')
 				continue
 			dy = 0
-			for (; i < l; i++, y -= 6, dy -= 6) {
+			for (; i < l; i++, y -= il, dy -= il) {
 				switch (stafflines[i]) {
 				case '.':
 				case '-':
 					continue
 				case ty:
-					ln += 'm-' + ws.toFixed(1) +
+					ln += 'm-' + w.toFixed(1) +
 						' ' + dy +
-						'h' + ws.toFixed(1);
+						'h' + w.toFixed(1);
 					dy = 0
 					continue
 				}
@@ -3262,7 +3263,7 @@ function draw_systems(indent) {
 				ty = stafflines[i]
 				ln += '<path class="' +
 					(ty == '[' ? 'slthW' : 'slW') +
-					'" d="m0 ' + y + 'h' + ws.toFixed(1);
+					'" d="m0 ' + y + 'h' + w.toFixed(1);
 				dy = 0
 			}
 			ln += '"/>'
