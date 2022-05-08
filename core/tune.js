@@ -373,7 +373,8 @@ function voice_adj(sys_chg) {
 					time: s.time,
 					dur:0,
 					next: s,
-					prev: s.prev
+					prev: s.prev,
+					fmt: s.fmt
 				}
 				if (s.prev)
 					s.prev.next = s2
