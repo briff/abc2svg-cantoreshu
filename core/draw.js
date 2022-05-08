@@ -485,7 +485,7 @@ function draw_beams(bm) {
 		y1 = bm.a * x1 + bm.b - dy;
 		x2 -= x1;
 		x2 /= stv_g.scale;
-		dy2 = bm.a * x2
+		dy2 = bm.a * x2 * stv_g.scale
 		xypath(x1, y1, true);
 		output += 'l' + x2.toFixed(1) + ' ' + (-dy2).toFixed(1) +
 			'v' + h.toFixed(1) +
@@ -507,6 +507,7 @@ function draw_beams(bm) {
 		shift = .29;
 		bh = 1.8
 	}
+	bh /= stv_g.scale
 
 /*fixme: quick hack for stubs at end of beam and different stem directions*/
 	beam_dir = s1.stem
