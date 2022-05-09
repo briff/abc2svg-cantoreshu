@@ -2153,6 +2153,9 @@ function get_voice(parm) {
 				stafflines: curvoice.stafflines || "|||||",
 				staffscale: 1
 			}
+		} else if (!par_sy.voices[v]) {
+			curvoice.ignore = 1	// voice not declared in %%staves
+			return
 		}
 		set_transp()
 	}
