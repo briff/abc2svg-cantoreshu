@@ -685,7 +685,7 @@ var info_font_init = {
 	X: "title"
 }
 function write_headform(lwidth) {
-	var	c, font, font_name, align, x, y, sz,
+    var	c, font, font_name, align, x, y, sz, w,
 		info_val = {},
 		info_font = Object.create(info_font_init),
 		info_sz = {
