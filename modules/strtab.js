@@ -158,6 +158,7 @@ abc2svg.strtab = {
 	C = abc2svg.C,
 	abc = this,
 	s = abc.get_tsfirst(),		// first symbol
+	tim = s.time,
 	strs = [],			// notes per staff - index = staff
 	lstr = []			// lowest string per staff - index staff
 
@@ -241,16 +242,6 @@ abc2svg.strtab = {
 			}
 			set_pit(p_v, s, nt, bi)
 		}
-
-		// put the stems on the lowest strings
-		if (!s.ts_next || s.ts_next.time != s.time) {
-			for (i = 0; i < lstr.length; i++) {
-				if (lstr[i]) {
-					delete lstr[i][1].stemless
-					lstr[i] = null
-				}
-			}
-		}
 	} // set_notes()
 
 	// get the string number from the decoration
@@ -274,6 +265,18 @@ abc2svg.strtab = {
 
 	// loop on the notes of the voices with a tablature
 	for ( ; s; s = s.ts_next) {
+
+		// let a stem on the lowest string
+		if (s.time != tim) {
+			tim = s.time
+			for (i = 0; i < lstr.length; i++) {
+				if (lstr[i]) {
+					delete lstr[i][1].stemless
+					lstr[i] = null
+				}
+			}
+		}
+
 		p_v = s.p_v
 		if (!p_v.tab)
 			continue
