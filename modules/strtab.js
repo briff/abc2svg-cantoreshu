@@ -38,6 +38,7 @@ abc2svg.strtab = {
 	C = abc2svg.C,
 	abc = this
 
+	// draw the note heads
 	function draw_heads(stb, s) {
 	    var	m, not, x, y
 
@@ -55,6 +56,85 @@ abc2svg.strtab = {
 			abc.out_svg('">' + not.nb + '</text>\n')
 		}
 	} // draw_heads()
+
+	// draw the stems, flags and beams
+	function draw_stems(stb, s) {
+		if (!s.tabst)
+			return			// don't draw any stem
+	    var	s1, s2, nfl, l,
+		y = stb + 3 * (s.notes[0].pit - 19) // -18) - 3
+				* s.p_v.staffscale,
+		h = (11 + 3 * (s.notes[0].pit - 18)) * s.p_v.staffscale
+
+		abc.out_svg('<path class="sW" d="M')
+		abc.out_sxsy(s.x, ' ', y)
+		abc.out_svg('v' + h.toFixed(1) +'"/>\n')
+
+		// draw the flag(s)
+		if (s.nflags <= 0
+		 || !s.beam_end)		// inside beam
+			return
+		y -= h
+		if (s.beam_st) {		// no beam
+			abc.out_svg('<text class="f'
+				+ abc.get_font('music').fid
+				+ '" transform="translate(')
+			abc.out_sxsy(s.x, ',', y)
+			abc.out_svg(') scale('
+				+ (s.grace ? '.5,.5' : '.7,.7') + ')">'
+				+ String.fromCharCode(0xe23f + 2 * s.nflags)
+				+ '</text>\n')
+			return
+		}
+
+		// draw the beam(s)
+		s2 = s
+		nfl = s.nflags
+		while (1) {
+			if (s.nflags > nfl)
+				nfl = s.nflags
+			if (s.beam_st)
+				break
+			s = s.prev
+		}
+		s1 = s
+		l = (s2.x - s1.x).toFixed(1)
+		abc.out_svg('<path d="M')
+		abc.out_sxsy(s1.x, ' ', y)
+		abc.out_svg('h' + l
+				+ 'v-3h-' + l
+				+ 'v3"/>\n')
+		if (nfl == 1)
+			return
+//fixme: do more levels
+		y += 5
+		while (1) {
+			while (s.nflags < 2) {
+				s = s.next
+				if (s == s2)
+					break
+			}
+			if (s == s2)
+				break
+			s1 = s
+			while (s.next.nflags >= 2) {
+				s = s.next
+				if (s == s2)
+					break
+			}
+			l = (s.x - s1.x).toFixed(1)
+			abc.out_svg('<path d="M')
+			abc.out_sxsy(s1.x, ' ', y)
+			abc.out_svg('h' + l
+					+ 'v-3h-' + l
+					+ 'v3"/>\n')
+			if (s == s2)
+				break
+			s = s.next
+			if (s == s2)
+				break
+		}
+	} // draw_stems()
 
 	if (!p_v.tab) {
 		of(p_v)
@@ -85,15 +165,6 @@ abc2svg.strtab = {
 		case C.REST:
 			s.invis = true
 			break
-		case C.GRACE:
-			for (g = s.extra; g; g = g.next) {
-				if (!g.stemless)
-					g.ys = -7 * s.p_v.staffscale
-			}
-		case C.NOTE:
-			if (!s.stemless)
-				s.ys = -7 * s.p_v.staffscale
-			break
 		}
 	}
 	of(p_v)
@@ -115,6 +186,21 @@ abc2svg.strtab = {
 		}
 	}
 	abc.out_svg('</g>\n')
+
+	// draw the stems and beams
+	abc.set_sscale(-1)		// no scale
+	for (s = p_v.sym; s; s = s.next) {
+		switch (s.type) {
+		case C.GRACE:
+			for (g = s.extra; g; g = g.next)
+				draw_stems(stb, g)
+			break
+		case C.NOTE:
+			draw_stems(stb, s)
+			break
+		}
+	}
+	abc.set_scale(p_v.sym)		// (for draw_all_ties)
     }, // draw_symbols()
 
     // set a format parameter
@@ -138,27 +224,12 @@ abc2svg.strtab = {
 	of(cmd, parm)
     }, // set_fmt()
 
-    // adjust the horizontal offset of the stems
-    set_width: function(of, s) {
-    var	m, not,
-	abc = this,
-	C = abc2svg.C,
-	o = s.stem < 0 ? 3.5 : -2.5
-
-	of(s)
-	if (s.p_v && s.p_v.tab && s.type == C.NOTE && !s.stemless) {
-		for (m = 0; m <= s.nhd; m++)
-			s.notes[m].shhd = o
-	}
-    }, // set_width()
-
     // change the notes when the global generation settings are done
     set_stems: function(of) {
     var	p_v, i, m, nt, n, bi, bn, strss, g,
 	C = abc2svg.C,
 	abc = this,
 	s = abc.get_tsfirst(),		// first symbol
-	tim = s.time,
 	strs = [],			// notes per staff - index = staff
 	lstr = []			// lowest string per staff - index staff
 
@@ -177,8 +248,9 @@ abc2svg.strtab = {
 		}
 		nt.acc = 0
 		nt.invis = true
-		strss[i] = s.time + s.dur
-		if (s.nflags >= -1 && !s.stemless) {
+		if (!s.grace)
+			strss[i] = s.time + s.dur
+		if (s.dur <= C.BLEN / 2 && !s.stemless) {
 			if (!lstr[st])
 				lstr[st] = [ 10 ]
 			if (lstr[st][0] > i) {
@@ -267,11 +339,10 @@ abc2svg.strtab = {
 	for ( ; s; s = s.ts_next) {
 
 		// let a stem on the lowest string
-		if (s.time != tim) {
-			tim = s.time
+		if (s.seqst || (s.ts_prev && s.ts_prev.type == C.GRACE)) {
 			for (i = 0; i < lstr.length; i++) {
 				if (lstr[i]) {
-					delete lstr[i][1].stemless
+					lstr[i][1].tabst = 1
 					lstr[i] = null
 				}
 			}
@@ -527,7 +598,6 @@ abc2svg.strtab = {
 	abc.draw_symbols = abc2svg.strtab.draw_symbols.bind(abc, abc.draw_symbols)
 	abc.set_format = abc2svg.strtab.set_fmt.bind(abc, abc.set_format);
 	abc.set_stems = abc2svg.strtab.set_stems.bind(abc, abc.set_stems)
-	abc.set_width = abc2svg.strtab.set_width.bind(abc, abc.set_width)
 	abc.set_vp = abc2svg.strtab.set_vp.bind(abc, abc.set_vp)
 
 	// define specific decorations used to force the string number
