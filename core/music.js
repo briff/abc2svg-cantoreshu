@@ -4651,6 +4651,20 @@ Abc.prototype.block_gen = function(s) {
 	}
 }
 
+// -- move some symbols of an empty staff to the next one --
+function sym_staff_move(st) {
+	for (var s = tsfirst; s; s = s.ts_next) {
+		if (s.nl)
+			break
+		if (s.st == st
+		 && s.type != C.CLEF) {
+			s.st++
+			if (s.type != C.TEMPO)
+				s.invis = true
+		}
+	}
+} // sym_staff_move()
+
 /* -- define the start and end of a piece of tune -- */
 /* tsnext becomes the beginning of the next line */
 function set_piece() {
@@ -4848,6 +4862,12 @@ function set_piece() {
 
 	/* define the offsets of the measure bars */
 	set_top_bot()
+
+	// move the symbols of the empty staves to the next staff
+	for (st = 0; st < nstaff; st++) {
+		if (!non_empty_gl[st])
+			sym_staff_move(st)
+	}
 
 	// set a null height if the last staff is empty
 	if (!non_empty_gl[nstaff])
