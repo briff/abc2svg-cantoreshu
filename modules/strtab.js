@@ -314,6 +314,8 @@ abc2svg.strtab = {
 			}
 			set_pit(p_v, s, nt, bi)
 		}
+
+		s.ymn = 0		// don't get space below the tablature
 	} // set_notes()
 
 	// get the string number from the decoration
@@ -334,6 +336,8 @@ abc2svg.strtab = {
 				p_v[n].tab[i] += m
 		}
 	}
+
+	of()				// do the normal work
 
 	// loop on the notes of the voices with a tablature
 	for ( ; s; s = s.ts_next) {
@@ -376,7 +380,6 @@ abc2svg.strtab = {
 			break
 		}
 	}
-	of()
     }, // set_stems()
 
     // get the parameters of the current voice
