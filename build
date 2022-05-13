@@ -7,6 +7,7 @@ if command -v jsmin >/dev/null 2>&1; then
 # binary program
 gen() {
  cat "$@" | jsmin
+ echo ""
 }
 elif command -v qjs >/dev/null 2>&1; then
 # script using QuickJS

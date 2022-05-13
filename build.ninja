@@ -38,6 +38,7 @@ rule jsc
    if [ "x$$NOMIN" = "x" ]; then $
       if command -v jsmin >/dev/null 2>&1; then $
 	cat $in | jsmin >> $out;$
+	echo "" >> $out;$
       else $
 	cat $in | uglifyjs >> $out;$
      fi;$
