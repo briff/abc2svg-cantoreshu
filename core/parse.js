@@ -1035,10 +1035,11 @@ function new_tempo(text) {
 
 // treat the information fields which may embedded
 function do_info(info_type, text) {
-	var s, d1, d2, a, vid
+    var	s, d1, d2, a, vid, tim, v, p_v
 
 	// skip this line if the current voice is ignored
 	if (curvoice && curvoice.ignore
+	 && info_type != 'P'
 	 && info_type != 'V')
 		return
 
@@ -1090,18 +1091,36 @@ function do_info(info_type, text) {
 			info.P = text
 			break
 		}
+
+		// synchronize the voices
+		tim = v = 0
+		while (1) {
+			p_v = voice_tb[v++]
+			if (!p_v)
+				break
+			if (!p_v.ignore && p_v.time > tim)
+				tim = p_v.time
+		}
+		v = 0
+		while (1) {
+			p_v = voice_tb[v++]
+			if (!p_v)
+				break
+			p_v.time = tim
+		}
 		if (!parse.part)
 			parse.part = {}
-		if (parse.part[curvoice.time])	// P: already defined
+		else if (parse.part[tim])	// P: already defined
 			break
+
 		s = {
 			text: text,
-			time: curvoice.time
+			time: tim
 		}
 		set_ref(s)
 		if (cfmt.writefields.indexOf(info_type) < 0)
 			s.invis = true
-		parse.part[curvoice.time] = s
+		parse.part[tim] = s
 		break
 	case 'Q':
 		if (!parse.state)
