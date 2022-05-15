@@ -1,6 +1,6 @@
 // abc2svg - grid.js - module to insert a chord grid before or after a tune
 //
-// Copyright (C) 2018-2021 Jean-Francois Moine
+// Copyright (C) 2018-2022 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -31,6 +31,9 @@
 //	%%gridfont font_name size (default: 'serif 16')
 
 abc2svg.grid = {
+    cs_sel0: /[\[(][^)]*[\])]/,
+    cs_sel1: /[^[(]*[\[(]|[\])][\s\S]*/g,
+
     pl: '<path class="stroke" stroke-width="1" d="M',
 
 // generate the grid
@@ -295,6 +298,28 @@ function build_grid(s, font) {
 	voice_tb = abc.get_voice_tb(),
 	grid = abc.cfmt().grid
 
+	// extract one of the chord symbols
+	// With chords as "xxx(yyy)" or "[yyy];xxx"
+	// (!sel - default) returns "xxx" and (sel) returns "yyy"
+	function cs_filter(a_cs, sel) {
+	    var	i, cs, tcs
+
+		for (i = 0; i < a_cs.length; i++) {
+			cs = a_cs[i]
+			if (cs.type == 'g') {
+				if (!tcs)
+					tcs = cs.text
+				else
+					tcs += cs.text
+			}
+		}
+		if (!abc2svg.grid.cs_sel0.test(tcs))
+			return tcs
+		return tcs.replace(sel
+				? abc2svg.grid.cs_sel1
+				: abc2svg.grid.cs_sel0, '')
+	} // cs_filter()
+
 	function get_beat(s) {
 	    var	beat = C.BLEN / 4
 
@@ -337,19 +362,24 @@ function build_grid(s, font) {
 			case C.REST:
 				if (!s.a_gch || chord[beat_i])
 					break
-				bt = abc2svg.cs_filter(s.a_gch,
-							abc.cfmt().altchord)
+				bt = cs_filter(s.a_gch, abc.cfmt().altchord)
 				if (!bt)
 					break
-				chord[beat_i] = bt
-				for (i = 0; i < s.a_gch.length; i++) {
-					if (s.a_gch[i].type == 'g')
-						break
+				if (typeof bt != "object") {
+					for (i = 0; i < s.a_gch.length; i++) {
+						if (s.a_gch[i].type == 'g')
+							break
+					}
+					abc.set_font(s.a_gch[i].font)
+//fixme: 'bt' may contain <tspan> elements
+//					w = abc.strwh(bt)
+					w = s.a_gch[i].text.wh
+					if (w[0] > wmx)
+						wmx = w[0]
+					bt = new String(bt)
+					bt.wh = w
 				}
-				abc.set_font(s.a_gch[i].font)
-				w = abc.strwh(bt)[0]
-				if (w > wmx)
-					wmx = w
+				chord[beat_i] = bt
 				break
 			case C.BAR:
 				i = s.bar_num		// check if normal measure bar
