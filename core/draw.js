@@ -3011,7 +3011,7 @@ function draw_vname(indent, stl) {
 
 	for (v = 0; v < voice_tb.length; v++) {
 		p_voice = voice_tb[v]
-		if (!p_voice.sym || !cur_sy.voices[v])
+		if (!cur_sy.voices[v])
 			continue
 		st = cur_sy.voices[v].st
 		if (!stl[st])
