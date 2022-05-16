@@ -2617,7 +2617,7 @@ function set_clefs() {
 				}
 				if (!staff_clef[st].clef) {	// new staff
 					if (s2.clef_auto) {
-						if (s2.type != 'a')
+						if (s2.clef_type != 'a')
 							p_voice.clef =
 								clone(p_voice.clef);
 						p_voice.clef.clef_type = new_type;
