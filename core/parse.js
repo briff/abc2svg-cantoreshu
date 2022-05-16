@@ -2037,6 +2037,10 @@ Abc.prototype.new_note = function(grace, sls) {
 		s.type = C.MREST;
 		c = line.next_char()
 		s.nmes = (c > '0' && c <= '9') ? line.get_int() : 1;
+		if (curvoice.wmeasure == 1) {
+			error(1, null, "multi-measure rest, but no measure!")
+			return
+		}
 		s.dur = curvoice.wmeasure * s.nmes
 
 		// ignore if in second voice
