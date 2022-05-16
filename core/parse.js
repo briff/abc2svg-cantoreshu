@@ -1091,6 +1091,8 @@ function do_info(info_type, text) {
 			info.P = text
 			break
 		}
+		if (parse.part && parse.part[curvoice.time])
+			break			// P: already defined
 
 		// synchronize the voices
 		tim = v = 0
