@@ -1099,7 +1099,7 @@ function draw_rest(s) {
 // -- draw a multi-measure rest --
 // (the staves are defined)
 function draw_mrest(s) {
-    var	x1, x2,
+    var	x1, x2, prev,
 	p_st = staff_tb[s.st],
 	y = p_st.y + (p_st.topbar + p_st.botbar) / 2,
 	p = s.nmes.toString()
@@ -1109,7 +1109,15 @@ function draw_mrest(s) {
 		return
 	}
 	set_scale(s)
-	x1 = s.prev.x + 20
+
+	prev = s3		// search the start of the previous time sequence
+	while (!prev.seqst)
+		prev = prev.ts_prev
+	prev = prev.ts_prev
+	while (!prev.seqst)
+		prev = prev.ts_prev
+
+	x1 = prev.x + 20
 	x2 = s.next.x - 20
 	s.x = (x1 + x2) / 2
 	anno_start(s)
