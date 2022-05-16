@@ -1110,7 +1110,7 @@ function draw_mrest(s) {
 	}
 	set_scale(s)
 
-	prev = s3		// search the start of the previous time sequence
+	prev = s		// search the start of the previous time sequence
 	while (!prev.seqst)
 		prev = prev.ts_prev
 	prev = prev.ts_prev
