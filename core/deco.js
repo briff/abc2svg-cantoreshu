@@ -901,11 +901,10 @@ function get_dd(nm) {
 		ty = nm[0]
 		if (ty == '@') {
 			p = nm.match(/@([-\d]+),([-\d]+)/)
-			if (!p) {
-				error(1, s, "Bad position in !$1!", nm)
-				return
-			}
-			ty = p[0]
+			if (p)
+				ty = p[0]
+			else
+				ty = ''		// accept decorations starting with '@'
 		}
 		dd = deco_def(nm, nm.replace(ty, ''))
 	} else {
