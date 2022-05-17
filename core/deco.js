@@ -75,7 +75,6 @@ var decos = {
 	shortphrase: "3 sphr 0 1 1",
 	turnx: "3 turnx 5,5 6 6",
 	invertedturn: "3 turn 5,5 6 6",
-	invertedturnx: "3 turnx 5,5 6 6",
 	"0": "3 fng 5,5 3 3 0",
 	"1": "3 fng 5,5 3 3 1",
 	"2": "3 fng 5,5 3 3 2",
