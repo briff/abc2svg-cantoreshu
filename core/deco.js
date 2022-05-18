@@ -1471,7 +1471,7 @@ function draw_deco_near() {
 				pos: pos
 //				dy: 0
 			}
-			if (dd.name.indexOf("invert") == 0)
+			if (dd.name.indexOf("inverted") >= 0)
 				de.inv = 1
 			if (s.type == C.BAR && !dd.ty)
 				de.x -= s.wl / 2 - 2
