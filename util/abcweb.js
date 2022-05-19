@@ -214,6 +214,41 @@ function render() {
 	ss = 0,
 	re_stop = /\n<|\n%.begin[^\s]+/g
 
+	// get the parameters from the script class
+	// format '--<key>:<value>'
+	function get_p(p) {
+	    var	i, j, k, r,
+		o = '',
+		c = p.match(/class="[^"]+"/),	// "
+		sh = document.styleSheets
+
+		if (!c)
+			return
+		c = '.' + c[0].slice(7, -1)		// selector
+		for (i = 0; i < sh.length; i++) {
+			r = sh[i].cssRules
+			for (j = 0; j < r.length; j++) {
+				if (r[j].selectorText == c)
+					break
+			}
+			if (j < r.length)
+				break
+		}
+		if (i == sh.length)
+			return
+
+		r = r[j]				// cssRule
+		for (i = 0; i < r.styleMap.size; i++) {
+			k = r.style[i]
+			o += '%%' + k.slice(2)
+				+ ' ' + r.style.getPropertyValue(k)
+				+ '\n'
+		}
+		if (o)
+			abc.tosvg(app, o)
+		return o
+	} // get_p()
+
 	// extract a music sequence
 	// @re is the regular expression starting a music sequence
 	function extract() {
@@ -246,8 +281,9 @@ Printing may be bad because the file contains pure HTML and %%pageheight\
 			t = t.slice(1, 4)
 			switch (t) {
 			case "scr":			// <script
-				i = page.indexOf('>', i)
-				i = page.indexOf('\n', i) + 1
+				k = page.indexOf('>', i)
+				get_p(page.slice(i, k))	// get the parameters
+				i = page.indexOf('\n', k) + 1
 				j = page.indexOf('</script>', i)
 				ss = j + 9
 				break
