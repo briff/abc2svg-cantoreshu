@@ -16,7 +16,7 @@ which requires compilation on every operating system.
 The **abc2svg** scripts can run in any system with no compilation on
 any platform that contains an internet browser. This includes MS-Windows,
 Apple, and Unix-like systems (Linux, BSD...) as well as portable devices
-such as cell phones and iPads.
+such as cell phones and tablets.
 
 A description of the ABC parameters that relate to both abcm2ps
 and abc2svg can be found [here][1].
@@ -110,6 +110,19 @@ If your ABC files contain `%%abc-include`, then you must:
 
 Only one included file is allowed.
 
+If you have installed abc2svg in a site of yours, you may put a file
+**pref.js** with the abc2svg scripts. This file may contain various
+javascript functions and also ABC parameters.
+These parameters must be defined inside the following sequence:
+
+	if (typeof abc2svg == "undefined")    
+	    var abc2svg = {}
+	if (!abc2svg.a_inc)
+		abc2svg.a_inc = {}
+	abc2svg.a_inc["default.abc"] = `
+	.. put here the ABC parameters ..
+	`
+
 If you have a US keyboard, its behaviour can be changed for easier music
 entering by one of these bookmarklets:
 <a href="javascript:(function(){if(typeof%20abc2svg.loadjs=='function'){abc2svg.loadjs('abckbd-1.js')}else{alert('use%20with%20abc2svg%20editor')}})()"
@@ -136,11 +149,11 @@ ABC sequences in the &lt;body&gt;.
 As it is apparent, HTML and ABC can be mixed in the same html file.
 Both are rendered in the order you defined them.
 
-You may also have noticed this CSS about SVG elements:  
+You may also have noticed this style about SVG elements:  
 `        svg { display: block }`
 
-This permits to have the music on separate vertical areas.  
-Without this CSS, the music is in-lined as in [this other example][5].
+It puts the lines of music on vertical areas.  
+Without this style, the music is in-lined as in [this other example][5].
 
 [5]: http://moinejf.free.fr/abcm2ps-doc/dansou-i.html "Tune index example"
 
@@ -153,18 +166,18 @@ of the URL of the page. The [following example][16] calls the same
 In the above examples, all the ABC music is generated (displayed
 and ready to be played) by means of the script **abcweb-1.js**.  
 If there is a large collection of tunes, it may be preferable to
-link to the other script, **abcweb1-1.js**, which permits you
-to select particular tune(s). Without an explicit
+link to the other script, **abcweb1-1.js**, which offers a tune selection.
+Without an explicit
 selection (see below), a list of the tunes is displayed, and,
 after a tune has been selected, the whole page is replaced by the music.
 (The HTML code, if any, is not displayed.)
-A menu on the top right corner of the screen
-permits to get the tune list again. Here is [a real example][6].
+You can go back to the list of the tunes thanks to the menu
+on the top right corner of the screen. Here is [a real example][6].
 
 [6]: http://moinejf.free.fr/abc/boyvin-2-2.html "J. Boyvin organ tunes"
 
 As you may notice in the menu, the edition of the ABC content is proposed.
-This permits, for example, to transpose the tunes.
+This permits you, for example, to transpose the tunes.
 This edition is done inside the browser, so, your changes will be lost
 after leaving the page.
 
@@ -421,7 +434,7 @@ Detailed information about the modules may be found in the [wiki][12].
   each one must contain the full CSS and defs. For that, insert  
   `        %%fullsvg x`  
   in the ABC file before rendering (see the
-  [fullsvg documentation](http://moinejf.free.fr/abcm2ps-doc/fullsvg.xhtml)
+  [fullsvg documentation](http://moinejf.free.fr/abcm2ps-doc/fullsvg.html)
   for more information).
 
 - Playing uses the HTML5 audio and/or the midi APIs.  
@@ -429,13 +442,15 @@ Detailed information about the modules may be found in the [wiki][12].
   which is split into one file
   per instrument. This sound font is stored in the subdirectory `Scc1t2/`.
   Each instrument file is a base64 encoded javascript array.  
-  Other sound fonts may be used. Some of them are stored in the subdirectory
+
+	Other sound fonts may be used. Some of them are stored in the subdirectory
   `sf2/` (`AWE_ROM_gm` and `2MBGMGS`). Two formats are supported: raw SF2 and
   SF2 wrapped into javascript (the raw SF2 files can be loaded
   only when they are in the same HTTP domain).
   The shell script `sf.sh` (in `sf2/`) may be used to create the javacript files
-  from raw SF2 files.  
-  The sound font to be used for playing may be defined in the ABC code
+  from raw SF2 files.
+
+	The sound font to be used for playing may be defined in the ABC code
   by the command `%%soundfont`. E.g.:  
   `        %%soundfont http://moinejf.free.fr/js/sf2/AWE_ROM_gm.js`
 
@@ -460,8 +475,21 @@ Here are the scripts which are used in a web context:
   the characters '<', '>' or '&',
   it must be enclosed in a XML comment or in a CDATA
   (%&lt;![CDATA[ .. %]]&gt; - the comment or CDATA must be in a ABC comment).  
-  See the
-  [%%beginml documentation](http://moinejf.free.fr/abcm2ps-doc/beginml.xhtml)
+
+	When using &lt;script&gt;, it is possible to set abc2svg parameters via CSS.
+  For that, the &lt;style&gt; in the HTML &lt;head&gt; may contain custom
+  properties (properties starting with '--') and these properties are converted
+  to abc2svg parameters (starting with '%%') before the ABC sequence.  
+  For instance, in the (&lt;head&gt;) &lt;style&gt; element, you can put:  
+  `        .parm {--pagewidth:30cm;  --bgcolor : yellow}`
+
+	and in some &lt;script ..vnd.abc..&gt;, you set the class:  
+  `        <script class="parm" type="text/vnd.abc">`
+
+	This defines the page width and the background color of the generated music.
+
+	See the
+  [%%beginml documentation](http://moinejf.free.fr/abcm2ps-doc/beginml.html)
   for an example, and here is [how to put inline music in HTML][15].   
   Playing and highlighting the played notes may be offered loading
   the script `snd-1.js` (see below).
