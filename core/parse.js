@@ -1025,10 +1025,12 @@ function new_tempo(text) {
 		glovar.tempo = s
 		return
 	}
-	if (!curvoice.time && !glovar.tempo)
-		glovar.tempo = s
-	else
-		sym_link(s)
+	if (!curvoice.time) {
+		if (!glovar.tempo)
+			glovar.tempo = s
+		return
+	}
+	sym_link(s)
 	if (!glovar.tempo)
 		syntax(0, "No previous tempo")
 }

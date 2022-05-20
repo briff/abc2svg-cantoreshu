@@ -494,6 +494,10 @@ Abc.prototype.set_bar_num = function() {
 			bar_tim = s.time
 			wmeasure = s.wmeasure
 			break
+		case C.TEMPO:
+			while (s.ts_next.type == C.TEMPO)
+				unlksym(s.ts_next)
+			break
 		case C.BAR:
 			if (s.invis)
 				break

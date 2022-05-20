@@ -2068,8 +2068,6 @@ function draw_partempo(st, top) {
 			writempo(s, s.x - 16, (dosh & 1) ? h : y);
 			anno_stop(s);
 			dosh >>= 1
-			while (s.ts_next && s.ts_next.type == C.TEMPO)
-				s = s.ts_next
 		}
 	}
 
