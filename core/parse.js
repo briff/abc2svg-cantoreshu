@@ -1038,6 +1038,7 @@ function new_tempo(text) {
 	s.p_v = voice_tb[s.v]
 	s.fmt = cfmt
 	s.st = s.p_v.st
+	s.time = tim
 }
 
 // treat the information fields which may embedded
