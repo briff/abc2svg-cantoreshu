@@ -72,6 +72,8 @@ abc2svg.chord = function(first,		// first symbol in time
 			 voice_tb,	// table of the voices
 			 cfmt) {	// tune parameters
     var	chnm, i, k, vch, s, gchon,
+	cs_sel0 = /[\[(][^)]*[\])]/,
+	cs_sel1 = /[^[(]*[\[(]|[\])][\s\S]*/g,
 	C = abc2svg.C,
 	trans = 48 + (cfmt.chord.trans ? cfmt.chord.trans * 12 : 0)
 
@@ -108,15 +110,15 @@ abc2svg.chord = function(first,		// first symbol in time
 			if (cs.type == 'g')
 				tcs += cs.otext
 		}
-		return tcs.replace(sel ? abc2svg.cs_sel1 : abc2svg.cs_sel0, '')
+		if (!cs_sel0.test(tcs))
+			return tcs
+		return tcs.replace(sel ? cs_sel1 : cs_sel0, '')
 	} // filter()
 
 	// generate a chord
 	function gench(sb) {
 	    var	r, ch, b, m, n, not,
-		a = filter(sb.a_gch, cfmt.altchord).
-			match(/([A-G])([#♯b♭]?)([^/]*)\/?(.*)/),
-			// a[1] = note, a[2] = acc, a[3] = type, a[4] = bass
+		a = filter(sb.a_gch, cfmt.altchord),
 		s = {
 			v: vch.v,
 			p_v: vch,
@@ -127,6 +129,11 @@ abc2svg.chord = function(first,		// first symbol in time
 
 		if (!a)
 			return
+		a = a.match(/([A-GN])([#♯b♭]?)([^/]*)\/?(.*)/)
+			// a[1] = note, a[2] = acc, a[3] = type, a[4] = bass
+		if (!a)
+			return
+
 		r = abc2svg.letmid[a[1]]		// root
 		if (r == undefined) {
 			if (a[1] != "N")
