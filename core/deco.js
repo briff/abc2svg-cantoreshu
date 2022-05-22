@@ -1884,7 +1884,7 @@ function draw_deco_staff() {
 	/* draw the repeat brackets */
 	for (v = 0; v < voice_tb.length; v++) {
 		p_voice = voice_tb[v]
-		if (p_voice.second || !p_voice.sym)
+		if (p_voice.second || !p_voice.sym || p_voice.ignore)
 			continue
 		draw_repbra(p_voice)
 	}

@@ -59,6 +59,21 @@ function voice_filter() {
 function sym_link(s) {
     var	tim = curvoice.time
 
+//	// set the waiting P: and Q: information fields
+//	if (!curvoice.ignore && !s.bar_type) {
+//		if (parse.part && parse.part[tim]
+//		 && !parse.part[tim].done) {
+//			parse.part[tim].done = 1
+//			s.part = parse.part[tim]
+//		}
+//		if (parse.tempo && parse.tempo[tim]
+//		 && !parse.tempo[tim].done) {
+//			parse.tempo[tim].done = 1
+//			if (s.type != C.TEMPO)
+//				sym_link(parse.tempo[tim])
+//		}
+//	}
+
 	if (!s.fname)
 		set_ref(s)
 	parse.last_sym = s
@@ -84,12 +99,6 @@ function sym_link(s) {
 	if (curvoice.eoln) {
 		s.soln = true
 		curvoice.eoln = false
-	}
-	if (parse.part && parse.part[tim]) {
-		if (!parse.part[tim].done) {
-			s.part = parse.part[tim]
-			parse.part[tim].done = true
-		}
 	}
 }
 
@@ -493,10 +502,6 @@ Abc.prototype.set_bar_num = function() {
 			bar_num += (s.time - bar_tim) / wmeasure
 			bar_tim = s.time
 			wmeasure = s.wmeasure
-			break
-		case C.TEMPO:
-			while (s.ts_next.type == C.TEMPO)
-				unlksym(s.ts_next)
 			break
 		case C.BAR:
 			if (s.invis)
@@ -909,6 +914,38 @@ function pit_adj() {
 		}
 	}
 } // pit_adj()
+
+// set the control values (P: and Q:)
+function set_ctrl() {
+    var	s, tim, e
+
+	for (tim in parse.ctrl) {
+//		if (!parse.ctrl.hasOwnProperty(tim))
+//			continue
+		e = parse.ctrl[tim]
+		s = tsfirst
+		while (s.next && s.next.time < tim)
+			s = s.next
+		while (s && s.time < tim)
+			s = s.ts_next
+		if (!s) {
+			//fixme: insert at the end
+		} else {
+			if (s.time == tim && s.bar_type && s.next)
+				s = s.next
+			if (e.part) {
+//				if (s.time != tim) {
+//					// fixme: insert a part (?)
+//				}
+				s.part = e.part
+			}
+			if (e.tempo) {
+				lkvsym(e.tempo, s)
+				lktsym(e.tempo, s)
+			}
+		}
+	}
+} // set_ctrl()
 
 // get a abcm2ps/abcMIDI compatible transposition value as a base-40 interval
 // The value may be
@@ -1403,6 +1440,9 @@ function generate() {
 
 	if (info.P)
 		tsfirst.parts = info.P	// for play
+
+	if (parse.ctrl)
+		set_ctrl()		// set control values
 
 	// give the parser result to the application
 	if (user.get_abcmodel)

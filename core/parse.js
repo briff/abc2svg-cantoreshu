@@ -1025,14 +1025,19 @@ function new_tempo(text) {
 		glovar.tempo = s
 		return
 	}
-	if (!curvoice.time) {
-		if (!glovar.tempo)
-			glovar.tempo = s
-		return
-	}
-	sym_link(s)
+
+    var	tim = curvoice.time
 	if (!glovar.tempo)
 		syntax(0, "No previous tempo")
+	if (!parse.ctrl)
+		parse.ctrl = {}
+	if (!parse.ctrl[tim])
+		parse.ctrl[tim] = {}
+	parse.ctrl[tim].tempo = s
+	s.v = par_sy.top_voice
+	s.p_v = voice_tb[s.v]
+	s.fmt = cfmt
+	s.st = s.p_v.st
 }
 
 // treat the information fields which may embedded
@@ -1040,10 +1045,17 @@ function do_info(info_type, text) {
     var	s, d1, d2, a, vid, tim, v, p_v
 
 	// skip this line if the current voice is ignored
-	if (curvoice && curvoice.ignore
-	 && info_type != 'P'
-	 && info_type != 'V')
-		return
+	// but keep the time related definitions
+	if (curvoice && curvoice.ignore) {
+		switch (info_type) {
+		default:
+			return
+		case 'P':
+		case 'Q':
+		case 'V':
+			break
+		}
+	}
 
 	switch (info_type) {
 
@@ -1093,11 +1105,6 @@ function do_info(info_type, text) {
 			info.P = text
 			break
 		}
-		if (!parse.part)
-			parse.part = {}
-		else if (!curvoice.ignore
-		      && parse.part[curvoice.time])
-			break			// P: already defined
 
 		// synchronize the voices
 		tim = v = 0
@@ -1123,7 +1130,15 @@ function do_info(info_type, text) {
 		set_ref(s)
 		if (cfmt.writefields.indexOf(info_type) < 0)
 			s.invis = true
-		parse.part[tim] = s
+		if (!parse.ctrl)
+			parse.ctrl = {}
+		if (!parse.ctrl[tim])
+			parse.ctrl[tim] = {}
+		parse.ctrl[tim].part = s
+		s.v = par_sy.top_voice
+		s.p_v = voice_tb[s.v]
+		s.fmt = cfmt
+		s.st = s.p_v.st
 		break
 	case 'Q':
 		if (!parse.state)
@@ -2622,19 +2637,6 @@ function parse_music_line() {
 			c = line.char()
 			if (!c)
 				break
-
-			// skip definitions if the current voice is ignored
-			if (curvoice.ignore) {
-				while (1) {
-					if (c == '['
-					 && line.buffer[line.index + 1] == 'V'
-					 && line.buffer[line.index + 2] == ':')
-						break		// [V:nn] found
-					c = line.next_char()
-					if (!c)
-						return
-				}
-			}
 
 			// check if start of a macro
 			if (!in_mac && maci[c]) {
