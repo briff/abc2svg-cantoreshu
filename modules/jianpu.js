@@ -168,8 +168,66 @@ abc2svg.jianpu = {
 		}
 	} // slice()
 
+	function set_note(s, delta) {
+	    var	i, m, note, p, pit, a, nn
+
+		s.stem = -1
+		s.stemless = true
+
+		if (s.sls) {
+			for (i = 0; i < s.sls.length; i++)
+				s.sls[i].ty = C.SL_ABOVE
+		}
+
+		for (m = 0; m <= s.nhd; m++) {
+			note = s.notes[m]
+
+			// note head
+			p = note.pit
+			pit = p + delta
+			note.jn = ((pit + 77) % 7) + 1	// note number
+
+			// set a fixed offset to the note for the decorations
+			note.pit = 25			// "e"
+
+			note.jo = (pit / 7) | 0	// octave number
+
+			// accidentals
+			a = note.acc
+			if (a) {
+				nn = abc2svg.jianpu.cde2fcg[(p + 5 + 16 * 7) % 7] - sf
+				if (a != 3)
+					nn += a * 7
+				nn = ((((nn + 1 + 21) / 7) | 0) + 2 - 3 + 32 * 5) % 5
+				note.acc = abc2svg.jianpu.acc2[nn]
+			}
+
+			// set the slurs and ties up
+			if (note.sls) {
+				for (i = 0; i < note.sls.length; i++)
+					note.sls[i].ty = C.SL_ABOVE
+			}
+			if (note.tie_ty)
+				note.tie_ty = C.SL_ABOVE
+		}
+
+		// change the long notes
+		if (s.dur >= C.BLEN / 2)
+			slice(s)
+
+		// replace the staccato dot
+		if (s.a_dd) {
+			for (i = 0; i < s.a_dd.length; i++) {
+				if (s.a_dd[i].glyph == "stc") {
+					abc.deco_put("gstc", s)
+					s.a_dd[i] = s.a_dd.pop()
+				}
+			}
+		}
+	} // set_note()
+
 	function set_sym(p_v) {
-	    var s, s2, note, pit, nn, p, a, m, i,
+	    var s, g,
 		sf = p_v.key.k_sf,
 		delta = abc2svg.jianpu.cgd2cde[sf + 7] - 2
 
@@ -213,61 +271,12 @@ abc2svg.jianpu = {
 					slice(s)
 				continue
 			case C.NOTE:			// change the notes
+				set_note(s, delta)
 				break
-			}
-
-			s.stem = -1
-			s.stemless = true
-
-			if (s.sls) {
-				for (i = 0; i < s.sls.length; i++)
-					s.sls[i].ty = C.SL_ABOVE
-			}
-
-			for (m = 0; m <= s.nhd; m++) {
-				note = s.notes[m]
-
-				// note head
-				p = note.pit
-				pit = p + delta
-				note.jn = ((pit + 77) % 7) + 1	// note number
-
-				// set a fixed offset to the note for the decorations
-				note.pit = 25			// "e"
-
-				note.jo = (pit / 7) | 0	// octave number
-
-				// accidentals
-				a = note.acc
-				if (a) {
-					nn = abc2svg.jianpu.cde2fcg[(p + 5 + 16 * 7) % 7] - sf
-					if (a != 3)
-						nn += a * 7
-					nn = ((((nn + 1 + 21) / 7) | 0) + 2 - 3 + 32 * 5) % 5
-					note.acc = abc2svg.jianpu.acc2[nn]
-				}
-
-				// set the slurs and ties up
-				if (note.sls) {
-					for (i = 0; i < note.sls.length; i++)
-						note.sls[i].ty = C.SL_ABOVE
-				}
-				if (note.tie_ty)
-					note.tie_ty = C.SL_ABOVE
-			}
-
-			// change the long notes
-			if (s.dur >= C.BLEN / 2)
-				slice(s)
-
-			// replace the staccato dot
-			if (s.a_dd) {
-				for (i = 0; i < s.a_dd.length; i++) {
-					if (s.a_dd[i].glyph == "stc") {
-						abc.deco_put("gstc", s)
-						s.a_dd[i] = s.a_dd.pop()
-					}
-				}
+			case C.GRACE:
+				for (g = s.extra; g; g = g.next)
+					set_note(g, delta)
+				break
 			}
 		}
 	} // set_sym()
@@ -286,7 +295,7 @@ abc2svg.jianpu = {
   }, // output_music()
 
   draw_symbols: function(of, p_voice) {
-    var	i, m, nl, note, s, s2, x, y,
+    var	s,
 	C = abc2svg.C,
 	abc = this,
 	dot = "\ue1e7",
@@ -301,11 +310,12 @@ abc2svg.jianpu = {
 	}
 
 	// draw the duration lines under the notes
-	function draw_dur(s1, y, s2, n, nl) {
-	    var s, s3
+	function draw_dur(s1, x, y, s2, n, nl) {
+	    var s, s3,
+		sc = s1.grace ? .5 : 1
 
-		xypath(s1.x - 3, y + 5)
-		out_svg('h' + (s2.x - s1.x + 8).toFixed(1) + '"/>\n')	// "
+		xypath(x - 3, y + 5)
+		out_svg('h' + ((s2.x - s1.x) / sc + 8).toFixed(1) + '"/>\n')	// "
 		y -= 2.5
 		while (++n <= nl) {
 			s = s1
@@ -320,7 +330,7 @@ abc2svg.jianpu = {
 							break
 						s = s.next
 					}
-					draw_dur(s3, y, s, n, nl)
+					draw_dur(s3, x, y, s, n, nl)
 				}
 				if (s == s2)
 					break
@@ -370,8 +380,51 @@ abc2svg.jianpu = {
 		}
 	} // draw_hd()
 
-	// -- draw_symbols --
+	function draw_note(s) {
+	    var	i, m, nl, note, s, s2,
+		sc = 1,
+		x = s.x,
+		y = staff_tb[s.st].y
 
+		if (s.grace) {
+			out_svg('<g transform="translate(')
+			out_sxsy(x, ',', y + 15)	// (font height)
+			out_svg(') scale(.5)">\n')
+			x = -s.fmt.leftmargin / s.fmt.scale
+			y = 0
+			sc = .5
+		}
+
+		draw_hd(s, x, y)
+
+		if (s.nflags >= 0 && s.dots)
+			out_mus(x + 8 * sc, y + 13 * sc, dot)
+		if (s.nflags > 0) {
+			if (s.time == p_voice.sym.time)
+				s.beam_st = 1	// beam continuation
+//fixme: ko with rests because no beam_st /_end
+			if (s.beam_st || s.type == C.REST) {
+				nl = s.nflags
+				s2 = s
+				while (1) {
+					if (s2.nflags && s2.nflags > nl)
+						nl = s2.nflags
+					if (s2.beam_end)
+						break
+					if (!s2.next
+					 || !s2.next.nflags
+					 || s2.next.nflags <= 0)
+						break
+					s2 = s2.next
+				}
+				draw_dur(s, x, y, s2, 1, nl)
+			}
+		}
+		if (s.grace)
+			out_svg('</g>\n')
+	} // draw_note()
+
+	// -- draw_symbols --
 	for (s = p_voice.sym; s; s = s.next) {
 		if (s.invis)
 			continue
@@ -381,33 +434,11 @@ abc2svg.jianpu = {
 			break
 		case C.NOTE:
 		case C.REST:
-			x = s.x
-			y = staff_tb[s.st].y
-			draw_hd(s, x, y)
-
-			if (s.nflags >= 0 && s.dots)
-				out_mus(x + 8, y + 13, dot)
-			if (s.nflags > 0) {
-				if (s.time == p_voice.sym.time)
-					s.beam_st = 1	// beam continuation
-//fixme: ko with rests because no beam_st /_end
-				if (s.beam_st || s.type == C.REST) {
-					nl = s.nflags
-					s2 = s
-					while (1) {
-						if (s2.nflags && s2.nflags > nl)
-							nl = s2.nflags
-						if (s2.beam_end)
-							break
-						if (!s2.next
-						 || !s2.next.nflags
-						 || s2.next.nflags <= 0)
-							break
-						s2 = s2.next
-					}
-					draw_dur(s, y, s2, 1, nl)
-				}
-			}
+			draw_note(s)
+			break
+		case C.GRACE:
+			for (g = s.extra; g; g = g.next)
+				draw_note(g)
 			break
 		}
 	}
