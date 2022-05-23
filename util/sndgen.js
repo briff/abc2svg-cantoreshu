@@ -186,6 +186,7 @@ function ToAudio() {
 				instr[9] = instr[c]	// force the channel 10
 				chn[v] = c = 9
 			}
+			s.chn = c
 			// fall thru
 		default:
 			return
