@@ -59,21 +59,6 @@ function voice_filter() {
 function sym_link(s) {
     var	tim = curvoice.time
 
-//	// set the waiting P: and Q: information fields
-//	if (!curvoice.ignore && !s.bar_type) {
-//		if (parse.part && parse.part[tim]
-//		 && !parse.part[tim].done) {
-//			parse.part[tim].done = 1
-//			s.part = parse.part[tim]
-//		}
-//		if (parse.tempo && parse.tempo[tim]
-//		 && !parse.tempo[tim].done) {
-//			parse.tempo[tim].done = 1
-//			if (s.type != C.TEMPO)
-//				sym_link(parse.tempo[tim])
-//		}
-//	}
-
 	if (!s.fname)
 		set_ref(s)
 	parse.last_sym = s
@@ -931,7 +916,8 @@ function set_ctrl() {
 		if (!s) {
 			//fixme: insert at the end
 		} else {
-			if (s.time == tim && s.bar_type && s.next)
+			if (s.time == tim && s.next
+			 && (s.bar_type || s.type == C.STAVES))
 				s = s.next
 			if (e.part) {
 //				if (s.time != tim) {
