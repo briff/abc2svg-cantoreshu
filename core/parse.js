@@ -1107,23 +1107,8 @@ function do_info(info_type, text) {
 			break
 		}
 
-		// synchronize the voices
-		tim = v = 0
-		while (1) {
-			p_v = voice_tb[v++]
-			if (!p_v)
-				break
-			if (!p_v.ignore && p_v.time > tim)
-				tim = p_v.time
-		}
-		v = 0
-		while (1) {
-			p_v = voice_tb[v++]
-			if (!p_v)
-				break
-			p_v.time = tim
-		}
-
+		// memorize the part in the control
+		tim = curvoice.time
 		s = {
 			text: text,
 			time: tim
