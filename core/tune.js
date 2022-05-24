@@ -916,8 +916,10 @@ function set_ctrl() {
 		if (!s) {
 			//fixme: insert at the end
 		} else {
-			if (s.time == tim && s.next
-			 && (s.bar_type || s.type == C.STAVES))
+
+			// put the P: and/or Q: on a note or rest
+			while (s.time == tim && s.next
+			 && !s.dur)
 				s = s.next
 			if (e.part) {
 //				if (s.time != tim) {
