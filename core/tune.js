@@ -918,9 +918,9 @@ function set_ctrl() {
 		} else {
 
 			// put the P: and/or Q: on a note or rest
-			while (s.time == tim && s.next
+			while (s.time == tim && s.ts_next
 			 && !s.dur)
-				s = s.next
+				s = s.ts_next
 			if (e.part) {
 //				if (s.time != tim) {
 //					// fixme: insert a part (?)
