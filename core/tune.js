@@ -56,11 +56,14 @@ function voice_filter() {
 }
 
 /* -- link a ABC symbol into the current voice -- */
+// if a voice is ignored (not in %%staves) don't link the symbol
+//	but update the time for P: and Q:
 function sym_link(s) {
     var	tim = curvoice.time
 
 	if (!s.fname)
 		set_ref(s)
+    if (!curvoice.ignore) {
 	parse.last_sym = s
 	s.prev = curvoice.last_sym
 	if (curvoice.last_sym)
@@ -68,6 +71,7 @@ function sym_link(s) {
 	else
 		curvoice.sym = s
 	curvoice.last_sym = s
+    }
 	s.v = curvoice.v;
 	s.p_v = curvoice;
 	s.st = curvoice.cst;
