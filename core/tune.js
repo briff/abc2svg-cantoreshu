@@ -64,14 +64,13 @@ function sym_link(s) {
 	if (!s.fname)
 		set_ref(s)
     if (!curvoice.ignore) {
-	parse.last_sym = s
 	s.prev = curvoice.last_sym
 	if (curvoice.last_sym)
 		curvoice.last_sym.next = s
 	else
 		curvoice.sym = s
-	curvoice.last_sym = s
     }
+	curvoice.last_sym = s
 	s.v = curvoice.v;
 	s.p_v = curvoice;
 	s.st = curvoice.cst;
