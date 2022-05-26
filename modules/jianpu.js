@@ -42,14 +42,14 @@ abc2svg.jianpu = {
 
 // change %%staves and %%score
   do_pscom: function(of, p) {
-//fixme
-//    if (this.cfmt().jianpu)
-//	switch (p.match(/\w+/)[0]) {
-//	case 'staves':
-//	case 'score':
-//		p = p.replace(/\(|\)/g, '')
-//		break
-//	}
+	if (this.cfmt().jianpu) {		// all jianpu
+		switch (p.match(/\w+/)[0]) {
+		case 'staves':
+		case 'score':
+			p = p.replace(/\(|\)/g, '')
+			break
+		}
+	}
 	of(p)
   },
 
@@ -447,7 +447,10 @@ abc2svg.jianpu = {
 // set some parameters
     set_fmt: function(of, cmd, param) {
 	if (cmd == "jianpu") {
-//	    var	cfmt = this.cfmt()
+	    var	p_v = this.get_curvoice()
+
+		if (!p_v)
+			this.cfmt().jianpu = 1		// all jianpu
 		this.set_v_param("jianpu", param)
 		this.set_v_param("staffsep", 20)
 		this.set_v_param("sysstaffsep", 14)
