@@ -330,7 +330,7 @@ abc2svg.jianpu = {
 							break
 						s = s.next
 					}
-					draw_dur(s3, x, y, s, n, nl)
+					draw_dur(s3, s3.x, y, s, n, nl)
 				}
 				if (s == s2)
 					break
