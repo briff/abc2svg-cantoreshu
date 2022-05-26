@@ -2912,6 +2912,10 @@ function parse_music_line() {
 				new_bar()
 				continue
 			case '}':
+				if (curvoice.ignore) {
+					grace = null
+					break
+				}
 				s = curvoice.last_note
 				if (!grace || !s) {
 					syntax(1, errs.bad_char, c)
