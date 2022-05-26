@@ -168,8 +168,9 @@ abc2svg.jianpu = {
 		}
 	} // slice()
 
-	function set_note(s, delta) {
-	    var	i, m, note, p, pit, a, nn
+	function set_note(s, sf) {
+	    var	i, m, note, p, pit, a, nn,
+		delta = abc2svg.jianpu.cgd2cde[sf + 7] - 2
 
 		s.stem = -1
 		s.stemless = true
@@ -228,8 +229,7 @@ abc2svg.jianpu = {
 
 	function set_sym(p_v) {
 	    var s, g,
-		sf = p_v.key.k_sf,
-		delta = abc2svg.jianpu.cgd2cde[sf + 7] - 2
+		sf = p_v.key.k_sf
 
 		p_v.key.k_a_acc = []	// no accidental
 
@@ -251,7 +251,7 @@ abc2svg.jianpu = {
 			default:
 				continue
 			case C.KEY:
-				delta = abc2svg.jianpu.cgd2cde[s.k_sf + 7] - 2
+				sf = s.k_sf
 				s.a_gch = [{
 					type: '@',
 					font: abc.get_font("annotation"),
@@ -259,7 +259,7 @@ abc2svg.jianpu = {
 					x: -5,
 					y: 30,
 					text: (s.k_mode + 1) + "=" +
-						(abc2svg.jianpu.k_tb[s.k_sf + 7 +
+						(abc2svg.jianpu.k_tb[sf + 7 +
 							abc2svg.jianpu.cde2fcg[s.k_mode]])
 				}]
 				continue
@@ -271,11 +271,11 @@ abc2svg.jianpu = {
 					slice(s)
 				continue
 			case C.NOTE:			// change the notes
-				set_note(s, delta)
+				set_note(s, sf)
 				break
 			case C.GRACE:
 				for (g = s.extra; g; g = g.next)
-					set_note(g, delta)
+					set_note(g, sf)
 				break
 			}
 		}
