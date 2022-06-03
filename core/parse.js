@@ -1020,7 +1020,8 @@ function new_tempo(text) {
 		}
 	}
 
-	if (parse.state < 2) {			// if in tune header
+	if (parse.state < 2			// if in tune header
+	 || (!curvoice.time && !glovar.tempo)) {
 		info.Q = txt
 		glovar.tempo = s
 		return
@@ -2692,9 +2693,9 @@ function parse_music_line() {
 					}
 				    var	pplet = line.get_int(),
 					qplet = qplet_tb[pplet],
-					rplet = pplet,
-					c = line.char()
+					rplet = pplet
 
+					c = line.char()
 					if (c == ':') {
 						c = line.next_char()
 						if (c > '0' && c <= '9') {
