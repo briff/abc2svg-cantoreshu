@@ -1890,7 +1890,7 @@ function set_lines(	s,		/* first symbol */
 			next,		/* symbol of the next line / null */
 			lwidth,		/* w - (clef & key sig) */
 			indent) {	/* for start of tune */
-    var	first, s2, s3, s4, x, xmin, xmid, xmax, wwidth, shrink, space,
+    var	first, s2, s3, s4, s5, x, xmin, xmid, xmax, wwidth, shrink, space,
 	nlines,
 	last = next ? next.ts_prev : null,
 	ws = get_width(s, next)		// 2 widths: nice and shrinked
@@ -1935,9 +1935,9 @@ function set_lines(	s,		/* first symbol */
 		s4 = s			// keep first symbol with x greater than xmin
 //fixme: can this occur?
 		if (s == next) {
-			if (next)
-				next = set_nl(next)
-			return next
+			if (s)
+				s = set_nl(s)
+			return s
 		}
 
 		/* try to cut on a measure bar */
@@ -1976,22 +1976,22 @@ function set_lines(	s,		/* first symbol */
 					else
 						beam &= ~(1 << s.v)
 				}
-				x = s.x
-				if (!x)
+				if (!s.seqst)
 					continue
+				x = s.x
 				if (x + s.wr >= xmax)
 					break
 				if (beam || s.in_tuplet)
 					continue
-				if (s3 && s.x >= xmid) {
-					if (xmid - s3.x > s.x - xmid
+				if (s5) {
+					if (xmid - s5.x > x - xmid
 					 || (s.dur
 					  && (s.time + s.dur - bar_time)
 							% (C.BLEN / 4) == 0))
-						s3 = s
-					break
+						s3 = s5
+//??					break
 				}
-				s3 = s
+				s5 = s			// start of time sequence
 			}
 		}
 
@@ -2004,8 +2004,8 @@ function set_lines(	s,		/* first symbol */
 					continue
 				if (x + s.wr >= xmax)
 					break
-				if (s3 && s.x >= xmid) {
-					if (xmid - s3.x > s.x - xmid)
+				if (s3 && x >= xmid) {
+					if (xmid - s3.x > x - xmid)
 						s3 = s
 					break
 				}
@@ -3535,7 +3535,7 @@ function set_words(p_voice) {
 				nflags += s.ntrem
 			if (s.type == C.REST && s.beam_end
 			 && !s.beam_on) {
-				s.beam_end = false;
+//				s.beam_end = false;
 				start_flag = true
 			}
 			if (start_flag
