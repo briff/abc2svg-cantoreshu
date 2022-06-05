@@ -891,7 +891,7 @@ function get_font(fn) {
 	fn += "font"
 	font = cfmt[fn]
 	if (!font) {
-		syntax(1, "Unknown font $1", '$' + fn[1]);
+		syntax(1, "Unknown font $1", fn)
 		return gene.curfont
 	}
 
