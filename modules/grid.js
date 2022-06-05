@@ -265,8 +265,6 @@ function build_grid(s, font) {
 	img = abc.get_img()
 
 	// set the text style
-	if (!cfmt.gridfont)
-		abc.param_set_font("gridfont", "serif 16")
 	font = abc.get_font('grid')
 	if (font.class)
 		font.class += ' mid'
@@ -296,7 +294,8 @@ function build_grid(s, font) {
 	abc = this,
 	tsfirst = abc.get_tsfirst(),
 	voice_tb = abc.get_voice_tb(),
-	grid = abc.cfmt().grid
+	cfmt = abc.cfmt(),
+	grid = cfmt.grid
 
 	// extract one of the chord symbols
 	// With chords as "xxx(yyy)" or "[yyy];xxx"
@@ -362,23 +361,15 @@ function build_grid(s, font) {
 			case C.REST:
 				if (!s.a_gch || chord[beat_i])
 					break
-				bt = cs_filter(s.a_gch, abc.cfmt().altchord)
+				bt = cs_filter(s.a_gch, cfmt.altchord)
 				if (!bt)
 					break
-				if (typeof bt != "object") {
-					for (i = 0; i < s.a_gch.length; i++) {
-						if (s.a_gch[i].type == 'g')
-							break
-					}
-					abc.set_font(s.a_gch[i].font)
-//fixme: 'bt' may contain <tspan> elements
-//					w = abc.strwh(bt)
-					w = s.a_gch[i].text.wh
+					w = abc.strwh(bt.replace(
+						/<[^>]+>/gm,''))
 					if (w[0] > wmx)
 						wmx = w[0]
 					bt = new String(bt)
 					bt.wh = w
-				}
 				chord[beat_i] = bt
 				break
 			case C.BAR:
@@ -471,6 +462,9 @@ function build_grid(s, font) {
 			st: p_v.st
 		}
 
+		if (!cfmt.gridfont)
+			abc.param_set_font("gridfont", "serif 16")
+		abc.set_font('grid')
 		build_chords(s)			// build the array of the chords
 
 		// and insert it in the tune
