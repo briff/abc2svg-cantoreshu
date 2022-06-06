@@ -2450,6 +2450,7 @@ function draw_tuplet(s1) {
 		else if (a < s0)
 			a = s0
 	}
+	a = s1.fmt.beamslope * a / (s1.fmt.beamslope + Math.abs(a))
 	if (a * a < .1 * .1)
 		a = 0
 
