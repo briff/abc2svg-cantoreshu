@@ -19,13 +19,14 @@
 
 var	output = "",		// output buffer
 	style = '\
+\npath{fill:currentColor}\
 \n.stroke{stroke:currentColor;fill:none}\
 \n.bW{stroke:currentColor;fill:none;stroke-width:1}\
 \n.bthW{stroke:currentColor;fill:none;stroke-width:3}\
 \n.slW{stroke:currentColor;fill:none;stroke-width:.7}\
 \n.slthW{stroke:currentColor;fill:none;stroke-width:1.5}\
 \n.sW{stroke:currentColor;fill:none;stroke-width:.7}\
-\n.box{outline: 1px solid black;outline-offset: 1px}',
+\n.box{outline:1px solid black;outline-offset:1px}',
 	font_style = '',
 	posx = cfmt.leftmargin / cfmt.scale,	// default x offset of the images
 	posy = 0,		// y offset in the block
