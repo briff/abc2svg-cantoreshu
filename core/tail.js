@@ -56,7 +56,7 @@ Abc.prototype.get_newpage = function() {
 		return true
 	}
 };
-Abc.prototype.get_posy = function() { var t = posy; posy = 0; return t };
+Abc.prototype.get_posy = function() { return posy }
 Abc.prototype.get_staff_tb = function() { return staff_tb };
 Abc.prototype.get_top_v = function() { return par_sy.top_voice };
 Abc.prototype.get_tsfirst = function() { return tsfirst };
