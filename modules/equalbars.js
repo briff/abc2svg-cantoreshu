@@ -32,10 +32,11 @@ abc2svg.equalbars = {
 
     // get the equalbars parameter
     set_fmt: function(of, cmd, param) {
-	if (cmd == "equalbars")
-		this.cfmt().equalbars = this.get_bool(param)
-	else
-		of(cmd, param)
+	if (!cmd == "equalbars")
+		of(cmd, parm)
+    var	fmt = this.cfmt()
+	fmt.equalbars = this.get_bool(parm)
+	fmt.stretchlast = 1
     },
 
     // adjust the symbol offsets of a music line
