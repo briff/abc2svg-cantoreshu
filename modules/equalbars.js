@@ -80,7 +80,7 @@ abc2svg.equalbars = {
 		bars.push([s, s.time - t])
 	else
 		bars[bars.length - 1][0] = s	// replace the last bar
-	width = s.x
+
 	t = s.time
 	if (s.dur)
 		t += s.dur;
@@ -88,6 +88,22 @@ abc2svg.equalbars = {
 	n = bars.length
 	if (n <= 1)
 		return				// one or no bar
+
+	// if small width, get the widest measure
+	if (s.x < width) {
+		w = 0
+		x = 0
+		for (i = 0; i < n; i++) {
+			s = bars[i][0]
+			if (s.x - x > w)
+				w = s.x - x
+			x = s.x
+		}
+//console.log('nw '+(w*n)+' w: '+width+' n: '+n)
+		if (w * n < width)
+			width = w * n
+		abc.set_realwidth(width)
+	}
 
 	// set the measure parameters
 	x = s2.type == C.GRACE ? s2.extra.x : s2.x;
