@@ -1,6 +1,6 @@
 // abc2svg - tail.js
 //
-// Copyright (C) 2014-2020 Jean-Francois Moine
+// Copyright (C) 2014-2022 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -79,7 +79,7 @@ Abc.prototype.set_font = set_font;
 Abc.prototype.set_a_gch = function(s, a) { a_gch = a; csan_add(s) }
 Abc.prototype.set_hl = set_hl
 Abc.prototype.set_pagef = function() { blkdiv = 1 }
-Abc.prototype.set_realwidth=function(v){realwidth = v};
+Abc.prototype.set_realwidth = function(v) { realwidth = v }
 Abc.prototype.set_scale = set_scale;
 Abc.prototype.set_sscale = set_sscale
 Abc.prototype.set_tsfirst = function(s) { tsfirst = s };

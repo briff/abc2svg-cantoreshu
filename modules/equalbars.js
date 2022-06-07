@@ -99,10 +99,9 @@ abc2svg.equalbars = {
 				w = s.x - x
 			x = s.x
 		}
-//console.log('nw '+(w*n)+' w: '+width+' n: '+n)
 		if (w * n < width)
 			width = w * n
-		abc.set_realwidth(width)
+		this.set_realwidth(width)
 	}
 
 	// set the measure parameters
