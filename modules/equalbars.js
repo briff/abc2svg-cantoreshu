@@ -32,8 +32,10 @@ abc2svg.equalbars = {
 
     // get the equalbars parameter
    set_fmt: function(of, cmd, parm) {
-	if (!cmd == "equalbars")
+	if (cmd != "equalbars") {
 		of(cmd, parm)
+		return
+	}
     var	fmt = this.cfmt()
 	fmt.equalbars = this.get_bool(parm)
 	fmt.stretchlast = 1
