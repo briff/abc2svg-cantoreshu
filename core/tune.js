@@ -966,7 +966,7 @@ function get_transp(param) {
 Abc.prototype.do_pscom = function(text) {
     var	h1, val, s, cmd, param, n, k, b
 
-	cmd = text.match(/(\w|-)+/)
+	cmd = text.match(/[\w-]+/)
 	if (!cmd)
 		return
 	cmd = cmd[0];
@@ -1417,11 +1417,8 @@ function generate() {
 
 	voice_adj();
 	sort_all()			/* define the time / vertical sequences */
-	if (!tsfirst) {
-		parse.state = 0			// (global)
-		blk_flush()			// output the tune header
-		return
-	}
+
+    if (tsfirst) {
 	if (user.anno_start)
 		anno_start = a_start
 	if (user.anno_stop)
@@ -1441,6 +1438,7 @@ function generate() {
 
 	if (user.img_out)		// if SVG generation
 		self.output_music()
+    } // (tsfirst)
 
 	// finish the generation
 	set_page()			// the page layout may have changed
@@ -1784,8 +1782,7 @@ function get_staves(cmd, parm) {
 
 /* -- get a voice overlay -- */
 function get_vover(type) {
-    var	p_voice2, p_voice3, range, s, time, v, v2, v3,
-	line = parse.line
+    var	p_voice2, p_voice3, range, s, time, v, v2, v3
 
 	/* treat the end of overlay */
 	if (type == '|'
