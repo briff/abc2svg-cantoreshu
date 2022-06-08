@@ -31,7 +31,7 @@ abc2svg.equalbars = {
     },
 
     // get the equalbars parameter
-    set_fmt: function(of, cmd, param) {
+   set_fmt: function(of, cmd, parm) {
 	if (!cmd == "equalbars")
 		of(cmd, parm)
     var	fmt = this.cfmt()
