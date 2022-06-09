@@ -117,6 +117,11 @@ abc2svg.equalbars = {
 
 	// loop on the bars
 	for (i = 0; i < n; i++) {
+		do {				// don't shift the 1st note
+			s2.x = d + s2.x - x	// from the bar
+			s2 = s2.ts_next
+		} while (!s2.seqst)
+
 		s = bars[i][0];			// next bar
 		f = w * bars[i][1] / (s.x - x)
 
