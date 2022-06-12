@@ -899,6 +899,10 @@ function new_meter(p) {
 		}
 		wmeasure = C.BLEN * val[1] / val[2]
 	}
+	if (!wmeasure) {
+		syntax(1, errs.bad_val, 'M:')
+		return
+	}
 	s.wmeasure = wmeasure
 
 	if (cfmt.writefields.indexOf('M') < 0)
