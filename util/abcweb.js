@@ -111,6 +111,10 @@ function clean_txt(txt) {
 
 	// function called on click on the music
 	abc2svg.playseq = function(evt) {
+		if (playing) {		// stop playing
+			abcplay.stop()
+			return
+		}
 	    var	i, j,
 		svg = evt.target,
 		e = svg			// keep the clicked element
@@ -155,11 +159,6 @@ function clean_txt(txt) {
 		i = e.getAttribute('class')
 		if (i)
 			i = i.match(/abcr _(\d+)_/)
-		if (playing) {
-			abcplay.stop();
-			if (!i)
-				return
-		}
 		if (i) {
 			i = i[1]		// symbol offset in the source
 			while (s && s.istart != i)
@@ -268,7 +267,12 @@ Printing may be bad because the file contains pure HTML and %%pageheight\
 
 			document.body.innerHTML = new_page // browser page update
 				+ page.slice(ss)	// HTML end
-			window.onclick = abc2svg.playseq	// prepare for play on click
+
+			// add the event handlers for playback
+			t = document.getElementsByTagName('svg')
+			for (i = 0; i < t.length; i++)
+				t[i].addEventListener('click', abc2svg.playseq)
+
 			return				// done
 		}
 		i = re.lastIndex - res[0].length	// start of music sequence
