@@ -813,22 +813,26 @@ function edit_init() {
 			elt = evt.target,
 			cl = elt.getAttribute('class')
 
-//			evt.stopImmediatePropagation();
-			evt.preventDefault()
-
 			// if right click on an element, select it
 			if (cl && cl.substr(0, 4) == 'abcr') {
 				setsel(1, Number(cl.slice(6, -1)))
-				return false
+				evt.preventDefault()
+				return
 			}
 
+			// if the play menu is already active
+			// display the default context menu
+			ctxMenu = document.getElementById("ctxMenu");
+			if (ctxMenu.style.display == "block")
+				return
+
 			// otherwise, display the play menu
+			evt.preventDefault()
 			play.click = {	// keep the click references for 'play tune'
 				svg: elt,
 				Y: evt.pageY
 			}
 
-			ctxMenu = document.getElementById("ctxMenu");
 			ctxMenu.style.display = "block";
 			x = evt.pageX - elt_ref.target.parentNode.offsetLeft
 					+ elt_ref.target.parentNode.scrollLeft;
@@ -840,10 +844,7 @@ function edit_init() {
 		e = elt_ref.target
 //		e.onauxclick = show_menu	// right or middle buttons (KO in Safari)
 		e.ondblclick = show_menu	// double click
-		e.oncontextmenu = function(ev) {
-			ev.preventDefault()
-			show_menu(ev)
-		}
+		e.oncontextmenu = show_menu
 	}
 	set_pref()	// set the preferences from local storage
 }
