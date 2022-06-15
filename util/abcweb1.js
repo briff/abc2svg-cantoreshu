@@ -1,6 +1,6 @@
 // abcweb1-1.js file to include in html pages with abc2svg-1.js
 //
-// Copyright (C) 2019-2021 Jean-Francois Moine
+// Copyright (C) 2019-2022 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -363,6 +363,11 @@ onclick="abc2svg.do_render(\'.*\')">' + tt +
 			return
 		}
 
+		// add the event handlers
+	   var	elts = document.getElementsByTagName('svg')
+		for (var i = 0; i < elts.length; i++)
+			elts[i].addEventListener('click', click)
+
 		// update the menu
 		setTimeout(function() {
 
@@ -425,8 +430,8 @@ onclick="abc2svg.do_render(\'.*\')">' + tt +
 	// get the page content
 	page = fix_abc(document.body.innerHTML)
 
-	// mouse/tap events
-	window.onclick = function(evt) {
+	// click on a SVG element
+	function click(evt) {
 		if (playing) {			// stop playing
 			abcplay.stop()
 			return
@@ -444,10 +449,13 @@ onclick="abc2svg.do_render(\'.*\')">' + tt +
 
 		// search if click in a SVG image
 		e = c				// keep the clicked element
-		while (c && c.tagName != 'svg')
+		while (1) {
+			if (c == document)
+				return
+			if (c.tagName.toLowerCase() == 'svg')
+				break
 			c = c.parentNode
-		if (!c)
-			return
+		}
 
 		c = c.getAttribute('class')
 		if (!c)
@@ -505,7 +513,7 @@ onclick="abc2svg.do_render(\'.*\')">' + tt +
 
 		playing = true
 		abcplay.play(s, null)
-	} // onclick()
+	} // click()
 
 	// accept page formatting
 	abc2svg.abc_end = function() {}
