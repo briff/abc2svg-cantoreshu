@@ -21,7 +21,7 @@
 // the result is added in the global variable a_gch
 // 'type' may be a single '"' or a string '"xxx"' created by U:
 function parse_gchord(type) {
-    var	c, text, gch, x_abs, y_abs, type,
+    var	c, text, gch, x_abs, y_abs,
 	i, j, istart, iend,
 		ann_font = get_font("annotation"),
 		h_ann = ann_font.size,
