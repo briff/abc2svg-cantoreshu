@@ -923,7 +923,7 @@ break
 	}
 
 	if (info.Q) {
-		abc2svg.print("Q: " + info.Q)
+		abc2svg.print("Q:" + info.Q)
 		for (s = tsfirst; s; s = s.ts_next) {
 			if (s.time)
 				break
