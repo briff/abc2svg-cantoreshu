@@ -245,7 +245,9 @@ Abc.prototype.calculate_beam = function(bm, s1) {
 /*fixme: more to do*/
 		ys = ((s1.grace ? 3.5 : BEAM_SHIFT) * (nflags - 1) +
 			BEAM_DEPTH) * .5
-		if (s1.stem != s2.stem && s1.nflags < s2.nflags)
+		if (s1.nflags == s2.nflags)
+			;
+		else if (s1.stem != s2.stem && s1.nflags < s2.nflags)
 			b += ys * s2.stem
 		else
 			b += ys * s1.stem
@@ -458,7 +460,7 @@ Abc.prototype.calculate_beam = function(bm, s1) {
 /* -- draw the beams for one word -- */
 /* (the staves are defined) */
 function draw_beams(bm) {
-	var	s, i, beam_dir, shift, bshift, bstub, bh, da,
+	var	s, i, beam_dir, shift, bshift, bstub, bh, da, bd,
 		k, k1, k2, x1,
 		s1 = bm.s1,
 		s2 = bm.s2
@@ -587,6 +589,7 @@ function draw_beams(bm) {
 			while (k2.type != C.NOTE)
 				k2 = k2.prev;
 			x1 = k1.xs
+			bd = beam_dir
 			if (k1 == k2) {
 				if (k1 == s1) {
 					x1 += bstub
@@ -615,9 +618,14 @@ function draw_beams(bm) {
 							x1 -= bstub
 					}
 				}
+				if (k1.stem != beam_dir) {
+					bd = k1.stem
+					k1.ys = bm.a * k1.xs + bm.b
+						- staff_tb[k1.st].y - bh
+				}
 			}
 			draw_beam(x1, k2.xs,
-				  shift * beam_dir,
+				  shift * bd,
 				  bh, bm, i)
 			if (s == s2)
 				break
