@@ -3486,27 +3486,6 @@ function draw_systems(indent) {
 		}
 		switch (s.type) {
 		case C.STAVES:
-		    if (s.ts_next.type == C.CLEF) {
-			staves_bar = s.x - s.ts_next.wl
-		    } else if (s.ts_prev.type == C.BAR) {
-			staves_bar = s.ts_prev.x
-		    } else {
-			for (s2 = s.ts_next; s2; s2 = s2.ts_next) {
-				if (s2.time != s.time)
-					break
-				switch (s2.type) {
-				case C.BAR:
-				case C.CLEF:
-				case C.KEY:
-				case C.METER:
-					staves_bar = s2.x
-					continue
-				}
-				break
-			}
-			if (!s2)
-				staves_bar = realwidth;
-		    }
 			sy = s.sy
 			for (st = 0; st <= nstaff; st++) {
 				x = xstaff[st]
@@ -3522,16 +3501,38 @@ function draw_systems(indent) {
 				 && sy.staves[st].stafflines ==
 						cur_sy.staves[st].stafflines)
 					continue
-				if (staves_bar) {
-					x2 = staves_bar;
-					bar_force = s.time
-				} else {
+//				if (staves_bar) {
+//					x2 = staves_bar;
+//					bar_force = s.time
+//				} else {
 					x2 = s.x - s.wl - 2;
 					xstaff[st] = -1
-				}
+//				}
 				draw_staff(st, x, x2)
 				if (sy.st_print[st])
 					xstaff[st] = x2
+			}
+
+			if (s.ts_next.type == C.CLEF) {
+				staves_bar = s.x - s.ts_next.wl
+			} else if (s.ts_prev.type == C.BAR) {
+				staves_bar = s.ts_prev.x
+			} else {
+				for (s2 = s.ts_next; s2; s2 = s2.ts_next) {
+					if (s2.time != s.time)
+						break
+					switch (s2.type) {
+					case C.BAR:
+					case C.CLEF:
+					case C.KEY:
+					case C.METER:
+						staves_bar = s2.x
+						continue
+					}
+					break
+				}
+				if (!s2)
+					staves_bar = realwidth;
 			}
 			cur_sy = sy;
 			bar_set()

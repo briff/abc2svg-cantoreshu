@@ -362,6 +362,7 @@ function voice_adj(sys_chg) {
 			// and if there a time skip,
 			// add a sequence marker before it
 			if (!w_tb[s.type]
+			 && s.type != C.STAVES
 			 && (!s.prev || s.time > s.prev.time + s.prev.dur)) {
 				s2 = {
 					type: C.SM,

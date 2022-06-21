@@ -1300,9 +1300,13 @@ function set_allsymwidth() {
 			stup = null
 		}
 
-		if (!s2.shrink && !s2.space && s2.type == C.CLEF) {
+		if (!s2.shrink) {
+		    if (!s2.space && s2.type == C.CLEF) {
 			delete s2.seqst;		/* no space */
 			s2.time = tim
+		    } else if (s2.dur) {
+			s2.shrink = 10			// cannot be null
+		    }
 		}
 		tim = s2.time
 		if (!s)
@@ -1631,8 +1635,8 @@ function set_nl(s) {			// s = start of line
 			s = s.ts_prev
 			if (s.bar_type)
 				s1 = s		// first previous bar
-			if (s.type == C.GRACE)
-				so = s		// keep the grace notes in the next line
+//			if (s.type == C.GRACE)
+//				so = s		// keep the grace notes in the next line
 		}
 		if (!s1)
 			return so
