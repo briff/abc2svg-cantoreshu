@@ -1973,6 +1973,7 @@ function set_lines(	s,		/* first symbol */
 			bar_time = s2.time
 
 			xmax -= 8; // (left width of the inserted bar in set_allsymwidth)
+			s5 = null
 			for ( ; s != next; s = s.ts_next) {
 				if (s.dur) {
 					if (!s.beam_end)
