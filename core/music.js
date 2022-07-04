@@ -3470,6 +3470,22 @@ function set_words(p_voice) {
 		start_flag = true,
 		pitch = 127			/* no note */
 
+	// adjust the duration of the notes in a decoration !trem1..4!
+	function trem_adj(s) {
+		s.prev.trem2 = true
+		s.prev.head = ++s.head
+		if (--s.nflags > 0) {
+			s.nflags += s.ntrem
+		} else {
+			if (s.nflags <= -2) {
+				s.stemless = true
+				s.prev.stemless = true
+			}
+			s.nflags = s.ntrem
+		}
+		s.prev.nflags = s.nflags
+	} // trem_adj()
+
 	for (s = p_voice.sym; s; s = s.next) {
 		if (s.type == C.NOTE) {
 			pitch = s.notes[0].pit
@@ -3495,8 +3511,16 @@ function set_words(p_voice) {
 				s.prev.head = C.SQUARE
 			break
 		case C.GRACE:
-			for (s2 = s.extra; s2; s2 = s2.next)
+			for (s2 = s.extra; s2; s2 = s2.next) {
 				s2.notes.sort(abc2svg.pitcmp)
+				res = identify_note(s2, s2.dur_orig)
+				s2.head = res[0]
+				s2.dots = res[1]
+				s2.nflags = res[2]
+				if (s2.trem2
+				 && (!s2.next || s2.next.trem2))
+					trem_adj(s2)
+			}
 			break
 		case C.NOTE:
 		case C.REST:
@@ -3518,19 +3542,7 @@ function set_words(p_voice) {
 			if (s.next && s.next.trem2)
 				break
 			if (s.trem2) {
-				s.prev.trem2 = true;
-				s.prev.nflags = --s.nflags;
-				s.prev.head = ++s.head
-				if (s.nflags > 0) {
-					s.nflags += s.ntrem;
-				} else {
-					if (s.nflags <= -2) {
-						s.stemless = true;
-						s.prev.stemless = true
-					}
-					s.nflags = s.ntrem
-				}
-				s.prev.nflags = s.nflags
+				trem_adj(s)
 				break
 			}
 
@@ -4435,7 +4447,7 @@ function set_overlap() {
 /* this routine is called only once per tune */
 // (possible hook)
 Abc.prototype.set_stems = function() {
-	var s, s2, g, slen, scale,ymn, ymx, nflags, ymin, ymax, res
+	var s, s2, g, slen, scale,ymn, ymx, nflags, ymin, ymax
 
 	for (s = tsfirst; s; s = s.ts_next) {
 		if (s.type != C.NOTE) {
@@ -4443,10 +4455,6 @@ Abc.prototype.set_stems = function() {
 				continue
 			ymin = ymax = s.mid
 			for (g = s.extra; g; g = g.next) {
-				res = identify_note(s, g.dur);
-				g.head = res[0];
-				g.dots = res[1];
-				g.nflags = res[2];
 				slen = GSTEM
 				if (g.nflags > 1)
 					slen += 1.2 * (g.nflags - 1);
