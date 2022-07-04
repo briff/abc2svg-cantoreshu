@@ -479,8 +479,14 @@ function draw_beams(bm) {
 				x1 = s.x + 6;
 				x2 = bm.s2.x - 6
 			} else if (s.dur < C.BLEN / 4) {
-				x1 += 5;
-				x2 -= 6
+			    var	dx = x2 - x1
+				if (dx < 16) {
+					x1 += dx / 4
+					x2 -= dx / 4
+				} else {
+					x1 += 5
+					x2 -= 6
+				}
 			}
 		}
 
