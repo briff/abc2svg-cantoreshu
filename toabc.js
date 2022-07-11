@@ -285,7 +285,9 @@ break
 			if (c >= '1' && c <= '9') {
 				c = "u" + c
 				f = cfmt[c + "font"]		// user font
-				f.fid = abc.get_font(c).fid	// dump it!
+//				f.fid = abc.get_font(c).fid	// dump it!
+				f.fid = 100 + +c
+				f.used = 1
 			}
 		}
 		font_dump()		// dump the new fonts
