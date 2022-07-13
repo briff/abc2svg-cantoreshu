@@ -171,21 +171,7 @@ abc2svg.strtab = {
 
 	abc.glout()			// output the stems
 
-	// draw the note heads
 	stb = abc.get_staff_tb()[p_v.st].y
-	abc.out_svg('<g class="bn">\n')
-	for (s = p_v.sym; s; s = s.next) {
-		switch (s.type) {
-		case C.GRACE:
-			for (g = s.extra; g; g = g.next)
-				draw_heads(stb, g)
-			break
-		case C.NOTE:
-			draw_heads(stb, s)
-			break
-		}
-	}
-	abc.out_svg('</g>\n')
 
 	// draw the stems and beams
 	abc.set_sscale(-1)		// no scale
@@ -200,7 +186,22 @@ abc2svg.strtab = {
 			break
 		}
 	}
+
+	// draw the note heads
 	abc.set_scale(p_v.sym)		// (for draw_all_ties)
+	abc.out_svg('<g class="bn">\n')
+	for (s = p_v.sym; s; s = s.next) {
+		switch (s.type) {
+		case C.GRACE:
+			for (g = s.extra; g; g = g.next)
+				draw_heads(stb, g)
+			break
+		case C.NOTE:
+			draw_heads(stb, s)
+			break
+		}
+	}
+	abc.out_svg('</g>\n')
     }, // draw_symbols()
 
     // set a format parameter
