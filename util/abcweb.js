@@ -432,12 +432,8 @@ console.log('error i/j '+i+' '+j)
 	    var	i, j,
 		k = location.search.substr(1).split("&")
 
-	    for (i = 0; i < k.length; i++) {
-		j = k[i].split('=')
-		if (j[0])
-			glopar += "%%" + j[0] + " "
-				+ decodeURIComponent(j[1]) + '\n'
-	    }
+	    for (i = 0; i < k.length; i++)
+		glopar += "%%" + decodeURIComponent(k[i].replace('=', ' ')) + '\n'
 	}
 
 	// accept page formatting
