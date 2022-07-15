@@ -40,6 +40,8 @@ abc2svg.grid3 = {
 		return
 	}
 
+	this.blk_flush()
+
     var	abc = this,
 	cfmt = abc.cfmt(),
 	img = abc.get_img(),
@@ -257,7 +259,6 @@ abc2svg.grid3 = {
 	wc += abc.strwh('  ')[0]
 
 	// build the grid and insert it in the music
-	abc.blk_flush()
 	build_grid()
 	abc.blk_flush()
     }, // block_gen()
