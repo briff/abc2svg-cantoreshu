@@ -295,7 +295,7 @@ abc2svg.jianpu = {
   }, // output_music()
 
   draw_symbols: function(of, p_voice) {
-    var	s,
+    var	s, s2, nl,
 	C = abc2svg.C,
 	abc = this,
 	dot = "\ue1e7",
@@ -399,27 +399,6 @@ abc2svg.jianpu = {
 
 		if (s.nflags >= 0 && s.dots)
 			out_mus(x + 8 * sc, y + 13 * sc, dot)
-		if (s.nflags > 0) {
-			if (s.time == p_voice.sym.time)
-				s.beam_st = 1	// beam continuation
-//fixme: ko with rests because no beam_st /_end
-			if (s.beam_st || s.type == C.REST) {
-				nl = s.nflags
-				s2 = s
-				while (1) {
-					if (s2.nflags && s2.nflags > nl)
-						nl = s2.nflags
-					if (s2.beam_end)
-						break
-					if (!s2.next
-					 || !s2.next.nflags
-					 || s2.next.nflags <= 0)
-						break
-					s2 = s2.next
-				}
-				draw_dur(s, x, y, s2, 1, nl)
-			}
-		}
 		if (s.grace)
 			out_svg('</g>\n')
 	} // draw_note()
@@ -439,6 +418,30 @@ abc2svg.jianpu = {
 		case C.GRACE:
 			for (g = s.extra; g; g = g.next)
 				draw_note(g)
+			break
+		}
+	}
+
+	// draw the (pseudo) beams
+	for (s = p_voice.sym; s; s = s.next) {
+		if (s.invis)
+			continue
+		switch (s.type) {
+		case C.NOTE:
+		case C.REST:
+			nl = s.nflags
+			if (nl <= 0)
+				continue
+			y = staff_tb[s.st].y
+			s2 = s
+			while (s.next && s.next.nflags > 0) {
+				s = s.next
+				if (s.nflags > nl)
+					nl = s.nflags
+				if (s.beam_end)
+					break
+			}
+			draw_dur(s2, s2.x, y, s, 1, nl)
 			break
 		}
 	}
