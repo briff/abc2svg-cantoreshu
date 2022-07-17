@@ -1464,13 +1464,18 @@ function new_bar() {
 	if (!curvoice.sym_restart)
 		curvoice.sym_restart = s
 
+	// if space before the bar, insert a marker
+	if (s.prev && s.prev.type == C.SPACE) {
+		s2 = {
+			type: C.SM,
+			dur: 0
+		}
+		sym_link(s2)
+	}
+
 	sym_link(s);
 
 	s.st = curvoice.st			/* original staff */
-
-	// if space before the bar, update its time (see w_tb[])
-	if (s.prev && s.prev.type == C.SPACE)
-		s.prev.time--
 
 	/* if repeat bar and shift, add a repeat bar */
 	if (s.rbstart
