@@ -1803,7 +1803,26 @@ function get_vover(type) {
 				vover.p_voice.time = curvoice.time
 		}
 		curvoice.acc = []		// no accidental anymore
-		curvoice = vover.p_voice;
+
+		// if the last symbols are spaces, move them to the main voice
+		p_voice2 = vover.p_voice	// main voice
+		s = curvoice.last_sym
+		if (s.type == C.SPACE) {
+			s.p_v = p_voice2
+			s.v = s.p_v.v
+			while (s.prev.type == C.SPACE) {
+				s = s.prev
+				s.p_v = p_voice2
+				s.v = s.p_v.v
+			}
+			s.prev.next = null
+			s.prev = p_voice2.last_sym
+			s.prev.next = s
+			p_voice2.last_sym = curvoice.last_sym
+			curvoice.last_sym = s.prev
+		}
+
+		curvoice = p_voice2
 		vover = null
 		return
 	}
