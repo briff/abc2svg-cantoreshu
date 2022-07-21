@@ -265,9 +265,10 @@ function up3(s, pos) {
 	case C.SL_BELOW:
 		return 0	// false
 	}
-	if (s.multi)
-		return s.multi > 0
-	return 1		// true
+//	if (s.multi)
+//		return s.multi > 0
+//	return 1		// true
+	return !s.second
 } // up3()
 
 // - of the dynamic and volume marks
@@ -278,8 +279,10 @@ function up6(s, pos) {
 	case C.SL_BELOW:
 		return false
 	}
-	if (s.multi)
-		return s.multi > 0
+//	if (s.multi)
+//		return s.multi > 0
+	if (s.second)
+		return false
 	if (!s.p_v.have_ly)
 		return false
 
