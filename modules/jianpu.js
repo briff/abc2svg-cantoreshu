@@ -494,6 +494,7 @@ abc2svg.jianpu = {
 				if (s.notes[s.nhd].jo > 3)
 					s.ymx += 2
 			}
+			s.ymn = 0		// bottom of line
 			break
 		}
 	}
