@@ -106,7 +106,8 @@ abc2svg.jianpu = {
 
 	// expand a long note/rest
 	function slice(s) {
-	    var	n, s2, s3
+	    var	n, s2, s3,
+		jn = s.type == C.REST ? 0 : 8	// '0' or '-'
 
 		if (s.dur >= C.BLEN)
 			n = 3 
@@ -130,7 +131,7 @@ abc2svg.jianpu = {
 				nhd: 0,
 				notes: [{
 					pit: s.notes[0].pit,
-					jn: 8
+					jn: jn
 				}],
 				xmx: 0,
 				noplay: true,
