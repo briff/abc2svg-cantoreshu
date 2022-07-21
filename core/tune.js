@@ -1807,7 +1807,7 @@ function get_vover(type) {
 		// if the last symbols are spaces, move them to the main voice
 		p_voice2 = vover.p_voice	// main voice
 		s = curvoice.last_sym
-		if (s.type == C.SPACE) {
+		if (s.type == C.SPACE && p_voice2.last_sym.type != C.SPACE) {
 			s.p_v = p_voice2
 			s.v = s.p_v.v
 			while (s.prev.type == C.SPACE) {
