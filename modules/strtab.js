@@ -281,8 +281,21 @@ abc2svg.strtab = {
 		}
 		delete s.a_dd
 
+		if (s.sls) {			// set the slurs above the staff
+			for (i = 0; i < s.sls.length; i++) {
+				s.sls[i].ty &= ~0x07
+				s.sls[i].ty |= C.SL_ABOVE
+			}
+		}
+
 	ls:	for (m = 0; m <= s.nhd; m++) {
 			nt = s.notes[m]
+			if (nt.sls) {			// if start of slur
+				for (i = 0; i < nt.sls.length; i++) {
+					nt.sls[i].ty &= ~0x07
+					nt.sls[i].ty |= C.SL_ABOVE
+				}
+			}
 			if (nt.nb != undefined)
 				continue
 			if (nt.a_dd) {
@@ -316,6 +329,7 @@ abc2svg.strtab = {
 			set_pit(p_v, s, nt, bi)
 		}
 
+		s.y = 3 * (nt.pit - 18)
 		s.ymn = 0		// don't get space below the tablature
 	} // set_notes()
 
