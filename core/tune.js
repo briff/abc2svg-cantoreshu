@@ -1783,7 +1783,7 @@ function get_staves(cmd, parm) {
 
 /* -- get a voice overlay -- */
 function get_vover(type) {
-    var	p_voice2, p_voice3, range, s, time, v, v2, v3
+    var	p_voice2, p_voice3, range, s, time, v, v2, v3, s2
 
 	/* treat the end of overlay */
 	if (type == '|'
@@ -1815,11 +1815,12 @@ function get_vover(type) {
 				s.p_v = p_voice2
 				s.v = s.p_v.v
 			}
-			s.prev.next = null
+			s2 = s.prev
+			s2.next = null
 			s.prev = p_voice2.last_sym
 			s.prev.next = s
 			p_voice2.last_sym = curvoice.last_sym
-			curvoice.last_sym = s.prev
+			curvoice.last_sym = s2
 		}
 
 		curvoice = p_voice2
