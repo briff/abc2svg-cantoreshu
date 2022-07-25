@@ -1633,8 +1633,15 @@ function set_nl(s) {			// s = start of line
 		while (s.ts_prev
 		 && s.ts_prev.time == so.time) {
 			s = s.ts_prev
-			if (s.bar_type)
+			if (s.bar_type) {
+
+				// if repeat variant, move the new line
+				if (s.bar_type[0] == '['
+				 && s.text
+				 && s.ts_next == so)
+					so = s
 				s1 = s		// first previous bar
+			}
 //			if (s.type == C.GRACE)
 //				so = s		// keep the grace notes in the next line
 		}
