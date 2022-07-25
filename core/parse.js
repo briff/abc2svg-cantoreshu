@@ -1356,7 +1356,6 @@ function new_bar() {
 
 	// handle the accidentals (ties and repeat)
 	if (s.text) {
-		s.rbstop = 2;
 		s.rbstart = 2
 		if (s.text[0] == '1') {
 			curvoice.tie_s_rep = curvoice.tie_s
@@ -1439,7 +1438,6 @@ function new_bar() {
 	/* set some flags */
 	switch (bar_type) {
 	case "[":
-		s.rbstop = 2
 	case "[]":
 	case "[|]":
 		s.invis = true;
