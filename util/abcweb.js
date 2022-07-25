@@ -270,9 +270,10 @@ Printing may be bad because the file contains pure HTML and %%pageheight\
 
 			// add the event handlers for playback
 			t = document.getElementsByTagName('svg')
-			for (i = 0; i < t.length; i++)
+			for (i = 0; i < t.length; i++) {
+			    if (t[i].getAttribute('class').indexOf('tune') >= 0)
 				t[i].addEventListener('click', abc2svg.playseq)
-
+			}
 			return				// done
 		}
 		i = re.lastIndex - res[0].length	// start of music sequence
@@ -425,8 +426,6 @@ console.log('error i/j '+i+' '+j)
 		return
 	}
 
-	window.removeEventListener("load", dom_loaded)
-
 	// use the query string of the URL for global parameters
 	{
 	    var	i, j,
@@ -448,4 +447,4 @@ console.log('error i/j '+i+' '+j)
 } // dom_loaded()
 
 // wait for the scripts to be loaded
-window.addEventListener("load", dom_loaded)
+window.addEventListener("load", dom_loaded, {once:true})
