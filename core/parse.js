@@ -2887,6 +2887,16 @@ function parse_music_line() {
 					syntax(1, "'{' in grace note")
 					break
 				}
+
+				// if first symbol of a voice overlay,
+				// add a sequence marker
+				if (vover && vover.time == curvoice.time) {
+					s = {
+						type: C.SM,
+						dur: 0
+					}
+					sym_link(s)
+				}
 				last_note_sav = curvoice.last_note;
 				curvoice.last_note = null;
 				a_dcn_sav = a_dcn;
