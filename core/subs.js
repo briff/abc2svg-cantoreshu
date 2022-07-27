@@ -225,9 +225,10 @@ function str2svg(str) {
 	if (typeof str == "object")
 		return str
 
-    var	o, n_font, wh,
-	o_font = gene.curfont,
-	c_font = o_font
+    var	n_font, wh,
+	o_font = gene.deffont,
+	c_font = gene.curfont,
+	o = ""
 
 	// start a '<tspan>' element
 	function tspan(nf, of) {
@@ -245,7 +246,9 @@ function str2svg(str) {
 		return '<tspan\n\tclass="' + cl + '">'
 	} // tspan()
 
-	o = str.replace(/<|>|&[^&\s]*?;|&|\$./g, function(c){
+	if (c_font != o_font)
+		o = tspan(c_font, o_font)
+	o += str.replace(/<|>|&[^&\s]*?;|&|\$./g, function(c){
 			switch (c) {
 			case '<': return "&lt;"
 			case '>': return "&gt;"
@@ -313,10 +316,10 @@ function xy_str(x, y,
 	if (!wh)
 		wh = str.wh || strwh(str)
 
-	output += '<text class="' + font_class(gene.curfont)
+	output += '<text class="' + font_class(gene.deffont)
 	if (action != 'j' && str.length > 5
-	 && gene.curfont.wadj)
-		output += '" lengthAdjust="' + gene.curfont.wadj +
+	 && gene.deffont.wadj)
+		output += '" lengthAdjust="' + gene.deffont.wadj +
 			'" textLength="' + wh[0].toFixed(1);
 	output += '" x="';
 	out_sxsy(x, '" y="', y + wh[1] * .2)	// a bit upper for the descent
