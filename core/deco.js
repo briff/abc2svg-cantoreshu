@@ -279,10 +279,8 @@ function up6(s, pos) {
 	case C.SL_BELOW:
 		return false
 	}
-//	if (s.multi)
-//		return s.multi > 0
-	if (s.second)
-		return false
+	if (s.multi)
+		return s.multi > 0
 	if (!s.p_v.have_ly)
 		return false
 
