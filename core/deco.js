@@ -439,7 +439,7 @@ function d_near(de) {
 	else
 		up = s.stem < 0
 	y = up ? s.ymx : s.ymn
-	if (y > -6 && y < 30) {
+	if (y > 0 && y < 24) {
 		y = (((y + 9) / 6) | 0) * 6 - 6	// between lines
 	}
 	if (up) {
@@ -456,8 +456,8 @@ function d_near(de) {
 	de.y = y
 	if (s.type == C.NOTE)
 		de.x += s.notes[s.stem >= 0 ? 0 : s.nhd].shhd
-	if (dd.name[0] == 'd'			/* if dot decoration */
-	 && s.nflags >= -1) {			/* on stem */
+	if (dd.name[0] == 'd') {		// if dot (staccato)
+	    if (!(s.beam_st && s.beam_end)) {	// if in a beam sequence
 		if (up) {
 			if (s.stem > 0)
 				de.x += 3.5	// stem_xoff
@@ -465,6 +465,15 @@ function d_near(de) {
 			if (s.stem < 0)
 				de.x -= 3.5
 		}
+	    } else {
+		if (up && s.stem > 0) {
+			y = s.y + (y - s.y) * .6
+			if (y >= 27) {
+				de.y = y	// put the dot a bit lower
+				s.ymx = de.y + dd.h
+			}
+		}
+	    }
 	}
 }
 
