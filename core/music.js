@@ -1606,7 +1606,7 @@ function set_nl(s) {			// s = start of line
 	// divide the left repeat (|:) or variant bars (|1)
 	// the new bars go in the next line
 	function bardiv(so) {		// start of next line
-	    var s, s1, s2, t1, t2, i, noseq
+	    var s, s1, s2, t1, t2, i
 
 	    function new_type(s) {
 	    var	t = s.bar_type.match(/(:*)([^:]*)(:*)/)
@@ -1661,8 +1661,6 @@ function set_nl(s) {			// s = start of line
 			}
 			break
 		}
-		if (s.bar_type)
-			noseq = 1
 
 		while (s1 != so) {
 		    if (s1.bar_type
@@ -1685,12 +1683,8 @@ function set_nl(s) {			// s = start of line
 				s = s.ts_next
 			}
 			lktsym(s2, s)		// time
-			if (!noseq) {
-				noseq = 1
-				s2.seqst = true
-				s2.shrink = s2.wl + s2.prev.wr
-				s2.space = 0
-			}
+			if (s1.seqst)
+				s2.seqst = 1
 			if (s == so)
 				so = s2
 			if (s1.text) {
