@@ -1713,7 +1713,7 @@ function set_nl(s) {			// s = start of line
 	// put the warning symbols
 	// the new symbols go in the previous line
 	function do_warn(s) {		// start of next line
-	    var s1, s2, s3
+	    var s1, s2, s3, s4
 
 		// advance in the next line
 		for (s2 = s; s2; s2 = s2.ts_next) {
@@ -1741,6 +1741,9 @@ function set_nl(s) {			// s = start of line
 					for (s1 = s.ts_prev; s1; s1 = s1.ts_prev) {
 						switch (s1.type) {
 						case C.BAR:
+							if (s1.bar_type[0] == ':')
+								break
+							// fall thru
 						case C.KEY:
 						case C.METER:
 							continue
@@ -1764,11 +1767,17 @@ function set_nl(s) {			// s = start of line
 
 				// care with spacing
 				if (s3.seqst) {
+					self.set_width(s3)
 					s3.shrink = s3.wl
-					if (s3.prev)	// if not start of voice
-						s3.shrink += s3.prev.wr
-					s3.space = set_space(s3, s3.ts_prev.time)
-					s3.next.shrink = s3.wr + s3.next.wl
+					s4 = s3.ts_prev
+					while (!s4.seqst)
+						s4 = s4.ts_prev
+					s3.shrink += s4.wr
+					s3.space = 0
+					s4 = s3.ts_next
+					while (!s4.seqst)
+						s4 = s4.ts_next
+					s4.shrink = s3.wr + s4.wl
 				}
 				delete s3.part
 				continue
