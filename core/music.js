@@ -240,8 +240,7 @@ function acc_shift(notes, dx_head) {
 		notes[i1].shac = notes[i2].shac = dx2
 	} else {
 		notes[i1].shac = dx1
-		if (p1 != ps)
-			dx1 += 7	// (there is a shift of a head when unison)
+		dx1 += 7
 		notes[i2].shac = dx2 = dx1
 	}
 	dx2 += 7
