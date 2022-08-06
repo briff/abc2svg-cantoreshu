@@ -39,14 +39,21 @@ user.anno_stop = function(type, start, stop, x, y, w, h) {
 }
 
 	playconf.onnote = function(i, on) {
-	    var	b, x, y,
-		elts = document.getElementsByClassName('_' + i + '_')
-		if (elts && elts[0]) {
-			elts[0].style.fillOpacity = on ? 0.4 : 0
+	    var	b, x, y, i, e, elts
+
+		if (abc2svg.mu)			// if many tunes with same offsets
+			elts = abc2svg.mu.d.getElementsByClassName('_' + i + '_')
+		else
+			elts = document.getElementsByClassName('_' + i + '_')
+		if (!elts || !elts.length)
+			return			// no symbol?
+		e = elts[0]
+
+		e.style.fillOpacity = on ? 0.4 : 0
 
 			// scroll for the element to be in the screen
 			if (on && !window.no_scroll) {	
-				b = elts[0].getBoundingClientRect()
+				b = e.getBoundingClientRect()
 
 				// normal
 				if (b.top < 0)
@@ -66,7 +73,6 @@ user.anno_stop = function(type, start, stop, x, y, w, h) {
 				if (x != undefined || y != undefined)
 					window.scrollTo(x || 0, y || 0)
 			}
-		}
 	}
 } // follow()
 

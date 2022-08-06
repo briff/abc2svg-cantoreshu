@@ -467,14 +467,14 @@ Here are the scripts which are used in a web context:
   The ABC sequences are searched:
   - first inside &lt;script&gt; elements with a type
     ["text/vnd.abc"](https://www.iana.org/assignments/media-types/text/vnd.abc)
-    (the script tag is removed from the page),
+    (the script tag is replaced by a &lt;div&gt;),
   - or inside (X)HTML elements with a class `abc` (lower case letters),
   - otherwise on `X:` or `%abc-` at start of line up to a XML tag at start of line.
 
 	When a ABC sequence is not included in a &lt;script&gt; and when it contains
   the characters '<', '>' or '&',
   it must be enclosed in a XML comment or in a CDATA
-  (%&lt;![CDATA[ .. %]]&gt; - the comment or CDATA must be in a ABC comment).  
+  (%&lt;![CDATA[ .. %]]&gt; - the comment or CDATA must be in a ABC comment).
 
 	When using &lt;script&gt;, it is possible to set abc2svg parameters via CSS.
   For that, the &lt;style&gt; in the HTML &lt;head&gt; may contain custom
@@ -496,6 +496,28 @@ Here are the scripts which are used in a web context:
 
 [15]: http://moinejf.free.fr/abcm2ps-doc/inline.html "abc2svg - inline music"
 
+    This script also accepts a parameter `with_source`.
+    When this parameter is set, the music source is included before the
+    SVG images of the music. An argument `nohead` prevents displaying
+    the source of the first music sequence. The music source is displayed
+    in a &lt;pre&gt; element of class `source`. The SVG's are included
+    in a &lt;div&gt; of the same class `source`.
+    The source may be displayed either above (default) or
+    at the left side of the music (using a style as
+    `.source{display: inline-block; vertical-align: top}`).
+    See the source of
+    [abcm2ps/abc2svg features](http://moinejf.free.fr/abcm2ps-doc/features.html)
+    for an example.
+
+    The music source may be editable.
+    To change it, the script contains two functions:  
+    - `abc2svg.get_music` returns the source of the music sequence
+       (in &lt;script&gt; type "text/vnd.abc", class="abc" or inlined ABC)
+       Its argument is the HTML &lt;div&gt; element that contains the music.  
+    - `abc2svg.set_music` has two arguments, the HTML &lt;div&gt; element
+       and the new source of the music.
+       It generates and replaces the music in the &lt;div&gt;.
+
 - `abcweb1-1.js`  
   The page body is analyzed as a ABC file and its content is
   replaced by music as SVG images.  
@@ -513,17 +535,10 @@ Here are the scripts which are used in a web context:
 
 	When one or many tunes are displayed, a menu in the top/right corner
   offers to go back to the tune list or to modify the ABC source.
-  
+
 - `snd-1.js`  
   This script may be used with `abcweb-1.js` or `abcweb1-1.js`
   to play the rendered ABC music.  
-
-- `abcdoc-1.js`  
-  This script is mainly used for ABC documentation.
-  It lets the ABC source sequences in the page before the SVG images.  
-  See the source of
-  [abcm2ps/abc2svg features](http://moinejf.free.fr/abcm2ps-doc/features.html)
-  for an example.
 
 ### 5. MEI support
 
