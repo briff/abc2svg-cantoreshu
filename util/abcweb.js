@@ -130,34 +130,45 @@ function dom_loaded() {
 		}
 	} // visible()
 	
-	// get the parameters from the script class
-	// format '--<key>:<value>'
-	function get_p(c) {
+	// get the custom properties of a HTML element
+	// from 'class="<class>"' and from 'style="--<key>:<value>"'
+	function get_p(e) {
 	    var	i, j, k, r,
 		o = '',
-		sh = document.styleSheets
+		sh = document.styleSheets,
+		s = e.style
 
-		if (!c)
-			return ""
-		c = '.' + c				// selector
-		for (i = 0; i < sh.length; i++) {
-			r = sh[i].cssRules
-			for (j = 0; j < r.length; j++) {
-				if (r[j].selectorText == c)
+		// from class=".."
+		c = e.getAttribute("class")
+		if (c) {
+			c = '.' + c				// selector
+			for (i = 0; i < sh.length; i++) {
+				r = sh[i].rules
+				for (j = 0; j < r.length; j++) {
+					if (r[j].selectorText == c)
+						break
+				}
+				if (j < r.length)
 					break
 			}
-			if (j < r.length)
-				break
+			if (i < sh.length) {
+				r = r[j]			// rule
+				for (i = 0; i < r.style.length; i++) {
+					k = r.style[i]
+					if (k[0] == '-' && k[1] == '-')
+						o += '%%' + k.slice(2) + ' '
+							+ r.style.getPropertyValue(k)
+							+ '\n'
+				}
+			}
 		}
-		if (i == sh.length)
-			return ""
 
-		r = r[j]				// cssRule
-		for (i = 0; i < r.styleMap.size; i++) {
-			k = r.style[i]
-			if (k.slice(0, 2) == '--')
-				o += '%%' + k.slice(2)
-					+ ' ' + r.style.getPropertyValue(k)
+		// from style=".."
+		for (i = 0; i < s.length; i++) {
+			k = s[i]
+			if (k[0] == '-' && k[1] == '-')
+				o += '%%' + k.slice(2) + ' '
+					+ s.getPropertyValue(k)
 					+ '\n'
 		}
 		return o
@@ -280,7 +291,7 @@ Printing may be bad because the file contains pure HTML and %%pageheight\
 			if (i >= sa.length)
 				break
 
-			c = get_p(s.getAttribute('class'))	// get custom attributes
+			c = get_p(s)			// get custom properties
 			div = document.createElement('div')
 			if (s.text.indexOf('\nX:') < 0) {
 				abc2svg.music[0].t += c + s.text // global
