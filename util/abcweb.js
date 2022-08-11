@@ -350,6 +350,8 @@ Printing may be bad because the file contains pure HTML and %%pageheight\
 			e = mu.d.getElementsByTagName('svg')
 			for (i = 0; i < e.length; i++) {
 				j = e[i].getAttribute('class')
+				if (!j)
+					continue	// (page formatting)
 				j = j.match(/tune(\d+)/)
 				if (!j)
 					continue
