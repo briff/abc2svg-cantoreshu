@@ -27,7 +27,7 @@ abc2svg.grid2 = {
 
 // function called before tune generation
     do_grid: function() {
-    var s, v, p_v, ix, cs, c_a_cs, bt,
+    var s, v, p_v, ix, cs, c_a_cs, bt, gch,
 	voice_tb = this.get_voice_tb()
 
 	for (v = 0; v < voice_tb.length; v++) {
@@ -56,13 +56,13 @@ abc2svg.grid2 = {
 					s.tf[0] = 1
 				if (!s.a_gch) {
 					if (s.time == bt)
-						s.a_gch = c_a_cs
+						s.a_gch = [ this.clone(c_a_cs) ]
 					continue
 				}
 				for (ix = 0; ix < s.a_gch.length; ix++) {
 					gch = s.a_gch[ix]
 					if (gch.type == 'g') {
-						c_a_cs = s.a_gch
+						c_a_cs = gch
 						break
 					}
 				}
