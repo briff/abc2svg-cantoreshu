@@ -19,7 +19,6 @@
 
 var	output = "",		// output buffer
 	style = '\
-\npath{fill:currentColor}\
 \n.stroke{stroke:currentColor;fill:none}\
 \n.bW{stroke:currentColor;fill:none;stroke-width:1}\
 \n.bthW{stroke:currentColor;fill:none;stroke-width:3}\
@@ -309,8 +308,7 @@ function set_g() {
 	if (stv_g.color) {
 		if (stv_g.scale != 1)
 			output += ' ';
-		output += 'color="' + stv_g.color +
-			'" fill="' + stv_g.color + '"'
+		output += 'color="' + stv_g.color + '"'
 	}
 	output += ">\n";
 	stv_g.started = true
@@ -1267,19 +1265,10 @@ function svg_flush() {
     var	i, font,
 	head = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"\n\
 	xmlns:xlink="http://www.w3.org/1999/xlink"\n\
-	color="',
+	fill="currentColor" stroke-width=".7"',
 	g = ''
 
 	glout()
-
-	if (cfmt.fgcolor)
-		head += cfmt.fgcolor + '" fill="' + cfmt.fgcolor + '"'
-	else
-		head += 'black"';
-	head += ' stroke-width=".7"'
-
-	if (cfmt.bgcolor)
-		head += ' style="background-color: ' + cfmt.bgcolor + '"';
 
 	font = get_font("music")
 	head += ' class="' + font_class(font) +
@@ -1299,8 +1288,19 @@ function svg_flush() {
 
 	head += fulldefs
 
-	if (style || font_style)
-		head += '<style>' + font_style + style + '\n</style>\n'
+	if (style || font_style) {
+		head += '<style>' + font_style
+		if (cfmt.fgcolor || cfmt.bgcolor) {
+			head += '\n.f' + font.fid + (cfmt.fullsvg || '')
+				+ '{'
+				+ (cfmt.fgcolor ? ('color:' + cfmt.fgcolor + ';')
+						: '')
+				+ (cfmt.bgcolor ? ('background-color:' + cfmt.bgcolor)
+						: '')
+				+ '}'
+		}
+		head += style + '\n</style>\n'
+	}
 
 	if (defs)
 		head += '<defs>' + defs + '\n</defs>\n'
