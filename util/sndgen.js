@@ -50,7 +50,7 @@ function ToAudio() {
 	s = first,
 	rst = s,		// left repeat (repeat restart)
 	rst_fac,		// play factor on repeat restart
-	rsk,			// repeat variant array (repeat skip)
+	rsk = [],		// repeat variant array (repeat skip)
 	b_tim,			// time of last measure bar
 	b_typ,			// type of last measure bar
 	instr = [],		// [voice] bank + instrument
@@ -260,9 +260,10 @@ function ToAudio() {
 		return d * s.tempo / 60
 	} // set_tempo()
 
-	function set_variant(rsk, n, s) {
-	    var	d
-		n = n.match(/[1-8]-[2-9]|[1-9,.]|[^\s]+$/g)
+	function set_variant(s) {
+	    var	d,
+		n = s.text.match(/[1-8]-[2-9]|[1-9,.]|[^\s]+$/g)
+
 		while (1) {
 			d = n.shift()
 			if (!d)
@@ -328,12 +329,13 @@ function ToAudio() {
 				b_tim = s.time
 				b_typ = 0
 			}
-			if (s.text && rsk		// if new variant
+			if (s.text			// if new variant
+			 && rsk.length > 1
 			 && s.text[0] != '1') {
 				if (b_typ & 1)
 					break
 				b_typ |= 1
-				set_variant(rsk, s.text, s)
+				set_variant(s)
 				play_fac = rst_fac
 				rst = rsk[0]		// reinit the restart
 			}
@@ -359,12 +361,12 @@ function ToAudio() {
 				if (rst.bar_type
 				 && rst.bar_type.slice(-1) != ':')
 					rst.bar_type += ':' // restart confirmed
-				set_variant(rsk, s.text, s)
+				set_variant(s)
 				rst_fac = play_fac
 			    }
 
 			// left repeat
-			} else if (s.rbstop) {
+			} else if (s.rbstop == 2) {
 				if (s.bar_type.slice(-1) == ':') {
 					if (b_typ & 4)
 						break
@@ -450,7 +452,7 @@ function ToAudio() {
 //  - conf
 //    - speed: current speed factor
 //		must be set to 1 at startup time
-//    - new_conf: new speed factor
+//    - new_speed: new speed factor
 //		set by the user
 // - internal variables
 //  - stim: start time
@@ -544,6 +546,28 @@ abc2svg.play_next = function(po) {
 	C = abc2svg.C,
 	s = po.s_cur
 
+	// search the end of a sequence of variants
+	function var_end(s) {
+	    var	i, s2, s3,
+		a = s.rep_v || s.rep_s
+		ti = 0
+
+		for (i = 1; i < a.length; i++) {
+			s2 = a[i]
+			if (s2.time > ti) {
+				ti = s2.time
+				s3 = s2
+			}
+		}
+		for (s = s3; s != po.s_end; s = s.ts_next) {
+			if (s.time == ti)
+				continue
+			if (s.rbstop == 2)
+				break
+		}
+		return s
+	} // var_end()
+
 	if (po.stop) {
 		if (po.onend)
 			po.onend(po.repv)
@@ -577,37 +601,41 @@ abc2svg.play_next = function(po) {
 			set_ctrl(po, s, t)	// set the MIDI controls
 		switch (s.type) {
 		case C.BAR:
+			s2 = null
 			if (s.rep_p) {		// right repeat
 				po.repv++
 				if (!po.repn	// if repeat a first time
 				 && (!s.rep_v	// and no variant (anymore)
 				  || po.repv < s.rep_v.length)) {
-					po.stim += (s.ptim - s.rep_p.ptim) /
-							po.conf.speed
-					s = s.rep_p	// left repeat
-					while (!s.dur)
-						s = s.ts_next
-					t = po.stim + s.ptim / po.conf.speed
+					s2 = s.rep_p	// left repeat
 					po.repn = true
-					break
+				} else {
+					if (s.rep_v)
+						s2 = var_end(s)
+					po.repn = false
 				}
-				po.repn = false
 			}
 			if (s.rep_s) {			// first variant
 				s2 = s.rep_s[po.repv]	// next variant
 				if (s2) {
-					po.stim += (s.ptim - s2.ptim) /
-							po.conf.speed
-					s = s2
-					t = po.stim + s.ptim / po.conf.speed
 					po.repn = false
-				} else {		// end of tune
-					s = po.s_end
-					break
+				} else {		// end of variants
+					s2 = var_end(s)
+					if (s2 == po.s_end)
+						break
 				}
 			}
 			if (s.bar_type.slice(-1) == ':') // left repeat
 				po.repv = 1
+
+			if (s2) {			// if skip
+				po.stim += (s.ptim - s2.ptim) / po.conf.speed
+				s = s2
+				while (!s.dur)
+					s = s.ts_next
+				t = po.stim + s.ptim / po.conf.speed
+				break
+			}
 
 		    if (!s.part1) {
 			while (s.ts_next && !s.ts_next.seqst) {
