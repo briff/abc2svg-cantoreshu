@@ -1356,7 +1356,7 @@ function new_bar() {
 
 	// handle the accidentals (ties and repeat)
 	if (s.text) {
-		s.rbstart = 2
+		s.rbstart = s.rbstop = 2
 		if (s.text[0] == '1') {
 			curvoice.tie_s_rep = curvoice.tie_s
 			if (curvoice.acc_tie)

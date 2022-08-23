@@ -1805,7 +1805,7 @@ function draw_deco_staff() {
 				else
 					w = 8
 			} else {
-				w = s.rbstop ? 0 : 8
+				w = (s.rbstop && !s.rbstart) ? 0 : 8
 			}
 			w = (s.x - x - w)	// / staff_tb[p_voice.st].staffscale;
 
@@ -1829,7 +1829,7 @@ function draw_deco_staff() {
 			y_set(s1.st, true, x, w, y + 2)
 
 			if (s.rbstart)
-				s = s.prev
+				s = s.prev.prev
 		}
 	} // draw_repbra()
 
