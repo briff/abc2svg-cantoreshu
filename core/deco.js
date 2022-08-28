@@ -1716,7 +1716,7 @@ function draw_deco_staff() {
 		var s, s1, x, y, y2, i, p, w, wh, first_repeat;
 
 		// search the max y offset of the line
-		y = staff_tb[p_voice.st].topbar + 25	// 20 (vert bar) + 5 (room)
+		y = staff_tb[p_voice.st].topbar + 15	// 10 (vert bar) + 5 (room)
 		for (s = p_voice.sym; s; s = s.next) {
 			if (s.type != C.BAR)
 				continue
@@ -1743,12 +1743,12 @@ function draw_deco_staff() {
 
 			// have room for the vertical lines and the repeat numbers
 			if (s1.rbstart == 2) {
-				y2 = y_get(p_voice.st, true, s1.x, 3) + 20
+				y2 = y_get(p_voice.st, true, s1.x, 3) + 10
 				if (y < y2)
 					y = y2
 			}
 			if (s.rbstop == 2) {
-				y2 = y_get(p_voice.st, true, s.x - 3, 3) + 20
+				y2 = y_get(p_voice.st, true, s.x - 3, 3) + 10
 				if (y < y2)
 					y = y2
 			}
@@ -1817,14 +1817,14 @@ function draw_deco_staff() {
 				p_voice.bar_start.rbstart = 1
 			}
 			if (s1.text)
-				xy_str(x + 4, y2 - gene.curfont.size - 3,
+				xy_str(x + 4, y2 - gene.curfont.size - 2,
 					s1.text);
 			xypath(x, y2);
 			if (s1.rbstart == 2)
-				output += 'm0 20v-20';
+				output += 'm0 10v-10';
 			output+= 'h' + w.toFixed(1)
 			if (s.rbstop == 2)
-				output += 'v20';
+				output += 'v10';
 			output += '"/>\n';
 			y_set(s1.st, true, x, w, y + 2)
 

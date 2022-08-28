@@ -95,7 +95,7 @@ H "History: "',
 	rightmargin: 1.4 * CM,
 	rbmax: 4,
 	rbmin: 2,
-	repeatfont: {name: txt_ff, size: 13},
+	repeatfont: {name: txt_ff, size: 9},
 	scale: 1,
 	slurheight: 1.0,
 	spatab: 	// spacing table (see "notespacingfactor" and set_space())
