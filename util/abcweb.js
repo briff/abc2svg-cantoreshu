@@ -294,13 +294,13 @@ Printing may be bad because the file contains pure HTML and %%pageheight\
 			c = get_p(s)			// get custom properties
 			div = document.createElement('div')
 			if (s.text.indexOf('\nX:') < 0) {
-				abc2svg.music[0].t += c + s.text // global
+				abc2svg.music[0].t += c + s.outerHTML // global
 				if (!abc2svg.music[0].d)
 					abc2svg.music[0].d = div
 			} else {
 				abc2svg.music.push({
 					n: "mus" + abc2svg.music.length,
-					t: c + s.text,
+					t: c + s.outerHTML,
 					d: div
 				})
 			}
