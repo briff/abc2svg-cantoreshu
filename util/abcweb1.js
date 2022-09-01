@@ -344,7 +344,7 @@ onclick="abc2svg.do_render(\'.*\')">' + tt +
 		new_page += '\
 <div id="dd" class="dd nop">\
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="db">\
-<path d="M4 6h15v2.5H4zm0 5h15v2.5H4zm0 5h15v2.5H4z" fill=black/>\
+<path d="M4 6h15v2.5H4zm0 5h15v2.5H4zm0 5h15v2.5H4z" fill="black"/>\
 </svg>\
 <div id="dc" class="dc">\
 <label id="edit" onclick="abc2svg.src_edit()">Source edit</label>\
