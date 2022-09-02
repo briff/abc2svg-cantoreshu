@@ -382,8 +382,7 @@ abc2svg.jianpu = {
 	} // draw_hd()
 
 	function draw_note(s) {
-	    var	i, m, nl, note, s, s2,
-		sc = 1,
+	    var	sc = 1,
 		x = s.x,
 		y = staff_tb[s.st].y
 
@@ -391,7 +390,8 @@ abc2svg.jianpu = {
 			out_svg('<g transform="translate(')
 			out_sxsy(x, ',', y + 15)	// (font height)
 			out_svg(') scale(.5)">\n')
-			x = -s.fmt.leftmargin / s.fmt.scale
+			abc.stv_g().g++			// in container
+			x = 0
 			y = 0
 			sc = .5
 		}
@@ -400,8 +400,10 @@ abc2svg.jianpu = {
 
 		if (s.nflags >= 0 && s.dots)
 			out_mus(x + 8 * sc, y + 13 * sc, dot)
-		if (s.grace)
+		if (s.grace) {
 			out_svg('</g>\n')
+			abc.stv_g().g--
+		}
 	} // draw_note()
 
 	// -- draw_symbols --
