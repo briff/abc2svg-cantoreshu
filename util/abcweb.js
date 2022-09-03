@@ -256,7 +256,7 @@ Printing may be bad because the file contains pure HTML and %%pageheight\
 				div = document.createElement('div')
 				abc2svg.music.push({
 					n: 'mus' + abc2svg.music.length,
-					t: s.text,
+					t: s.outerHTML,
 					d: div
 				})
 				s.parentNode.replaceChild(div, s)
@@ -294,13 +294,13 @@ Printing may be bad because the file contains pure HTML and %%pageheight\
 			c = get_p(s)			// get custom properties
 			div = document.createElement('div')
 			if (s.text.indexOf('\nX:') < 0) {
-				abc2svg.music[0].t += c + s.outerHTML // global
+				abc2svg.music[0].t += c + s.innerHTML // global
 				if (!abc2svg.music[0].d)
 					abc2svg.music[0].d = div
 			} else {
 				abc2svg.music.push({
 					n: "mus" + abc2svg.music.length,
-					t: c + s.outerHTML,
+					t: c + s.innerHTML,
 					d: div
 				})
 			}
