@@ -1,6 +1,6 @@
 // abc2svg - lyrics.js - lyrics
 //
-// Copyright (C) 2014-2021 Jean-Francois Moine
+// Copyright (C) 2014-2022 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -204,7 +204,7 @@ function get_lyrics(text, cont) {
 				case '\t':
 					break
 				case '~':
-					word += ' ';	// (&nbsp;)
+					word += '&#x00a0;';	// (&nbsp;)
 					i++
 					continue
 				case '-':
@@ -317,7 +317,7 @@ function ly_set(s) {
 			if (p[0] == '(') {
 				sz = spw
 			} else {
-				j = p.indexOf(' ');	// (&nbsp;)
+				j = p.indexOf('&#x00a0;');	// (&nbsp;)
 				set_font(ly.font)
 				if (j > 0)
 					sz = strwh(p.slice(0, j))[0]

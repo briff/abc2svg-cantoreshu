@@ -1,6 +1,6 @@
 // abc2svg - subs.js - text output
 //
-// Copyright (C) 2014-2021 Jean-Francois Moine
+// Copyright (C) 2014-2022 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -480,7 +480,7 @@ function write_text(text, action) {
 			words = words.split(/\s+/);
 			w = k = wh = 0
 			for (j = 0; j < words.length; j++) {
-				ww = strwh(words[j] + ' ')	// (&nbsp;)
+				ww = strwh(words[j] + '&#x00a0;')	// (&nbsp;)
 				w += ww[0]
 				if (w >= strlw) {
 					vskip(wh * cfmt.lineskipfac)
