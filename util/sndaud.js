@@ -1,6 +1,6 @@
 // sndaud.js - audio output using HTML5 audio
 //
-// Copyright (C) 2019-2021 Jean-Francois Moine
+// Copyright (C) 2019-2022 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -341,11 +341,20 @@ function Audio5(i_conf) {
 
 		// create the instruments
 		while (s) {
+			if (s.p_v.chn == undefined) {	// if no %%MIDI
+				s.p_v.chn = 0
+				if (!params[0]) {
+					params[0] = []	// instrument being loaded
+					sf2_create(0)
+				}
+			}
+		    if (s.subtype == "midiprog") {
 		    var	i = s.instr
-			if (i != undefined && !params[i]) {
+			if (!params[i]) {
 				params[i] = []	// instrument being loaded
 				sf2_create(i)
 			}
+		    }
 			s = s.ts_next
 		}
 		play_start()
@@ -355,11 +364,20 @@ function Audio5(i_conf) {
 	//  one file per instrument)
 		w_instr++			// play lock
 		while (s) {
+			if (s.p_v.chn == undefined) {	// if no %%MIDI
+				s.p_v.chn = 0
+				if (!params[0]) {
+					params[0] = []	// instrument being loaded
+					load_instr(0)
+				}
+			}
+		    if (s.subtype == "midiprog") {
 		    var	i = s.instr
-			if (i != undefined && !params[i]) {
+			if (!params[i]) {
 				params[i] = []	// instrument being loaded
 				load_instr(i)
 			}
+		    }
 			s = s.ts_next
 		}
 		if (--w_instr == 0)		// all resources were there already
@@ -378,6 +396,13 @@ function Audio5(i_conf) {
 			s.p_v.vol = s.val / 127
 	} // midi_ctrl()
 
+	// MIDI prog or channel
+	function midi_prog(po, s) {
+		po.v_c[s.v] = s.chn
+		if (s.instr)
+			po.c_i[s.chn] = s.instr
+	} // midi_prog()
+
 	// create a note
 	// @po = play object
 	// @s = symbol
@@ -386,7 +411,8 @@ function Audio5(i_conf) {
 	// @d = duration adjusted for speed
 	function note_run(po, s, key, t, d) {
 	    var	g, st,
-		instr = s.instr,
+		c = po.v_c[s.v],
+		instr = po.c_i[c],
 		k = key | 0,
 		parm = po.params[instr][k],
 		o = po.ac.createBufferSource(),
@@ -515,8 +541,11 @@ function Audio5(i_conf) {
 			tgen: 2,	// // generate by 2 seconds
 			get_time: get_time,
 			midi_ctrl: midi_ctrl,
+			midi_prog: midi_prog,
 			note_run: note_run,
 			timouts: [],
+			v_c: [],	// voice to channel
+			c_i: [],	// channel to instrument
 
 			// audio specific
 			ac: ac,

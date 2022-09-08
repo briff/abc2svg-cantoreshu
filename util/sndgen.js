@@ -1,6 +1,6 @@
 // sndgen.js - sound generation
 //
-// Copyright (C) 2019-2021 Jean-Francois Moine
+// Copyright (C) 2019-2022 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -26,8 +26,6 @@
 //						indexed by the repeat number
 // - in NOTE and REST
 //	s.pdur = play duration
-//	s.instr = bank + instrument
-//	s.chn = MIDI channel
 // - in the notes[] of NOTE
 //	s.notes[i].midi
 
@@ -46,7 +44,7 @@ function ToAudio() {
 	p_time = 0,		// last playing time
 	abc_time = 0,		// last ABC time
 	play_fac = C.BLEN / 4 * 120 / 60, // play time factor - default: Q:1/4=120
-	i, n, dt, d, v, c,
+	i, n, dt, d, v,
 	s = first,
 	rst = s,		// left repeat (repeat restart)
 	rst_fac,		// play factor on repeat restart
@@ -186,7 +184,6 @@ function ToAudio() {
 				instr[9] = instr[c]	// force the channel 10
 				chn[v] = c = 9
 			}
-			s.chn = c
 			// fall thru
 		default:
 			return
@@ -244,7 +241,6 @@ function ToAudio() {
 			g.ptim = t
 			g.pdur = d
 			g.chn = chn[s.v]
-			g.instr = instr[g.chn]
 			t += d
 		}
 	} // gen_grace()
@@ -410,9 +406,6 @@ function ToAudio() {
 			d /= play_fac
 			s.pdur = d
 			v = s.v
-			c = chn[v]			// channel
-			s.chn = c
-			s.instr = instr[c]
 			break
 		case C.TEMPO:
 			if (s.tempo)
@@ -536,7 +529,17 @@ abc2svg.play_next = function(po) {
 		for (s = p_v.sym; s && s.time <= tim; s = s.next) {
 			if (s.subtype == "midictl")
 				po.midi_ctrl(po, s, t)
+			else if (s.subtype == 'midiprog')
+				po.midi_prog(po, s)
 		}
+
+		// if no %%MIDI, set 'grand acoustic piano' as the instrument
+		i = po.v_c[s2.v]
+		if (i == undefined)
+			po.v_c[s2.v] = i = s2.v
+		if (po.c_i[i] == undefined)
+			po.c_i[i] = 0	// piano
+
 		po.p_v[s2.v] = true	// synchronization done
 	} // set_ctrl()
 
@@ -669,6 +672,8 @@ abc2svg.play_next = function(po) {
 		case C.BLOCK:
 			if (s.subtype == "midictl")
 				po.midi_ctrl(po, s, t)
+			else if (s.subtype == 'midiprog')
+				po.midi_prog(po, s)
 			break
 		case C.GRACE:
 			for (g = s.extra; g; g = g.next) {

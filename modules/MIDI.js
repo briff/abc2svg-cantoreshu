@@ -1,6 +1,6 @@
 // MIDI.js - module to handle the %%MIDI parameters
 //
-// Copyright (C) 2019-2021 Jean-Francois Moine
+// Copyright (C) 2019-2022 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -134,7 +134,7 @@ abc2svg.MIDI = {
 		if (!cfmt.chord)
 			cfmt.chord = {}
 		if (abc.parse.state >= 2
-		 && abc.get_curvoice()) {
+		 && curvoice) {
 			s = abc.new_block("midigch")
 			s.play = true
 			s.on = a[1][7] == 'n'
@@ -150,9 +150,9 @@ abc2svg.MIDI = {
 		}
 		if (--v != 9) {			// channel range 1..16 => 0..15
 			if (abc.parse.state == 3) {
-				s = abc.new_block("midichn");
+				s = abc.new_block("midiprog")
 				s.play = true
-				s.chn = v
+				curvoice.chn = s.chn = v
 			} else {
 				abc.set_v_param("channel", v)
 			}
@@ -198,6 +198,7 @@ abc2svg.MIDI = {
 			s = abc.new_block("midiprog");
 			s.play = true
 			s.instr = v
+			s.chn = curvoice.chn
 		} else {
 			abc.set_v_param("instr", v)
 		}
@@ -296,16 +297,39 @@ abc2svg.MIDI = {
 
     // set the MIDI parameters in the current voice
     set_vp: function(of, a) {
-    var	i, item,
+    var	i, item, s,
+	abc = this,
 	curvoice = this.get_curvoice()
+
+	if (curvoice.st == undefined) {		// if new voice by V:
+	    var	st = 0,
+		vtb = abc.get_voice_tb()
+
+		for (i = 0; i < vtb.length; i++) {
+			if (vtb[i].st != undefined
+			 && vtb[i].st > st)
+				st = vtb[i].st
+		}
+		curvoice.st = curvoice.cst = st + 1
+	}
 
 	for (i = 0; i < a.length; i++) {
 		switch (a[i]) {
 		case "channel=":		// %%MIDI channel
-			curvoice.chn = a[++i]
+			s = abc.new_block("midiprog")
+			s.play = true
+			s.chn = curvoice.chn = a[++i]
 			break
 		case "instr=":			// %%MIDI program
-			curvoice.instr = a[++i]
+			s = abc.new_block("midiprog")
+			s.play = true
+			s.instr = a[++i]
+			if (curvoice.chn == undefined) {
+				curvoice.chn = curvoice.v < 9 ?
+						curvoice.v :
+						curvoice.v + 1
+			}
+			s.chn = curvoice.chn
 			break
 		case "midictl=":		// %%MIDI control
 			if (!curvoice.midictl)
