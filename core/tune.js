@@ -116,18 +116,18 @@ function sym_add(p_voice, type) {
 /* -- sort all symbols by time and vertical sequence -- */
 // weight of the symbols !! depends on the symbol type !!
 var w_tb = new Uint8Array([
-	4,	// bar
+	5,	// bar
 	1,	// clef
 	8,	// custos
-	5,	// sm (sequence marker)
-	0,	// grace
+	6,	// sm (sequence marker, after bar)
+	0,	// grace (must be null)
 	2,	// key
 	3,	// meter
 	9,	// mrest
 	9,	// note
 	0,	// part
 	9,	// rest
-	6,	// space (after bar)
+	4,	// space (before bar)
 	0,	// staves
 	7,	// stbrk
 	0,	// tempo
@@ -361,8 +361,8 @@ function voice_adj(sys_chg) {
 			// if the symbol has no sequence weight
 			// and if there a time skip,
 			// add a sequence marker before it
-			if (!w_tb[s.type]
-			 && s.type != C.STAVES
+			if (((!w_tb[s.type] && s.type != C.STAVES)
+			  || s.type == C.SPACE || s.type == C.GRACE)
 			 && (!s.prev || s.time > s.prev.time + s.prev.dur)) {
 				s2 = {
 					type: C.SM,

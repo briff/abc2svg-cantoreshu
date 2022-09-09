@@ -1462,15 +1462,6 @@ function new_bar() {
 	if (!curvoice.sym_restart)
 		curvoice.sym_restart = s
 
-	// if space before the bar, insert a marker
-	if (s.prev && s.prev.type == C.SPACE) {
-		s2 = {
-			type: C.SM,
-			dur: 0
-		}
-		sym_link(s2)
-	}
-
 	sym_link(s);
 
 	s.st = curvoice.st			/* original staff */
@@ -2886,16 +2877,6 @@ function parse_music_line() {
 				if (grace) {
 					syntax(1, "'{' in grace note")
 					break
-				}
-
-				// if first symbol of a voice overlay,
-				// add a sequence marker
-				if (vover && vover.time == curvoice.time) {
-					s = {
-						type: C.SM,
-						dur: 0
-					}
-					sym_link(s)
 				}
 				last_note_sav = curvoice.last_note;
 				curvoice.last_note = null;
