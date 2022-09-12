@@ -370,6 +370,11 @@ function set_scale(s) {
 // -- set the staff output buffer and scale when delayed output
 function set_dscale(st, no_scale) {
 	if (output) {
+		if (stv_g.started) {	// close the previous sequence
+			stv_g.started = false
+			glout()
+			output += "</g>\n"
+		}
 		if (stv_g.st < 0) {
 			staff_tb[0].output += output
 		} else if (stv_g.scale == 1) {
