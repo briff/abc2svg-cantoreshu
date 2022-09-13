@@ -536,7 +536,7 @@ abc2svg.play_next = function(po) {
 		// if no %%MIDI, set 'grand acoustic piano' as the instrument
 		i = po.v_c[s2.v]
 		if (i == undefined)
-			po.v_c[s2.v] = i = s2.v
+			po.v_c[s2.v] = i = s2.v < 9 ? s2.v : s2.v + 1
 		if (po.c_i[i] == undefined)
 			po.c_i[i] = 0	// piano
 
