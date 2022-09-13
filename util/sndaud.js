@@ -289,6 +289,37 @@ function Audio5(i_conf) {
 			})
 	} // load_instr()
 
+	// define the instruments of the tune
+	function def_instr(s, f) {
+	    var	i
+
+		for ( ; s; s = s.ts_next) {
+			if (s.subtype == "midiprog") {
+				po.v_c[s.v] = s.chn
+				i = s.instr
+				if (i == undefined)
+					continue
+				po.c_i[s.chn] = i
+			} else if (!s.dur) {
+			    	continue
+			} else {
+				i = po.v_c[s.v]
+				if (i == undefined)
+					po.v_c[s.v] = i = s.v < 9 ? s.v : s.v + 1
+				if (po.c_i[i] == undefined)
+					po.c_i[i] = 0		// piano
+				i = po.c_i[i]
+			}
+
+			if (!params[i]) {
+				params[i] = []	// instrument being loaded
+				f(i)		// sf2_create or load_instr
+			}
+		}
+		if (!w_instr || --w_instr == 0)	// all resources are there
+			play_start()
+	} // def_instr()
+
 	// load the needed instruments
 	function load_res(s) {
 	    if (abc2svg.sf2
@@ -339,49 +370,14 @@ function Audio5(i_conf) {
 			return
 		}
 
-		// create the instruments
-		while (s) {
-			if (s.p_v.chn == undefined) {	// if no %%MIDI
-				s.p_v.chn = 0
-				if (!params[0]) {
-					params[0] = []	// instrument being loaded
-					sf2_create(0)
-				}
-			}
-		    if (s.subtype == "midiprog") {
-		    var	i = s.instr
-			if (!params[i]) {
-				params[i] = []	// instrument being loaded
-				sf2_create(i)
-			}
-		    }
-			s = s.ts_next
-		}
-		play_start()
-	   } else {
+		// create the instruments and start playing
+		def_instr(s, sf2_create)
+	    } else {
 
 	// (case instruments as base64 encoded js file,
 	//  one file per instrument)
 		w_instr++			// play lock
-		while (s) {
-			if (s.p_v.chn == undefined) {	// if no %%MIDI
-				s.p_v.chn = 0
-				if (!params[0]) {
-					params[0] = []	// instrument being loaded
-					load_instr(0)
-				}
-			}
-		    if (s.subtype == "midiprog") {
-		    var	i = s.instr
-			if (!params[i]) {
-				params[i] = []	// instrument being loaded
-				load_instr(i)
-			}
-		    }
-			s = s.ts_next
-		}
-		if (--w_instr == 0)		// all resources were there already
-			play_start()
+		def_instr(s, load_instr)
 	    }
 	} // load_res()
 
