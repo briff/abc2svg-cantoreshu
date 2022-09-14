@@ -305,9 +305,9 @@ function Audio5(i_conf) {
 			} else {
 				i = po.v_c[s.v]
 				if (i == undefined)
-					po.v_c[s.v] = i = s.v < 9 ? s.v : s.v + 1
+					po.v_c[s.v] = i = s.p_v.chn
 				if (po.c_i[i] == undefined)
-					po.c_i[i] = 0		// piano
+					po.c_i[i] = s.p_v.instr
 				i = po.c_i[i]
 			}
 
@@ -410,7 +410,7 @@ function Audio5(i_conf) {
 		c = po.v_c[s.v],
 		instr = po.c_i[c],
 		k = key | 0,
-		parm = po.params[instr][k],
+		parm = params[instr][k],
 		o = po.ac.createBufferSource(),
 		v = s.p_v.vol == undefined ? 1 : s.p_v.vol	// volume (gain)
 
@@ -546,7 +546,6 @@ function Audio5(i_conf) {
 			// audio specific
 			ac: ac,
 			gain: gain,
-			params: params,
 			rates: rates
 		}
 		load_res(i_start)

@@ -127,10 +127,12 @@ function ToAudio() {
 
 		for (v = 0; v < voice_tb.length; v++) {
 			p_v = voice_tb[v]
-			ii = p_v.instr || 0		// instrument
+			ii = p_v.instr
+			if (ii == undefined)
+				p_v.instr = ii = 0	// default: acoustic grand piano
 			c = p_v.chn			// channel
 			if (c == undefined)
-				c = p_v.v < 9 ? p_v.v : p_v.v + 1
+				p_v.chn = c = p_v.v < 9 ? p_v.v : p_v.v + 1
 			else if (c == 9)		// percussion
 				ii = (ii & ~0x7f) | 16384
 
@@ -279,7 +281,15 @@ function ToAudio() {
 	// if some MIDI stuff, load the associated module
 	if (cfmt.chord) {
 		if (!abc2svg.chord) {
-			abc2svg.pwait = true	// don't start playing now
+			abc2svg.pwait = {
+				f: abcplay.play
+			}
+			abcplay.play = function(istart, i_iend, a_e) {
+				abc2svg.pwait.is = istart
+				abc2svg.pwait.ie = i_iend
+				abc2svg.pwait.ae = a_e
+				abc2svg.pwait.w = 1 //true
+			}
 
 			abc2svg.loadjs("chord-1.js",
 					function(){	// ok
@@ -292,6 +302,14 @@ function ToAudio() {
 			return
 		}
 		abc2svg.chord(first, voice_tb, cfmt)
+		if (abc2svg.pwait) {
+			abcplay.play = abc2svg.pwait.f
+			if (abc2svg.pwait.w)
+				abcplay.play(abc2svg.pwait.is,
+						abc2svg.pwait.ie,
+						abc2svg.pwait.ae)
+			abc2svg.pwait = null
+		}
 	}
 
 	if (s.parts)
