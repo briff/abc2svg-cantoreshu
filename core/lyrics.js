@@ -204,7 +204,7 @@ function get_lyrics(text, cont) {
 				case '\t':
 					break
 				case '~':
-					word += '&#x00a0;';	// (&nbsp;)
+					word += ' '
 					i++
 					continue
 				case '-':
@@ -317,7 +317,7 @@ function ly_set(s) {
 			if (p[0] == '(') {
 				sz = spw
 			} else {
-				j = p.indexOf('&#x00a0;');	// (&nbsp;)
+				j = p.indexOf(' ')
 				set_font(ly.font)
 				if (j > 0)
 					sz = strwh(p.slice(0, j))[0]
