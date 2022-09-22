@@ -79,13 +79,12 @@ gen util/abcemb2.js > abcemb2-$MAJOR.js
 gen util/abcweb.js > abcweb-$MAJOR.js
 gen util/abcweb1.js > abcweb1-$MAJOR.js
 gen util/abcweb.js > abcweb2-$MAJOR.js
-gen util/chord.js > chord-$MAJOR.js
 gen util/json.js > json-$MAJOR.js
 gen util/toaudio.js > toaudio-$MAJOR.js
 gen util/play.js util/toaudio.js util/toaudio5.js\
  util/sf2-parser.js util/tomidi5.js util/follow.js > play-$MAJOR.js
-gen util/play.js util/sndgen.js util/sndaud.js\
- util/sf2-parser.js util/sndmid.js util/follow.js > snd-$MAJOR.js
+gen util/play.js util/sndgen.js util/sndaud.js util/sf2-parser.js\
+ util/sndmid.js util/follow.js util/chord.js > snd-$MAJOR.js
 
 sed "s+@MAJOR@+$MAJOR+" editor/edit.xhtml > edit-$MAJOR.xhtml
 sed "s+@MAJOR@+$MAJOR+" editor/abckbd.js > abckbd-$MAJOR.js

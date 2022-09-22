@@ -133,13 +133,12 @@ build abcemb2-$MAJOR.js: jscu util/abcemb2.js
 build abcweb-$MAJOR.js: jscu util/abcweb.js
 build abcweb1-$MAJOR.js: jscu util/abcweb1.js
 build abcweb2-$MAJOR.js: jscu util/abcweb.js
-build chord-$MAJOR.js: jscu util/chord.js
 build json-$MAJOR.js: jscu util/json.js
 build toaudio-$MAJOR.js: jscu util/toaudio.js
 build play-$MAJOR.js: jscu util/play.js util/toaudio.js $
  util/toaudio5.js util/sf2-parser.js util/tomidi5.js util/follow.js
-build snd-$MAJOR.js: jscu util/play.js util/sndgen.js $
- util/sndaud.js util/sf2-parser.js util/sndmid.js util/follow.js
+build snd-$MAJOR.js: jscu util/play.js util/sndgen.js util/sndaud.js $
+ util/sf2-parser.js util/sndmid.js util/follow.js util/chord.js
 
 build edit-$MAJOR.xhtml: cpm editor/edit.xhtml
 build abckbd-$MAJOR.js: edit editor/abckbd.js
@@ -148,7 +147,7 @@ build edit-$MAJOR.js: edit editor/edit.js
 
 build all: phony abc2svg-$MAJOR.js abcdoc-$MAJOR.js $
  abcemb-$MAJOR.js abcemb1-$MAJOR.js abcemb2-$MAJOR.js $
- abcweb-$MAJOR.js abcweb1-$MAJOR.js abcweb2-$MAJOR.js chord-$MAJOR.js $
+ abcweb-$MAJOR.js abcweb1-$MAJOR.js abcweb2-$MAJOR.js $
  json-$MAJOR.js toaudio-$MAJOR.js snd-$MAJOR.js play-$MAJOR.js psvg-$MAJOR.js $
  ambitus-$MAJOR.js break-$MAJOR.js capo-$MAJOR.js $
  chordnames-$MAJOR.js clair-$MAJOR.js clip-$MAJOR.js $
