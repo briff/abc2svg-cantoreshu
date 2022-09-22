@@ -357,22 +357,21 @@ function setsel(idx, v) {
 }
 
 function do_scroll(elt) {
-    var	r,
-	dr = elt_ref.target.parentElement,		// <div> 'dright'
-	drh = dr.getBoundingClientRect().height,	// height of the view
-	ty = elt_ref.target.getBoundingClientRect().y	// y offset of <div> 'target'
+    var	x, y,
+	b = elt.getBoundingClientRect(),		// box of the rectangle
+	d = elt_ref.target.parentElement,		// <div> 'dright'
+	r = elt.parentNode.getBoundingClientRect()	// box of the svg container
 
-		elt = elt.parentNode;
-	r = elt.getBoundingClientRect()
-// upper -> top, lower -> bottom
-	if (r.y < 0)				// y offset of the svg container
-		dr.scrollTo(0, r.y - ty)
-	else if (r.y + r.height > drh)
-		dr.scrollTo(0, r.y - ty - drh + r.height)
-// in the middle
-//	if (r.y < 0				// y offset of the svg container
-//	 || r.y + r.height > drh)
-//		dr.scrollTo(0, r.y - ty - drh / 2 + r.height)
+	if (b.x + b.width < d.offsetLeft)		// x offset of the rectangle
+		x = b.x - d.offsetLeft + d.scrollLeft
+	else if (b.x > d.offsetLeft + d.clientWidth)
+		x = b.x + b.width - d.offsetLeft - d.clientWidth + d.scrollLeft
+	if (r.y + r.height < d.offsetTop)		// y offset of the svg container
+		y = r.y - d.offsetTop + d.scrollTop
+	else if (r.y > d.offsetTop + d.clientHeight)
+		y = r.y + r.height - d.offsetTop - d.clientHeight + d.scrollTop
+	if (x != undefined || y != undefined)
+		d.scrollTo(x || d.scrollLeft, y || d.scrollTop)
 }
 
 // source text selection callback
