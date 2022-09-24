@@ -1945,7 +1945,7 @@ function pit2mid(pit, acc) {
 function do_ties(s, tie_s) {
     var	i, m, not1, not2, mid, g,
 	nt = 0,
-	se = (tie_s.time + tie_s.dur) == curvoice.time	// 'start-end' flag
+	se = !Math.round(tie_s.time + tie_s.dur - curvoice.time) // 'start-end' flag
 
 	for (m = 0; m <= s.nhd; m++) {
 		not2 = s.notes[m]
