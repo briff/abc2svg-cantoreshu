@@ -357,21 +357,28 @@ function setsel(idx, v) {
 }
 
 function do_scroll(elt) {
-    var	x, y,
+    var	x = 0,
+	y = 0,
 	b = elt.getBoundingClientRect(),		// box of the rectangle
 	d = elt_ref.target.parentElement,		// <div> 'dright'
 	r = elt.parentNode.getBoundingClientRect()	// box of the svg container
 
-	if (b.x + b.width < d.offsetLeft)		// x offset of the rectangle
-		x = b.x - d.offsetLeft + d.scrollLeft
-	else if (b.x > d.offsetLeft + d.clientWidth)
-		x = b.x + b.width - d.offsetLeft - d.clientWidth + d.scrollLeft
-	if (r.y + r.height < d.offsetTop)		// y offset of the svg container
-		y = r.y - d.offsetTop + d.scrollTop
-	else if (r.y > d.offsetTop + d.clientHeight)
-		y = r.y + r.height - d.offsetTop - d.clientHeight + d.scrollTop
-	if (x != undefined || y != undefined)
-		d.scrollTo(x || d.scrollLeft, y || d.scrollTop)
+	if (b.x < d.offsetLeft		// x offset of the rectangle
+	 || b.x + b.width > d.offsetLeft + d.clientWidth * .7)
+		x = b.x - d.offsetLeft - d.clientWidth * .3
+
+	if (r.y < d.offsetTop		// y offset of the svg container
+	 || r.y + r.height > d.offsetTop + d.clientHeight * .7)
+		y = r.y - d.offsetTop - d.clientHeight * .3
+
+	if (x || y)
+//		d.scrollBy(x, y)
+		d.scrollBy({
+			top: y,
+			left: x,
+			behavior: (x < 0 || y) ? 'instant' : 'smooth'
+				// 'smooth', 'instant' or 'auto' (default)
+		})
 }
 
 // source text selection callback
