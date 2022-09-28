@@ -1972,6 +1972,21 @@ function get_key(parm) {
 		parse.state = 3			// in tune body
 	}
 
+	// install the new key in the voice
+	curvoice.okey = clone(s_key)
+	s_key.k_old_sf = curvoice.ckey.k_sf	// memorize the key changes
+	if (!s_key.k_b40)
+		s_key.k_b40 = curvoice.ckey.k_b40
+	curvoice.ckey = s_key
+	if (is_voice_sig()) {
+		s_key.fmt = cfmt
+		curvoice.key = clone(s_key)
+		if (s_key.k_none)
+			curvoice.key.k_sf = 0
+	} else {
+		sym_link(s_key)			// (don't move the key)
+	}
+
 	set_kv_parm(a)
 
 	if (!curvoice.ckey.k_bagpipe && !curvoice.ckey.k_drum
@@ -1996,7 +2011,6 @@ function get_key(parm) {
 		s_key.k_sf = curvoice.okey.k_sf
 	}
 
-	curvoice.okey = clone(s_key)
 	if (transp != undefined) {
 		curvoice.vtransp = transp;
 		s_key.k_transp = transp
@@ -2004,25 +2018,9 @@ function get_key(parm) {
 	if (sndtran != undefined)
 		s_key.k_sndtran = sndtran
 
-	s_key.k_old_sf = curvoice.ckey.k_sf;	// memorize the key changes
-
 	if ((!s_key.k_a_acc || !s_key.k_a_acc.length)
 	 && !s_key.k_sf && !s_key.k_old_sf)
 		s_key.invis = true		// don't display the key signature
-
-	if (!s_key.k_b40)
-		s_key.k_b40 = curvoice.ckey.k_b40
-
-	curvoice.ckey = s_key
-
-	if (is_voice_sig()) {
-		s_key.fmt = cfmt
-		curvoice.key = clone(s_key)
-		if (s_key.k_none)
-			curvoice.key.k_sf = 0
-	} else {
-		sym_link(s_key)			// (don't move the key)
-	}
 }
 
 // get / create a new voice
