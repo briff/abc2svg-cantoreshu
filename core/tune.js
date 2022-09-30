@@ -889,7 +889,7 @@ function pit_adj() {
 					continue
 				case C.KEY:
 					if (sk)
-						s.k_sf = sk.k_sf
+						s.k_old_sf = sk.k_sf
 					key_transp(s)
 					if (!s.k_transp) // end of transposition
 						break
@@ -1475,7 +1475,6 @@ function key_transp(sk) {
 	sk.k_b40 = n_b40
 
    var sf = abc2svg.b40sf[n_b40]
-	sk.k_old_sf = sk.k_sf
 	sk.k_sf = sf
 	sk.k_map = abc2svg.keys[sf + 7]	// map of the notes with accidentals
 }
@@ -1974,17 +1973,18 @@ function get_key(parm) {
 
 	set_kv_parm(a)
 
-	if (!curvoice.ckey.k_bagpipe && !curvoice.ckey.k_drum
-	 && (cfmt.transp != undefined
-	  || curvoice.transp != undefined
-	  || curvoice.shift != undefined))
-	    transp = (cfmt.transp || 0) +
-		(curvoice.transp || 0) +
-		(curvoice.shift || 0)
-	if (curvoice.sndtran != undefined
-	 || curvoice.sndsh != undefined)
-		sndtran = (curvoice.sndtran || 0) +
-			(curvoice.sndsh || 0)
+	if (!curvoice.ckey.k_bagpipe && !curvoice.ckey.k_drum) {
+		if (cfmt.transp != undefined
+		  || curvoice.transp != undefined
+		  || curvoice.shift != undefined)
+		    transp = (cfmt.transp || 0) +
+			(curvoice.transp || 0) +
+			(curvoice.shift || 0)
+		if (curvoice.sndtran != undefined
+		 || curvoice.sndsh != undefined)
+			sndtran = (curvoice.sndtran || 0) +
+				(curvoice.sndsh || 0)
+	}
 
 	if (s_key.k_sf == undefined) {
 		if (!s_key.k_a_acc
@@ -2190,6 +2190,10 @@ function get_voice(parm) {
 	}
 
 	set_kv_parm(a)
+	if (curvoice.new_transp || curvoice.new) {
+		set_transp()
+		curvoice.new_transp = 0
+	}
 
 	v = curvoice.v
 	if (curvoice.new) {			// if new voice
@@ -2209,7 +2213,6 @@ function get_voice(parm) {
 			curvoice.ignore = 1	// voice not declared in %%staves
 			return
 		}
-		set_transp()
 	}
 
 	if (!curvoice.filtered

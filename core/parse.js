@@ -511,7 +511,7 @@ Abc.prototype.set_vp = function(a) {
 		}
 	}
 	if (tr_p)
-		set_transp()
+		curvoice.new_transp = 1
 } // set_vp()
 
 // set the K: / V: parameters
