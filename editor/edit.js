@@ -294,7 +294,9 @@ function gotoabc(l, c) {
 	selsrc(0)
 	if (l >= 0)
 		c = soffs(l, Number(c))
-	s.focus();
+	s.blur()			// unfocus
+	s.setSelectionRange(c, c)	// just set the cursor (no range)
+	s.focus()			// should scroll the textarea
 	s.setSelectionRange(c, syms[c] ? syms[c].iend : c + 1)
 }
 
@@ -323,14 +325,12 @@ function selsvg(evt) {
 
 	// highlight the clicked element or clear the selection start
 	s = elt_ref.source;
-	if (cl && cl.substr(0, 4) == 'abcr') {
-		v = Number(cl.slice(6, -1));
-		s.setSelectionRange(v, syms[v].iend)
-	} else {
-		s.setSelectionRange(0, 0)
-	}
 	s.blur();
+	v = cl && cl.substr(0, 4) == 'abcr' ? Number(cl.slice(6, -1)) : 0
+	s.setSelectionRange(v, v)	// just a cursor
 	s.focus()
+	if (v)
+		s.setSelectionRange(v, syms[v].iend)
 }
 
 // set/clear a selection
