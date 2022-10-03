@@ -1,6 +1,6 @@
 // combine.js - module to add a combine chord line
 //
-// Copyright (C) 2018-2021 Jean-Francois Moine
+// Copyright (C) 2018-2022 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -27,6 +27,7 @@ abc2svg.combine = {
     // function called at start of the generation when multi-voices
     comb_v: function() {
     var	C = abc2svg.C,
+	abc = this,
 	sy
 
     // check if voice combine may occur
@@ -68,15 +69,20 @@ abc2svg.combine = {
 
     // combine two notes
     function combine_notes(s, s2) {
-    var	nhd, type, m;
+    var	nhd, type, m, not
 
-	for (m = 0; m <= s2.nhd; m++)	// change the container of the notes
-		s2.notes[m].s = s
-	Array.prototype.push.apply(s.notes, s2.notes);
+	// put the notes of the 2nd voice into the 1st one
+	for (m = 0; m <= s2.nhd; m++) {
+		not = abc.clone(s2.notes[m])
+		not.s = s		// change the container of the note
+		not.noplay = true	// and don't play it
+		s.notes.push(not)
+	}
 	s.nhd = nhd = s.notes.length - 1;
 	s.notes.sort(abc2svg.pitcmp)	// sort the notes by pitch
 
 	if (s.combine >= 3) {		// remove unison heads
+//fixme: KO for playback
 		for (m = nhd; m > 0; m--) {
 			if (s.notes[m].pit == s.notes[m - 1].pit
 			 && s.notes[m].acc == s.notes[m - 1].acc)
@@ -106,8 +112,8 @@ function do_combine(s) {
 		// there may be more voices
 		if (!s.in_tuplet
 		 && s2.combine != undefined && s2.combine >= 0
-		 && may_combine.call(this, s2))
-			do_combine.call(this, s2)
+		 && may_combine(s2))
+			do_combine(s2)
 
 		nhd = s.nhd;
 		nhd2 = s2.nhd
@@ -121,7 +127,7 @@ function do_combine(s) {
 			 && !s2.invis)
 				delete s.invis
 		} else {
-			combine_notes.call(this, s, s2)
+			combine_notes(s, s2)
 			if (s2.ti1)
 				s.ti1 = true
 			if (s2.ti2)
@@ -145,19 +151,19 @@ function do_combine(s) {
 				Array.prototype.push.apply(s.a_dd, s2.a_dd)
 		}
 
-		this.unlksym(s2)			// remove the next symbol
+		s2.play = s2.invis = true	// don't display, but play
 } // do_combine()
 
 	// code of comb_v()
 	var s, s2, g, i, r
 
-	for (s = this.get_tsfirst(); s; s = s.ts_next) {
+	for (s = abc.get_tsfirst(); s; s = s.ts_next) {
 		switch (s.type) {
 		case C.REST:
 			if (s.combine == undefined || s.combine < 0)
 				continue
-			if (may_combine.call(this, s))
-				do_combine.call(this, s)
+			if (may_combine(s))
+				do_combine(s)
 			continue
 		case C.STAVES:
 			sy = s.sy
@@ -175,7 +181,7 @@ function do_combine(s) {
 
 		s2 = s
 		while (1) {
-			if (!may_combine.call(this, s2)) {
+			if (!may_combine(s2)) {
 				s2 = null
 				break
 			}
@@ -190,7 +196,7 @@ function do_combine(s) {
 			continue
 		s2 = s
 		while (1) {
-			do_combine.call(this, s2)
+			do_combine(s2)
 //fixme: may have rests in beam
 			if (s2.beam_end)
 				break

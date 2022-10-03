@@ -660,7 +660,8 @@ abc2svg.play_next = function(po) {
 				d = g.pdur / po.conf.speed
 				for (m = 0; m <= g.nhd; m++) {
 					note = g.notes[m]
-					po.note_run(po, g,
+					if (!note.noplay)
+					    po.note_run(po, g,
 						note.midi,
 						t + g.ptim - s.ptim,
 //fixme: there may be a tie...
@@ -674,7 +675,8 @@ abc2svg.play_next = function(po) {
 		    if (s.type == C.NOTE) {
 			for (m = 0; m <= s.nhd; m++) {
 				note = s.notes[m]
-				if (note.tie_s)		// end of tie
+				if (note.tie_s		// end of tie
+				 || note.noplay)	// (%%voicecombine)
 					continue	// already generated
 				po.note_run(po, s,
 					note.midi,
