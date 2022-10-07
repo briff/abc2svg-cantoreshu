@@ -804,11 +804,10 @@ Abc.prototype.set_width = function(s) {
 				if (s2.second
 				 || s2.clef_small)
 					break
-				wlw += 8
-				break
+				// fall thru
 			case C.KEY:
-/*			case C.METER:	*/
-				wlw += 4
+			case C.METER:
+				wlw += 3
 				break
 			}
 		}
@@ -900,21 +899,19 @@ Abc.prototype.set_width = function(s) {
 			return
 		}
 		s.wl = s.clef_small ? 11 : 12
-		s.wr = s.clef_small ? 10 : 12
+		s.wr = s.clef_small ? 8 : 13
 		if (s.prev && s.prev.type == C.STBRK) {
 			s.wl -= 6
 			delete s.next.clef_small
 		}
-		if (s.next && s.next.type == C.BAR)
-			s.wr -= 4
 		return
 	case C.KEY:
 		if (s.invis) {				// if no accidental
 			s.wl = s.wr = 0			// no width
 			return
 		}
-		s.wl = 3;
-		esp = 4
+		s.wl = 0
+		esp = 3
 		if (!s.k_a_acc) {
 			n1 = s.k_sf			/* new key sig */
 			if (s.k_old_sf && (s.fmt.cancelkey || n1 == 0))
@@ -948,11 +945,17 @@ Abc.prototype.set_width = function(s) {
 				last_acc = acc.acc
 			}
 		}
+		if (!n1)
+			break			// no width
 		s.wr = 5.5 * n1 + esp
+		if (s.prev && !s.prev.bar_type)
+			s.wl += 2
 		return
 	case C.METER:
-		wlw = 0;
 		s.x_meter = []
+		if (!s.a_meter.length)
+			break				// no width
+		wlw = 0
 		for (i = 0; i < s.a_meter.length; i++) {
 			meter = s.a_meter[i]
 			switch (meter.top[0]) {
@@ -991,8 +994,8 @@ Abc.prototype.set_width = function(s) {
 				wlw += w
 			}
 		}
-		s.wl = 0;
-		s.wr = wlw + 6
+		s.wl = 1
+		s.wr = wlw + 7
 		return
 	case C.MREST:
 		s.wl = 6;
@@ -1252,7 +1255,8 @@ function add_end_bar(s) {
 
 /* -- set the width and space of all symbols -- */
 // this function is called once for the whole tune
-function set_allsymwidth() {
+// and once more for each new music line
+function set_allsymwidth(first) {
     var	val, st, s_chs, stup, itup,
 	s = tsfirst,
 	s2 = s,
@@ -1277,7 +1281,8 @@ function set_allsymwidth() {
 			val = xl[st] + wr[st] + s.wl
 			if (val > maxx)
 				maxx = val
-			if (s.dur && s.dur != s.notes[0].dur)	// if in tuplet
+			if (s.dur && s.dur != s.notes[0].dur	// if in tuplet
+			 && s.ts_next)			// (not new music line)
 				itup = 1
 			s = s.ts_next
 		} while (s && !s.seqst);
@@ -1329,7 +1334,7 @@ function set_allsymwidth() {
 
 	// let the chord symbols at the same offset
 	// and adjust the spacing due to the lyrics
-	if (s_chs)
+	if (first && s_chs)
 		set_w_chs(s_chs)
 }
 
@@ -3422,40 +3427,13 @@ function init_music_line() {
 
 	s = tsfirst
 	s.seqst = true
-	shlp = 0
-	while (1) {
-		s2 = s;
-		shl = shrmx = 0
-		do {
-			self.set_width(s);
-			shr = s.wl + shlp
-			if (shr > shrmx)
-				shrmx = shr;
-			if (s.wr > shl)
-				shl = s.wr	// left width for next symbol
-			s = s.ts_next
-		} while (s != last_s && !s.seqst);
-		s2.shrink = shrmx;
-		s2.space = 0
-		if (s == last_s)
-			break
-		shlp = shl
-	}
 
-	// update the spacing before the first old time sequence
-	shr = 0
-	if (last_s.type == C.BAR && s2.type == C.CLEF)
-		shl += 4		// (see set_width)
-	do {
-		self.set_width(s)
-		if (s.a_ly)
-			ly_set(s)
-		if (shr < s.wl)
-			shr = s.wl;
-		s = s.ts_next
-	} while (s && !s.seqst);
-	last_s.shrink = shl + shr
-	last_s.space = 0
+	for (s = last_s; s.ts_next && !s.ts_next.seqst; s = s.ts_next)
+		;
+	s2 = s.ts_next
+	s.ts_next = null
+	set_allsymwidth()
+	s.ts_next = s2
 } // init_music_line()
 
 // check if the tune ends on a measure bar
@@ -5137,7 +5115,7 @@ Abc.prototype.output_music = function() {
 		set_rest_offset();	/* set the vertical offset of rests */
 		set_overlap();		/* shift the notes on voice overlap */
 	}
-	set_allsymwidth();		/* set the width of all symbols */
+	set_allsymwidth(1)		// set the width of all symbols
 
 	lsh = get_lshift()
 
