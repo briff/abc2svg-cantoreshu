@@ -1031,38 +1031,27 @@ Abc.prototype.do_pscom = function(text) {
 		}
 		switch (param) {
 		case "start":
-			multicol = {
-				maxy: 0,
-				lmarg: cfmt.leftmargin,
-				rmarg: cfmt.rightmargin
-			}
+			self.block_gen({
+				subtype: "mc_start"
+			})
 			break
 		case "new":
 			if (!multicol) {
 				syntax(1, "%%multicol new without start")
 				break
 			}
-			if (posy > multicol.maxy)
-				multicol.maxy = posy;
-			cfmt.leftmargin = multicol.lmarg;
-			cfmt.rightmargin = multicol.rmarg;
-			img.chg = true;
-			set_page();
-			posy = 0
+			self.block_gen({
+				subtype: "mc_new"
+			})
 			break
 		case "end":
 			if (!multicol) {
 				syntax(1, "%%multicol end without start")
 				break
 			}
-			if (posy < multicol.maxy)
-				posy = multicol.maxy;
-			cfmt.leftmargin = multicol.lmarg;
-			cfmt.rightmargin = multicol.rmarg;
-			multicol = undefined;
-			blk_flush();
-			img.chg = true;
-			set_page()
+			self.block_gen({
+				subtype: "mc_end"
+			})
 			break
 		default:
 			syntax(1, "Unknown keyword '$1' in %%multicol", param)

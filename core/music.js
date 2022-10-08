@@ -2061,7 +2061,7 @@ function set_lines(	s,		/* first symbol */
 
 /* -- cut the tune into music lines -- */
 function cut_tune(lwidth, lsh) {
-    var	s2, i,
+    var	s2, i, mc,
 	pg_sav = {			// save the page parameters
 		leftmargin: cfmt.leftmargin,
 		rightmargin: cfmt.rightmargin,
@@ -2110,9 +2110,20 @@ function cut_tune(lwidth, lsh) {
 			case "pagewidth":
 			case "scale":
 			case "staffwidth":
-				self.set_format(s.subtype, s.param)
 				if (!s.soln)
-					continue
+					self.set_format(s.subtype, s.param)
+				break
+			case "mc_start":
+				mc = {
+					lm: cfmt.leftmargin,
+					rm: cfmt.rightmargin
+				}
+				break
+			case "mc_new":
+			case "mc_end":
+				cfmt.leftmargin = mc.lm
+				cfmt.rightmargin = mc.rm
+				img.chg = 1 //true
 				break
 			}
 		}
@@ -4588,36 +4599,30 @@ Abc.prototype.block_gen = function(s) {
 		multicol = {
 			posy: posy,
 			maxy: posy,
-			lmarg: cfmt.leftmargin,
-			rmarg: cfmt.rightmargin
+			lm: cfmt.leftmargin,
+			rm: cfmt.rightmargin,
+			w: cfmt.pagewidth,
+			sc: cfmt.scale
 		}
 		break
 	case "mc_new":			// multicol new
-		if (!multicol) {
-			error(1, s, "%%multicol new without start")
-			break
-		}
 		if (posy > multicol.maxy)
 			multicol.maxy = posy
-		cfmt.leftmargin = multicol.lmarg
-		cfmt.rightmargin = multicol.rmarg
-		img.chg = true
-		set_page()
+		cfmt.leftmargin = multicol.lm
+		cfmt.rightmargin = multicol.rm
+		cfmt.pagewidth = multicol.w
+		cfmt.scale = multicol.sc
 		posy = multicol.posy
 		break
 	case "mc_end":			// multicol end
-		if (!multicol) {
-			error(1, s, "%%multicol new without start")
-			break
-		}
 		if (posy < multicol.maxy)
 			posy = multicol.maxy
-		cfmt.leftmargin = multicol.lmarg
-		cfmt.rightmargin = multicol.rmarg
+		cfmt.leftmargin = multicol.lm
+		cfmt.rightmargin = multicol.rm
+		cfmt.pagewidth = multicol.w
+		cfmt.scale = multicol.sc
 		multicol = undefined
 		blk_flush()
-		img.chg = true
-		set_page()
 		break
 	case "ml":
 		blk_flush()
@@ -5159,11 +5164,11 @@ Abc.prototype.output_music = function() {
 				vskip(line_height)
 			if (indent)
 				posx -= indent;
-			while (blocks.length)
-				self.block_gen(blocks.shift())
 		}
 
 		blk_flush()
+		while (blocks.length)
+			self.block_gen(blocks.shift())
 		if (tslast)
 			tslast.ts_next.ts_prev = tslast
 		if (!tsnext)
