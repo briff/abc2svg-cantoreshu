@@ -39,7 +39,9 @@ user.anno_stop = function(type, start, stop, x, y, w, h) {
 }
 
 	playconf.onnote = function(i, on) {
-	    var	b, x, y, i, e, elts
+	    var	b, i, e, elts,
+		x = 0,
+		y = 0
 
 		if (abc2svg.mu)			// if many tunes with same offsets
 			elts = abc2svg.mu.d.getElementsByClassName('_' + i + '_')
@@ -56,22 +58,22 @@ user.anno_stop = function(type, start, stop, x, y, w, h) {
 				b = e.getBoundingClientRect()
 
 				// normal
-				if (b.top < 0)
-					y = window.scrollY + b.top -
-							window.innerHeight / 2
-				else if (b.bottom > window.innerHeight)
-					y = window.scrollY + b.bottom +
-							window.innerHeight / 2
+				if (b.top < 0
+				 || b.bottom > window.innerHeight * .8)
+					y = b.top - window.innerHeight * .3
 
 				// single line
-				if (b.left < 0)
-					x = window.scrollX + b.left -
-							window.innerWidth / 2
-				else if (b.right > window.innerWidth)
-					x = window.scrollX + b.right +
-							window.innerWidth / 2
-				if (x != undefined || y != undefined)
-					window.scrollTo(x || 0, y || 0)
+				if (b.left < 0
+				 || b.right > window.innerWidth * .8)
+					x = b.left - window.innerWidth * .3
+				if (x || y)
+					window.scrollBy({
+						top: y,
+						left: x,
+						behavior: (x < 0 || y)
+								? 'instant'
+								: 'smooth'
+					})
 			}
 	}
 } // follow()
