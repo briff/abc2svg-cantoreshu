@@ -55,7 +55,7 @@ abc2svg.jianpu = {
 
 // adjust some symbols before the generation
   output_music: function(of) {
-    var	p_v,
+    var	p_v, v,
 	C = abc2svg.C,
 	abc = this,
 	cur_sy = abc.get_cur_sy(),
@@ -115,6 +115,7 @@ abc2svg.jianpu = {
 			n = 1
 		else
 			n = 2
+		s.notes[0].dur =
 		s.dur = s.dur_orig = C.BLEN / 4
 		delete s.fmr
 		while (--n >= 0) {
@@ -130,6 +131,7 @@ abc2svg.jianpu = {
 				multi: 0,
 				nhd: 0,
 				notes: [{
+					dur: s.dur,
 					pit: s.notes[0].pit,
 					jn: jn
 				}],
