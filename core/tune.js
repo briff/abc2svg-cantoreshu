@@ -1786,6 +1786,7 @@ function get_vover(type) {
 			return
 		}
 		if (curvoice.time != vover.p_voice.time) {
+		    if (!curvoice.ignore)
 			syntax(1, "Wrong duration in voice overlay");
 			if (curvoice.time > vover.p_voice.time)
 				vover.p_voice.time = curvoice.time
@@ -1843,6 +1844,7 @@ function get_vover(type) {
 		p_voice2.time = 0;
 		p_voice2.second = true;
 		v2 = p_voice2.v;
+	    if (par_sy.voices[curvoice.v]) {	// if voice in the staff system
 		par_sy.voices[v2] = {
 			st: curvoice.st,
 			second: true
@@ -1854,6 +1856,7 @@ function get_vover(type) {
 				par_sy.voices[v].range++
 		}
 		par_sy.voices[v2].range = range + 1
+	    }
 	}
 	p_voice2.ulen = curvoice.ulen
 	p_voice2.dur_fact = curvoice.dur_fact
@@ -1861,6 +1864,9 @@ function get_vover(type) {
 
 	if (!vover) {				/* first '&' in a measure */
 		time = p_voice2.time
+	    if (curvoice.ignore)
+		s = null
+	    else
 		for (s = curvoice.last_sym; /*s*/; s = s.prev) {
 			if (s.type == C.BAR
 			 || s.time <= time)	/* (if start of tune) */
@@ -1869,7 +1875,7 @@ function get_vover(type) {
 		vover = {
 			bar: (s && s.bar_type) ? s.bar_type : '|',
 			p_voice: curvoice,
-			time: s.time
+			time: s ? s.time : curvoice.time
 		}
 	} else {
 		if (curvoice != vover.p_voice
