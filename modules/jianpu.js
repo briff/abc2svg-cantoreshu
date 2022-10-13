@@ -40,19 +40,6 @@ abc2svg.jianpu = {
 //	return 0
   }, // calc_beam()
 
-// change %%staves and %%score
-  do_pscom: function(of, p) {
-	if (this.cfmt().jianpu) {		// all jianpu
-		switch (p.match(/\w+/)[0]) {
-		case 'staves':
-		case 'score':
-			p = p.replace(/\(|\)/g, '')
-			break
-		}
-	}
-	of(p)
-  },
-
 // adjust some symbols before the generation
   output_music: function(of) {
     var	p_v, v,
@@ -60,6 +47,43 @@ abc2svg.jianpu = {
 	abc = this,
 	cur_sy = abc.get_cur_sy(),
 	voice_tb = abc.get_voice_tb()
+
+	// handle the overlay voices
+	function ov_def(v) {
+	    var	s1, tim,
+		s = p_v.sym
+
+		while (s) {
+			s1 = s.ts_prev
+			if (!s.invis
+			 && s1.v != v
+			 && s1.st == s.st	// overlay start
+			 && s1.time == s.time) {
+				//add deco '{' sur s1
+				while (1) {
+					s.dy = -14
+					tim = s.time
+					if (s.dur)
+						tim += s.dur
+					s = s.next
+					if (!s
+					 || s.invis
+					 || s.time != tim)	// time skip
+						break
+				}
+				while (1) {
+					s1.dy = 14
+					if (!s1.next || s1.next.time >= tim)
+						break
+					s1 = s1.next
+				}
+				// add deco '}' sur s1
+			}
+			if (!s)
+				break
+			s = s.next
+		}
+	} // ov_def()
 
 	// output the key and time signatures
 	function set_head() {
@@ -216,7 +240,8 @@ abc2svg.jianpu = {
 		}
 
 		// change the long notes
-		if (s.dur >= C.BLEN / 2)
+		if (s.dur >= C.BLEN / 2
+		 && !s.invis)
 			slice(s)
 
 		// replace the staccato dot
@@ -270,7 +295,8 @@ abc2svg.jianpu = {
 				if (s.notes[0].jn)
 					continue
 				s.notes[0].jn = 0
-				if (s.dur >= C.BLEN / 2)
+				if (s.dur >= C.BLEN / 2
+				 && !s.invis)
 					slice(s)
 				continue
 			case C.NOTE:			// change the notes
@@ -290,15 +316,18 @@ abc2svg.jianpu = {
 
 	for (v = 0; v < voice_tb.length; v++) {
 		p_v = voice_tb[v]
-		if (p_v.jianpu)
+		if (p_v.jianpu) {
 			set_sym(p_v)
+			if (v > 0 && voice_tb[v - 1].st == p_v.st)
+				ov_def(v)
+		}
 	}
 
 	of()
   }, // output_music()
 
   draw_symbols: function(of, p_voice) {
-    var	s, s2, nl,
+    var	s, s2, nl, y,
 	C = abc2svg.C,
 	abc = this,
 	dot = "\ue1e7",
@@ -388,6 +417,9 @@ abc2svg.jianpu = {
 		x = s.x,
 		y = staff_tb[s.st].y
 
+		if (s.dy)
+			y += s.dy			// voice overlay
+
 		if (s.grace) {
 			out_svg('<g transform="translate(')
 			out_sxsy(x, ',', y + 15)	// (font height)
@@ -446,6 +478,8 @@ abc2svg.jianpu = {
 				if (s.beam_end)
 					break
 			}
+			if (s.dy)
+				y += s.dy
 			draw_dur(s2, s2.x, y, s, 1, nl)
 			break
 		}
@@ -545,7 +579,6 @@ abc2svg.jianpu = {
 
     set_hooks: function(abc) {
 	abc.calculate_beam = abc2svg.jianpu.calc_beam.bind(abc, abc.calculate_beam)
-	abc.do_pscom = abc2svg.jianpu.do_pscom.bind(abc, abc.do_pscom)
 	abc.draw_symbols = abc2svg.jianpu.draw_symbols.bind(abc, abc.draw_symbols)
 	abc.output_music = abc2svg.jianpu.output_music.bind(abc, abc.output_music)
 	abc.set_format = abc2svg.jianpu.set_fmt.bind(abc, abc.set_format)
