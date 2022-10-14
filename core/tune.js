@@ -363,6 +363,7 @@ function voice_adj(sys_chg) {
 			// add a sequence marker before it
 			if (((!w_tb[s.type] && s.type != C.STAVES)
 			  || s.type == C.SPACE || s.type == C.GRACE)
+			 && s.time			// not at start of tune
 			 && (!s.prev || s.time > s.prev.time + s.prev.dur)) {
 				s2 = {
 					type: C.SM,
