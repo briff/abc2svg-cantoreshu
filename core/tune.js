@@ -778,10 +778,10 @@ function note_transp(s, sk, note) {
 		if (!an)
 			an = 3
 	} else if (sk.k_none) {			// if no key
-		if (acc_same_pitch(s, note.pit)) // and accidental from previous notes
+		if (acc_same_pitch(s, note.midi)) // and accidental from previous notes
 			return			// no change
 	} else if (sk.k_a_acc) {		// if accidental list
-		if (acc_same_pitch(s, note.pit)) // and accidental from previous notes
+		if (acc_same_pitch(s, note.midi)) // and accidental from previous notes
 			return			// no change
 		ak = sk.k_map[(note.pit + 19) % 7]
 		if (ak)
@@ -1471,9 +1471,9 @@ function key_transp(sk) {
 
 /*
  * for transpose purpose, check if a pitch is already in the measure or
- * if it is tied from a previous note, and return the associated accidental
+ * if it is tied from a previous note
  */
-function acc_same_pitch(s, pit) {
+function acc_same_pitch(s, midi) {
     var	i, a,
 	time = s.time
 
@@ -1481,7 +1481,7 @@ function acc_same_pitch(s, pit) {
 		switch (s.type) {
 		case C.BAR:
 			if (s.time < time)
-				return //undefined // no same pitch
+				return //undefined // not the same pitch
 			while (1) {
 				s = s.prev
 				if (!s)
@@ -1495,19 +1495,14 @@ function acc_same_pitch(s, pit) {
 					return //undefined
 			}
 			for (i = 0; i <= s.nhd; i++) {
-				if (s.notes[i].pit == pit
-				 && s.notes[i].tie_ty) {
-					a = s.notes[i].acc
-					return a == undefined || a == 3
-				}
+				if (s.notes[i].midi == midi)
+					return 1 //true
 			}
 			return //undefined
 		case C.NOTE:
 			for (i = 0; i <= s.nhd; i++) {
-				if (s.notes[i].pit == pit) {
-					a = s.notes[i].acc
-					return a == undefined || a == 3
-				}
+				if (s.notes[i].midi == midi)
+					return 1 //true
 			}
 			break
 		}
