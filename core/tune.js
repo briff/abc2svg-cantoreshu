@@ -769,6 +769,20 @@ function note_transp(s, sk, note) {
 	}
 
 	an = abc2svg.b40a(b40)			// new accidental
+
+	if (sk.k_none) {			// if atonal music
+		b40 %= 40
+		if (an == -2 || an == 2		// __ or ^^
+		 || b40 == 1 || b40 == 38 || b40 == 18 || b40 == 15) {
+						// _C, ^B, _F, ^E
+			if (an < 0)
+				note.pit--
+			else
+				note.pit++
+			an = 0
+		}
+	}
+
 	if (a) {
 		if (sk.k_a_acc) {		// if accidental list
 			ak = sk.k_map[(note.pit + 19) % 7]
