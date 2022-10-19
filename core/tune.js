@@ -775,10 +775,7 @@ function note_transp(s, sk, note) {
 		if (an == -2 || an == 2		// __ or ^^
 		 || b40 == 1 || b40 == 38 || b40 == 18 || b40 == 15) {
 						// _C, ^B, _F, ^E
-			if (an < 0)
-				note.pit--
-			else
-				note.pit++
+			note.pit += (an > 0) ? 1 : -1
 			an = 0
 		}
 	}
@@ -789,14 +786,22 @@ function note_transp(s, sk, note) {
 			if (ak == an)
 				an = 0		// accidental in the key
 		}
-		if (!an)
-			an = 3
+		if (!an) {
+			n = same_pit(s, note)
+			an = (n && n.acc) ? 3 : 0
+		}
 	} else if (sk.k_none) {			// if no key
-		if (acc_same_pitch(s, note.midi)) // and accidental from previous notes
-			return			// no change
+		n = same_pit(s, note)
+		if (n) {
+			if (n.acc == an)
+				return
+			if (!an)
+				an = 3
+		}
 	} else if (sk.k_a_acc) {		// if accidental list
-		if (acc_same_pitch(s, note.midi)) // and accidental from previous notes
-			return			// no change
+		n = same_pit(s, note)
+		if (n && n.acc == an)
+			return
 		ak = sk.k_map[(note.pit + 19) % 7]
 		if (ak)
 			an = 3		// natural
@@ -1484,18 +1489,20 @@ function key_transp(sk) {
 }
 
 /*
- * for transpose purpose, check if a pitch is already in the measure or
- * if it is tied from a previous note
+ * for transpose purpose, search a note that has the same pitch
+ * as a note in the measure or tied from a previous note
  */
-function acc_same_pitch(s, midi) {
-    var	i, a,
+function same_pit(s, note) {
+    var	i,
+	pit = note.pit,
 	time = s.time
 
+//fixme: other voice?
 	for (s = s.prev; s; s = s.prev) {
 		switch (s.type) {
 		case C.BAR:
 			if (s.time < time)
-				return //undefined // not the same pitch
+				return //undefined
 			while (1) {
 				s = s.prev
 				if (!s)
@@ -1509,14 +1516,15 @@ function acc_same_pitch(s, midi) {
 					return //undefined
 			}
 			for (i = 0; i <= s.nhd; i++) {
-				if (s.notes[i].midi == midi)
-					return 1 //true
+				if (s.notes[i].pit == pit
+				 && s.notes[i].tie_ty)
+					return s.notes[i]
 			}
 			return //undefined
 		case C.NOTE:
 			for (i = 0; i <= s.nhd; i++) {
-				if (s.notes[i].midi == midi)
-					return 1 //true
+				if (s.notes[i].pit == pit)
+					return s.notes[i]
 			}
 			break
 		}
