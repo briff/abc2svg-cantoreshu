@@ -151,7 +151,7 @@ function ToAudio() {
 				}
 			}
 
-			if ((ii & ~0x7f) == 16384) // if bank 128 (percussion)
+			if ((ii & ~0x7f) == 16384)	// if bank 128 (percussion)
 				c = 9			// channel '10'
 			chn[v] = c
 			instr[c] = ii
@@ -330,7 +330,7 @@ function ToAudio() {
 					break
 				b_typ |= 2
 				s.rep_p = rst		// :| to |:
-				if (rsk && rst == rsk[0])
+				if (rst == rsk[0])
 					s.rep_v = rsk	// to know the number of variants
 			}
 
@@ -548,6 +548,7 @@ abc2svg.play_next = function(po) {
 			if (s.rbstop == 2)
 				break
 		}
+		po.repv = 1		// repeat end
 		return s
 	} // var_end()
 
@@ -589,7 +590,7 @@ abc2svg.play_next = function(po) {
 				po.repv++
 				if (!po.repn	// if repeat a first time
 				 && (!s.rep_v	// and no variant (anymore)
-				  || po.repv < s.rep_v.length)) {
+				  || po.repv <= s.rep_v.length)) {
 					s2 = s.rep_p	// left repeat
 					po.repn = true
 				} else {
@@ -602,20 +603,25 @@ abc2svg.play_next = function(po) {
 				s2 = s.rep_s[po.repv]	// next variant
 				if (s2) {
 					po.repn = false
+					if (s2 == s)
+						s2 = null
 				} else {		// end of variants
 					s2 = var_end(s)
 					if (s2 == po.s_end)
 						break
 				}
 			}
-			if (s.bar_type.slice(-1) == ':') // left repeat
+			if (s.bar_type.slice(-1) == ':' // left repeat
+			 && s.bar_type[0] != ':')	// but not ::
 				po.repv = 1
 
 			if (s2) {			// if skip
 				po.stim += (s.ptim - s2.ptim) / po.conf.speed
 				s = s2
-				while (!s.dur)
+				while (s && !s.dur)
 					s = s.ts_next
+				if (!s)
+					break		// no ending variant
 				t = po.stim + s.ptim / po.conf.speed
 				break
 			}
