@@ -524,6 +524,8 @@ function endplay(repv) {
 //	2: Loop
 //	3: Continue
 function play_tune(what) {
+	if (!abc)
+		return			// no generation yet
     var	i, si, ei, elt,
 	C = abc2svg.C,
 	tunes = abc.tunes
