@@ -1817,7 +1817,7 @@ function draw_deco_staff() {
 				p_voice.bar_start.rbstart = 1
 			}
 			if (s1.text)
-				xy_str(x + 4, y2 - gene.curfont.size - 2,
+				xy_str(x + 4, y2 - gene.curfont.size,
 					s1.text);
 			xypath(x, y2);
 			if (s1.rbstart == 2)
@@ -1932,7 +1932,7 @@ function draw_measnb() {
 			y = y_get(st, true, 0, 20)
 			if (y < staff_tb[st].topbar + 14)
 				y = staff_tb[st].topbar + 14;
-			xy_str(0, y, bar_num.toString());
+			xy_str(0, y - gene.curfont.size * .2, bar_num.toString())
 			y_set(st, true, 0, 20, y + gene.curfont.size + 2)
 		} else if (bar_num % cfmt.measurenb == 0) {
 			for ( ; ; s = s.ts_next) {
@@ -1959,7 +1959,7 @@ function draw_measnb() {
 			if (y < staff_tb[st].topbar + 6)
 				y = staff_tb[st].topbar + 6;
 			y += 2 + gene.curfont.pad
-			xy_str(x, y, bar_num.toString())
+			xy_str(x, y - gene.curfont.size * .2, bar_num.toString())
 			y += gene.curfont.size + gene.curfont.pad
 			y_set(st, true, x, w, y);
 //			s.ymx = y
@@ -2012,7 +2012,7 @@ function draw_measnb() {
 			}
 		}
 		y += 2 + gene.curfont.pad
-		xy_str(x, y, bar_num.toString())
+		xy_str(x, y - gene.curfont.size * .2, bar_num.toString())
 		y += gene.curfont.size + gene.curfont.pad
 		y_set(st, true, x, w, y);
 //		s.ymx = y
@@ -2121,7 +2121,7 @@ function draw_partempo(st, top) {
 				s2.ymx = s2.ymn + h
 				anno_start(s2)
 			}
-			xy_str(s2.x, 2 - ht, s2.text)
+			xy_str(s2.x, 2 - ht - gene.curfont.size * .2, s2.text)
 			anno_stop(s2)
 		}
 	}

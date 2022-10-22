@@ -855,7 +855,7 @@ function out_tubrn(x, y, dx, dy, up, str) {
 	h = up ? -3 : 3;
 
 	set_font("tuplet")
-	xy_str(x + dx / 2, y + dy / 2 - gene.curfont.size * .5 + 2,
+	xy_str(x + dx / 2, y + dy / 2 - gene.curfont.size * .1,
 		str, 'c')
 		dx /= stv_g.scale
 	if (!up)

@@ -163,7 +163,7 @@ var strwh = typeof document != "undefined" ?
 			w += el.clientWidth
 //fixme: bad result if space(s) at end of string
 			if (font.size > h)
-				h = font.size;
+				h = el.clientHeight
 
 			el.style.font = style_font(font).slice(5);
 			i += 2;
@@ -322,7 +322,7 @@ function xy_str(x, y,
 		output += '" lengthAdjust="' + gene.deffont.wadj +
 			'" textLength="' + wh[0].toFixed(1);
 	output += '" x="';
-	out_sxsy(x, '" y="', y + wh[1] * .2)	// a bit upper for the descent
+	out_sxsy(x, '" y="', y)
 	switch (action) {
 	case 'c':
 		x -= wh[0] / 2;
@@ -457,9 +457,10 @@ function write_text(text, action) {
 					str = text.slice(j)
 				else
 					str = text.slice(j, i)
-				vskip(strwh(str)[1]  * cfmt.lineskipfac
+				ww = strwh(str)
+				vskip(ww[1] * cfmt.lineskipfac
 					+ font.pad * 2)
-				xy_str(x, font.pad, str, action)
+				xy_str(x, font.pad + ww[1] * .2, str, action)
 				if (i < 0)
 					break
 			}
@@ -484,7 +485,8 @@ function write_text(text, action) {
 				w += ww[0]
 				if (w >= strlw) {
 					vskip(wh * cfmt.lineskipfac)
-					xy_str(0, 0, words.slice(k, j).join(' '),
+					xy_str(0, ww[1] * .2,
+						words.slice(k, j).join(' '),
 						action, strlw)
 					k = j;
 					w = ww[0]
@@ -495,7 +497,7 @@ function write_text(text, action) {
 			}
 			if (w != 0) {			// last line
 				vskip(wh * cfmt.lineskipfac)
-				xy_str(0, 0, words.slice(k).join(' '))
+				xy_str(0, ww[1] * .2, words.slice(k).join(' '))
 			}
 			vskip(parskip);
 			blk_flush()
