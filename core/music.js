@@ -1282,7 +1282,7 @@ function set_allsymwidth(first) {
 			if (val > maxx)
 				maxx = val
 			if (s.dur && s.dur != s.notes[0].dur	// if in tuplet
-			 && s.ts_next)			// (not new music line)
+			 && first)			// (first time only)
 				itup = 1
 			s = s.ts_next
 		} while (s && !s.seqst);
