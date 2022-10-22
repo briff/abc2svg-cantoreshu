@@ -481,7 +481,7 @@ function write_text(text, action) {
 			words = words.split(/\s+/);
 			w = k = wh = 0
 			for (j = 0; j < words.length; j++) {
-				ww = strwh(words[j] + ' ')
+				ww = strwh(words[j] + ' ')	// &nbsp;
 				w += ww[0]
 				if (w >= strlw) {
 					vskip(wh * cfmt.lineskipfac)
