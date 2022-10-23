@@ -547,10 +547,11 @@ function put_words(words) {
 				i++
 		}
 
+	    var	y = gene.curfont.size * .22		// descent
 		if (k != 0)
-			xy_str(x, 0, p.slice(0, k), 'r')
+			xy_str(x, y, p.slice(0, k), 'r')
 		if (i < p.length)
-			xy_str(x + 5, 0, p.slice(i), 'l')
+			xy_str(x + 5, y, p.slice(i), 'l')
 	} // put_wline()
 
 	set_font("words")
