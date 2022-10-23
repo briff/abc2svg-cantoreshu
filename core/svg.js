@@ -736,7 +736,7 @@ function out_hyph(x, y, w) {
 	out_XYAB('<path class="stroke" stroke-width="1.2"\n\
 	stroke-dasharray="5,A"\n\
 	d="mX YhB"/>\n',
-		x, y + 6,		// set the line a bit upper
+		x, y + 4,		// set the line a bit upper
 		Math.round((d - 5) / stv_g.scale), d * n + 5)
 }
 // stem [and flags]
@@ -880,7 +880,7 @@ function out_tubrn(x, y, dx, dy, up, str) {
 // underscore line
 function out_wln(x, y, w) {
 	out_XYAB('<path class="stroke" stroke-width="0.8" d="mX YhF"/>\n',
-		x, y + 3, w)
+		x, y + 1, w)
 }
 
 // decorations with string
