@@ -56,31 +56,34 @@ abc2svg.jianpu = {
 		while (s) {
 			s1 = s.ts_prev
 			if (!s.invis
+			 && s.dur
 			 && s1.v != v
 			 && s1.st == s.st	// overlay start
 			 && s1.time == s.time) {
-				//add deco '{' sur s1
-				while (1) {
-					s.dy = -14
-					tim = s.time
-					if (s.dur)
-						tim += s.dur
-					s = s.next
-					if (!s
-					 || s.invis
-					 || s.time != tim)	// time skip
+				while (1) {	// go back to the previous bar
+					if (!s1.prev
+					 || s1.prev.bar_type)
 						break
+					s1 = s1.prev
 				}
-				while (1) {
+				//add deco '{' on s1
+				while (!s1.bar_type) {
 					s1.dy = 14
-					if (!s1.next || s1.next.time >= tim)
-						break
+					s1.notes[0].pit = 30
 					s1 = s1.next
 				}
-				// add deco '}' sur s1
+				// add deco '}' on s1
+
+				while (1) {
+					s.dy = -14
+					s.notes[0].pit = 20
+					if (!s.next
+					 || s.next.bar_type
+					 || s.next.time >= s1.time)
+						break
+					s = s.next
+				}
 			}
-			if (!s)
-				break
 			s = s.next
 		}
 	} // ov_def()
