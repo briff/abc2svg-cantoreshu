@@ -234,6 +234,7 @@ function dom_loaded() {
 				+ '</script>\n'
 			re.lastIndex = ss		// new HTML start
 		}
+		out += src.slice(ss)		// copy the last HTML sequence
 		if (abc2svg.page && html)
 			out += '\
 <pre class="nop" style="background:#ff8080">\
