@@ -492,15 +492,7 @@ abc2svg.jianpu = {
 // set some parameters
     set_fmt: function(of, cmd, param) {
 	if (cmd == "jianpu") {
-	    var	p_v = this.get_curvoice()
-
-		if (!p_v)
-			this.cfmt().jianpu = 1		// all jianpu
 		this.set_v_param("jianpu", param)
-		this.set_v_param("staffsep", 20)
-		this.set_v_param("sysstaffsep", 14)
-		this.set_v_param("stafflines", "...")
-		this.set_v_param("tuplets",[0, 1, 0, 1]) // [auto, slur, number, above]
 		return
 	}
 	of(cmd, param)
@@ -547,7 +539,15 @@ abc2svg.jianpu = {
 
 	for (i = 0; i < a.length; i++) {
 		if (a[i] == "jianpu=") {
-			p_v.jianpu = a[++i]
+			p_v.jianpu = this.get_bool(a[++i])
+			if (p_v.jianpu)
+				this.set_vp([
+					"staffsep=", "20",
+					"sysstaffsep=", "14",
+					"stafflines=", "...",
+					"tuplets=", "0 1 0 1"
+						// [auto, slur, number, above]
+				])
 			break
 		}
 	}
