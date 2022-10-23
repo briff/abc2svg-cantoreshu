@@ -288,7 +288,7 @@ abc2svg.jianpu = {
 					font: abc.get_font("annotation"),
 					wh: [10, 10],
 					x: -5,
-					y: 30,
+					y: 26,
 					text: (s.k_mode + 1) + "=" +
 						(abc2svg.jianpu.k_tb[sf + 7 +
 							abc2svg.jianpu.cde2fcg[s.k_mode]])
