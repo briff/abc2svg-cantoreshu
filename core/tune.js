@@ -361,10 +361,12 @@ function voice_adj(sys_chg) {
 			// if the symbol has no sequence weight
 			// and if there a time skip,
 			// add a sequence marker before it
-			if (((!w_tb[s.type] && s.type != C.STAVES)
-			  || s.type == C.SPACE || s.type == C.GRACE)
+			if ((((!w_tb[s.type] && s.type != C.STAVES)
+			  || s.type == C.SPACE)
 			 && s.time			// not at start of tune
-			 && (!s.prev || s.time > s.prev.time + s.prev.dur)) {
+			 && (!s.prev || s.time > s.prev.time + s.prev.dur))
+			|| (s.type == C.GRACE		// n {gn} {gn} n
+			 && s.prev && s.prev.type == C.GRACE)) {
 				s2 = {
 					type: C.SM,
 					v: s.v,
