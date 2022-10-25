@@ -2138,16 +2138,16 @@ function cut_tune(lwidth, lsh) {
 			while (!s.seqst)
 				s = s.ts_prev
 		}
+		set_page()
+		lwidth = get_lwidth() - lsh[1] - ckw[0]
 		s2 = set_lines(s2, s, lwidth, indent)
 		if (!s2)
 			break
 
-//--fixme
-//		s = s2.ts_prev;		// don't miss an eoln
-		s = s2
+		s = s2.type == C.BLOCK
+			? s2.ts_prev		// don't miss a parameter
+			: s
 		indent = 0
-		set_page()
-		lwidth = get_lwidth() - lsh[1] - ckw[0]
 	}
 
 	// restore the page parameters at start of line
