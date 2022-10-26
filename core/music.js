@@ -4613,6 +4613,7 @@ Abc.prototype.block_gen = function(s) {
 		cfmt.pagewidth = multicol.w
 		cfmt.scale = multicol.sc
 		posy = multicol.posy
+		img.chg = 1 //true
 		break
 	case "mc_end":			// multicol end
 		if (posy < multicol.maxy)
@@ -4623,6 +4624,7 @@ Abc.prototype.block_gen = function(s) {
 		cfmt.scale = multicol.sc
 		multicol = undefined
 		blk_flush()
+		img.chg = 1 //true
 		break
 	case "ml":
 		blk_flush()
