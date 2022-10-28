@@ -2121,7 +2121,7 @@ function draw_partempo(st, top) {
 				s2.ymx = s2.ymn + h
 				anno_start(s2)
 			}
-			xy_str(s2.x, 2 - ht - gene.curfont.size * .2, s2.text)
+			xy_str(s2.x, 2 - ht + gene.curfont.size * .22, s2.text)
 			anno_stop(s2)
 		}
 	}
