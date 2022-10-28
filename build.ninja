@@ -90,7 +90,8 @@ build sf: sf | Scc1t2/
 build abc2svg-$MAJOR.js: jsc core/abc2svg.js core/deco.js core/draw.js $
  font.js core/format.js core/front.js core/music.js core/parse.js core/subs.js $
  core/svg.js core/tune.js core/lyrics.js core/gchord.js core/tail.js $
- core/modules.js | package.json
+ core/modules.js
+#| package.json
 build mei2svg-$MAJOR.js: jsc core/abc2svg.js core/deco.js core/draw.js $
  font.js core/format.js core/front.js core/music.js core/parse.js core/subs.js $
  core/svg.js core/tune.js core/lyrics.js core/gchord.js core/mei.js core/tail.js $
@@ -127,16 +128,16 @@ build temper-$MAJOR.js: jscu modules/temper.js
 build edit-$MAJOR.css: cp editor/edit.css
 
 build abcdoc-$MAJOR.js: jscu util/abcdoc.js
-build abcemb-$MAJOR.js: jscu util/abcemb.js
-build abcemb1-$MAJOR.js: jscu util/abcemb1.js
-build abcemb2-$MAJOR.js: jscu util/abcemb2.js
+#build abcemb-$MAJOR.js: jscu util/abcemb.js
+#build abcemb1-$MAJOR.js: jscu util/abcemb1.js
+#build abcemb2-$MAJOR.js: jscu util/abcemb2.js
 build abcweb-$MAJOR.js: jscu util/abcweb.js
 build abcweb1-$MAJOR.js: jscu util/abcweb1.js
-build abcweb2-$MAJOR.js: jscu util/abcweb.js
+#build abcweb2-$MAJOR.js: jscu util/abcweb.js
 build json-$MAJOR.js: jscu util/json.js
-build toaudio-$MAJOR.js: jscu util/toaudio.js
-build play-$MAJOR.js: jscu util/play.js util/toaudio.js $
- util/toaudio5.js util/sf2-parser.js util/tomidi5.js util/follow.js
+#build toaudio-$MAJOR.js: jscu util/toaudio.js
+#build play-$MAJOR.js: jscu util/play.js util/toaudio.js $
+# util/toaudio5.js util/sf2-parser.js util/tomidi5.js util/follow.js
 build snd-$MAJOR.js: jscu util/play.js util/sndgen.js util/sndaud.js $
  util/sf2-parser.js util/sndmid.js util/follow.js util/chord.js
 
@@ -146,33 +147,39 @@ build abckbd2-$MAJOR.js: edit editor/abckbd2.js
 build edit-$MAJOR.js: edit editor/edit.js
 
 build all: phony abc2svg-$MAJOR.js abcdoc-$MAJOR.js $
- abcemb-$MAJOR.js abcemb1-$MAJOR.js abcemb2-$MAJOR.js $
  abcweb-$MAJOR.js abcweb1-$MAJOR.js abcweb2-$MAJOR.js $
- json-$MAJOR.js toaudio-$MAJOR.js snd-$MAJOR.js play-$MAJOR.js psvg-$MAJOR.js $
+ snd-$MAJOR.js psvg-$MAJOR.js $
  ambitus-$MAJOR.js break-$MAJOR.js capo-$MAJOR.js $
  chordnames-$MAJOR.js clair-$MAJOR.js clip-$MAJOR.js $
  combine-$MAJOR.js diag-$MAJOR.js equalbars-$MAJOR.js gamelan-$MAJOR.js $
  grid-$MAJOR.js grid2-$MAJOR.js grid3-$MAJOR.js jianpu-$MAJOR.js $
  jazzchord-$MAJOR.js  mdnn-$MAJOR.js MIDI-$MAJOR.js $
- nns-$MAJOR.js page-$MAJOR.js pedline-$MAJOR.js perc-$MAJOR.js $
+ nns-$MAJOR.js page-$MAJOR.js pedline-$MAJOR.js perc-$MAJOR.js psvg-$MAJOR.js $
  roman-$MAJOR.js soloffs-$MAJOR.js sth-$MAJOR.js strtab-$MAJOR.js $
  temper-$MAJOR.js edit-$MAJOR.css edit-$MAJOR.js edit-$MAJOR.xhtml $
- abckbd-$MAJOR.js abckbd2-$MAJOR.js follow-$MAJOR.js
+ abckbd-$MAJOR.js abckbd2-$MAJOR.js
 # not mei2svg-$MAJOR.js
 
 default all
 
-# npm/fossil new release
+# fossil new release
 rule version
-  command = npm version $out;$
-	tag=`ag -Q '"version"' package.json|cut -d'"' -f4`;$
-	fossil commit -m "New release v$$tag" -tag v$$tag;$
-	$tool -v;$
-	echo 'do "npm publish --otp <authy_code>"'
+  command = v=`fossil tag list|tail -1`;$
+	if [ $out=patch ]; then $
+		v=`echo $$v|awk -F. -v OFS=. '{$$3 += 1; print}'`;$
+	else $
+		v=`echo $$v|awk -F. -v OFS=. '{$$2 += 1; $$3=0; print}'`;$
+	fi;$
+	fossil commit -m "New release $$v" -tag $$v
 build minor: version
 build patch: version
 
-# temporary
-rule nul
-  command = touch $out
-build follow-$MAJOR.js: nul
+# generate a tarball and a .zip of the runable scripts (bin)
+rule dist_bin
+  command = v=`fossil tag list|tail -1`;$
+   ln -s . abc2svg-$$v;$
+   sed -e "s#^#abc2svg-$$v/#" dist_bin | pax -wj -x tar -f abc2svg.tar.bz2;$
+   sed -e "s#^#abc2svg-$$v/#" dist_bin | zip abc2svg.zip -@;$
+   rm abc2svg-$$v
+
+build dist_bin: dist_bin | abc2svg-1.js
