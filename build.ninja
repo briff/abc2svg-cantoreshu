@@ -21,9 +21,8 @@ rule font
 
 rule jsc
   command = if [ -e .fslckout ] && command -v fossil >/dev/null 2>&1; then $
-	v=`fossil tag list|tail -1`;$
 	c=`fossil info | grep checkout:`;$
-	v="$${v}-$$(echo $$c | cut -d' ' -f2 | cut -c1-10)";$
+	v="$$(echo $$c | cut -d' ' -f2 | cut -c1-10)";$
 	d=`echo $$c | cut -d' ' -f3`;$
 	v="abc2svg.version=\"$$v\";abc2svg.vdate=\"$$d\"";$
    else $
