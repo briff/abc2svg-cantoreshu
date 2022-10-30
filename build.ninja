@@ -135,7 +135,7 @@ build abckbd2-$MAJOR.js: edit editor/abckbd2.js
 build edit-$MAJOR.js: edit editor/edit.js
 
 build all: phony abc2svg-$MAJOR.js abcdoc-$MAJOR.js $
- abcweb-$MAJOR.js abcweb1-$MAJOR.js abcweb2-$MAJOR.js $
+ abcweb-$MAJOR.js abcweb1-$MAJOR.js $
  snd-$MAJOR.js psvg-$MAJOR.js $
  ambitus-$MAJOR.js break-$MAJOR.js capo-$MAJOR.js $
  chordnames-$MAJOR.js clair-$MAJOR.js clip-$MAJOR.js $
