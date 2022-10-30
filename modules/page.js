@@ -29,6 +29,10 @@ abc2svg.page = {
     var page = this.page
 	if (page && page.in_page)
 		abc2svg.page.close_page(page)
+	if (abc2svg.page.user_out) {
+		user.img_out = abc2svg.page.user_out
+		abc2svg.page.user_out = null
+	}
 	of()
     }, // abc_end()
 
@@ -389,10 +393,14 @@ abc2svg.page = {
 			this.syntax(1, this.errs.bad_val, '%%' + cmd)
 			return
 		}
+		if (!user.img_out || !abc2svg.abc_end)
+			v = 0
 		cfmt.pageheight = v
+		if (!v)
+			return
 
 		// if first definition, install the hook
-		if (!page && user.img_out && abc2svg.abc_end) {
+		if (!page || !abc2svg.page.user_out) {
 			this.page = page = {
 				abc: this,
 				topmargin: 38,	// 1cm
