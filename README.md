@@ -44,7 +44,7 @@ by right clicking on one of the bookmarklets below and selecting
 copy url. Then, paste this code into the URL of your new bookmark
 in your library.
 
-To use a abc2svg bookmarklet, first load an ABC file into your
+To use a abc2svg bookmarklet, first, load an ABC file into your
 browser either from a web site of from a file on your system.
 Once you see the textual abc code, click on the bookmarklet
 that you created. After a slight delay depending upon the
@@ -205,6 +205,14 @@ prefer to install and run it from your own system.
 
 There are many ways to install abc2svg:
 
+- [tarball][16] or [.zip archive][17] from my site  
+  Both files contain the scripts that are generated from the source
+  when a new abc2svg version is out. The scripts are ready
+  to be used from the root directory.
+
+[16]: http://moinejf.free.fr/abc2svg.tar.bz2 "tarball"
+[17]: http://moinejf.free.fr/abc2svg.zip "ZIP file"
+
 - [Guido Gonzato's page](http://abcplus.sourceforge.net/#abc2svg)  
   Guido maintains a ZIP archive of the abc2vg scripts after
   each release of a new version (many thanks, Guido!).  
@@ -215,7 +223,7 @@ There are many ways to install abc2svg:
 
 - tarball  
   From the timeline in the [chisel repository][13], you can get a tarball
-  any version of the abc2svg source and install it in your system.  
+  of any version of the abc2svg source and install it in your system.  
   The abc2svg scripts must then be built from the raw source files
   described in the section 'Build' below.  
   The disadvantage of this approach is that if you want
@@ -233,19 +241,13 @@ There are many ways to install abc2svg:
   `        fossil pull`  
   `        fossil update`  
   Building the scripts is done in the same way as with a tarball.  
-  The repository is presently over 34Mb.
+  The repository is presently over 50Mb.
 
   For those unfamiliar with [fossil][14], it is an integrated
   software management system similar to [git](https://git-scm.com/).  
   Chisel acts like a repository similar to [github](https://github.com/).
 
 [14]: https://fossil-scm.org/home/doc/trunk/www/index.wiki
-
-- npm  
-  The scripts may be installed from the `npm` repository by:  
-  `        npm install abc2svg`  
-  They are ready to run (web and shell with nodejs).
-  I upload a new npm version about once a month.
 
 Using bookmarklets with a local installation does not work directly
 because of a cross-domain security hole, but this is possible by running

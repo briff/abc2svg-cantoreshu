@@ -5,9 +5,6 @@
 
 MAJOR=1
 
-# ninja tool
-tool=samu
-
 rule cp
   command = cp $in $out
 
@@ -23,16 +20,14 @@ rule font
    echo "\") format(\"truetype\")'" >> font.js
 
 rule jsc
-  command = VERSION=`grep '"version"' package.json|cut -d'"' -f4`;$
-   if [ -e .fslckout ] && command -v fossil >/dev/null 2>&1; then $
+  command = if [ -e .fslckout ] && command -v fossil >/dev/null 2>&1; then $
+	v=`fossil tag list|tail -1`;$
 	c=`fossil info | grep checkout:`;$
-	t=`fossil info | grep tags: | awk '{print $$NF}'`;$
-	if [ "$${t#v}" != "$$VERSION" ]; then $
-		VERSION="$${VERSION}-$$(echo $$c | cut -d' ' -f2 | cut -c1-10)";$
-	fi;$
-	DATE=`echo $$c | cut -d' ' -f3`;$
+	v="$${v}-$$(echo $$c | cut -d' ' -f2 | cut -c1-10)";$
+	d=`echo $$c | cut -d' ' -f3`;$
+	v="abc2svg.version=\"$$v\";abc2svg.vdate=\"$$d\"";$
    else $
-	DATE=`date -r package.json '+%Y-%m-%d'`;$
+	v=`grep abc2svg.version $out`;$
    fi;$
    cp core/license $out;$
    if [ "x$$NOMIN" = "x" ]; then $
@@ -45,7 +40,7 @@ rule jsc
    else $
 	cat $in >> $out;$
    fi;$
-   echo "abc2svg.version=\"$$VERSION\";abc2svg.vdate=\"$$DATE\"" >> $out
+   echo $$v >> $out
 
 rule jscu
   command = cp core/license $out;$
@@ -128,16 +123,9 @@ build temper-$MAJOR.js: jscu modules/temper.js
 build edit-$MAJOR.css: cp editor/edit.css
 
 build abcdoc-$MAJOR.js: jscu util/abcdoc.js
-#build abcemb-$MAJOR.js: jscu util/abcemb.js
-#build abcemb1-$MAJOR.js: jscu util/abcemb1.js
-#build abcemb2-$MAJOR.js: jscu util/abcemb2.js
 build abcweb-$MAJOR.js: jscu util/abcweb.js
 build abcweb1-$MAJOR.js: jscu util/abcweb1.js
-#build abcweb2-$MAJOR.js: jscu util/abcweb.js
 build json-$MAJOR.js: jscu util/json.js
-#build toaudio-$MAJOR.js: jscu util/toaudio.js
-#build play-$MAJOR.js: jscu util/play.js util/toaudio.js $
-# util/toaudio5.js util/sf2-parser.js util/tomidi5.js util/follow.js
 build snd-$MAJOR.js: jscu util/play.js util/sndgen.js util/sndaud.js $
  util/sf2-parser.js util/sndmid.js util/follow.js util/chord.js
 
@@ -176,10 +164,11 @@ build patch: version
 
 # generate a tarball and a .zip of the runable scripts (bin)
 rule dist_bin
-  command = v=`fossil tag list|tail -1`;$
-   ln -s . abc2svg-$$v;$
-   sed -e "s#^#abc2svg-$$v/#" dist_bin | pax -wj -x tar -f abc2svg.tar.bz2;$
-   sed -e "s#^#abc2svg-$$v/#" dist_bin | zip abc2svg.zip -@;$
-   rm abc2svg-$$v
+  command = c=`fossil info | grep checkout:`;$
+   r="abc2svg-$$(echo $$c | cut -d' ' -f2 | cut -c1-10)";$
+   ln -s . $$r;$
+   sed -e "s#^#$$r/#" dist_bin | pax -wj -x tar -f abc2svg.tar.bz2;$
+   sed -e "s#^#$$r/#" dist_bin | zip abc2svg.zip -@;$
+   rm $$r
 
 build dist_bin: dist_bin | abc2svg-1.js

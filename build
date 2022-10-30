@@ -73,16 +73,8 @@ gen modules/temper.js > temper-$MAJOR.js
 cp editor/edit.css edit-$MAJOR.css
 
 gen util/abcdoc.js > abcdoc-$MAJOR.js
-gen util/abcemb.js > abcemb-$MAJOR.js
-gen util/abcemb1.js > abcemb1-$MAJOR.js
-gen util/abcemb2.js > abcemb2-$MAJOR.js
 gen util/abcweb.js > abcweb-$MAJOR.js
 gen util/abcweb1.js > abcweb1-$MAJOR.js
-gen util/abcweb.js > abcweb2-$MAJOR.js
-gen util/json.js > json-$MAJOR.js
-gen util/toaudio.js > toaudio-$MAJOR.js
-gen util/play.js util/toaudio.js util/toaudio5.js\
- util/sf2-parser.js util/tomidi5.js util/follow.js > play-$MAJOR.js
 gen util/play.js util/sndgen.js util/sndaud.js util/sf2-parser.js\
  util/sndmid.js util/follow.js util/chord.js > snd-$MAJOR.js
 
@@ -90,5 +82,3 @@ sed "s+@MAJOR@+$MAJOR+" editor/edit.xhtml > edit-$MAJOR.xhtml
 sed "s+@MAJOR@+$MAJOR+" editor/abckbd.js > abckbd-$MAJOR.js
 sed "s+@MAJOR@+$MAJOR+" editor/abckbd2.js > abckbd2-$MAJOR.js
 sed "s+@MAJOR@+$MAJOR+" editor/edit.js > edit-$MAJOR.js
-
-touch follow-$MAJOR.js
