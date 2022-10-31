@@ -1798,6 +1798,10 @@ function get_vover(type) {
 	 || type == ')')  {
 		if (!curvoice.last_note) {
 			syntax(1, errs.nonote_vo)
+			if (vover) {
+				curvoice = vover.p_voice
+				vover = null
+			}
 			return
 		}
 		curvoice.last_note.beam_end = true
@@ -1863,6 +1867,7 @@ function get_vover(type) {
 		curvoice.voice_down = p_voice2;
 		p_voice2.time = 0;
 		p_voice2.second = true;
+		p_voice2.last_note = null
 		v2 = p_voice2.v;
 	    if (par_sy.voices[curvoice.v]) {	// if voice in the staff system
 		par_sy.voices[v2] = {
