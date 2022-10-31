@@ -91,6 +91,7 @@ H "History: "',
 	partsspace: 8,
 //	pageheight: 29.7 * CM,
 	pagewidth: 21 * CM,
+	"propagate-accidentals": "o",		// octave
 	printmargin: 0,
 	rightmargin: 1.4 * CM,
 	rbmax: 4,
@@ -516,6 +517,7 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "abc-version":
 	case "bgcolor":
 	case "fgcolor":
+	case "propagate-accidentals":
 	case "titleformat":
 		cfmt[cmd] = param
 		break

@@ -2153,9 +2153,15 @@ Abc.prototype.new_note = function(grace, sls) {
 
 			// get the explicit or implicit accidental
 			if (i) {
-				curvoice.acc[apit] = i
+				if (cfmt["propagate-accidentals"][0] == 'p')
+					curvoice.acc[apit % 7] = i
+				else if (cfmt["propagate-accidentals"][0] != 'n')
+					curvoice.acc[apit] = i
 			} else {
-				i = curvoice.acc[apit]
+				if (cfmt["propagate-accidentals"][0] == 'p')
+					i = curvoice.acc[apit % 7]
+				else
+					i = curvoice.acc[apit]
 				if (!i && acc_tie)
 					i = acc_tie[apit]
 				if (!i)
