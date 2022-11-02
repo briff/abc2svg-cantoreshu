@@ -167,7 +167,8 @@ rule dist_bin
    r="abc2svg-$$(echo $$c | cut -d' ' -f2 | cut -c1-10)";$
    ln -s . $$r;$
    sed -e "s#^#$$r/#" dist_bin | pax -wj -x tar -f abc2svg.tar.bz2;$
-   sed -e "s#^#$$r/#" dist_bin | zip abc2svg.zip -@;$
+   rm -f abc2svg.zip;$
+   sed -e "s#^#$$r/#" dist_bin | zip -r abc2svg.zip -@;$
    rm $$r
 
 build dist_bin: dist_bin | abc2svg-1.js
