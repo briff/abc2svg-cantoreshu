@@ -579,14 +579,14 @@ abc2svg.strtab = {
 			if (!g.tab3)
 // SMuFL: -none-
 				g.tab3 = '<text id="tab3"\
- x="-4,-4,-4" y="-4,3,10"\
+ x="-2,-2,-2" y="-4,3,10"\
  style="font:bold 8px sans-serif">TAB</text>'
 		} else if (tab.length == 4) {
 			a.push('"tab4"')
 			if (!g.tab4)
 // SMuFL: \ue06e
 				g.tab4 = '<text id="tab4"\
- x="-4,-4,-4" y="-8,1,10"\
+ x="-3,-3,-3" y="-8,1,10"\
  style="font:bold 12px sans-serif">TAB</text>'
 		} else if (tab.length == 5) {
 			a.push('"tab5"')
