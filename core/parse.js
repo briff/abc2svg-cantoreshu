@@ -545,7 +545,7 @@ function memo_kv_parm(vid,	// voice ID (V:) / '*' (K:/V:*)
 // K: key signature
 // return the key and the voice/clef parameters
 function new_key(param) {
-    var	i, clef, key_end, c, tmp, exp,
+    var	i, clef, key_end, c, tmp,
 	sf = "FCGDAEB".indexOf(param[0]) - 1,
 	mode = 0,
 	s = {
@@ -553,48 +553,6 @@ function new_key(param) {
 		dur: 0
 	}
 
-	// set the accidentals when K: with modified accidentals
-	function set_k_acc(s, sf) {
-	    var i, j, n, nacc, p_acc,
-		accs = [],
-		pits = []
-
-		if (sf > 0) {
-			for (nacc = 0; nacc < sf; nacc++) {
-				accs[nacc] = 1;			// sharp
-				pits[nacc] = [26, 23, 27, 24, 21, 25, 22][nacc]
-			}
-		} else {
-			for (nacc = 0; nacc < -sf; nacc++) {
-				accs[nacc] = -1;		// flat
-				pits[nacc] = [22, 25, 21, 24, 20, 23, 26][nacc]
-			}
-		}
-		n = s.k_a_acc.length
-		for (i = 0; i < n; i++) {
-			p_acc = s.k_a_acc[i]
-			for (j = 0; j < nacc; j++) {
-				if (pits[j] == p_acc.pit) {
-					accs[j] = p_acc.acc
-					break
-				}
-			}
-			if (j == nacc) {
-				accs[j] = p_acc.acc;
-				pits[j] = p_acc.pit
-				nacc++
-			}
-		}
-		for (i = 0; i < nacc; i++) {
-			p_acc = s.k_a_acc[i]
-			if (!p_acc)
-				p_acc = s.k_a_acc[i] = {}
-			p_acc.acc = accs[i];
-			p_acc.pit = pits[i]
-		}
-	} // set_k_acc()
-
-	// code of new_key()
 	set_ref(s);
 
 	// tonic
@@ -699,7 +657,7 @@ function new_key(param) {
 			param = param.replace(/\w+\s*/, '')
 			if (!param)
 				syntax(1, "No accidental after 'exp'");
-			exp = true
+			s.exp = 1 //true
 		}
 		c = param[0]
 		if (c == '^' || c == '_' || c == '=') {
@@ -715,10 +673,8 @@ function new_key(param) {
 				while (c == ' ')
 					c = param[++tmp.index]
 			} while (c == '^' || c == '_' || c == '=');
-			if (!exp)
-				set_k_acc(s, sf)
 			param = param.slice(tmp.index)
-		} else if (exp && param.indexOf("none") == 0) {
+		} else if (s.exp && param.indexOf("none") == 0) {
 			sf = 0
 			param = param.replace(/\w+\s*/, '')
 		}
@@ -734,18 +690,16 @@ function new_key(param) {
 	s.k_sf = sf;
 
 	// set the map of the notes with accidentals
+	s.k_map = s.k_bagpipe && !sf
+		? abc2svg.keys[9]		// implicit F# and C#
+		: abc2svg.keys[sf + 7]
 	if (s.k_a_acc) {
-		s.k_map = []
+		s.k_map = new Int8Array(s.k_map)
 		i = s.k_a_acc.length
 		while (--i >= 0) {
 			note = s.k_a_acc[i]
 			s.k_map[(note.pit + 19) % 7] = note.acc
 		}
-	} else {
-		s.k_map = s.k_bagpipe && !sf
-			? abc2svg.keys[9]		// implicit F# and C#
-			: abc2svg.keys[sf + 7]
-
 	}
 	s.k_mode = mode
 
@@ -2166,6 +2120,25 @@ Abc.prototype.new_note = function(grace, sls) {
 					i = acc_tie[apit]
 				if (!i)
 					i = curvoice.ckey.k_map[apit % 7] || 0
+			}
+			if (i) {
+				switch (cfmt["writeout-accidentals"][1]) {
+				case 'd':			// added
+					s2 = curvoice.ckey
+					if (!s2.k_a_acc)
+						break
+					for (n = 0; n < s2.k_a_acc.length; n++) {
+						if ((s2.k_a_acc[n].pit - note.pit)
+								% 7 == 0) {
+							note.acc = i
+							break
+						}
+					}
+					break
+				case 'l':			// all
+					note.acc = i
+					break
+				}
 			}
 
 			// map

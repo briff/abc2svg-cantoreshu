@@ -883,8 +883,51 @@ Abc.prototype.draw_keysig = function(x, s) {
 		st = s.st,
 		staffb = staff_tb[st].y,
 		i, shift, p_seq,
-		clef_ix = s.k_y_clef
+		clef_ix = s.k_y_clef,
+	a_acc = s.k_a_acc			// accidental list [pit, acc]
 
+	// set the accidentals when K: with modified accidentals
+	function set_k_acc(a_acc, sf) {
+	    var i, j, n, nacc, p_acc,
+		accs = [],
+		pits = []
+
+		if (sf > 0) {
+			for (nacc = 0; nacc < sf; nacc++) {
+				accs[nacc] = 1			// sharp
+				pits[nacc] = [26, 23, 27, 24, 21, 25, 22][nacc]
+			}
+		} else {
+			for (nacc = 0; nacc < -sf; nacc++) {
+				accs[nacc] = -1			// flat
+				pits[nacc] = [22, 25, 21, 24, 20, 23, 26][nacc]
+			}
+		}
+		n = a_acc.length
+		for (i = 0; i < n; i++) {
+			p_acc = a_acc[i]
+			for (j = 0; j < nacc; j++) {
+				if (pits[j] == p_acc.pit) {
+					accs[j] = p_acc.acc
+					break
+				}
+			}
+			if (j == nacc) {
+				accs[j] = p_acc.acc
+				pits[j] = p_acc.pit
+				nacc++
+			}
+		}
+		for (i = 0; i < nacc; i++) {
+			p_acc = a_acc[i]
+			if (!p_acc)
+				p_acc = a_acc[i] = {}
+			p_acc.acc = accs[i]
+			p_acc.pit = pits[i]
+		}
+	} // set_k_acc()
+
+	// ---- draw_keysig ---
 	if (clef_ix & 1)
 		clef_ix += 7;
 	clef_ix /= 2
@@ -893,7 +936,10 @@ Abc.prototype.draw_keysig = function(x, s) {
 	clef_ix %= 7
 
 	/* normal accidentals */
-	if (!s.k_a_acc) {
+	if (a_acc && !s.exp)			// if added accidentals
+		set_k_acc(a_acc, s.k_sf)	// merge them into the key
+
+	if (!a_acc) {
 
 		/* put neutrals if 'accidental cancel' */
 		if (s.fmt.cancelkey || s.k_sf == 0) {
@@ -961,11 +1007,11 @@ Abc.prototype.draw_keysig = function(x, s) {
 				}
 			}
 		}
-	} else if (s.k_a_acc.length) {
+	} else if (a_acc.length) {
 
 		/* explicit accidentals */
 		var	acc,
-			last_acc = s.k_a_acc[0].acc,
+			last_acc = a_acc[0].acc,
 			last_shift = 100,
 			s2 = {
 				st: st,
@@ -973,8 +1019,8 @@ Abc.prototype.draw_keysig = function(x, s) {
 				notes: [{}]
 			}
 
-		for (i = 0; i < s.k_a_acc.length; i++) {
-			acc = s.k_a_acc[i];
+		for (i = 0; i < a_acc.length; i++) {
+			acc = a_acc[i];
 			shift = (s.k_y_clef	// clef shift
 				+ acc.pit - 18) * 3
 			while (shift < -3)		// let the accidentals inside the staff

@@ -912,7 +912,6 @@ Abc.prototype.set_width = function(s) {
 		}
 		s.wl = 0
 		esp = 3
-		if (!s.k_a_acc) {
 			n1 = s.k_sf			/* new key sig */
 			if (s.k_old_sf && (s.fmt.cancelkey || n1 == 0))
 				n2 = s.k_old_sf	/* old key */
@@ -931,8 +930,12 @@ Abc.prototype.set_width = function(s) {
 					n1 = -n1;
 				esp += 3	/* see extra space in draw_keysig() */
 			}
-		} else {
-			n1 = n2 = s.k_a_acc.length
+		if (s.k_a_acc) {
+			n2 = s.k_a_acc.length
+			if (s.exp)
+				n1 = n2			// no key signature
+			else
+				n1 += n2
 			if (n2)
 				last_acc = s.k_a_acc[0].acc
 			for (i = 1; i < n2; i++) {

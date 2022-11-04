@@ -131,7 +131,8 @@ H "History: "',
 //	voicescale: 1,
 	writefields: "CMOPQsTWw",
 	wordsfont: {name: txt_ff, size: 16},
-	wordsspace: 5
+	wordsspace: 5,
+	"writeout-accidentals": "n"
 }
 
 // parameters that are used in the symbols
@@ -519,6 +520,7 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "fgcolor":
 	case "propagate-accidentals":
 	case "titleformat":
+	case "writeout-accidentals":
 		cfmt[cmd] = param
 		break
 	case "beamslope":
