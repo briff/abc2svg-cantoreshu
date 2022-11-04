@@ -229,7 +229,9 @@ function abc_dump(tsfirst, voice_tb, info, cfmt) {
 	} // clef_dump()
 
 	function deco_dump(a_dd) {
-	    var	i, n, dd
+	    var	i, n, dd,
+		ln = ""
+
 //fixme: check if user deco
 		for (i = 0; i < a_dd.length; i++) {
 			dd = a_dd[i]
@@ -246,18 +248,21 @@ function abc_dump(tsfirst, voice_tb, info, cfmt) {
 					line += '!' + n + '!'
 			}
 		}
+		return ln
 	} // deco_dump
 
 	function dur_dump(dur, grace) {
 	    var	d = 0,
-		l = grace ? C.BLEN / 4 : ulen
+		l = grace ? C.BLEN / 4 : ulen,
+		ln = ""
+
 		if (dur == l)
-			return
+			return ""
 		while (1) {
 			if (dur % l == 0) {
 				dur /= l
 				if (dur != 1)
-					line += dur.toString()
+					ln += dur.toString()
 				break
 			}
 			dur *= 2
@@ -268,7 +273,8 @@ break
 			d++
 		}
 		if (d > 0)
-			line += "//////".slice(0, d)
+			ln += "//////".slice(0, d)
+		return ln
 	} // dur_dump()
 
     var	ft_w = ['', 'Thin', 'ExtraLight', 'Light', 'Regular',
@@ -388,7 +394,8 @@ break
 	} // header_dump()
 
 	function key_dump(s, clef) {
-	    var	ln
+	    var	ln, i, a
+
 		if (s.k_bagpipe) {
 			bagpipe = true			// for grace notes
 			ln = "K:H" + s.k_bagpipe
@@ -400,6 +407,14 @@ break
 			ln = "K:"
 			ln += k_tb[s.k_sf + 7 + mode_tb[s.k_mode][0]]
 			ln += mode_tb[s.k_mode][1]
+		}
+		a = s.k_a_acc				// accidental list
+		if (a) {
+			if (s.k_exp)
+				ln += ' exp'
+			ln += ' '
+			for (i = 0; i < a.length; i++)
+				ln += note_dump({}, a[i])
 		}
 
 		if (clef && clef.clef_type != 'a')
@@ -477,11 +492,13 @@ break
 	} // meter_dump()
 
 	function note_dump(s, note, tie_ch) {
-	    var	p, j, sl, s2, a, d
+	    var	p, j, sl, s2, a, d,
+		ln = ""
+
 		if (note.sls) {
 			for (j = 0; j < note.sls.length; j++) {
 				sl = note.sls[j];
-				slti_dump(sl.ty, '(');
+				ln += slti_dump(sl.ty, '(')
 				s2 = sl.note.s
 				if (s2.sl2)
 					s2.sl2++
@@ -490,69 +507,73 @@ break
 			}
 		}
 		if (note.a_dd)
-			deco_dump(note.a_dd)
+			ln += deco_dump(note.a_dd)
 		if (note.color)
-			line += "!" + note.color + "!"
+			ln += "!" + note.color + "!"
 		a = note.acc
 		if (typeof a == "object") {
 			d = a[1]
 			a = a[0]
 			if (a > 0) {
-				line += '^'
+				ln += '^'
 			} else {
-				line += '_'
+				ln += '_'
 				a = -a
 			}
-			dur_dump(C.BLEN / 4 * a / d, true)
+			ln += dur_dump(C.BLEN / 4 * a / d, true)
 		} else {
 			switch (a) {
-			case -2: line += '__'; break
-			case -1: line += '_'; break
-			case 1: line += '^'; break
-			case 2: line += '^^'; break
-			case 3: line += '='; break
+			case -2: ln += '__'; break
+			case -1: ln += '_'; break
+			case 1: ln += '^'; break
+			case 2: ln += '^^'; break
+			case 3: ln += '='; break
 			}
 		}
 		p = note.pit
 		if (p >= 23) {
-			line += "abcdefg"[p % 7]
+			ln += "abcdefg"[p % 7]
 			if (p >= 30) {
-				line += "'"
+				ln += "'"
 				if (p >= 37)
-					line += "'"
+					ln += "'"
 			}
 		} else {
 			p += 7;			// for very low notes
-			line += "ABCDEFG"[p % 7]
+			ln += "ABCDEFG"[p % 7]
 			if (p < 23) {
-				line += ","
+				ln += ","
 				if (p < 16) {
-					line += ","
+					ln += ","
 					if (p < 9)
-						line += ","
+						ln += ","
 				}
 			}
 		}
 		if (!tie_ch && note.tie_ty)
-			slti_dump(note.tie_ty, '-')
+			ln += slti_dump(note.tie_ty, '-')
 		while (note.sl2) {
-			line += ')';
+			ln += ')'
 			note.sl2--
 		}
+		return ln
 	} // note_dump()
 
 	function slti_dump(fl, ty) {
+	    var	ln = ""
+
 		if (fl & C.SL_DOTTED)
-			line += ".";
-		line += ty
+			ln += '.'
+		ln += ty
 		switch (fl & 0x07) {
 		case C.SL_ABOVE:
-			line += "'"
+			ln += "'"
 			break
 		case C.SL_BELOW:
-			line += ','
+			ln += ','
 			break
 		}
+		return ln
 	} // slti_dump()
 
 //fixme: missing: '+' (master voice) and '*' (floating voice)
@@ -719,7 +740,7 @@ break
 		if (s.sls) {
 			for (i = 0; i < s.sls.length; i++) {
 				sl = s.sls[i];
-				slti_dump(sl.ty, '(');
+				line += slti_dump(sl.ty, '(')
 				if (sl.is_note) {
 					if (sl.note.sl2)
 						sl.note.sl2++
@@ -736,7 +757,7 @@ break
 		if (s.a_gch)
 			gch_dump(s.a_gch)
 		if (s.a_dd)
-			deco_dump(s.a_dd)
+			line += deco_dump(s.a_dd)
 		if (s.color)
 			line += "!" + s.color + "!"
 		switch (s.type) {
@@ -797,7 +818,7 @@ break
 			}
 			tie_ch = s.ti1
 			if (s.notes.length == 1) {
-				note_dump(s, s.notes[0], tie_ch)
+				line += note_dump(s, s.notes[0], tie_ch)
 			} else {
 				for (i = 0; i < s.notes.length; i++) {
 					if (!s.notes[i].tie_ty) {
@@ -807,7 +828,7 @@ break
 				}
 				line += '['
 				for (i = 0; i < s.notes.length; i++)
-					note_dump(s, s.notes[i], tie_ch);
+					line += note_dump(s, s.notes[i], tie_ch)
 				line += ']'
 			}
 			if (s.grace) {
@@ -818,15 +839,15 @@ break
 					if (s.prev || s.next)
 						tmp *= 2
 				}
-				dur_dump(tmp, true)
+				line += dur_dump(tmp, true)
 			} else {
 				tmp = s.notes[0].dur	// head duration
 				if (s.trem2)
 					tmp /= 2;
-				dur_dump(tmp)
+				line += dur_dump(tmp)
 			}
 			if (tie_ch)
-				slti_dump(s.notes[0].tie_ty, '-');
+				line += slti_dump(s.notes[0].tie_ty, '-')
 			tmp = s.sl2
 			while (tmp) {
 				line += ')';
@@ -849,8 +870,7 @@ break
 			tempo_dump(s)
 			break
 		case C.REST:
-			line += s.invis ? 'x' : 'z';
-			dur_dump(s.dur_orig)
+			line += (s.invis ? 'x' : 'z') + dur_dump(s.dur_orig)
 			break
 		case C.SPACE:
 			line += 'y'
@@ -963,8 +983,7 @@ break
 		if (s.type != C.STAVES && s.time > vti[v]) {
 //fixme: put 'X' if more than one measure
 			if (s.time > vti[v] + 2) {
-				line += 'x';
-				dur_dump(s.time - vti[v]);
+				line += 'x' + dur_dump(s.time - vti[v])
 			}
 			vti[v] = s.time
 		}
