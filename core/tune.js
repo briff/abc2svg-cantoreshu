@@ -692,9 +692,9 @@ function get_map(text) {
 	}
 }
 
-// set the transposition in the previous or first key signature
+// set the transposition in the first key signature or in a new key
 function set_transp() {
-    var	s, transp, sndtran
+    var	s
 
 	if (curvoice.ckey.k_bagpipe || curvoice.ckey.k_drum)
 		return
@@ -702,229 +702,20 @@ function set_transp() {
 	if (cfmt.transp && curvoice.shift)	// if %%transpose and shift=
 		syntax(0, "Mix of old and new transposition syntaxes");
 
-	if (cfmt.transp != undefined
-	 || curvoice.transp != undefined
-	 || curvoice.shift != undefined)
-		transp = (cfmt.transp || 0) +	 // %%transpose
-			(curvoice.transp || 0) + // score= / sound= / instrument=
-			(curvoice.shift || 0)	 // shift=
-	if (curvoice.sndtran != undefined
-	 || curvoice.sndsh != undefined)
-		sndtran = (curvoice.sndtran || 0) +
-			(curvoice.sndsh || 0)
-	if (transp == undefined) {
-		if (sndtran == undefined)
-			return
-	} else {
-		curvoice.vtransp = transp
-	}
-
 	if (is_voice_sig()) {			// if no symbol yet
 		curvoice.okey.fmt = cfmt
 		curvoice.key = s = clone(curvoice.okey)
 	} else {
-		s = curvoice.last_sym
-		while (1) {	// set the transposition in the previous K:
-			if (s.type == C.KEY)
-				break
-			s = s.prev
-			if (!s) {
-				s = curvoice.key	// first key
-				break
-			}
-		}
+		s = clone(curvoice.ckey)
+		s.k_old_sf = s.k_sf
+		sym_link(s)
 	}
-	if (transp != undefined)
-		s.k_transp = transp
-	if (sndtran != undefined)
-		s.k_sndtran = sndtran
+	delete s.invis			// needed if K:C/none at start of tune
+	key_transp(s)
 	curvoice.ckey = clone(s)
 	if (curvoice.key.k_none)
 		s.k_sf = 0
 }
-
-/* transpose a note / chord */
-function note_transp(s, sk, note) {
-    var	ak, an, d, b40,
-	n = note.pit,
-	a = note.acc
-
-	if (typeof a == "object") {
-		d = a[1]
-		a = a[0]
-		if (d != 2) {
-			error(1, s, "Microtone transposition not coded")
-			return
-		}
-	}
-	if (!a && sk.k_a_acc)			// if accidental list
-		a = sk.k_map[(n + 19) % 7]	// invisible accidental
-
-	b40 = abc2svg.pab40(n, a) + sk.k_transp	// base-40 transposition
-
-	note.pit = abc2svg.b40p(b40)		// new pitch
-
-	if (!a) {				// if no old accidental
-		if (!sk.k_a_acc			// if no accidental list
-		 && !sk.k_none)			// and normal key
-			return			// same accidental (in the key)
-	}
-
-	an = abc2svg.b40a(b40)			// new accidental
-
-	if (sk.k_none) {			// if atonal music
-		b40 %= 40
-		if (an == -2 || an == 2		// __ or ^^
-		 || b40 == 1 || b40 == 38 || b40 == 18 || b40 == 15) {
-						// _C, ^B, _F, ^E
-			note.pit += (an > 0) ? 1 : -1
-			an = 0
-		}
-	}
-
-	if (a) {
-		if (sk.k_a_acc) {		// if accidental list
-			ak = sk.k_map[(note.pit + 19) % 7]
-			if (ak == an)
-				an = 0		// accidental in the key
-		}
-		if (!an) {
-			n = same_pit(s, note)
-			an = (n && n.acc) ? 3 : 0
-		}
-	} else if (sk.k_none) {			// if no key
-		n = same_pit(s, note)
-		if (n) {
-			if (n.acc == an)
-				return
-			if (!an)
-				an = 3
-		}
-	} else if (sk.k_a_acc) {		// if accidental list
-		n = same_pit(s, note)
-		if (n && n.acc == an)
-			return
-		ak = sk.k_map[(note.pit + 19) % 7]
-		if (ak)
-			an = 3		// natural
-	} else {
-		return			// same accidental (in the key)
-	}
-	if (d && an != a) {
-		switch (Number(a)) {
-		case -3:
-			switch (an) {
-			case -2:
-				an = -1
-				break
-			case 3:			// natural
-				an = -3
-				note.pit++
-				break
-			case 2:
-				an = -1
-				break
-			}
-			break
-		case -1:
-			switch (an) {
-			case -2:
-				an = -3
-				break
-			case 3:			// natural
-				an = 1
-				break
-			}
-			break
-		case 1:
-			switch (an) {
-			case -1:
-				an = -3
-				break
-			case 3:			// natural
-				an = -1
-				break
-			case 2:
-				an = 3
-				break
-			}
-			break
-		case 3:
-			switch (an) {
-			case -1:
-				an = 1
-				break
-			case 1:
-				an = 1
-				note.pit++
-				break
-			}
-			break
-		}
-	}
-	note.acc = d ? [an, d] : an
-}
-
-// adjust the pitches according to the transposition(s)
-function pit_adj() {
-    var	i, p_v, s, sk, g,
-	nv = voice_tb.length
-
-	while (--nv >= 0) {
-		p_v = voice_tb[nv]
-		if (p_v.vtransp == undefined)
-			continue	// no transposition in this voice
-		if (p_v.key.k_transp) {
-			sk = p_v.key
-			key_transp(sk)
-			sk.k_old_sf = sk.k_sf	// no natural
-		} else {
-			sk = null
-		}
-		s = p_v.sym
-		while (s) {
-
-			// search a transposing key signature
-			if (!sk) {
-				for (; s; s = s.next) {
-					if (s.type == C.KEY
-					 && s.k_transp)
-						break
-				}
-			}
-
-			// transpose
-			for (; s; s = s.next) {
-				switch (s.type) {
-				case C.GRACE:
-					for (g = s.extra; g; g = g.next) {
-						for (i = 0; i <= g.nhd; i++)
-							note_transp(g, sk, g.notes[i])
-					}
-					continue
-				case C.NOTE:
-				case C.REST:
-					for (i = 0; i <= s.nhd; i++)
-						note_transp(s, sk, s.notes[i])
-					if (s.a_gch)
-						gch_transp(s, sk)
-					continue
-				case C.KEY:
-					if (sk)
-						s.k_old_sf = sk.k_sf
-					key_transp(s)
-					if (!s.k_transp) // end of transposition
-						break
-					sk = s
-				default:
-					continue
-				}
-				break
-			}
-			sk = null
-		}
-	}
-} // pit_adj()
 
 // set the control values (P: and Q:)
 function set_ctrl() {
@@ -1266,21 +1057,7 @@ Abc.prototype.do_pscom = function(text) {
 			cfmt.transp = (cfmt.transp || 0) + val
 			return
 		}
-		for (s = curvoice.last_sym; s; s = s.prev) {
-			switch (s.type) {
-			case C.NOTE:		// insert a key
-				s = clone(curvoice.okey);
-				s.k_old_sf = curvoice.ckey.k_sf;
-				sym_link(s)
-				break
-			case C.KEY:
-				break
-			default:
-				continue
-			}
-			break
-		}
-		curvoice.transp = val
+		curvoice.tr_sco = val
 		set_transp()
 		return
 	case "tune":
@@ -1436,7 +1213,6 @@ function generate() {
 	if (user.anno_stop)
 		anno_stop = a_stop
 	self.set_bar_num()
-	pit_adj()
 
 	if (info.P)
 		tsfirst.parts = info.P	// for play
@@ -1467,71 +1243,38 @@ function generate() {
 }
 
 // transpose a key
-//fixme: transpose of the accidental list is not done
-function key_transp(sk) {
-	if (sk.k_a_acc || sk.k_none)		// same displayed key
+function key_transp(s) {
+	if (s.k_none)			// no key
 		return
-    var	d,
-	k_b40 = sk.k_b40,
-	n_b40 = (k_b40 + 200 + sk.k_transp) % 40
 
-	d = abc2svg.b40k[n_b40] - n_b40
+    var	n, a_acc,
+	b40 = (s.k_b40 + 200 + curvoice.tr_sco) % 40,
+	d = abc2svg.b40k[b40] - b40
+
 	if (d) {
-		if (sk.k_transp > 0)
-			sk.k_transp += d
+		if (curvoice.tr_sco > 0)
+			curvoice.tr_sco += d
 		else
-			sk.k_transp -= d
-		n_b40 += d
+			curvoice.tr_sco -= d
+		b40 += d
 	}
-	sk.k_b40 = n_b40
+	s.k_b40 = b40
+	s.k_sf = abc2svg.b40sf[b40]
 
-   var sf = abc2svg.b40sf[n_b40]
-	sk.k_sf = sf
-	sk.k_map = abc2svg.keys[sf + 7]	// map of the notes with accidentals
-}
+	// transpose the accidental list
+	if (!s.k_a_acc)
+		return
+	a_acc = []
+	for (n = 0; n < s.k_a_acc.length; n++) {
+		b40 = abc2svg.pab40(s.k_a_acc[n].pit, s.k_a_acc[n].acc)
+			+ curvoice.tr_sco
 
-/*
- * for transpose purpose, search a note that has the same pitch
- * as a note in the measure or tied from a previous note
- */
-function same_pit(s, note) {
-    var	i,
-	pit = note.pit,
-	time = s.time
-
-//fixme: other voice?
-	for (s = s.prev; s; s = s.prev) {
-		switch (s.type) {
-		case C.BAR:
-			if (s.time < time)
-				return //undefined
-			while (1) {
-				s = s.prev
-				if (!s)
-					return //undefined
-				if (s.type == C.NOTE) {
-					if (s.time + s.dur == time)
-						break
-					return //undefined
-				}
-				if (s.time < time)
-					return //undefined
-			}
-			for (i = 0; i <= s.nhd; i++) {
-				if (s.notes[i].pit == pit
-				 && s.notes[i].tie_ty)
-					return s.notes[i]
-			}
-			return //undefined
-		case C.NOTE:
-			for (i = 0; i <= s.nhd; i++) {
-				if (s.notes[i].pit == pit)
-					return s.notes[i]
-			}
-			break
+		a_acc[n] = {
+			pit: abc2svg.b40p(b40),
+			acc: abc2svg.b40a(b40) || 3
 		}
 	}
-	return //undefined
+	s.k_a_acc = a_acc
 }
 
 /* -- get staves definition (%%staves / %%score) -- */
@@ -1961,10 +1704,11 @@ function get_clef(s) {
 
 // treat K: (kp = key signature + parameters)
 function get_key(parm) {
-	var	v, p_voice, s, transp, sndtran,
+    var	v, p_voice, transp, sndtran, tr_p, nt,
 //		[s_key, a] = new_key(parm)	// KO with nodejs
 		a = new_key(parm),
-		s_key = a[0];
+		s_key = a[0],
+		s = s_key
 
 	a = a[1]
 
@@ -1988,41 +1732,24 @@ function get_key(parm) {
 			a = ''
 		}
 		goto_tune()
-		parse.state = 3			// in tune body
+	} else {
+		set_kv_parm(a)
 	}
 
-	set_kv_parm(a)
-
-	if (!curvoice.ckey.k_bagpipe && !curvoice.ckey.k_drum) {
-		if (cfmt.transp != undefined
-		  || curvoice.transp != undefined
-		  || curvoice.shift != undefined)
-		    transp = (cfmt.transp || 0) +
-			(curvoice.transp || 0) +
-			(curvoice.shift || 0)
-		if (curvoice.sndtran != undefined
-		 || curvoice.sndsh != undefined)
-			sndtran = (curvoice.sndtran || 0) +
-				(curvoice.sndsh || 0)
+	tr_p = curvoice.tr_p			// transposition change 1=sco, 2=snd
+	curvoice.tr_p = 0
+	if (s.k_sf == undefined) {		// if no key
+		if (!s.k_a_acc			// if no accidental list
+		 && !(tr_p & 1))		// and no score transposition
+			return			// not a key signature
+		s_key.k_sf = curvoice.okey.k_sf	// set the same key
+		s_key.k_b40 = curvoice.okey.k_b40
 	}
 
-	if (s_key.k_sf == undefined) {
-		if (!s_key.k_a_acc
-		 && transp == undefined) {
-			if (sndtran == undefined)
-				return		// not a key signature
-			s_key.invis = true	// play only
-		}
-		s_key.k_sf = curvoice.okey.k_sf
-	}
 
+	if (curvoice.tr_sco)			// if transpose score
+		key_transp(s)
 	curvoice.okey = clone(s_key)
-	if (transp != undefined) {
-		curvoice.vtransp = transp;
-		s_key.k_transp = transp
-	}
-	if (sndtran != undefined)
-		s_key.k_sndtran = sndtran
 
 	s_key.k_old_sf = curvoice.ckey.k_sf	// memorize the key changes
 
@@ -2061,6 +1788,7 @@ function new_voice(id) {
 			 && parse.state >= 2) {
 				p_v_sav = curvoice;
 				curvoice = p_voice;
+				curvoice.tr_sco = cfmt.transp
 				set_transp();
 				curvoice = p_v_sav
 			}
@@ -2210,9 +1938,9 @@ function get_voice(parm) {
 	}
 
 	set_kv_parm(a)
-	if (curvoice.new_transp || curvoice.new) {
+	if (curvoice.tr_p) {
+		curvoice.tr_p = 0
 		set_transp()
-		curvoice.new_transp = 0
 	}
 
 	v = curvoice.v
@@ -2257,6 +1985,8 @@ function goto_tune() {
 	} else {
 		gene.nbar = 1
 	}
+
+	parse.state = 3				// in tune body
 
 	// if no voice yet, create the default voice
 	if (!voice_tb.length) {
