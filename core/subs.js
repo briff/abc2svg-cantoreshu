@@ -106,18 +106,26 @@ function cwidf(c) {
 }
 
 // estimate the width and height of a string ..
-var strwh = typeof document != "undefined" ?
+var strwh
+
+(function() {
+    if (typeof document != "undefined") {
 
     // .. by the browser
-    (function() {
-	// (re)create a text element
-    var	el = document.createElement('text')
+
+	// create a text element if not done yet
+    var	el = abc2svg.eltxt
+      if (!el) {
+	el = document.createElement('text')
 	el.style.position = 'absolute'
 	el.style.top = '-1000px'
 	el.style.padding = '0'
 	document.body.appendChild(el)
+	abc2svg.eltxt = el			// reused after new Abc()
+      }
 
-	return function(str) {
+	// change the function
+	strwh = function(str) {
 		if (str.wh)
 			return str.wh
 	    var	c,
@@ -148,36 +156,35 @@ var strwh = typeof document != "undefined" ?
 
 		while (1) {
 			i = str.indexOf('$', i)
+			if (i >= 0) {
+				c = str[i + 1]
+				if (c == '0') {
+					font = gene.deffont
+				} else if (c >= '1' && c <= '9') {
+					font = get_font("u" + c)
+				} else {
+					i++
+					continue
+				}
+			}
+
+			el.innerHTML = str.slice(i0, i >= 0 ? i : undefined)
+			w += el.clientWidth
+//fixme: bad width if space(s) at end of string
+			if (el.clientHeight > h)
+				h = el.clientHeight
 			if (i < 0)
 				break
-			c = str[i + 1]
-			if (c == '0') {
-				font = gene.deffont
-			} else if (c >= '1' && c <= '9') {
-				font = get_font("u" + c)
-			} else {
-				i++
-				continue
-			}
-			el.innerHTML = str.slice(i0, i);
-			w += el.clientWidth
-//fixme: bad result if space(s) at end of string
-			if (font.size > h)
-				h = el.clientHeight
-
 			el.style.font = style_font(font).slice(5);
 			i += 2;
 			i0 = i
 		}
-		el.innerHTML = str.slice(i0);
-		w += el.clientWidth;
-
 		return [w, h]
 	}
-    })() :
+    } else {
 
     // .. by internal tables
-    function(str) {
+    strwh = function(str) {
     var	font = gene.curfont,
 	swfac = font.swfac,
 	h = font.size,
@@ -216,7 +223,9 @@ var strwh = typeof document != "undefined" ?
 		w += cwid(c) * swfac
 	}
 	return [w, h]
-}
+    }
+  }
+})()
 
 // convert a string to a SVG text, handling the font changes
 // The string size is memorized into the String.
