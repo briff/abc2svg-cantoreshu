@@ -38,9 +38,8 @@ abc2svg.page = {
 
     // generate a header or a footer in page.hf and return its height
     gen_hf: function(page, ty) {
-    var	a, i, j, k, x, y, y0, s,
+    var	a, i, j, k, x, y, y0, s, str,
 	font = page.abc.get_font(ty),
-	str = page[ty],
 	cfmt = page.abc.cfmt(),
 	fh = font.size * 1.1,
 	pos = [ '">',
@@ -177,6 +176,11 @@ abc2svg.page = {
 	}
 
 	// gen_hf
+
+	if (!(page.pn & 1))
+		str = page[ty + '2'] || page[ty]
+	else
+		str = page[ty]
 
 	if (str[0] == '-') {		// not on 1st page
 		if (page.pn == 1)
@@ -421,6 +425,14 @@ abc2svg.page = {
 				page.footer = cfmt.footer;
 				cfmt.footer = null
 			}
+			if (cfmt.header2) {
+				page.header2 = cfmt.header2
+				cfmt.header2 = null
+			}
+			if (cfmt.footer2) {
+				page.footer2 = cfmt.footer2
+				cfmt.footer2 = null
+			}
 
 			// get the previously defined page parameters
 			if (cfmt.botmargin != undefined) {
@@ -456,6 +468,8 @@ abc2svg.page = {
 		switch (cmd) {
 		case "header":
 		case "footer":
+		case "header2":
+		case "footer2":
 			page[cmd] = parm
 			return
 		case "newpage":
