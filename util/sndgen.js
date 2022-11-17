@@ -493,7 +493,6 @@ abc2svg.play_next = function(po) {
 	function set_ctrl(po, s2, t) {
 	    var	i,
 		p_v = s2.p_v,
-		tim = s2.time,
 		s = {
 			subtype: "midictl",
 			p_v: p_v,
@@ -506,7 +505,7 @@ abc2svg.play_next = function(po) {
 			s.val = p_v.midictl[i]
 			po.midi_ctrl(po, s, t)
 		}
-		for (s = p_v.sym; s && s.time <= tim; s = s.next) {
+		for (s = p_v.sym; s != s2; s = s.next) {
 			if (s.subtype == "midictl")
 				po.midi_ctrl(po, s, t)
 			else if (s.subtype == 'midiprog')
