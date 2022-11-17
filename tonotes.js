@@ -56,11 +56,13 @@ abc2svg.abc_end = function() {
 		tgen: 3600, 	// generate by (for) 1 hour
 		get_time: function() { return -.3},	// (move the time origin)
 		midi_ctrl: function(po, s, t) {
-			abc2svg.print('    MIDI control ' + s.ctrl + ' ' + s.val)
+			abc2svg.print(' v:' + s.v
+					+ '  MIDI control ' + s.ctrl + ' ' + s.val)
 		}, // midi_ctrl()
 		midi_prog: function(po, s) {
 			if (s.instr)
-				abc2svg.print('    MIDI program ' + s.instr)
+				abc2svg.print(' v:' + s.v
+					+ '  MIDI program ' + s.instr)
 		}, // midi_prog()
 		note_run: function(po, s, k, t, d) {
 			abc2svg.print(' ' + (t * 100).toFixed(0) +
