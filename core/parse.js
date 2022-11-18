@@ -1998,6 +1998,7 @@ function do_ties(s, tie_s) {
 				  || !not1.tie_e)) {	// (if unison)
 					not2.tie_s = not1
 					not2.s = s
+					delete not2.acc	// (if transposing)
 					if (se) {
 						not1.tie_e = not2
 						not1.s = tie_s
