@@ -2033,7 +2033,8 @@ function do_ties(s, tie_s) {
 // (possible hook)
 Abc.prototype.new_note = function(grace, sls) {
     var	note, s, in_chord, c, dcn, type, tie_s, acc_tie,
-	i, n, s2, nd, res, num, dur, apit, div, ty, m,
+	i, n, s2, nd, res, num, dur, apit, div, ty,
+	dpit = 0,
 	sl1 = [],
 	line = parse.line,
 	a_dcn_sav = a_dcn		// save parsed decoration names
@@ -2213,11 +2214,13 @@ Abc.prototype.new_note = function(grace, sls) {
 
 			// set the MIDI pitch
 			if (!note.midi)		// if not map play
-				note.midi = pit2mid(note.pit + 19, i)
+				note.midi = pit2mid(apit, i)
 
 			// transpose
-			if (curvoice.tr_sco)
+			if (curvoice.tr_sco) {
 				i = nt_trans(note, i)
+				dpit = note.pit + 19 - apit
+			}
 			if (curvoice.tr_snd)
 				note.midi += curvoice.tr_snd
 
@@ -2418,6 +2421,7 @@ Abc.prototype.new_note = function(grace, sls) {
 				for (i = 0; i <= s.nhd; i++) {
 					note = s.notes[i]
 					apit = note.pit + 19	// pitch from C-1
+						- dpit		// (if transposition)
 					if (curvoice.acc[apit]
 					 || (acc_tie
 					  && acc_tie[apit])) {
