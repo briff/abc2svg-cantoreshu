@@ -58,6 +58,10 @@ abc2svg.tropt = {
 				continue
 			for (m = 0; m <= s.nhd; m++) {
 				nt = s.notes[m]
+				if (nt.tie_s) {		// if end of tie
+					nt.pit = nt.tie_s.pit
+					continue
+				}
 				p = nt.pit % 7		// A..G
 				a = nt.acc
 				switch (a) {
