@@ -69,6 +69,7 @@ gen modules/soloffs.js > soloffs-$MAJOR.js
 gen modules/sth.js > sth-$MAJOR.js
 gen modules/strtab.js > strtab-$MAJOR.js
 gen modules/temper.js > temper-$MAJOR.js
+gen modules/tropt.js > tropt-$MAJOR.js
 
 cp editor/edit.css edit-$MAJOR.css
 
