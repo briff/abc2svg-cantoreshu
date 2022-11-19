@@ -43,7 +43,7 @@ abc2svg.tropt = {
 				for (m = 0; m <= s.nhd; m++) {
 					nt = s.notes[m]
 					if (nt.pit == p)
-						return !nt.acc
+						return nt.acc
 				}
 			}
 			s = s.next
@@ -109,7 +109,6 @@ abc2svg.tropt = {
 				default:
 					continue
 				}
-//console.log('pit:'+nt.pit+' p:'+p+' a:'+a+' np:'+np+' na:'+na)
 				if (ok(s, np)) {
 					nt.pit = np
 					nt.acc = na
@@ -118,7 +117,7 @@ abc2svg.tropt = {
 		}
 	}
 	of(last_s)
-    }, // set_stems()
+    }, // set_pitch()
 
     // set the tropt parameter
     do_pscom: function(of, text) {
