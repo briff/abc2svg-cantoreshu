@@ -2195,8 +2195,6 @@ Abc.prototype.new_note = function(grace, sls) {
 					i = curvoice.acc[apit % 7]
 				else
 					i = curvoice.acc[apit]
-				if (!i && acc_tie)
-					i = acc_tie[apit]
 				if (!i)
 					i = curvoice.ckey.k_map[apit % 7] || 0
 			}
@@ -2207,6 +2205,9 @@ Abc.prototype.new_note = function(grace, sls) {
 				else if (cfmt["propagate-accidentals"][0] != 'n')
 					curvoice.acc[apit] = i
 			}
+
+			if (!i && acc_tie)
+				i = acc_tie[apit]	// tied note
 
 			// map
 			if (curvoice.map
@@ -2282,9 +2283,7 @@ Abc.prototype.new_note = function(grace, sls) {
 					note.s = s
 					curvoice.tie_s = s
 					s.ti1 = true
-					if (curvoice.acc[apit]
-					 || (acc_tie
-					  && acc_tie[apit])) {
+					if (curvoice.acc[apit]) {
 						if (!curvoice.acc_tie)
 							curvoice.acc_tie = []
 						curvoice.acc_tie[apit] =
@@ -2423,9 +2422,7 @@ Abc.prototype.new_note = function(grace, sls) {
 					note = s.notes[i]
 					apit = note.pit + 19	// pitch from C-1
 						- dpit		// (if transposition)
-					if (curvoice.acc[apit]
-					 || (acc_tie
-					  && acc_tie[apit])) {
+					if (curvoice.acc[apit]) {
 						if (!curvoice.acc_tie)
 							curvoice.acc_tie = []
 						curvoice.acc_tie[apit] =
