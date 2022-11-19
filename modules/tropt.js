@@ -22,13 +22,15 @@
 abc2svg.tropt = {
 
     // function called before start of the generation
-    set_stems: function(of) {
-    var	v, p_v, s, m, nt, p, a, np,
+    set_pitch: function(of, last_s) {
+	if (last_s) {			// if not first time
+		of(last_s)
+		return
+	}
+    var	v, p_v, s, m, nt, p, a, np, na,
 	C = abc2svg.C,
 	vo_tb = this.get_voice_tb(),
 	nv = vo_tb.length
-
-	of()
 
 	// check if some next note has the same pitch without any accidental
 	function ok(s, p) {
@@ -64,6 +66,7 @@ abc2svg.tropt = {
 				}
 				p = nt.pit % 7		// A..G
 				a = nt.acc
+				na = 3
 				switch (a) {
 				case -1:
 					switch (p) {
@@ -73,8 +76,15 @@ abc2svg.tropt = {
 					default:
 						continue
 					}
-					// fall thru
+					np = nt.pit - 1
+					break
 				case -2:
+					switch (p) {
+					case 2:		// C
+					case 5:		// F
+						na = -1
+						break
+					}
 					np = nt.pit - 1
 					break
 				case 1:
@@ -85,20 +95,29 @@ abc2svg.tropt = {
 					default:
 						continue
 					}
-					// fall thru
+					np = nt.pit + 1
+					break
 				case 2:
+					switch (p) {
+					case 1:		// B
+					case 4:		// E
+						na = 1
+						break	
+					}
 					np = nt.pit + 1
 					break
 				default:
 					continue
 				}
+//console.log('pit:'+nt.pit+' p:'+p+' a:'+a+' np:'+np+' na:'+na)
 				if (ok(s, np)) {
 					nt.pit = np
-					nt.acc = 3	// or 0?
+					nt.acc = na
 				}
 			}
 		}
 	}
+	of(last_s)
     }, // set_stems()
 
     // set the tropt parameter
@@ -125,7 +144,7 @@ abc2svg.tropt = {
 
     set_hooks: function(abc) {
 	abc.do_pscom = abc2svg.tropt.do_pscom.bind(abc, abc.do_pscom)
-	abc.set_stems = abc2svg.tropt.set_stems.bind(abc, abc.set_stems)
+	abc.set_pitch = abc2svg.tropt.set_pitch.bind(abc, abc.set_pitch)
 	abc.set_vp = abc2svg.tropt.set_vp.bind(abc, abc.set_vp)
     }
 } // tropt
