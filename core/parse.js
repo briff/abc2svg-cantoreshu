@@ -175,6 +175,8 @@ function nt_trans(nt,
 	an = abc2svg.b40a(b40)			// new accidental
 
 	if (!d) {				// if not a microtonal accidental
+		if (an == -3)			// if no error
+			return an
 		a = an
 		if (nt.acc) {			// if old accidental
 			if (!a)
@@ -2079,7 +2081,7 @@ Abc.prototype.new_note = function(grace, sls) {
 		c = line.next_char()
 		s.nmes = (c > '0' && c <= '9') ? line.get_int() : 1;
 		if (curvoice.wmeasure == 1) {
-			error(1, null, "multi-measure rest, but no measure!")
+			error(1, s, "multi-measure rest, but no measure!")
 			return
 		}
 		s.dur = curvoice.wmeasure * s.nmes
@@ -2221,6 +2223,12 @@ Abc.prototype.new_note = function(grace, sls) {
 			// transpose
 			if (curvoice.tr_sco) {
 				i = nt_trans(note, i)
+				if (i == -3) {		// if triple sharp/flat
+					error(1, s, "triple sharp/flat")
+					i = note.acc > 0 ? 1 : -1
+					note.pit += i
+					note.acc = i
+				}
 				dpit = note.pit + 19 - apit
 			}
 			if (curvoice.tr_snd)
