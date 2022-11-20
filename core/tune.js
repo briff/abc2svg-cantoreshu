@@ -1253,9 +1253,9 @@ function key_transp(s) {
 
 	if (d) {
 		if (curvoice.tr_sco > 0)
-			curvoice.tr_sco += d
-		else
 			curvoice.tr_sco -= d
+		else
+			curvoice.tr_sco += d
 		b40 += d
 	}
 	s.k_b40 = b40
