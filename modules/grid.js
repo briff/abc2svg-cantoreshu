@@ -31,9 +31,6 @@
 //	%%gridfont font_name size (default: 'serif 16')
 
 abc2svg.grid = {
-    cs_sel0: /[\[(][^)]*[\])]/,
-    cs_sel1: /[^[(]*[\[(]|[\])][\s\S]*/g,
-
     pl: '<path class="stroke" stroke-width="1" d="M',
 
 // generate the grid
@@ -341,25 +338,27 @@ function build_grid(s, font) {
 	grid = cfmt.grid
 
 	// extract one of the chord symbols
-	// With chords as "xxx(yyy)" or "[yyy];xxx"
-	// (!sel - default) returns "xxx" and (sel) returns "yyy"
+	// With chords as "[yyy];xxx"
+	// (!sel - default) returns "yyy" and (sel) returns "xxx"
 	function cs_filter(a_cs, sel) {
-	    var	i, cs, tcs
+	    var	i, cs, t
 
 		for (i = 0; i < a_cs.length; i++) {
 			cs = a_cs[i]
-			if (cs.type == 'g') {
-				if (!tcs)
-					tcs = cs.text
-				else
-					tcs += cs.text
+			if (cs.type != 'g')
+				continue
+			t = cs.text
+			if (cfmt.altchord) {
+				for (i++; i < a_cs.length; i++) {
+					cs = a_cs[i]
+					if (cs.type != 'g')
+						continue
+					t = cs.text
+					break
+				}
 			}
+			return t.replace(/\[|\]/g, '')
 		}
-		if (!abc2svg.grid.cs_sel0.test(tcs))
-			return tcs
-		return tcs.replace(sel
-				? abc2svg.grid.cs_sel1
-				: abc2svg.grid.cs_sel0, '')
 	} // cs_filter()
 
 	function get_beat(s) {
