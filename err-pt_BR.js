@@ -113,6 +113,8 @@ user.textrans = {
 	"Misplaced dot": "Ponto fora de lugar",
 	"Mix of old and new transposition syntaxes":
 				"Mistura de sintaxes de transposição antiga e nova",
+	"multi-measure rest, but no measure!":
+			"multi-measure rest, but no measure!",
 	"No $1 after %%$2": "Falta $1 após %%$2",
 	"No </defs> in %%beginsvg sequence":
 				"Falta </defs> em bloco %%beginsvg",
@@ -157,6 +159,7 @@ user.textrans = {
 	"Too many include levels": "Excessivos níveis de inclusão de arquivos",
 	"Too many ties": "Excesso de ligaduras de prolongamento",
 	"Too many words in lyric line": "Excesso de palavras",
+	"triple sharp/flat": "triple sharp/flat",
 	"Unknown bagpipe-like key": "Armadura desconhecida para gaita de foles",
 	"Unknown clef '$1'": "Clave '$1' desconhecida",
 	"Unknown decoration '$1'": "Decoração '$1' desconhecida",
