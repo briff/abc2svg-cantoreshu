@@ -72,8 +72,6 @@ abc2svg.chord = function(first,		// first symbol in time
 			 voice_tb,	// table of the voices
 			 cfmt) {	// tune parameters
     var	chnm, i, k, vch, s, gchon,
-	cs_sel0 = /[\[(][^)]*[\])]/,
-	cs_sel1 = /[^[(]*[\[(]|[\])][\s\S]*/g,
 	C = abc2svg.C,
 	trans = 48 + (cfmt.chord.trans ? cfmt.chord.trans * 12 : 0)
 
@@ -100,25 +98,25 @@ abc2svg.chord = function(first,		// first symbol in time
 		return r
 	} // chcr()
 
-	// (quite the same as abc2svg.cs_filter() but with otext)
-	function filter(a_cs, sel) {
-	    var	i, cs,
-		tcs = ""
+	// get the playback part of the first chord symbol
+	function filter(a_cs) {
+	    var	i, cs, t
 
 		for (i = 0; i < a_cs.length; i++) {
 			cs = a_cs[i]
-			if (cs.type == 'g')
-				tcs += cs.otext
+			if (cs.type != 'g')
+				continue
+			t = cs.otext
+			if (t.slice(-1) == ')')		// if alternate chord
+				t = t.replace(/\(.*/, '') // remove it
+			return t.replace(/\(|\)|\[|\]/g,'') // remove ()[]
 		}
-		if (!cs_sel0.test(tcs))
-			return tcs
-		return tcs.replace(sel ? cs_sel1 : cs_sel0, '')
 	} // filter()
 
 	// generate a chord
 	function gench(sb) {
 	    var	r, ch, b, m, n, not,
-		a = filter(sb.a_gch, cfmt.altchord),
+		a = filter(sb.a_gch),
 		s = {
 			v: vch.v,
 			p_v: vch,
