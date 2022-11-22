@@ -37,8 +37,9 @@
 abc2svg.abc_init = function(args) {
 }
 
-// but load the sound generator
+// but load the sound generator and the chord generator
 abc2svg.loadjs('util/sndgen.js')
+abc2svg.loadjs('util/chord.js')
 
 abc2svg.abc_end = function() {
 	function pit(v) {
