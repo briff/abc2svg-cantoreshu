@@ -175,7 +175,7 @@ function nt_trans(nt,
 	an = abc2svg.b40a(b40)			// new accidental
 
 	if (!d) {				// if not a microtonal accidental
-		if (an == -3)			// if no error
+		if (an == -3)			// if triple sharp/flat
 			return an
 		a = an
 		if (nt.acc) {			// if old accidental

@@ -340,7 +340,7 @@ function build_grid(s, font) {
 	// extract one of the chord symbols
 	// With chords as "[yyy];xxx"
 	// (!sel - default) returns "yyy" and (sel) returns "xxx"
-	function cs_filter(a_cs, sel) {
+	function cs_filter(a_cs) {
 	    var	i, cs, t
 
 		for (i = 0; i < a_cs.length; i++) {
@@ -403,7 +403,7 @@ function build_grid(s, font) {
 			case C.REST:
 				if (!s.a_gch || chord[beat_i])
 					break
-				bt = cs_filter(s.a_gch, cfmt.altchord)
+				bt = cs_filter(s.a_gch)
 				if (!bt)
 					break
 					w = abc.strwh(bt.replace(

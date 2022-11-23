@@ -224,7 +224,7 @@ function csan_add(s) {
 	if (s.type == C.BAR) {
 		for (i = 0; i < a_gch.length; i++) {
 			if (a_gch[i].type == 'g') {
-				syntax(1,
+				error(1, s,
 				       "There cannot be chord symbols on measure bars")
 				a_gch.splice(i)
 			}
