@@ -152,24 +152,24 @@ default all
 
 # fossil new release
 rule version
-  command = v=`fossil tag list|tail -1`;$
+  command = v=`fossil changes|wc -l`;$
+	if [ $$v!=0 ]; then $
+		echo "!! There are changes !!";$
+		exit 1;$
+	fi;$
+	v=`fossil describe`;$
 	if [ $out=patch ]; then $
 		v=`echo $$v|awk -F. -v OFS=. '{$$3 += 1; print}'`;$
 	else $
 		v=`echo $$v|awk -F. -v OFS=. '{$$2 += 1; $$3=0; print}'`;$
 	fi;$
-	fossil commit -m "New release $$v" -tag $$v
+	fossil commit -m "New release $$v" -tag $$v;$
+	r="abc2svg-$$v";$
+	ln -s . $$r;$
+	sed "s#^#$$r/#" dist_bin | pax -wj -x tar -f abc2svg.tar.bz2;$
+	rm -f abc2svg.zip;$
+	sed "s#^#$$r/#" dist_bin | zip -r abc2svg.zip -@;$
+	rm $$r;$
+	echo "Don't forget to upload abc2svg.tar.bz2 and abc2svg.zip"
 build minor: version
 build patch: version
-
-# generate a tarball and a .zip of the runable scripts (bin)
-rule dist_bin
-  command = c=`fossil info | grep checkout:`;$
-   r="abc2svg-$$(echo $$c | cut -d' ' -f2 | cut -c1-10)";$
-   ln -s . $$r;$
-   sed -e "s#^#$$r/#" dist_bin | pax -wj -x tar -f abc2svg.tar.bz2;$
-   rm -f abc2svg.zip;$
-   sed -e "s#^#$$r/#" dist_bin | zip -r abc2svg.zip -@;$
-   rm $$r
-
-build dist_bin: dist_bin | abc2svg-1.js
