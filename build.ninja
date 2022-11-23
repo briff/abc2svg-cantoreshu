@@ -153,7 +153,7 @@ default all
 # fossil new release
 rule version
   command = v=`fossil changes|wc -l`;$
-	if [ $$v!=0 ]; then $
+	if [ $$v -ne 0 ]; then $
 		echo "!! There are changes !!";$
 		exit 1;$
 	fi;$
