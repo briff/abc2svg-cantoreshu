@@ -207,7 +207,7 @@ There are many ways to install abc2svg:
 
 - [tarball][16] or [.zip archive][17] from my site  
   Both files contain the scripts that are generated from the source
-  when a new abc2svg version is out. The scripts are ready
+  when abc2svg is stable enough. The scripts are ready
   to be used from the root directory.
 
 [16]: http://moinejf.free.fr/abc2svg.tar.bz2 "tarball"
@@ -284,7 +284,6 @@ find the scripts I had to built.
 - `abcmjs` with `js78`, `js60`, `js52` or `js24` (Mozilla JavaScript shell)
 - `abcjsc` with `jsc` (webkit2gtk)
 - `abcnode` with `node` (nodeJS without module)
-- `abc2svg` with `node` (nodeJS with modules)
 
 [10]: https://bellard.org/quickjs/
 
