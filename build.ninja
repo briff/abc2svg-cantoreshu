@@ -158,12 +158,12 @@ rule version
 		exit 1;$
 	fi;$
 	v=`fossil describe`;$
-	if [ $out=patch ]; then $
+	if [ "$out"="patch" ]; then $
 		v=`echo $$v|awk -F. -v OFS=. '{$$3 += 1; print}'`;$
 	else $
 		v=`echo $$v|awk -F. -v OFS=. '{$$2 += 1; $$3=0; print}'`;$
 	fi;$
-	fossil commit -m "New release $$v" -tag $$v;$
+	fossil commit --allow-empty -m "New release $$v" -tag $$v;$
 	r="abc2svg-$$v";$
 	ln -s . $$r;$
 	sed "s#^#$$r/#" dist_bin | pax -wj -x tar -f abc2svg.tar.bz2;$
