@@ -136,7 +136,7 @@ abc2svg.MIDI = {
 		if (abc.parse.state >= 2
 		 && curvoice) {
 			s = abc.new_block("midigch")
-			s.play = true
+			s.play = s.invis = 1 //true
 			s.on = a[1][7] == 'n'
 		} else {
 			cfmt.chord.gchon = a[1][7] == 'n'
@@ -151,7 +151,7 @@ abc2svg.MIDI = {
 		if (--v != 9) {			// channel range 1..16 => 0..15
 			if (abc.parse.state == 3) {
 				s = abc.new_block("midiprog")
-				s.play = true
+				s.play = s.invis = 1 //true
 				curvoice.chn = s.chn = v
 			} else {
 				abc.set_v_param("channel", v)
@@ -196,7 +196,7 @@ abc2svg.MIDI = {
 		}
 		if (abc.parse.state == 3) {
 			s = abc.new_block("midiprog");
-			s.play = true
+			s.play = s.invis = 1 //true
 			s.instr = v
 			s.chn = curvoice.chn
 		} else {
@@ -216,7 +216,7 @@ abc2svg.MIDI = {
 		}
 		if (abc.parse.state == 3) {
 			s = abc.new_block("midictl");
-			s.play = true
+			s.play = s.invis = 1 //true
 			s.ctrl = n;
 			s.val = v
 		} else {
@@ -299,30 +299,19 @@ abc2svg.MIDI = {
     set_vp: function(of, a) {
     var	i, item, s,
 	abc = this,
-	curvoice = this.get_curvoice()
-
-	if (curvoice.st == undefined) {		// if new voice by V:
-	    var	st = 0,
-		vtb = abc.get_voice_tb()
-
-		for (i = 0; i < vtb.length; i++) {
-			if (vtb[i].st != undefined
-			 && vtb[i].st > st)
-				st = vtb[i].st
-		}
-		curvoice.st = curvoice.cst = st + 1
-	}
+	curvoice = abc.get_curvoice(),
+	b = []
 
 	for (i = 0; i < a.length; i++) {
 		switch (a[i]) {
 		case "channel=":		// %%MIDI channel
 			s = abc.new_block("midiprog")
-			s.play = true
+			s.play = s.invis = 1 //true
 			s.chn = curvoice.chn = a[++i]
 			break
 		case "instr=":			// %%MIDI program
 			s = abc.new_block("midiprog")
-			s.play = true
+			s.play = s.invis = 1 //true
 			s.instr = a[++i]
 			if (curvoice.chn == undefined) {
 				curvoice.chn = curvoice.v < 9 ?
