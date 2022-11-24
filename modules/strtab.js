@@ -27,6 +27,11 @@
 //	"!" digit "s!"
 // where 'digit' is the string range in the string list (last string is '1')
 //
+// The command %%minfret permits to force upper frets.
+// Syntax:
+//	%%minfret [ <string number> : <fret number> ]*
+// Each command replaces the previous value.
+//
 // This module accepts Willem Vree's tablature syntax:
 //	https://wim.vree.org/svgParse/abc2xml.html#tab
 
@@ -222,6 +227,10 @@ abc2svg.strtab = {
 		this.set_v_param("strings", parm)
 		return
 	}
+	if (cmd == "minfret") {
+		this.set_v_param("minfret", parm)
+		return
+	}
 	of(cmd, parm)
     }, // set_fmt()
 
@@ -263,7 +272,7 @@ abc2svg.strtab = {
 	} // set_pit()
 
 	function set_notes(p_v, s) {
-	    var	i, bi, bn, nt, m, n
+	    var	i, bi, bn, nt, m, n, ns
 
 		s.stem = -1			// down stems
 
@@ -314,14 +323,17 @@ abc2svg.strtab = {
 			// search the best string
 			bn = 100
 			bi = -1
-			i = p_v.tab.length
+			ns = i = p_v.tab.length
 			while (--i >= 0) {
 				if (strss[i] && strss[i] > s.time)
 					continue
 				n = (p_v.diafret ?
 					nt.pit : nt.midi) -
 						p_v.tab[i]
-				if (n >= 0 && n < bn) {
+				if (n >= 0 && n < bn
+				 && (!p_v.minfret
+				  || !p_v.minfret[ns - i]
+				  || n >= p_v.minfret[ns - i])) {
 					bi = i
 					bn = n
 				}
@@ -399,7 +411,7 @@ abc2svg.strtab = {
 
     // get the parameters of the current voice
     set_vp: function(of, a) {
-    var	i, e, g, tab, strs, ok,
+    var	i, j, e, g, tab, strs, ok,
 	p_v = this.get_curvoice()
 
 	// convert a list of ABC notes into a list of MIDI pitches
@@ -504,6 +516,23 @@ abc2svg.strtab = {
 		return t
 	} // str2tab()
 
+	// convert the list of <string number> ':' <fret number>
+	function minfret(a) {
+	    var	sf,
+		sfa = a.split(' ')
+
+		p_v.minfret = {}
+		while (1) {
+			sf = sfa.shift()
+			if (!sf)
+				break
+			sf = sf.split(':')
+			if (sf.length != 2)
+				break		//fixme: error
+			p_v.minfret[sf[0]] = sf[1]
+		}
+	} //minfret()
+
 	for (i = 0; i < a.length; i++) {
 		switch (a[i]) {
 		case "clef=":
@@ -532,6 +561,9 @@ abc2svg.strtab = {
 			i++
 		case "diafret":
 			p_v.diafret = true
+			break
+		case "minfret=":
+			minfret(a[++i])
 			break
 		}
 	}
