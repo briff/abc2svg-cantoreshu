@@ -411,7 +411,7 @@ abc2svg.strtab = {
 
     // get the parameters of the current voice
     set_vp: function(of, a) {
-    var	i, j, e, g, tab, strs, ok,
+    var	i, e, g, tab, strs, ok,
 	p_v = this.get_curvoice()
 
 	// convert a list of ABC notes into a list of MIDI pitches

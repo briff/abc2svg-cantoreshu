@@ -299,8 +299,7 @@ abc2svg.MIDI = {
     set_vp: function(of, a) {
     var	i, item, s,
 	abc = this,
-	curvoice = abc.get_curvoice(),
-	b = []
+	curvoice = abc.get_curvoice()
 
 	for (i = 0; i < a.length; i++) {
 		switch (a[i]) {
