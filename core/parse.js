@@ -1985,7 +1985,7 @@ function pit2mid(pit, acc) {
 function do_ties(s, tie_s) {
     var	i, m, not1, not2, mid, g,
 	nt = 0,
-	se = !Math.round(tie_s.time + tie_s.dur - curvoice.time) // 'start-end' flag
+	se = (tie_s.time + tie_s.dur) == curvoice.time	// 'start-end' flag
 
 	for (m = 0; m <= s.nhd; m++) {
 		not2 = s.notes[m]
@@ -2477,16 +2477,22 @@ Abc.prototype.new_note = function(grace, sls) {
 
 // adjust the duration of the elements in a tuplet
 function tp_adj(s, fact) {
-    var	tim = s.time
+    var	d,
+	tim = s.time,
+	to = curvoice.time - tim,	// previous delta time
+	tt = to * fact			// new delta time
 
-	curvoice.time = tim + (curvoice.time - tim) * fact
+	curvoice.time = tim + tt
 	while (1) {
 //fixme: tuplets in grace notes?
 		s.in_tuplet = true
 		if (!s.grace) {
 			s.time = tim
 			if (s.dur) {
-				s.dur *= fact
+				d = Math.round(s.dur * tt / to)	// new duration
+				to -= s.dur		// old remaining time
+				s.dur = d
+				tt -= s.dur		// new remaining time
 				tim += s.dur
 			}
 		}
