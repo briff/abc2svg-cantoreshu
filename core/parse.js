@@ -2208,7 +2208,7 @@ Abc.prototype.new_note = function(grace, sls) {
 					curvoice.acc[apit] = i
 			}
 
-			if (!i && acc_tie)
+			if (acc_tie && acc_tie[apit])
 				i = acc_tie[apit]	// tied note
 
 			// map
@@ -2291,12 +2291,15 @@ Abc.prototype.new_note = function(grace, sls) {
 					note.s = s
 					curvoice.tie_s = s
 					s.ti1 = true
-					if (curvoice.acc[apit]) {
+					if (curvoice.acc[apit]
+					 || (acc_tie
+					  && acc_tie[apit])) {
 						if (!curvoice.acc_tie)
 							curvoice.acc_tie = []
-						curvoice.acc_tie[apit] =
-							curvoice.acc[apit] ||
-								acc_tie[apit]
+						i = curvoice.acc[apit]
+						if (acc_tie && acc_tie[apit])
+							i = acc_tie[apit]
+						curvoice.acc_tie[apit] = i
 					}
 					c = line.char()
 					continue
@@ -2430,12 +2433,15 @@ Abc.prototype.new_note = function(grace, sls) {
 					note = s.notes[i]
 					apit = note.pit + 19	// pitch from C-1
 						- dpit		// (if transposition)
-					if (curvoice.acc[apit]) {
+					if (curvoice.acc[apit]
+					 || (acc_tie
+					  && acc_tie[apit])) {
 						if (!curvoice.acc_tie)
 							curvoice.acc_tie = []
-						curvoice.acc_tie[apit] =
-							curvoice.acc[apit] ||
-								acc_tie[apit]
+						n = curvoice.acc[apit]
+						if (acc_tie && acc_tie[apit])
+							n = acc_tie[apit]
+						curvoice.acc_tie[apit] = n
 					}
 				}
 				c = line.char()
