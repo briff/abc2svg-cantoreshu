@@ -42,6 +42,7 @@ abc2svg.equalbars = {
     },
 
     // adjust the symbol offsets of a music line
+    // only the bars of the first voice are treated
     set_sym_glue: function(of, width) {
     var	C = abc2svg.C,
 	s, s2, w, i, n, x, g, t, t0,
@@ -53,7 +54,7 @@ abc2svg.equalbars = {
 		return
 
 	// search the first note/rest/space
-	for (s2 = tsfirst; s2; s2 = s2.ts_next) {
+	for (s2 = tsfirst; s2; s2 = s2.next) {
 		switch (s2.type) {
 		default:
 			continue
@@ -71,7 +72,7 @@ abc2svg.equalbars = {
 
 	// build an array of the bars
 	t0 = t = s2.time
-	for (s = s2; s.ts_next; s = s.ts_next) {
+	for (s = s2; s.next; s = s.next) {
 		if (s.type == C.BAR && s.seqst) {
 			bars.push([s, s.time - t]);
 			t = s.time
