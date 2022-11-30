@@ -1955,10 +1955,10 @@ function draw_measnb() {
 			if (gene.curfont.pad)
 				w += gene.curfont.pad * 2
 			x = s.x - s.wl + 2	// if clef, shift a bit
-			y = y_get(st, true, x, w)
+			y = y_get(st, true, x, w) + 5
 			if (y < staff_tb[st].topbar + 6)
 				y = staff_tb[st].topbar + 6;
-			y += 2 + gene.curfont.pad
+			y += gene.curfont.pad
 			xy_str(x, y - gene.curfont.size * .2, bar_num.toString())
 			y += gene.curfont.size + gene.curfont.pad
 			y_set(st, true, x, w, y);

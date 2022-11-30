@@ -2991,21 +2991,16 @@ function draw_sym_near() {
 
 		/* have room for the accidentals */
 		if (s.notes[s.nhd].acc) {
-			y = s.y + 8
-			if (s.ymx < y)
-				s.ymx = y;
-			y_set(s.st, true, s.x, 0, y)
+			y = 3 * (s.notes[s.nhd].pit - 18)
+				+ (s.notes[s.nhd].acc == -1	// flat
+					? 11 : 10)
+			y_set(s.st, true, s.x - 10, 10, y)
 		}
 		if (s.notes[0].acc) {
-			y = s.y
-			if (s.notes[0].acc == 1		// sharp
-			 || s.notes[0].acc == 3)	// natural
-				y -= 7
-			else
-				y -= 5
-			if (s.ymn > y)
-				s.ymn = y;
-			y_set(s.st, false, s.x, 0, y)
+			y = 3 * (s.notes[0].pit - 18)
+				- (s.notes[0].acc == -1		// flat
+					? 5 : 10)
+			y_set(s.st, false, s.x - 10, 10, y)
 		}
 	}
 
