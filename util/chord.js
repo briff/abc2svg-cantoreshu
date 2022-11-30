@@ -176,6 +176,8 @@ abc2svg.chord = function(first,		// first symbol in time
 		// generate the notes of the chord
 		n = ch.length
 		r += trans
+		if (sb.p_v.tr_snd)
+			r += sb.p_v.tr_snd
 		for (m = 0; m < n; m++) {
 			not = {
 				midi: r + ch[m]
