@@ -336,11 +336,11 @@ Abc.prototype.draw_gchord = function(i, s, x, y) {
 	h = an.text.wh[1],
 	pad = an.font.pad,
 	w = an.text.wh[0] + pad * 2,
-	dy = 0
+	dy = h * .22			// descent
 
 	if (an.font.figb) {
 		h *= 2.4
-		dy = an.font.size * 1.3
+		dy += an.font.size * 1.3
 	}
 
 	switch (an.type) {
@@ -349,7 +349,6 @@ Abc.prototype.draw_gchord = function(i, s, x, y) {
 		y_set(s.st, 0, x, w, y - pad)
 		break
 	case '^':			// above
-		y = y_get(s.st, 1, x, w)
 		y += pad
 		y_set(s.st, 1, x, w, y + h + pad)
 		break
@@ -438,7 +437,7 @@ function draw_all_chsy() {
 				w = an.text.wh[0]
 				if (w && x + w > realwidth)
 					x = realwidth - w // let the text in the page
-				y = y_get(s.st, 1, x, w)	// y / staff
+				y = y_get(s.st, 1, x, w) + 2	// y / staff
 				if (an.type == 'g' && y < minmax[s.st].yup)
 					y = minmax[s.st].yup
 			} else if (an.pos == C.SL_BELOW
@@ -467,7 +466,7 @@ function draw_all_chsy() {
 			w = an.text.wh[0]
 			if (w && x + w > realwidth)	// let the text inside the page
 				x = realwidth - w
-			y = y_get(s.st, 0, x, w)	// y / staff
+			y = y_get(s.st, 0, x, w) - 2	// y / staff
 			if (an.type == 'g' && y > minmax[s.st].ydn)
 				y = minmax[s.st].ydn
 			self.draw_gchord(i, s, x, y)
@@ -495,11 +494,11 @@ function draw_all_chsy() {
 				an = an[i]
 				w = an.text.wh[0]
 				if (an.pos == C.SL_ABOVE) {
-					y = y_get(s.st, true, s.x, w)
+					y = y_get(s.st, true, s.x, w) + 2
 					if (y > minmax[s.st].yup)
 						minmax[s.st].yup = y
 				} else if (an.pos == C.SL_BELOW) {
-					y = y_get(s.st, false, s.x, w)
+					y = y_get(s.st, false, s.x, w) - 2
 					if (y < minmax[s.st].ydn)
 						minmax[s.st].ydn = y
 				}
