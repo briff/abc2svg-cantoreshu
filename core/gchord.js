@@ -174,8 +174,9 @@ function parse_gchord(type) {
 var	note_names = "CDEFGAB",
 	acc_name = ["bb", "b", "", "#", "##"]
 
-	function gch_tr1(p, transp) {
+	function gch_tr1(p) {
 	    var	i, o, n, a, ip, b40,
+		tr = curvoice.tr_sco,
 		csa = p.split('/')
 
 		for (i = 0; i < csa.length; i++) {	// main and optional bass
@@ -194,7 +195,7 @@ var	note_names = "CDEFGAB",
 				ip++
 			}
 			n = note_names.indexOf(p[o]) + 16
-			b40 = (abc2svg.pab40(n, a) + transp + 200) % 40
+			b40 = (abc2svg.pab40(n, a) + tr + 200) % 40
 			b40 = abc2svg.b40k[b40]
 			csa[i] = p.slice(0, o) +
 					note_names[abc2svg.b40_p[b40]] +
@@ -204,19 +205,9 @@ var	note_names = "CDEFGAB",
 		return csa.join('/')
 	} // gch_tr1
 
-function gch_transp(s, sk) {
-    var	gch,
-	i = s.a_gch.length
-
-	while (--i >= 0) {
-		gch = s.a_gch[i]
-		if (gch.type == 'g')
-			gch.text = gch_tr1(gch.text, sk.k_transp)
-	}
-}
-
 // parser: add the parsed list of chord symbols and annotations
 //	to the symbol (note, rest or bar)
+//	and transpose the chord symbols
 function csan_add(s) {
     var	i, gch
 
@@ -228,6 +219,14 @@ function csan_add(s) {
 				       "There cannot be chord symbols on measure bars")
 				a_gch.splice(i)
 			}
+		}
+	}
+
+	if (curvoice.tr_sco) {
+		for (i = 0; i < a_gch.length; i++) {
+			gch = a_gch[i]
+			if (gch.type == 'g')
+				gch.text = gch_tr1(gch.text)
 		}
 	}
 
