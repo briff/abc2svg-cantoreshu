@@ -163,6 +163,10 @@ rule version
 		v=`echo $$v|awk -F. -v OFS=. '{$$2 += 1; $$3=0; print}'`;$
 	fi;$
 	fossil commit --allow-empty -m "New release $$v" -tag $$v;$
+	n=`tail -1 abc2svg-1.js|wc -c`;$
+	truncate -s -$$n abc2svg-1.js;$
+	d=`date -Idate`;$
+	echo "abc2svg.version=\"$$v\";abc2svg.vdate=\"$$d\"" >> abc2svg-1.js;$
 	r="abc2svg-$$v";$
 	ln -s . $$r;$
 	sed "s#^#$$r/#" dist_bin | pax -wj -x tar -f abc2svg.tar.bz2;$
