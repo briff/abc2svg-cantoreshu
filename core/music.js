@@ -2541,8 +2541,7 @@ function set_auto_clef(st, s_start, clef_type_start) {
 		for (s2 = s.ts_prev; s2 != s_last_chg; s2 = s2.ts_prev) {
 			if (s2.st != st)
 				continue
-			if (s2.type == C.BAR
-			 && s2.v == s.v) {
+			if (s2.type == C.BAR) {
 				s3 = s2.bar_type[0] != ':' ? s2 : s2.next
 				break
 			}
