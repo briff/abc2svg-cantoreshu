@@ -1954,7 +1954,7 @@ function draw_measnb() {
 				w *= bar_num >= 100 ? 3 : 2
 			if (gene.curfont.pad)
 				w += gene.curfont.pad * 2
-			x = s.x - s.wl + 2	// if clef, shift a bit
+			x = s.x - s.wl - w
 			y = y_get(st, true, x, w) + 5
 			if (y < staff_tb[st].topbar + 6)
 				y = staff_tb[st].topbar + 6;
