@@ -447,7 +447,8 @@ function new_syst(init) {
 /* -- set the bar numbers -- */
 // (possible hook)
 Abc.prototype.set_bar_num = function() {
-    var	s, s2, tim, rep_tim, k, n, b_typ,
+    var	s, s2, rep_tim, k, n, nu, txt,
+	tim = 0,			// time of the previous bar
 	bar_num = gene.nbar,
 	bar_tim = 0,			// time of previous repeat variant
 	ptim = 0,			// time of previous bar
@@ -496,15 +497,22 @@ Abc.prototype.set_bar_num = function() {
 			wmeasure = s.wmeasure
 			break
 		case C.BAR:
-			if (s.invis)
-				break
-			if (s.time != tim)
-				b_typ = 0
+			if (s.time <= tim)
+				break			// already seen
 			tim = s.time
-			k = s.text ? 1 : 2		// bar type: variant or not
-			if (b_typ & k)
-				break			// bar already seen
-			b_typ |= k
+
+			nu = 1 //true			// no num update
+			txt = ""
+			for (s2 = s; s2; s2 = s2.next) {
+				if (s2.time > tim || s2.dur)
+					break
+				if (!s2.bar_type)
+					continue
+				if (s2.bar_type != '[')
+					nu = 0 //false	// do update
+				if (s2.text)
+					txt = s2.text
+			}
 			if (s.bar_num) {
 				bar_num = s.bar_num	// (%%setbarnb)
 				ptim = bar_tim = tim
@@ -513,15 +521,16 @@ Abc.prototype.set_bar_num = function() {
 			if (wmeasure == 1) {		// if M:none
 				if (s.bar_dotted)
 					continue
-				if (s.text) {
+				if (txt) {
 					if (!cfmt.contbarnb) {
-						if (s.text[0] == '1')
+						if (txt[0] == '1')
 							rep_tim = bar_num
 						else
 							bar_num = rep_tim
 					}
 				}
-				s.bar_num = ++bar_num
+				if (!nu)
+					s.bar_num = ++bar_num
 				continue
 			}
 
@@ -537,13 +546,14 @@ Abc.prototype.set_bar_num = function() {
 				bar_tim = tim		// re-synchronize
 				bar_num = n
 			}
-			if (s.text) {
-				if (s.text[0] == '1') {
+
+			if (txt) {
+				if (txt[0] == '1') {
 					if (cfmt.contbarnb)
 						rep_tim = bar_tim + k * wmeasure
 					else
 						rep_tim = tim
-					if (!k)
+					if (!nu)
 						s.bar_num = n
 				} else {
 					if (cfmt.contbarnb)
