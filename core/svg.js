@@ -1077,16 +1077,25 @@ function out_deco_val(x, y, name, val, defl) {
 }
 
 function out_glisq(x2, y2, de) {
-	var	de1 = de.start,
+    var	ar, a, len,
+	de1 = de.start,
 		x1 = de1.x,
 		y1 = de1.y + staff_tb[de1.st].y,
-		ar = Math.atan2(y1 - y2, x2 - x1),
-		a = ar / Math.PI * 180,
-		len = (x2 - x1) / Math.cos(ar);
+		dx = x2 - x1,
+		dy = self.sh(y1 - y2)
+
+	if (!stv_g.g)
+		dx /= stv_g.scale
+
+	ar = Math.atan2(dy, dx)
+	a = ar / Math.PI * 180
+	len = (dx - (de1.s.dots ? 13 + de1.s.xmx : 8)
+		- 8 - (de.s.notes[0].shac || 0))
+			/ Math.cos(ar)
 
 	g_open(x1, y1, a);
 	x1 = de1.s.dots ? 13 + de1.s.xmx : 8;
-	len = (len - x1 - 6) / 6 | 0
+	len = len / 6 | 0
 	if (len < 1)
 		len = 1
 	while (--len >= 0) {
@@ -1097,17 +1106,24 @@ function out_glisq(x2, y2, de) {
 }
 
 function out_gliss(x2, y2, de) {
-	var	de1 = de.start,
+    var	ar, a, len,
+	de1 = de.start,
 		x1 = de1.x,
 		y1 = de1.y + staff_tb[de1.st].y,
-		ar = -Math.atan2(y2 - y1, x2 - x1),
-		a = ar / Math.PI * 180,
-		len = (x2 - x1) / Math.cos(ar);
+		dx = x2 - x1,
+		dy = self.sh(y1 - y2)
+
+	if (!stv_g.g)
+		dx /= stv_g.scale
+
+	ar = Math.atan2(dy, dx)
+	a = ar / Math.PI * 180
+	len = (dx - (de1.s.dots ? 13 + de1.s.xmx : 8)
+		- 8 - (de.s.notes[0].shac || 0))
+			/ Math.cos(ar)
 
 	g_open(x1, y1, a);
-	x1 = de1.s.dots ? 13 + de1.s.xmx : 8;
-	len -= x1 + 8;
-	xypath(x1, 0);
+	xypath(de1.s.dots ? 13 + de1.s.xmx : 8, 0)
 	output += 'h' + len.toFixed(1) + '" stroke-width="1"/>\n';
 	g_close()
 }
