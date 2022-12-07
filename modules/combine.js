@@ -27,8 +27,7 @@ abc2svg.combine = {
     // function called at start of the generation when multi-voices
     comb_v: function() {
     var	C = abc2svg.C,
-	abc = this,
-	sy
+	abc = this
 
     // check if voice combine may occur
     function may_combine(s) {
@@ -39,8 +38,7 @@ abc2svg.combine = {
 		return false
 	if (s2.st != s.st
 	 || s2.time != s.time
-	 || s2.dur != s.dur
-	 || sy.voices[s2.v].range != sy.voices[s.v].range + 1)	// next voice only
+	 || s2.dur != s.dur)
 		return false
 	if (s.combine <= 0
 	 && s2.type != s.type)
@@ -164,10 +162,7 @@ function do_combine(s) {
 				continue
 			if (may_combine(s))
 				do_combine(s)
-			continue
-		case C.STAVES:
-			sy = s.sy
-			// fall thru
+//			continue		// fall thru
 		default:
 			continue
 		case C.NOTE:
