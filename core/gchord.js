@@ -50,7 +50,8 @@ function parse_gchord(type) {
 				syntax(1, "No end of chord symbol/annotation")
 				return
 			}
-			if (line.buffer[j - 1] != '\\')
+			if (line.buffer[j - 1] != '\\'
+			 || line.buffer[j - 2] == '\\')	// (string ending with \\")
 				break
 			i = j + 1
 		}
@@ -130,9 +131,11 @@ function parse_gchord(type) {
 			switch (c) {
 			case '\\':
 				c = text[++i]
-				if (!c || c == 'n')
+				if (c == 'n')
 					break
 				gch.text += '\\'
+				if (!c)
+					break
 			default:
 				gch.text += c;
 				i++
