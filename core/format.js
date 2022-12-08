@@ -216,6 +216,8 @@ function param_set_font(xxxfont, p) {
 		font = {
 			name: font.name,
 			size: font.size,
+			weight: font.weight,
+			style: font.style,
 			box: font.box,
 			pad: font.pad || 0
 		}
