@@ -1257,14 +1257,14 @@ function writempo(s, x, y) {
 //fixme: then there cannot be font changes by "$n" in the Q: texts
 	output += '<text class="' + font_class(gene.curfont) +
 		'" x="'
-	out_sxsy(x, '" y="', y + gene.curfont.size * .2)
+	out_sxsy(x, '" y="', y + gene.curfont.size * .22)
 	output += '">' + s.tempo_str + '</text>\n'
 
 	if (bh) {
 		gene.curfont.box = true
 		output += '<rect class="stroke" x="'
 		out_sxsy(x - 2, '" y="', y + bh - 1)
-		output += '" width="' + (s.tempo_wh[0] + 2).toFixed(1) +
+		output += '" width="' + (s.tempo_wh[0] + 4).toFixed(1) +
 			'" height="' + bh.toFixed(1) +
 			'"/>\n'
 	}
