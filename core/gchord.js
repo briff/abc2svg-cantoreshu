@@ -88,7 +88,6 @@ function parse_gchord(type) {
 					i--
 			}
 			gch.x = x_abs;
-			y_abs -= h_ann * .3	// center vertically
 			gch.y = y_abs
 			break
 		case '^':
@@ -272,7 +271,6 @@ Abc.prototype.gch_build = function(s) {
 			 && !user.anno_start && !user.anno_stop) {
 				set_font(gch.font)
 				gch.text = str2svg(gch.text)
-				gch.text.wh = [0, 0]
 				continue		/* no width */
 			}
 		}
@@ -281,7 +279,6 @@ Abc.prototype.gch_build = function(s) {
 		set_font(gch.font);
 		gch.text = str2svg(gch.text)
 		wh = gch.text.wh
-		wh[1] += gch.font.pad * 2
 		switch (gch.type) {
 		case '@':
 			break
@@ -349,11 +346,9 @@ Abc.prototype.draw_gchord = function(i, s, x, y) {
 	switch (an.type) {
 	case '_':			// below
 		y -= h + pad
-		y_set(s.st, 0, x, w, y - pad)
 		break
 	case '^':			// above
 		y += pad
-		y_set(s.st, 1, x, w, y + h + pad)
 		break
 	case '<':			// left
 	case '>':			// right
@@ -374,37 +369,38 @@ Abc.prototype.draw_gchord = function(i, s, x, y) {
 						18) * 3 :
 				12)		// fixed offset on rests and bars
 			- h / 2
-		if (y > 24)
-			y_set(s.st, 1, x, w, y + h + pad)
-		if (y < 0)
-			y_set(s.st, 0, x, w, y - pad)
 		break
 	default:			// chord symbol
-		if (y >= 0) {
+		if (y >= 0)
 			y += pad
-			y_set(s.st, 1, x, w, y + h + pad)
-		} else {
+		else
 			y -= h + pad
-			y_set(s.st, 0, x, w, y - pad)
-		}
 		break
 	case '@':			// absolute
 		y += (s.type == C.NOTE ?
 				(((s.notes[s.nhd].pit + s.notes[0].pit) >> 1) -
 						18) * 3 :
 				12)		// fixed offset on rests and bars
-			+ h * .2
+			- h / 2
 		if (y > 0) {
-			y2 = y + h * .8
+			y2 = y + h + pad + 2
 			if (y2 > staff_tb[s.st].ann_top)
 				staff_tb[s.st].ann_top = y2
 		} else {
-			y2 = y
+			y2 = y - 2
 			if (y2 < staff_tb[s.st].ann_bot)
 				staff_tb[s.st].ann_bot = y2
 		}
 		break
 	}
+
+	if (an.type != '@') {
+		if (y > 24)
+			y_set(s.st, 1, x, w, y + h + pad + 2)
+		else if (y < 0)
+			y_set(s.st, 0, x, w, y - pad)
+	}
+
 	use_font(an.font)
 	set_font(an.font)
 	set_dscale(s.st)
