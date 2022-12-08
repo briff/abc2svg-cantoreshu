@@ -230,7 +230,7 @@ function param_set_font(xxxfont, p) {
 			font.pad = 0
 		} else {
 			font.box = true
-			font.pad = 2
+			font.pad = 2.5
 		}
 		p = p.replace(a[0], a[2])
 	}
