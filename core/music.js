@@ -1745,6 +1745,8 @@ function set_nl(s) {			// s = start of line
 				if (!s2.prev)		// start of voice
 					continue
 				if (s2.type == C.CLEF) {
+					if (s2.invis)	// if 'K: clef=none' after bar
+						break
 					for (s1 = s.ts_prev; s1; s1 = s1.ts_prev) {
 						switch (s1.type) {
 						case C.BAR:
