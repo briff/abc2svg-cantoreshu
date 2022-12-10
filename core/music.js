@@ -1992,30 +1992,28 @@ function set_lines(	s,		/* first symbol */
 			bar_time = s2.time
 
 			xmax -= 8; // (left width of the inserted bar in set_allsymwidth)
-			s5 = null
+			s5 = s
 			for ( ; s != next; s = s.ts_next) {
-				if (s.dur) {
-					if (!s.beam_end)
-						beam |= 1 << s.v
-					else
-						beam &= ~(1 << s.v)
-				}
-				if (!s.seqst)
-					continue
-				x = s.x
-				if (x + s.wr >= xmax)
-					break
-				if (beam || s.in_tuplet)
-					continue
-				if (s5) {
-					if (xmid - s5.x > x - xmid
-					 || (s.dur
-					  && (s.time + s.dur - bar_time)
+				if (s.seqst) {
+					x = s.x
+					if (x + s.wr >= xmax)
+						break
+					if (!beam && !s.in_tuplet
+					 && (xmid - s5.x > x - xmid
+					  || (s.time - bar_time)
 							% (C.BLEN / 4) == 0))
-						s3 = s5
-//??					break
+						s3 = s
 				}
-				s5 = s			// start of time sequence
+				if (s.beam_st)
+					beam |= 1 << s.v
+				if (s.beam_end)
+					beam &= ~(1 << s.v)
+				s5 = s		// start of new time sequence
+			}
+			if (s3) {
+				do {		// cut on the previous sequence
+					s3 = s3.ts_prev
+				} while (!s3.seqst)
 			}
 		}
 
