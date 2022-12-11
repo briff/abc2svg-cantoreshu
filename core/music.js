@@ -313,8 +313,10 @@ function set_acc_shft() {
 
 		// build a pseudo chord and shift the accidentals
 		notes = []
-		for ( ; s != s2; s = s.ts_next)
-			Array.prototype.push.apply(notes, s.notes)
+		for ( ; s != s2; s = s.ts_next) {
+			if (!s.invis)
+				Array.prototype.push.apply(notes, s.notes)
+		}
 		notes.sort(abc2svg.pitcmp)
 		acc_shift(notes, dx_head)
 	}
