@@ -29,10 +29,27 @@ abc2svg.combine = {
     var	C = abc2svg.C,
 	abc = this
 
+    // get the symbol of the note to combine
+    function get_cmb(s) {
+    var	p,
+	s2 = s.ts_next,
+	i = s.p_v.id.indexOf('.')		// '.' is the group separator
+
+	if (i >= 0) {
+		p = s.p_v.id.slice(0, i)	// group
+		while (s2 && s2.time == s.time) {
+			if (s2.p_v.id.indexOf(p) == 0)
+				break
+			s2 = s2.ts_next
+		}
+	}
+	return s2
+    } // get_cmb()
+
     // check if voice combine may occur
     function may_combine(s) {
     var	nhd2,
-	s2 = s.ts_next
+	s2 = get_cmb(s)
 
 	if (!s2 || (s2.type != C.NOTE && s2.type != C.REST))
 		return false
@@ -102,19 +119,18 @@ abc2svg.combine = {
 } // combine_notes()
 
 // combine 2 voices
+// return the remaining one
 function do_combine(s) {
-	var s2, nhd, nhd2, type
+	var s2, type
 
-		s2 = s.ts_next
+		s2 = get_cmb(s)
 
 		// there may be more voices
 		if (!s.in_tuplet
 		 && s2.combine != undefined && s2.combine >= 0
 		 && may_combine(s2))
-			do_combine(s2)
+			s2 = do_combine(s2)
 
-		nhd = s.nhd;
-		nhd2 = s2.nhd
 		if (s.type != s2.type) {	// if note and rest
 			if (s2.type != C.REST) {
 				s2 = s;
@@ -150,6 +166,7 @@ function do_combine(s) {
 		}
 
 		s2.play = s2.invis = true	// don't display, but play
+		return s
 } // do_combine()
 
 	// code of comb_v()
@@ -161,7 +178,7 @@ function do_combine(s) {
 			if (s.combine == undefined || s.combine < 0)
 				continue
 			if (may_combine(s))
-				do_combine(s)
+				s = do_combine(s)
 //			continue		// fall thru
 		default:
 			continue
@@ -191,7 +208,7 @@ function do_combine(s) {
 			continue
 		s2 = s
 		while (1) {
-			do_combine(s2)
+			s2 = do_combine(s2)
 //fixme: may have rests in beam
 			if (s2.beam_end)
 				break
