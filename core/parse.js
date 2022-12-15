@@ -631,7 +631,7 @@ function memo_kv_parm(vid,	// voice ID (V:) / '*' (K:/V:*)
 // K: key signature
 // return the key and the voice/clef parameters
 function new_key(param) {
-    var	i, clef, key_end, c, tmp, note,
+    var	i, key_end, c, tmp, note,
 	sf = "FCGDAEB".indexOf(param[0]) - 1,
 	mode = 0,
 	s = {
@@ -1861,68 +1861,63 @@ function parse_vpos() {
 }
 
 // on end of slur, create the slur
-function slur_add(enote, e_is_note) {
-    var	i, s, sl, snote, s_is_note
+function slur_add(s, nt) {		// nt = note if slur ending on note
+    var	i, s2, sl
 
 	// go back and find the last start of slur
 	for (i = curvoice.sls.length; --i >= 0; ) {
 		sl = curvoice.sls[i]
-		snote = sl.note
-		s_is_note = sl.is_note
-		delete sl.is_note
 
 		// the slur must not start and stop on a same symbol
-		if (snote.s != enote.s) {
-			sl.note = enote
-			if (e_is_note)
-				sl.is_note = e_is_note
-			s = s_is_note ? snote : snote.s
-			if (!s.sls)
-				s.sls = [];
-			s.sls.push(sl)
-			curvoice.sls.splice(i, 1)
+		if (sl.ss == s)
+			continue
+		curvoice.sls.splice(i, 1)
+		sl.se = s			// ending symbol
+		if (nt)
+			sl.nte = nt
+		s2 = sl.ss			// start of slur
+		if (!s2.sls)
+			s2.sls = []
+		s2.sls.push(sl)
 
-			// set a flag on the start symbol if slur from a note
-			if (s_is_note)
-				snote.s.sl1 = true
+		// set a flag if the slur starts on a grace note
+		if (sl.grace)
+			sl.grace.sl1 = true
 
-			// set a flag if the slur starts on a grace note
-			if (sl.grace)
-				sl.grace.sl1 = true
-
-			// set a flag if the slur ends on a grace note
-			if (enote.s.grace)
-				enote.s.sl2 = true
-			return
-		}
+		// set a flag if the slur ends on a grace note
+		if (s.grace)
+			s.grace.sl2 = 1 //true
+		return
 	}
 
 	// the lack of a starting slur may be due to a repeat
-	for (s = enote.s.prev; s; s = s.prev) {
-		if (s.type == C.BAR
-		 && s.bar_type[0] == ':'
-		 && s.text) {
-			if (!s.sls)
-				s.sls = [];
-			s.sls.push({
-				note: enote,
+	for (s2 = s.prev; s2; s2 = s2.prev) {
+		if (s2.type == C.BAR
+		 && s2.bar_type[0] == ':'
+		 && s2.text) {
+			if (!s2.sls)
+				s2.sls = [];
+			s2.sls.push({
 //fixme: should go back to the bar "|1" and find the slur type...
-				ty: C.SL_AUTO
+				ty: C.SL_AUTO,
+				ss: s2,
+				se: s
 			})
-			if (e_is_note)
-				s.sls[s.sls.length - 1].is_note = e_is_note
+			if (nt)
+				s2.sls[s2.sls.length - 1].nte = nt
 			return
 		}
 	}
 //	syntax(1, "End of slur without start")
-	s = enote.s
 	if (!s.sls)
 		s.sls = [];
 	s.sls.push({
-		note: enote,
 		ty: C.SL_AUTO,
+		se: s,
 		loc: 'i'			// no slur start
 	})
+	if (nt)
+		s.sls[s.sls.length - 1].nte = nt
 }
 
 // convert a diatonic pitch and accidental to a MIDI pitch with cents
@@ -2262,12 +2257,11 @@ Abc.prototype.new_note = function(grace, sls) {
 					if (!i)
 						break
 					curvoice.sls.push({
-						is_note: true,
-						note: note,
-						ty: i
+						ty: i,
+						ss: s,
+						nts: note	// starting note
 					})
 				}
-				note.s = s;		// link the note to the chord
 			}
 			if (a_dcn.length) {
 				s.time = curvoice.time	// (needed for !tie)!
@@ -2282,8 +2276,7 @@ Abc.prototype.new_note = function(grace, sls) {
 			while (1) {
 				switch (c) {
 				case ')':
-					note.s = s
-					slur_add(note, true)
+					slur_add(s, note)
 					c = line.next_char()
 					continue
 				case '-':
@@ -2336,10 +2329,10 @@ Abc.prototype.new_note = function(grace, sls) {
 				i = sls.shift()
 				if (!i)
 					break
-				s.notes[0].s = s
 				curvoice.sls.push({
-					note: s.notes[0],
-					ty: i
+					ty: i,
+					ss: s
+					// no starting note
 				})
 				if (grace)
 					curvoice.sls[curvoice.sls.length - 1].grace =
@@ -2350,6 +2343,7 @@ Abc.prototype.new_note = function(grace, sls) {
 		// the duration of the chord is the duration of the 1st note
 		s.dur_orig = s.notes[0].dur;
 		s.dur = s.notes[0].dur * curvoice.dur_fact
+		break
 	}
 	if (s.grace && s.type != C.NOTE) {
 		syntax(1, errs.bad_grace)
@@ -2853,8 +2847,7 @@ function parse_music_line() {
 					syntax(1, errs.bad_char, c)
 					break
 				}
-				s.notes[0].s = s
-				slur_add(s.notes[0])
+				slur_add(s)
 				break
 			case '!':			// start of decoration
 				if (type.length > 1)	// decoration letter

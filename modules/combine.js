@@ -89,7 +89,6 @@ abc2svg.combine = {
 	// put the notes of the 2nd voice into the 1st one
 	for (m = 0; m <= s2.nhd; m++) {
 		not = abc.clone(s2.notes[m])
-		not.s = s		// change the container of the note
 		not.noplay = true	// and don't play it
 		s.notes.push(not)
 	}
@@ -121,7 +120,7 @@ abc2svg.combine = {
 // combine 2 voices
 // return the remaining one
 function do_combine(s) {
-	var s2, type
+	var s2, s3, type, i, n, sl
 
 		s2 = get_cmb(s)
 
@@ -148,14 +147,34 @@ function do_combine(s) {
 				s.ti2 = true
 		}
 
+		// if some slurs start on the second symbol
+		// move them to the combined symbol
+		// also, set a flag in the symbols of the ending slurs
 		if (s2.sls) {
 			if (s.sls)
 				Array.prototype.push.apply(s.sls, s2.sls)
 			else
 				s.sls = s2.sls
+			for (i = 0; i < s2.sls.length; i++) {
+				sl = s2.sls[i]
+				if (sl.se)
+					sl.se.slsr = s	// reverse pointer
+				sl.ty = C.SL_BELOW
+			}
+			delete s2.sls
 		}
-		if (s2.sl1)
-			s.sl1 = true
+
+		// if a combined slur is ending on the second symbol,
+		// update its starting symbol
+		s3 = s2.slsr			// pointer to the starting symbol
+		if (s3) {
+			for (i = 0; i < s3.sls.length; i++) {
+				sl = s3.sls[i]
+				if (sl.se == s2)
+					sl.se = s
+			}
+		}
+
 		if (s2.a_gch)
 			s.a_gch = s2.a_gch
 		if (s2.a_dd) {

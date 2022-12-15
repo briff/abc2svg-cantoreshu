@@ -1356,7 +1356,6 @@ function to_rest(so) {
 // just keep nl and seqst
 	delete s.in_tuplet
 	delete s.tp
-	delete s.sl1
 	delete s.a_dd
 	delete s.a_gch
 	delete s.sls

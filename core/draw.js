@@ -1744,8 +1744,7 @@ function slur_out(x1, y1, x2, y2, dir, height, dotted) {
 /* (delayed output) */
 /* (not a pretty routine, this) */
 function draw_slur(path,	// list of symbols under the slur
-		not1,		// note if start on a note head
-		sl) {		// ending variables: type, note, end on a note
+		sl) {		// slur variables: type, end symbol, note
     var	i,
 	k, g, x1, y1, x2, y2, height, addy,
 	a, y, z, h, dx, dy,
@@ -1754,6 +1753,7 @@ function draw_slur(path,	// list of symbols under the slur
 	n = path.length,
 	i1 = 0,
 	i2 = n - 1,
+	not1 = sl.nts,		// if the slur start on a note
 	k1 = path[0],
 	k2 = path[i2]
 
@@ -1837,8 +1837,8 @@ if (two_staves) error(2, k1, "*** multi-staves slurs not treated yet");
 		}
 	}
 
-	if (sl.is_note) {				// end on a note
-		y2 = 3 * (sl.note.pit - 18) + 2 * dir
+	if (sl.nte) {					// slur ending on a note
+		y2 = 3 * (sl.nte.pit - 18) + 2 * dir
 		x2 -= 3
 	} else {					// end on a chord
 		y2 = dir > 0 ? k2.ymx + 2 : k2.ymn - 2
@@ -2059,7 +2059,7 @@ if (two_staves) error(2, k1, "*** multi-staves slurs not treated yet");
 			k.ymn = y
 		if (i == i2 - 1) {
 			dx = x2
-			if (k2.sl1)
+			if (sl.nte)
 				dx -= 5;
 			if (i)
 				y -= height / 3
@@ -2081,12 +2081,10 @@ function draw_slurs(s, last) {
 
 	// draw a slur knowing the start and stop elements
 	function draw_sls(s,		// start symbol
-			sl,		// stop note
-			snote) {	// optional start note
+			sl) {		// slur variables
 	    var	k, v, i, dir, s3,
 		path = [],
-		enote = sl.note,
-		s2 = enote.s			// end of slur
+		s2 = sl.se			// slur end
 
 		if (last && s2.time > last.time)
 			return			// will be drawn next time
@@ -2148,9 +2146,6 @@ function draw_slurs(s, last) {
 			while (s2.next)
 				s2 = s2.next;		// search the ending bar
 			sl = Object.create(sl);		// new slur
-			sl.note = {
-				s: s2
-			}
 		    }
 		}
 
@@ -2236,12 +2231,12 @@ function draw_slurs(s, last) {
 		// if some nested slurs/tuplets, draw them
 		for (i = 1; i < path.length - 1; i++) {
 			s = path[i]
-			if (s.sls || s.sl1)
+			if (s.sls)
 				draw_slurs(s, last)
 			if (s.tp)
 				draw_tuplet(s)
 		}
-		draw_slur(path, snote, sl)
+		draw_slur(path, sl)
 		return 1			// slur drawn, remove it
 	} // draw_sls()
 
@@ -2270,22 +2265,6 @@ function draw_slurs(s, last) {
 			if (nsls.length)
 				s.sls = nsls
 		}
-		if (s.sl1) {			// slurs from the note heads
-			for (m = 0; m <= s.nhd; m++) {
-				note = s.notes[m]
-				if (note.sls) {
-					sls = note.sls
-					note.sls = null
-					nsls = []
-					for (i = 0; i < sls.length; i++) {
-						if (!draw_sls(s, sls[i], note))
-							nsls.push(sls[i])
-					}
-					if (nsls.length)
-						note.sls = nsls
-				}
-			}
-		}
 		s = s.next
 	}
 }
@@ -2309,8 +2288,10 @@ function draw_tuplet(s1) {
 	for (s2 = s1; s2; s2 = s2.next) {
 		switch (s2.type) {
 		case C.GRACE:
+			if (!s2.sl1)
+				continue
 			for (g = s2.extra; g; g = g.next) {
-				if (g.sls || g.sl1)
+				if (g.sls)
 					draw_slurs(g)
 			}
 			// fall thru
@@ -2320,7 +2301,7 @@ function draw_tuplet(s1) {
 		case C.REST:
 			break
 		}
-		if (s2.sls || s2.sl1)
+		if (s2.sls)
 			draw_slurs(s2)
 		if (s2.st < upstaff)
 			upstaff = s2.st
@@ -2354,7 +2335,7 @@ function draw_tuplet(s1) {
 		nb_only = true
 	} else if (tp.f[1] == 1) {			/* 'what' == slur */
 		nb_only = true;
-		draw_slur([s1, s2], null, {ty: dir})
+		draw_slur([s1, s2], {ty: dir})
 	} else {
 
 		/* search if a bracket is needed */
@@ -2836,7 +2817,7 @@ function draw_all_ties(p_voice) {
  * The buffer output is delayed until the definition of the staff system
  */
 function draw_sym_near() {
-    var	p_voice, p_st, s, v, st, y, g, w, i, st, dx, top, bot, ymn, slur,
+    var	p_voice, p_st, s, v, st, y, g, w, i, st, dx, top, bot, ymn,
 	output_sav = output;
 
 	// set the staff offsets of a beam
@@ -2892,20 +2873,17 @@ function draw_sym_near() {
 		for (s = p_voice.sym; s; s = s.next) {
 			switch (s.type) {
 			case C.GRACE:
-				slur = 0
 				for (g = s.extra; g; g = g.next) {
 					if (g.beam_st && !g.beam_end) {
 						self.calculate_beam(bm, g)
 						if (bm.s2)
 							set_yab(g, bm.s2)
 					}
-					if (g.sls || g.sl1)
-						slur++
 				}
 				if (!s.p_v.ckey.k_bagpipe	// no slur when bagpipe
 				 && s.fmt.graceslurs
 				 && !s.gr_shift			// tied to previous note
-				 && !slur			// explicit slur
+				 && !s.sl1			// explicit slur
 				 && !s.ti1			// some tie
 				 && s.next
 				 && s.next.type == C.NOTE)
