@@ -932,6 +932,8 @@ Abc.prototype.set_width = function(s) {
 					n1 = -n1;
 				esp += 3	/* see extra space in draw_keysig() */
 			}
+		if (s.k_bagpipe == 'p')		// K:Hp - add the g natural
+			n1++
 		if (s.k_a_acc) {
 			n2 = s.k_a_acc.length
 			if (s.exp)

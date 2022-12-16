@@ -987,6 +987,10 @@ Abc.prototype.draw_keysig = function(x, s) {
 					x += 5.5
 				}
 			}
+			if (s.k_bagpipe == 'p') {	// K:Hp - add the g natural
+				xygl(x, staffb + 27, "acc3")
+				x += 5.5
+			}
 		}
 
 		/* new flats */
