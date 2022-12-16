@@ -1917,7 +1917,7 @@ function set_lines(	s,		/* first symbol */
     var	first, s2, s3, s4, s5, x, xmin, xmid, xmax, wwidth, shrink, space,
 	nlines,
 	last = next ? next.ts_prev : null,
-	ws = get_width(s, next)		// 2 widths: nice and shrinked
+	ws = get_width(s, next)		// 2 widths: nice and shrunk
 
 	// take care of big key signatures at end of line
 	if (s.fmt.keywarn && next
@@ -2772,7 +2772,7 @@ var rest_sp = [
 	[18, 18],
 	[12, 18],
 	[12, 12],
-	[0, 12],
+	[6, 12],
 	[6, 8],
 	[10, 10],			/* crotchet */
 	[6, 4],
