@@ -572,7 +572,6 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "keywarn":
 	case "linewarn":
 	case "quiet":
-	case "singleline":
 	case "squarebreve":
 	case "splittune":
 	case "straightflags":
@@ -791,12 +790,13 @@ Abc.prototype.set_format = function(cmd, param) {
 		cfmt[cmd] = get_textopt(param)
 		break
 	case "dynalign":
+	case "singleline":
 	case "stretchlast":
 	case "titletrim":
 		v = +param
 		if (isNaN(v))
 			v = get_bool(param) ? 0 : 1
-		if (cmd[0] == 's') {		// stretchlast
+		if (cmd[1] == 't') {		// stretchlast
 			if (v < 0 || v > 1) {
 				syntax(1, errs.bad_val, '%%' + cmd)
 				break

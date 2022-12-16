@@ -5133,7 +5133,12 @@ Abc.prototype.output_music = function() {
 	if (cfmt.singleline) {
 		v = get_ck_width();
 		lwidth = lsh[0] + v[0] + v[1] + get_width(tsfirst, null)[0]
-		img.width = lwidth * cfmt.scale + img.lm + img.rm + 2
+		v = cfmt.singleline == 2	// if as wide as the page width
+			? get_lwidth() : lwidth
+		if (v > lwidth)
+			lwidth = v
+		else
+			img.width = lwidth * cfmt.scale + img.lm + img.rm + 2
 	} else {
 
 	/* else, split the tune into music lines */
