@@ -328,28 +328,12 @@ function voice_adj(sys_chg) {
 				sl = p_voice.sls.shift()
 				if (!sl)
 					break
-				s = sl.note.s
-				for (s2 = s.next; s2; s2 = s2.next) {
-					if (s2.bar_type && s2.bar_type[0] == ':')
-						break
-				}
-				if (s2) {
-					if (!s.sls)
-						s.sls = []
-					s.sls.push({
-						ty: sl.ty,
-						note: {s: s2}
-					})
-				} else {
+				s = sl.ss
 //					error(1, s, "Lack of ending slur(s)")
 					if (!s.sls)
 						s.sls = []
-					s.sls.push({
-						ty: sl.ty,
-						note: {s: s2},
-						loc: 'o'	// no slur end
-					})
-				}
+				sl.loc = 'o'		// no slur end
+				s.sls.push(sl)
 			}
 		} // not %%score
 		for (s = p_voice.sym; s; s = s.next) {
