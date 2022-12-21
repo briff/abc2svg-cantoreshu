@@ -3280,7 +3280,7 @@ function draw_systems(indent) {
 
 	/* -- draw a staff -- */
 	function draw_staff(st, x1, x2) {
-		var	w, ws, i, dy, ty,
+	    var	w, i, dy, ty,
 			y = 0,
 			ln = "",
 			stafflines = staff_tb[st].stafflines,
@@ -3291,11 +3291,10 @@ function draw_systems(indent) {
 			return				// no line
 		w = x2 - x1;
 		set_sscale(-1)
-		ws = w / staff_tb[st].staffscale
 
 		// check if default staff
 		if (cache && cache.st_l == stafflines
-		 && cache.st_ws == (ws | 0)) {
+		 && cache.st_w == (w | 0)) {
 			xygl(x1, staff_tb[st].y, 'stdef' + cfmt.fullsvg)
 			return
 		}
@@ -3330,7 +3329,7 @@ function draw_systems(indent) {
 		 && w > get_lwidth() - 10) {
 			cache = {
 				st_l: stafflines,
-				st_ws: ws | 0
+				st_w: w | 0
 			}
 			i = 'stdef' + cfmt.fullsvg;
 			if (ln.indexOf('<path', 1) < 0)
