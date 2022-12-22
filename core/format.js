@@ -306,6 +306,10 @@ function param_set_font(xxxfont, p) {
 		if (a) {
 			font.normal = true
 			p = p.replace(a[0], '')
+			if (font.weight)
+				font.weight = null
+			if (font.style)
+				font.style = null
 		}
 
 		// font weight
