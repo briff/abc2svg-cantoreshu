@@ -217,30 +217,34 @@ abc2svg.chord = function(first,		// first symbol in time
 		chnm = abc2svg.ch_names
 	}
 
-	// create the chord voice
-	vch = {
-		v: voice_tb.length,
-		id: "_chord",
-		time: 0,
-		sym: {			// dummy symbol to simplify chord insertion
-			type: C.REST,
-			time: 0
-		},
-		instr: cfmt.chord.prog || 0,
-		vol: cfmt.chord.vol || .6	// (external default 76.2)
-	}
-	vch.last_sym = vch.sym
-	voice_tb.push(vch)
-
 	// define the MIDI channel
 	k = 0
-	for (i = 0; i < vch.v; i++) {
+	for (i = 0; i < voice_tb.length; i++) {
 		if (k < voice_tb[i].chn)
 			k = voice_tb[i].chn
 	}
 	if (k == 8)
 		k++			// skip the channel 10
-	vch.chn = k + 1
+
+	// create the chord voice
+	vch = {
+		v: voice_tb.length,
+		id: "_chord",
+		time: 0,
+		sym: {
+			type: C.BLOCK,
+			subtype: "midiprog",
+			chn: k + 1,
+			instr: cfmt.chord.prog || 0,
+			time: 0,
+			ts_prev: first,
+			ts_next: first.ts_next
+		},
+		vol: cfmt.chord.vol || .6	// (external default 76.2)
+	}
+	vch.last_sym = vch.sym
+	voice_tb.push(vch)
+	first.ts_next = vch.sym
 
 	// loop on the symbols and add the accompaniment chords
 	gchon = cfmt.chord.gchon

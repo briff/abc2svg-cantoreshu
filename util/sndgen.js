@@ -50,9 +50,7 @@ function ToAudio() {
 	rst_fac,		// play factor on repeat restart
 	rsk = [],		// repeat variant array (repeat skip)
 	b_tim,			// time of last measure bar
-	b_typ,			// type of last measure bar
-	instr = [],		// [voice] bank + instrument
-	chn = []		// [voice] MIDI channel
+	b_typ			// type of last measure bar
 
 	// build the information about the parts (P:)
 	function build_parts(first) {
@@ -121,94 +119,6 @@ function ToAudio() {
 		}
 	} // build_parts()
 
-	// set the starting MIDI instruments and channels
-	function midi_start() {
-	    var	v, p_v, c, i, ii
-
-		for (v = 0; v < voice_tb.length; v++) {
-			p_v = voice_tb[v]
-			ii = p_v.instr
-			if (ii == undefined)
-				p_v.instr = ii = 0	// default: acoustic grand piano
-			c = p_v.chn			// channel
-			if (c == undefined)
-				p_v.chn = c = p_v.v < 9 ? p_v.v : p_v.v + 1
-			else if (c == 9)		// percussion
-				ii = (ii & ~0x7f) | 16384
-
-			if (p_v.midictl) {		// if MIDI controls
-				for (i in p_v.midictl) {
-					switch (Number(i)) {
-					case 0:		// MSB bank
-						ii = (ii & 0x3fff) |
-							(p_v.midictl[i] << 14)
-						break
-					case 32:	// LSB bank
-						ii = (ii & 0x1fc07f) |
-							(p_v.midictl[i] << 7)
-						break
-					}
-				}
-			}
-
-			if ((ii & ~0x7f) == 16384)	// if bank 128 (percussion)
-				c = 9			// channel '10'
-			chn[v] = c
-			instr[c] = ii
-		}
-	} // midi_start()
-
-	// handle a block symbol
-	function do_block(s) {
-	    var	v = s.v,
-		p_v = s.p_v,
-		c = chn[v],
-		co = c
-
-		switch (s.subtype) {
-		case "midichn":
-			break
-		case "midictl":
-			switch (s.ctrl) {
-			case 0:			// MSB bank
-				instr[c] = (instr[c] & 0x3fff) |
-					(s.val << 14)
-				break
-			case 32:		// LSB bank
-				instr[c] = (instr[c] & 0x1fc07f) |
-					(s.val << 7)
-				break
-//			case 121:		// reset all controllers
-//				instr = []
-//				break
-			}
-			if ((instr[c] & ~0x7f) == 16384) { // if percussion
-				instr[9] = instr[c]	// force the channel 10
-				chn[v] = c = 9
-			}
-			// fall thru
-		default:
-			return
-		case "midiprog":
-			instr[c] = (instr[c] & ~0x7f) | s.instr
-			break
-		}
-		if (s.chn == undefined)
-			return			// same channel
-
-		// update the channel of the voice
-		// and the one of the overlay voices
-		chn[v] = s.chn
-		while (1) {
-			p_v = p_v.voice_down
-			if (!p_v)
-				break
-			v = p_v.v
-			if (chn[v] == undefined || chn[v] == co)
-				chn[v] = s.chn
-		}
-	} // do_block()
-
 	// generate the grace notes
 	function gen_grace(s) {
 	    var	g, i, n, t, d, s2,
@@ -242,7 +152,6 @@ function ToAudio() {
 		for (g = s.extra; g; g = g.next) {
 			g.ptim = t
 			g.pdur = d
-			g.chn = chn[s.v]
 			t += d
 		}
 	} // gen_grace()
@@ -284,9 +193,6 @@ function ToAudio() {
 
 	if (s.parts)
 		build_parts(s)
-
-	// get the starting MIDI parameters
-	midi_start()
 
 	// set the time parameters
 	rst_fac = play_fac
@@ -363,9 +269,6 @@ function ToAudio() {
 				rst = s			// new possible restart
 				rst_fac = play_fac
 			}
-			break
-		case C.BLOCK:
-			do_block(s)
 			break
 		case C.GRACE:
 			if (s.time == 0		// if before beat at start time

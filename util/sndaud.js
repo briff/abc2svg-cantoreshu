@@ -127,13 +127,13 @@ function Audio5(i_conf) {
 	}
 
 	// create all notes of an instrument
-	function sf2_create(instr) {
+	function sf2_create(instr, sf2par, sf2pre) {	// parser, presets
 
 		// get the instrument parameters
 		// adapted from getInstruments() in sf2-parser.js
 		function get_instr(i) {
-		    var	instrument = parser.instrument,
-			zone = parser.instrumentZone,
+		    var	instrument = sf2par.instrument,
+			zone = sf2par.instrumentZone,
 			j = instrument[i].instrumentBagIndex,
 			jl = instrument[i + 1]
 				? instrument[i + 1].instrumentBagIndex
@@ -142,9 +142,9 @@ function Audio5(i_conf) {
 
 			while (j < jl) {
 				instrumentGenerator =
-					parser.createInstrumentGenerator_(zone, j)
+					sf2par.createInstrumentGenerator_(zone, j)
 //				instrumentModulator =
-//					parser.createInstrumentModulator_(zone, j)
+//					sf2par.createInstrumentModulator_(zone, j)
 
 				info.push({
 					generator: instrumentGenerator.generator,
@@ -152,7 +152,7 @@ function Audio5(i_conf) {
 				})
 				j++
 			}
-//console.log('instr: '+instrument[i].instrumentName)
+//console.log('created instr: '+instrument[i].instrumentName)
 		return {
 //			name: instrument[i].instrumentName,
 			info: info
@@ -164,7 +164,7 @@ function Audio5(i_conf) {
 		sampleRate, scale,
 		b = instr >> 7,			// bank
 		p = instr % 128,		// preset
-		pr = presets
+		pr = sf2pre
 
 		rates[instr] = []
 
@@ -225,8 +225,8 @@ function Audio5(i_conf) {
 				continue
 
 			sid = gen.sampleID.amount
-			sampleRate = parser.sampleHeader[sid].sampleRate
-			sample = parser.sample[sid]
+			sampleRate = sf2par.sampleHeader[sid].sampleRate
+			sample = sf2par.sample[sid]
 			parm.buffer = ac.createBuffer(1,
 						sample.length,
 						sampleRate)
@@ -243,9 +243,9 @@ function Audio5(i_conf) {
 			sample_cp(parm.buffer, sample)
 
 			if (parm.sm) {
-				parm.loopStart = parser.sampleHeader[sid].startLoop /
+				parm.loopStart = sf2par.sampleHeader[sid].startLoop /
 					sampleRate
-				parm.loopEnd = parser.sampleHeader[sid].endLoop /
+				parm.loopEnd = sf2par.sampleHeader[sid].endLoop /
 					sampleRate
 			}
 
@@ -254,10 +254,10 @@ function Audio5(i_conf) {
 					gen.scaleTuning.amount : 100) / 100,
 			tune = (gen.coarseTune ? gen.coarseTune.amount : 0) +
 				(gen.fineTune ? gen.fineTune.amount : 0) / 100 +
-				parser.sampleHeader[sid].pitchCorrection / 100 -
+				sf2par.sampleHeader[sid].pitchCorrection / 100 -
 				(gen.overridingRootKey ?
 					gen.overridingRootKey.amount :
-					parser.sampleHeader[sid].originalPitch)
+					sf2par.sampleHeader[sid].originalPitch)
 
 			for (j = gen.keyRange.lo; j <= gen.keyRange.hi; j++) {
 				rates[instr][j] = Math.pow(Math.pow(2, 1 / 12),
@@ -273,10 +273,11 @@ function Audio5(i_conf) {
 		w_instr++
 		abc2svg.loadjs(conf.sfu + '/' + instr + '.js',
 			function() {
-				parser = new sf2.Parser(b64dcod(abcsf2[instr]))
-				parser.parse()
-				presets = parser.getPresets()
-				sf2_create(instr)
+			    var	sf2par = new sf2.Parser(b64dcod(abcsf2[instr]))
+				sf2par.parse()
+			    var	sf2pre = sf2par.getPresets()
+				sf2_create(instr, sf2par, sf2pre)
+
 				if (--w_instr == 0)
 					play_start()
 			},
@@ -290,34 +291,24 @@ function Audio5(i_conf) {
 	} // load_instr()
 
 	// define the instruments of the tune
-	function def_instr(s, f) {
+	function def_instr(s, f, sf2par, sf2pre) {
 	    var	i
 
-		for ( ; s; s = s.ts_next) {
-			if (s.subtype == "midiprog") {
-				po.v_c[s.v] = s.chn
-				i = s.instr
-				if (i == undefined)
-					continue
-				po.c_i[s.chn] = i
-			} else if (!s.dur) {
-			    	continue
-			} else {
-				i = po.v_c[s.v]
-				if (i == undefined)
-					po.v_c[s.v] = i = s.p_v.chn
-				if (po.c_i[i] == undefined)
-					po.c_i[i] = s.p_v.instr
-				i = po.c_i[i]
-			}
+		// scan from the beginning of the tune
+		s = s.p_v.sym
+		while (s.ts_prev)
+			s = s.ts_prev
 
+		for ( ; s; s = s.ts_next) {
+			if (s.subtype != "midiprog")
+				continue
+			i = s.instr
 			if (!params[i]) {
-				params[i] = []	// instrument being loaded
-				f(i)		// sf2_create or load_instr
+//console.log(' new c:'+s.chn+' i:'+i)
+				params[i] = []		// instrument being loaded
+				f(i, sf2par, sf2pre)	// sf2_create or load_instr
 			}
 		}
-		if (!w_instr || --w_instr == 0)	// all resources are there
-			play_start()
 	} // def_instr()
 
 	// load the needed instruments
@@ -334,7 +325,7 @@ function Audio5(i_conf) {
 				presets = parser.getPresets()
 			}
 
-		// load the soundfont if no done yet
+		// load the soundfont if not done yet
 		} else if (!parser) {
 		    if (conf.sfu.slice(-3) == ".js") {
 			abc2svg.loadjs(conf.sfu,
@@ -371,12 +362,11 @@ function Audio5(i_conf) {
 		}
 
 		// create the instruments and start playing
-		def_instr(s, sf2_create)
+		def_instr(s, sf2_create, parser, presets)
 	    } else {
 
 	// (case instruments as base64 encoded js file,
 	//  one file per instrument)
-		w_instr++			// play lock
 		def_instr(s, load_instr)
 	    }
 	} // load_res()
@@ -395,8 +385,9 @@ function Audio5(i_conf) {
 	// MIDI prog or channel
 	function midi_prog(po, s) {
 		po.v_c[s.v] = s.chn
-		if (s.instr)
+		if (s.instr != undefined)
 			po.c_i[s.chn] = s.instr
+//console.log('prog i:'+s.instr+' ch:'+s.chn+' v:'+s.v)
 	} // midi_prog()
 
 	// create a note
@@ -406,6 +397,7 @@ function Audio5(i_conf) {
 	// @t = audio start time
 	// @d = duration adjusted for speed
 	function note_run(po, s, key, t, d) {
+//console.log('run c:'+po.v_c[s.v]+' i:'+po.c_i[po.v_c[s.v]])
 	    var	g, st,
 		c = po.v_c[s.v],
 		instr = po.c_i[c],
@@ -457,6 +449,7 @@ function Audio5(i_conf) {
 
 	// wait for all resources, then start playing
 	function play_start() {
+//console.log('- play start')
 		if (po.stop) {			// stop playing
 			po.onend(repv)
 			return
@@ -548,7 +541,10 @@ function Audio5(i_conf) {
 			gain: gain,
 			rates: rates
 		}
+		w_instr++			// play lock
 		load_res(i_start)
+		if (--w_instr == 0)		// all resources are there
+			play_start()
 	}, // play()
 
 	// stop playing
