@@ -1312,7 +1312,8 @@ function set_allsymwidth(first) {
 		}
 
 		if (!s2.shrink) {
-		    if (!s2.space && s2.type == C.CLEF) {
+		    if (!s2.space && s2.type == C.CLEF
+		     && !s2.ts_prev.bar_type) {
 			delete s2.seqst;		/* no space */
 			s2.time = tim
 		    } else if (s2.dur) {
