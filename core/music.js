@@ -695,7 +695,7 @@ Abc.prototype.set_width = function(s) {
 	case C.REST:
 
 		/* set the note widths */
-		s.wr = wlnote = hw_tb[s.head]
+		s.wr = wlnote = s.invis ? 0 : hw_tb[s.head]
 
 		/* room for shifted heads and accidental signs */
 		if (s.xmx > 0)
