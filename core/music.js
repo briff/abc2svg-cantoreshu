@@ -3697,6 +3697,7 @@ function set_global() {
 // return [lsh1, lsho]
 function get_lshift() {
     var	st, v, p_v, p1, po, fnt, w,
+	sy = cur_sy,
 	lsh1 = 0,
 	lsho = 0, 
 	nv = voice_tb.length
@@ -3742,14 +3743,19 @@ function get_lshift() {
 	}
 	// add the width of the braces/brackets
 	w = 0
-	for (st = 0; st <= cur_sy.nstaff; st++) {
-		if (cur_sy.staves[st].flags
-				& (OPEN_BRACE2 | OPEN_BRACKET2)) {
-			w = 12
-			break
+	while (sy) {
+		for (st = 0; st <= sy.nstaff; st++) {
+			if (sy.staves[st].flags
+					& (OPEN_BRACE2 | OPEN_BRACKET2)) {
+				w = 12
+				break
+			}
+			if (sy.staves[st].flags & (OPEN_BRACE | OPEN_BRACKET))
+				w = 6
 		}
-		if (cur_sy.staves[st].flags & (OPEN_BRACE | OPEN_BRACKET))
-			w = 6
+		if (w == 12)
+			break
+		sy = sy.next
 	}
 	lsh1 += w
 	lsho += w
