@@ -1883,10 +1883,6 @@ function slur_add(s, nt) {		// nt = note if slur ending on note
 		// set a flag if the slur starts on a grace note
 		if (sl.grace)
 			sl.grace.sl1 = true
-
-		// set a flag if the slur ends on a grace note
-		if (s.grace)
-			s.grace.sl2 = 1 //true
 		return
 	}
 
