@@ -1675,6 +1675,7 @@ function set_nl(s) {			// s = start of line
 
 		while (s1 != so) {
 		    if (s1.bar_type
+		     && s1.next
 		     && (s1.bar_type.slice(-1) == ':'
 		      || s1.text)
 		     && s1.bar_type != ':') {
