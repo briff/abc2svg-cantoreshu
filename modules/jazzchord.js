@@ -96,6 +96,8 @@ abc2svg.jazzchord = {
 			r = jzch(t[0])
 			if (t.length > 1)
 				r += '(' + jzch(t[1])
+		} else {
+			r = t
 		}
 		if (gch.text[0] == '(')
 			gch.text = '(' + r + ')'
