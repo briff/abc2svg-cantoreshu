@@ -292,7 +292,8 @@ function Audio5(i_conf) {
 
 	// define the instruments of the tune
 	function def_instr(s, f, sf2par, sf2pre) {
-	    var	i
+	    var	i,
+		n = 0
 
 		// scan from the beginning of the tune
 		s = s.p_v.sym
@@ -307,7 +308,12 @@ function Audio5(i_conf) {
 //console.log(' new c:'+s.chn+' i:'+i)
 				params[i] = []		// instrument being loaded
 				f(i, sf2par, sf2pre)	// sf2_create or load_instr
+				n++			// number of instruments
 			}
+		}
+		if (!n) {				// if no instrument
+			params[0] = []			// load the piano
+			f(0, sf2par, sf2pre)
 		}
 	} // def_instr()
 
