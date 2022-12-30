@@ -438,6 +438,23 @@ Abc.prototype.set_bar_num = function() {
 	ptim = 0,			// time of previous bar
 	wmeasure = voice_tb[cur_sy.top_voice].meter.wmeasure
 
+	// check the measure duration
+	function check_meas() {
+	    var	s3
+
+		if (tim > ptim + wmeasure
+		 && s.prev.type != C.MREST)
+			return 1 //true
+
+		// the measure is too short,
+		// check if there is a bar a bit further
+		for (s3 = s.next; s3 && s3.time == s.time; s3 = s3.next)
+			;
+		for ( ; s3 && !s3.bar_type; s3 = s3.next)
+			;
+		return s3 && (s3.time - bar_tim) % wmeasure
+	}
+
 	// don't count a bar at start of tune
 	for (s = tsfirst; ; s = s.ts_next) {
 		if (!s)
@@ -521,8 +538,8 @@ Abc.prototype.set_bar_num = function() {
 			n = bar_num + (tim - bar_tim) / wmeasure
 			k = n - (n | 0)
 			if (cfmt.checkbars
-			 && ((k && !s.bar_dotted && s.next)
-			  || (tim > ptim + wmeasure && s.prev.type != C.MREST)))
+			 && k
+			 && check_meas())
 				error(0, s, "Bad measure duration")
 			if (tim > ptim + wmeasure) {	// if more than one measure
 				n |= 0
@@ -549,8 +566,7 @@ Abc.prototype.set_bar_num = function() {
 						s.bar_num = n
 				}
 			} else {
-				if (k)
-					n -= k
+				n |= 0
 				s.bar_num = n
 			}
 			if (!k)
