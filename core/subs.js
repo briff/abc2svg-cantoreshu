@@ -115,19 +115,20 @@ var strwh
 
 	// create a text element if not done yet
     var	el = abc2svg.eltxt
-      if (!el) {
-	el = document.createElement('text')
-	el.style.position = 'absolute'
-	el.style.top = '-1000px'
-	el.style.padding = '0'
-	document.body.appendChild(el)
-	abc2svg.eltxt = el			// reused after new Abc()
-      }
 
 	// change the function
 	strwh = function(str) {
 		if (str.wh)
 			return str.wh
+		if (!el) {
+			el = document.createElement('text')
+			el.style.position = 'absolute'
+			el.style.top = '-1000px'
+			el.style.padding = '0'
+			document.body.appendChild(el)
+			abc2svg.eltxt = el	// reused after new Abc()
+		}
+
 	    var	c,
 		font = gene.curfont,
 		h = font.size,
