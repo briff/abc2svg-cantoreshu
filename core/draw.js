@@ -2809,7 +2809,6 @@ function draw_all_ties(p_voice) {
  * - scaled
  *   - beams
  *   - decorations near the notes
- *   - measure bar numbers
  *   - decorations tied to the notes
  *   - tuplets and slurs
  * - not scaled
@@ -3509,8 +3508,8 @@ function draw_systems(indent) {
 
 	/* draw the staff, skipping the staff breaks */
 	for (st = 0; st <= nstaff; st++) {
-		xstaff[st] = !cur_sy.st_print[st] ? -1 : 0;
-		stl[st] = cur_sy.st_print[st]	// staff in the line
+		stl[st] = gene.st_print[st] || cur_sy.st_print[st] // staff in the line
+		xstaff[st] = !stl[st] ? -1 : 0;
 	}
 	bar_set();
 	draw_lstaff(0)
