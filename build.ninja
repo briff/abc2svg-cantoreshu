@@ -33,7 +33,11 @@ rule jsc
 	cat $in | jsmin >> $out;$
 	echo "" >> $out;$
       else $
-	cat $in | uglifyjs >> $out;$
+	if command -v qjs >/dev/null 2>&1; then $
+	  cat $in | ./jsmin >> $out;$
+	else $
+	  cat $in | uglifyjs >> $out;$
+	fi;$
      fi;$
    else $
 	cat $in >> $out;$
@@ -45,8 +49,13 @@ rule jscu
    if [ "x$$NOMIN" = "x" ]; then $
       if command -v jsmin >/dev/null 2>&1; then $
 	cat $in | jsmin >> $out;$
+	echo "" >> $out;$
       else $
-	uglifyjs $in >> $out;$
+	if command -v qjs >/dev/null 2>&1; then $
+	  cat $in | ./jsmin >> $out;$
+	else $
+	  cat $in | uglifyjs >> $out;$
+	fi;$
       fi;$
    else $
 	cat $in >> $out;$
