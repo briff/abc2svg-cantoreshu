@@ -284,8 +284,10 @@ p span {line-height:' + ((cfmt.lineskipfac * 100) | 0).toString() + '%}\n' +
 	for (var i = 0; i < args.length; i++) {
 	    var	a = args[i]
 
-		if (a[0] == '-')
+		if (a[0] == '-') {
+			i++
 			continue
+		}
 		fn = a
 		break
 	}
