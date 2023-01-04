@@ -1,6 +1,6 @@
 // abc2svg - tune.js - tune generation
 //
-// Copyright (C) 2014-2022 Jean-Francois Moine
+// Copyright (C) 2014-2023 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -197,12 +197,30 @@ function sort_all() {
 		vtb[v] = s
 	}
 
+	// if only one voice, quickly create the time links
+	if (nv == 1) {
+		s = tsfirst
+		s.ts_next = s.next
+		while (1) {
+			s = s.next
+			if (!s)
+				return
+			s.ts_prev = s.prev
+			s.ts_next = s.next
+			if (s.time != s.prev.time
+			 || w_tb[s.prev.type]
+			 || s.type == C.GRACE && s.prev.type == C.GRACE)
+				s.seqst = 1 //true
+		}
+		// not reached
+	}
+
 	// loop on the symbols of all voices
 	while (1) {
 		if (new_sy) {
 			sy = new_sy;
 			new_sy = null;
-			vn = []
+			vn.length = 0
 			for (v = 0; v < nv; v++) {
 				if (!sy.voices[v])
 					continue
@@ -221,6 +239,8 @@ function sort_all() {
 			if (!s || s.time > time)
 				continue
 			w = w_tb[s.type]
+			if (s.type == C.GRACE && s.next && s.next.type == C.GRACE)
+				w--
 			if (s.time < time) {
 				time = s.time;
 				wmin = w
@@ -239,20 +259,16 @@ function sort_all() {
 			if (v == undefined)
 				break
 			s = vtb[v]
-			if (!s || s.time != time
-			 || w_tb[s.type] != wmin)
+			if (!s)
 				continue
-			if (s.type == C.STAVES) {
+			w = w_tb[s.type]
+			if (s.type == C.GRACE && s.next && s.next.type == C.GRACE)
+				w--
+			if (s.time != time
+			 || w != wmin)
+				continue
+			if (s.type == C.STAVES)
 				new_sy = s.sy
-			} else if (s.type == C.SM) {	// if a sequence marker
-				s.next.prev = s.prev	// remove it
-				if (s.prev)
-					s.prev.next = s.next
-				else
-					s.p_v.sym = s.next
-				vtb[v] = s.next
-				continue
-			}
 			if (fl) {
 				fl = 0;
 				s.seqst = true
@@ -342,24 +358,26 @@ function voice_adj(sys_chg) {
 		}
 		for ( ; s; s = s.next) {
 
-			// if the symbol has no sequence weight
+			// if the symbol has a sequence weight smaller than the bar one
 			// and if there a time skip,
-			// add a sequence marker before it
-			if ((((!w_tb[s.type] && s.type != C.STAVES)
-			  || s.type == C.SPACE)
+			// add an invisible bar before it
+			if (w_tb[s.type] < 5
+			 && s.type != C.STAVES
+			 && s.type != C.CLEF
 			 && s.time			// not at start of tune
-			 && (!s.prev || s.time > s.prev.time + s.prev.dur))
-			|| (s.type == C.GRACE		// n {gn} {gn} n
-			 && s.prev && s.prev.type == C.GRACE)) {
+			 && (!s.prev || s.time > s.prev.time + s.prev.dur)) {
 				s2 = {
-					type: C.SM,
+					type: C.BAR,
+					bar_type: "[]",
 					v: s.v,
 					p_v: s.p_v,
+					st: s.st,
 					time: s.time,
 					dur:0,
 					next: s,
 					prev: s.prev,
-					fmt: s.fmt
+					fmt: s.fmt,
+					invis: 1
 				}
 				if (s.prev)
 					s.prev.next = s2
