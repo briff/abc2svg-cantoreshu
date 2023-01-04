@@ -3533,6 +3533,7 @@ function draw_systems(indent) {
 					continue
 				}
 				if (sy.st_print[st]	// if not staff stop
+				 && cur_sy.staves[st]
 				 && sy.staves[st].stafflines ==
 						cur_sy.staves[st].stafflines)
 					continue
