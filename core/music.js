@@ -1,6 +1,6 @@
 // abc2svg - music.js - music generation
 //
-// Copyright (C) 2014-2022 Jean-Francois Moine
+// Copyright (C) 2014-2023 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -3258,9 +3258,10 @@ function new_sym(s, p_v, last_s) {
 
 /* -- init the symbols at start of a music line -- */
 function init_music_line() {
-   var	p_voice, s, s1, s2, s3, last_s, v, st, shr, shrmx, shl, fmt,
+   var	p_voice, s, s1, s2, s3, last_s, v, st, shr, shrmx, shl,
 	shlp, p_st, top,
-	nv = voice_tb.length
+	nv = voice_tb.length,
+	fmt = tsfirst.fmt
 
 	/* initialize the voices */
 	for (v = 0; v < nv; v++) {
@@ -3270,13 +3271,10 @@ function init_music_line() {
 		p_voice.st = cur_sy.voices[v].st
 		p_voice.second = cur_sy.voices[v].second;
 		p_voice.last_sym = p_voice.sym;
-	}
 
 	// move the first clefs, key signatures and time signatures
 	// to the staves
-	s = tsfirst
-	fmt = s.fmt
-	while (s) {
+	   for (s = p_voice.sym; s && s.time == tsfirst.time; s = s.next) {
 		switch (s.type) {
 		case C.CLEF:
 		case C.KEY:
@@ -3301,10 +3299,10 @@ function init_music_line() {
 		case C.TEMPO:
 		case C.BLOCK:
 		case C.REMARK:
-			s = s.ts_next
 			continue
 		}
 		break
+	    }
 	}
 
 	// generate the starting clefs, key signatures and time signatures
@@ -3342,11 +3340,8 @@ function init_music_line() {
 			s.ts_prev.ts_next = s
 			delete s.seqst
 		}
-		if (last_s) {
+		if (last_s)
 			last_s.ts_prev = s
-			if (last_s.type == C.CLEF)
-				delete last_s.seqst
-		}
 		delete s.clef_small;
 		delete s.part
 		s.second = cur_sy.voices[v].second
