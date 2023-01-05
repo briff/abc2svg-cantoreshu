@@ -1,6 +1,6 @@
 // sndaud.js - audio output using HTML5 audio
 //
-// Copyright (C) 2019-2022 Jean-Francois Moine
+// Copyright (C) 2019-2023 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -293,7 +293,8 @@ function Audio5(i_conf) {
 	// define the instruments of the tune
 	function def_instr(s, f, sf2par, sf2pre) {
 	    var	i,
-		n = 0
+		nv = 0,			// number of voices
+		vb = 0			// bitmap of voices with instruments
 
 		// scan from the beginning of the tune
 		s = s.p_v.sym
@@ -301,18 +302,23 @@ function Audio5(i_conf) {
 			s = s.ts_prev
 
 		for ( ; s; s = s.ts_next) {
+			if (s.v < nv)
+				nv = s.v
 			if (s.subtype != "midiprog")
 				continue
+			vb |= 1 << s.v
 			i = s.instr
+			if (i == undefined)
+				continue
 			if (!params[i]) {
-//console.log(' new c:'+s.chn+' i:'+i)
 				params[i] = []		// instrument being loaded
 				f(i, sf2par, sf2pre)	// sf2_create or load_instr
-				n++			// number of instruments
 			}
 		}
-		if (!n) {				// if no instrument
-			params[0] = []			// load the piano
+		nv = (2 << nv) - 1
+		if (!(nv & vb)			// if some voice(s) without instrument
+		 && !params[0]) {
+			params[0] = []		// load the piano
 			f(0, sf2par, sf2pre)
 		}
 	} // def_instr()
