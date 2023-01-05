@@ -124,12 +124,17 @@ abc2svg.jianpu = {
 		if (mt)
 			s.text += ' ' + (mt.bot ? (mt.top + '/' + mt.bot) : mt.top)
 
-		s2.prev = s
-		s.next = s2
-		p_v.sym = s
-		tsfirst.ts_prev = s
-		s.ts_next = tsfirst
-		abc.set_tsfirst(s)
+		// insert the block after the first %%staves
+		s2 = tsfirst
+		s.next = s2.next
+		if (s.next)
+			s.next.prev = s
+		s.prev = s2
+		s2.next = s
+		s.ts_next = s2.ts_next
+		s.ts_next.ts_prev = s
+		s.ts_prev = s2
+		s2.ts_next = s
 	} // set head()
 
 	// expand a long note/rest
