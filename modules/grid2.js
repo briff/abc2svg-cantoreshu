@@ -1,6 +1,6 @@
 // grid2.js - module to replace a voice in the music by a chord grid
 //
-// Copyright (C) 2018-2021 Jean-Francois Moine
+// Copyright (C) 2018-2023 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -42,7 +42,8 @@ abc2svg.grid2 = {
 		curvoice = p_v
 		this.set_v_param("stafflines", "...")	// no staff
 		p_v.clef.invis = true;		// no clef
-		p_v.key.k_sf = p_v.key.k_a_acc = 0; // no key signature
+		p_v.key.k_sf = 0		// no key signature
+		delete p_v.key.k_a_acc
 		p_v.staffnonote = 2		// draw the staff
 		for (s = p_v.sym; s; s = s.next) {
 			delete s.a_dd		// no decoration

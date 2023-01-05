@@ -169,7 +169,7 @@ abc2svg.gamelan = {
 		sf = p_v.key.k_sf,
 		delta = abc2svg.gamelan.cgd2cde[sf + 7] - 2
 
-		p_v.key.k_a_acc = []	// no accidental
+		delete p_v.key.k_a_acc		// no accidental
 
 		// no (visible) clef
 		p_v.clef.invis = true

@@ -268,7 +268,7 @@ abc2svg.jianpu = {
 	    var s, g,
 		sf = p_v.key.k_sf
 
-		p_v.key.k_a_acc = []	// no accidental
+		delete p_v.key.k_a_acc		// no accidental
 
 		// no (visible) clef
 		s = p_v.clef
