@@ -1,6 +1,6 @@
 // gamelan.js - module to output Gamelan (indonesian) music sheets
 //
-// Copyright (C) 2020-2022 Jean-Francois Moine
+// Copyright (C) 2020-2023 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -443,7 +443,7 @@ abc2svg.gamelan = {
 	case C.CLEF:
 	case C.KEY:
 	case C.METER:
-		s.wl = s.wr = 0
+		s.wl = s.wr = .1		// (must not be null)
 		break
 	}
     }, // set_width()
