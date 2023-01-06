@@ -1,6 +1,6 @@
 // sndmid.js - audio output using HTML5 MIDI
 //
-// Copyright (C) 2019-2022 Jean-Francois Moine
+// Copyright (C) 2019-2023 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -107,7 +107,7 @@ function Midi5(i_conf) {
 		c = s.chn
 
 		po.v_c[s.v] = c
-		if (!s.instr)
+		if (s.instr != undefined)
 			return
 		i = po.c_i[c]
 
