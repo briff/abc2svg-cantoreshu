@@ -1,6 +1,6 @@
 // MIDI.js - module to handle the %%MIDI parameters
 //
-// Copyright (C) 2019-2022 Jean-Francois Moine
+// Copyright (C) 2019-2023 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -148,7 +148,7 @@ abc2svg.MIDI = {
 			abc.syntax(1, abc.errs.bad_val, "%%MIDI channel")
 			break
 		}
-		if (--v != 9) {			// channel range 1..16 => 0..15
+		v--				// channel range 1..16 => 0..15
 			if (abc.parse.state == 3) {
 				s = abc.new_block("midiprog")
 				s.play = s.invis = 1 //true
@@ -156,12 +156,6 @@ abc2svg.MIDI = {
 			} else {
 				abc.set_v_param("channel", v)
 			}
-			break
-		}
-
-		// channel 10 is bank 128
-		abc2svg.MIDI.do_midi.call(abc, "MIDI control 0 1")	// MSB bank
-		abc2svg.MIDI.do_midi.call(abc, "MIDI control 32 0")	// LSB bank
 		break
 	case "drummap":
 //fixme: should have a 'MIDIdrum' per voice?

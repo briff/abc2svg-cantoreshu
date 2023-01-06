@@ -63,7 +63,12 @@ abc2svg.abc_end = function() {
 		midi_prog: function(po, s) {
 			if (s.instr)
 				abc2svg.print(' v:' + s.v
-					+ '  MIDI program ' + s.instr)
+					+ '  MIDI program '
+					+ (s.chn + 1) + ' '
+					+ s.instr)
+			else
+				abc2svg.print(' v:' + s.v
+					+ '  MIDI channel ' + (s.chn + 1))
 		}, // midi_prog()
 		note_run: function(po, s, k, t, d) {
 			abc2svg.print(' ' + (t * 100).toFixed(0) +

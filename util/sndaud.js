@@ -293,7 +293,8 @@ function Audio5(i_conf) {
 	// define the instruments of the tune
 	function def_instr(s, f, sf2par, sf2pre) {
 	    var	i,
-		nv = 0,			// number of voices
+		bk = [],		// bank number per voice
+		nv = -1,		// highest voice number
 		vb = 0			// bitmap of voices with instruments
 
 		// scan from the beginning of the tune
@@ -302,14 +303,45 @@ function Audio5(i_conf) {
 			s = s.ts_prev
 
 		for ( ; s; s = s.ts_next) {
-			if (s.v < nv)
+			if (s.v < nv) {			// if new voice
 				nv = s.v
-			if (s.subtype != "midiprog")
+				bk[nv] = 0		// bank 0
+				if (p_v.midictl) {
+					if (p_v.midictl[0])	// MSB
+						bk[s.v] = (bk[s.v] & ~0x1fc000)
+								+ (p_v.midictl[0] << 14)
+					if (p_v.midictl[32])	// LSB
+						bk[s.v] = (bk[s.v] & ~0x3f80)
+								+ (p_v.midictl[32] << 7)
+				}
+			}
+			switch (s.subtype) {
+			case "midiprog":
+				break
+			case "midictl":
+				if (s.ctrl != 0 && s.ctrl != 32)
+					continue	// not bank LSB or MSB
+				if (bk[s.v] == undefined)
+					bk[s.v] = 0
+				if (s.ctrl == 0)			// MSB
+					bk[s.v] = (bk[s.v] & ~0x1fc000)
+							+ (s.val << 14)
+				else					// LSB
+					bk[s.v] = (bk[s.v] & ~0x3f80)
+							+ (s.val << 7)
+//				continue
+			default:
 				continue
+			}
 			vb |= 1 << s.v
 			i = s.instr
-			if (i == undefined)
-				continue
+			if (i == undefined) {		// channel only
+				if (s.chn != 9)
+					continue
+				i = bk[s.v] ? 0 : 128 * 128	// bank 256 program 0
+			}
+			if (bk[s.v]) 
+				i += bk[s.v]		// bank number
 			if (!params[i]) {
 				params[i] = []		// instrument being loaded
 				f(i, sf2par, sf2pre)	// sf2_create or load_instr
@@ -390,16 +422,39 @@ function Audio5(i_conf) {
 
 	// MIDI control
 	function midi_ctrl(po, s, t) {
-		if (s.ctrl == 7)		// if volume
+		switch (s.ctrl) {
+		case 0:				// bank MSB
+			if (po.v_b[s.v] == undefined)
+				po.v_b[s.v] = 0
+			po.v_b[s.v] = (po.v_b[s.v] & ~0x1fc000)
+					+ (s.val << 14)
+			break
+		case 7:				// volume
 			s.p_v.vol = s.val / 127
+			break
+		case 32:			// bank LSB
+			if (po.v_b[s.v] == undefined)
+				po.v_b[s.v] = 0
+			po.v_b[s.v] = (po.v_b[s.v] & ~0x3f80)
+					+ (s.val << 7)
+			break
+		}
 	} // midi_ctrl()
 
 	// MIDI prog or channel
 	function midi_prog(po, s) {
+	    var	i = s.instr
+
 		po.v_c[s.v] = s.chn
-		if (s.instr != undefined)
-			po.c_i[s.chn] = s.instr
-//console.log('prog i:'+s.instr+' ch:'+s.chn+' v:'+s.v)
+		if (i == undefined) {
+			if (s.chn != 9)			// if not channel 9
+				return
+			i = po.v_b[s.v] ? 0 : 128 * 128	// bank 256 program 0
+		}
+		if (po.v_b[s.v])
+			i += po.v_b[s.v]
+		po.c_i[s.chn] = i
+//console.log('prog i:'+i+' ch:'+s.chn+' v:'+s.v)
 	} // midi_prog()
 
 	// create a note
@@ -547,6 +602,7 @@ function Audio5(i_conf) {
 			timouts: [],
 			v_c: [],	// voice to channel
 			c_i: [],	// channel to instrument
+			v_b: [],	// voice to bank
 
 			// audio specific
 			ac: ac,
