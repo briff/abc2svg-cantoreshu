@@ -1,7 +1,7 @@
 // abc2svg - nns.js - module to output chords in the NNS
 //			(Nashville Notation System)
 //
-// Copyright (C) 2021 Jean-Francois Moine
+// Copyright (C) 2021-2023 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -21,13 +21,15 @@
 // This module is loaded when "%%nns" appears in a ABC source.
 //
 // Parameters
-//	%%nns [n] [include=<list>] [nomusic] [repbrk] [roman]
+//	%%nns [n] [include=<list>] [nomusic] [repbrk] [roman= 1 | 2]
 //		<n> = number of chords per line (1: auto)
 //			> 0: above the tune, < 0: under the tune
 //		<list> = comma separated list of (continuous) measure numbers
 //		'nomusic' displays only the chord
 //		'repbrk' starts a new grid line on start/stop repeat
-//		'roman' Roman Numeral Notation
+//		'roman' display the chord in the Roman Numeral Notation
+//			=1: uppercase letters with 'm' for minor chords (default)
+//			=2: lowercase letters for minor chords
 //	%%nnsfont font_name size (default: 'monospace 16')
 
 abc2svg.nns = {
@@ -36,13 +38,16 @@ abc2svg.nns = {
 	// Nashville
     nns_nm: ["1", "♯1", "2", "♭3", "3", "4", "♯4",
 		"5", "♯5", "6", "♭7", "7"],
-    nns_nm_m: ["1", "♭2", "2", "3", "♯3", "4", "♭5",
-		"5", "6", "♯6", "7", "♯7"],
 	// Roman
     rnn_nm: ["I", "♯I", "II", "♭III", "III", "IV", "♯IV",
 		"V", "♯V", "VI", "♭VII", "VII"],
-    rnn_nm_m: ["I", "♭II", "II", "III", "♯III", "IV", "♭V",
-		"V", "VI", "♯VI", "VII", "♯VII"],
+    rnn_nm_m: ["III", "♯III", "IV", "♭V", "V", "VI", "♯VI",
+		"VII", "♯VII", "I", "♭II", "II", "III"],
+	// Roman 2
+    rnn2_nm: ["I", "♯I", "ii", "♭III", "iii", "IV", "♯IV",
+		"V", "♯V", "vi", "♭VII", "vii"],
+    rnn2_nm_m: ["III", "♯III", "iv", "♭V", "v", "VI", "♯VI",
+		"VII", "♯VII", "i", "♭II", "ii", "III"],
 // inversions: 1st: (upper)6, 2nd: (upper)6 (lower) 4 
 
 // generate the grid
@@ -262,7 +267,7 @@ function build_nns(s, font) {
 
     // hook before the generation
     set_stems: function(of) {
-    var	C, tsfirst, voice_tb, fmt, p_v, s, s2, mode,
+    var	C, tsfirst, voice_tb, fmt, p_v, s, s2,
 	abc = this,
 	nns = abc.cfmt().nns
 
@@ -280,7 +285,7 @@ function build_nns(s, font) {
 	} // get_beat()
 
 	// transpose the chord back to "C"
-	function set_nm(p, tr) {
+	function set_nm(p, tr, mode) {
 	    var	i, o, o2, a, n,
 		csa = []
 
@@ -321,18 +326,20 @@ function build_nns(s, font) {
 					[abc2svg.nns.note_nm.indexOf(p[o])]
 				+ a
 				+ tr) % 12
-			if (mode)
-				n = (n + 3) % 12
 			if (!nns.roman) {
-			   if (!mode)
-				n = abc2svg.nns.nns_nm[n]	// major
-			   else
-				n = abc2svg.nns.nns_nm_m[n]	// minor
-			} else {
+				n = abc2svg.nns.nns_nm[n]	// major and minor
+			} else if (nns.roman == 1) {
 			   if (!mode)
 				n = abc2svg.nns.rnn_nm[n]
 			   else
 				n = abc2svg.nns.rnn_nm_m[n]
+			} else {
+			   if (!mode)
+				n = abc2svg.nns.rnn2_nm[n]
+			   else
+				n = abc2svg.nns.rnn2_nm_m[n]
+				if (p[o2] == 'm')
+					o2++
 			}
 			csa[i] = p.slice(0, o)
 				+ n
@@ -352,8 +359,8 @@ function build_nns(s, font) {
 		wm = voice_tb[0].meter.wmeasure,
 		cur_beat = 0,
 		beat_i = 0,
-		tr = (tsfirst.p_v.key.k_sf + 12) * 5
-					// transposition to "C"
+		tr = (tsfirst.p_v.key.k_sf + 12) * 5,	// transposition to "C"
+		mode = tsfirst.p_v.key.k_mode
 
 		// scan all the symbols
 		bars.push('|')
@@ -366,6 +373,10 @@ function build_nns(s, font) {
 			if (s.part)
 				parts[chords.length] = s.part.text
 			switch (s.type) {
+			case C.KEY:
+				tr = (s.k_sf + 12) * 5
+				mode = s.k_mode
+				break
 			case C.NOTE:
 			case C.REST:
 				if (!s.a_gch)
@@ -377,7 +388,7 @@ function build_nns(s, font) {
 						if (!chord[beat_i]) {
 							chord[beat_i] =
 							    set_nm(s.a_gch[i].text,
-									tr)
+									tr, mode)
 						}
 						break
 					}
@@ -432,7 +443,6 @@ function build_nns(s, font) {
 	if (nns) {
 		C = abc2svg.C
 		tsfirst = this.get_tsfirst()
-		mode = tsfirst.p_v.key.k_mode
 		fmt = tsfirst.fmt
 		voice_tb = this.get_voice_tb()
 		p_v = voice_tb[this.get_top_v()]
@@ -503,11 +513,13 @@ function build_nns(s, font) {
 			if (item == "nomusic")
 				nns.nomusic = true
 			else if (item == "roman")
-				nns.roman = true
+				nns.roman = 1
 			else if (item == "repbrk")
 				nns.repbrk = true
 			else if (item.slice(0, 8) == "include=")
 				nns.ls = item.slice(8).split(',')
+			else if (item.slice(0, -1) == "roman=")
+				nns.roman = item.slice(-1) == "1" ? 1 : 2
 		}
 		this.cfmt().nns = nns
 		return
