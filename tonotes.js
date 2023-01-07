@@ -1,6 +1,6 @@
 // abc2svg - tonotes.js - convert ABC to a list of MIDI notes
 //
-// Copyright (C) 2021-2022 Jean-Francois Moine
+// Copyright (C) 2021-2023 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
