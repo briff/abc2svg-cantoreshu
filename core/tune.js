@@ -160,6 +160,53 @@ function sort_all() {
 	if (!p_voice.sym)
 		return
 
+	// check if different bars at the same time
+	function b_chk() {
+	    var	ir, bt, s, s2, v
+
+		ir = 0
+		bt = ""
+		while (1) {
+			v = vn[ir++]
+			if (v == undefined)
+				break
+			s = vtb[v]
+			if (!s || !s.bar_type || s.invis)
+				continue
+			if (!bt) {
+				bt = s.bar_type
+				continue
+			}
+			if (s.bar_type != bt)
+				break
+		}
+		if (!v)
+			return			// no problem
+
+		
+		if (bt == "::" || bt == ":|") {
+			ir = 0
+			while (1) {
+				v = vn[ir++]
+				if (v == undefined)
+					break
+				s = vtb[v]
+				if (!s || s.invis
+				 || s.bar_type != "::")
+					continue
+				s2 = clone(s)
+				s.bar_type = ":|"
+				s2.bar_type = "|:"
+				s2.next = s.next
+				s2.prev = s
+				s.next = s2
+			}
+		} else {
+			error(2, s, "Different bars $1 and $2",
+				bt, s.bar_type)
+		}
+	} // b_chk()
+
 	prev.fmt = fmt = p_voice.sym.fmt	// starting format
 
 	// set the first symbol of each voice
@@ -251,6 +298,10 @@ function sort_all() {
 
 		if (wmin > 127)
 			break			// done
+
+		// check the type of the measure bars
+		if (wmin == 5)			// weight of bars
+			b_chk()
 
 		/* link the vertical sequence */
 		ir = 0
