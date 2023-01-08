@@ -1804,7 +1804,7 @@ function get_key(parm) {
 			p_voice.okey = clone(s_key);
 			p_voice.ckey = clone(s_key)
 		}
-		parse.ckey = s_key
+		parse.ckey = clone(s_key)		// (could be changed by transposition)
 		if (!glovar.ulen)
 			glovar.ulen = C.BLEN / 8;
 		if (a.length) {
