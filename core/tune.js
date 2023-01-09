@@ -1326,10 +1326,19 @@ function key_transp(s) {
 	if (s.k_none)			// no key
 		return
 
-    var	n, a_acc,
-	b40 = (s.k_b40 + 200 + curvoice.tr_sco) % 40,
-	d = abc2svg.b40k[b40] - b40
+    var	n, a_acc, b40, d
 
+	// set the score transposition
+	n = (curvoice.score | 0)
+		+ (curvoice.shift | 0)
+		+ (cfmt.transp | 0)
+	if (n)
+		curvoice.tr_sco = n		// b40 interval
+	else if (curvoice.tr_sco)
+		curvoice.tr_sco = 0
+
+	b40 = (s.k_b40 + 200 + curvoice.tr_sco) % 40
+	d = abc2svg.b40k[b40] - b40
 	if (d) {
 		if (curvoice.tr_sco > 0)
 			curvoice.tr_sco -= d
@@ -1804,17 +1813,12 @@ function get_key(parm) {
 			p_voice.okey = clone(s_key);
 			p_voice.ckey = clone(s_key)
 		}
-		parse.ckey = clone(s_key)		// (could be changed by transposition)
+		parse.ckey = clone(s_key)
 		if (!glovar.ulen)
 			glovar.ulen = C.BLEN / 8;
-		if (a.length) {
-			memo_kv_parm('*', a)
-			a = ''
-		}
 		goto_tune()
-	} else {
-		set_kv_parm(a)
 	}
+	set_kv_parm(a)
 
 	tr_p = curvoice.tr_p			// transposition change 1=sco, 2=snd
 	curvoice.tr_p = 0
@@ -1826,8 +1830,7 @@ function get_key(parm) {
 		s_key.k_b40 = curvoice.okey.k_b40
 	}
 
-
-	if (curvoice.tr_sco)			// if transpose score
+	if (tr_p & 1)				// if transpose score
 		key_transp(s)
 	curvoice.okey = clone(s_key)
 
@@ -1863,15 +1866,6 @@ function new_voice(id) {
 		delete p_voice.default
 		if (!p_voice.time) {		// if no symbol yet
 			p_voice.id = id
-			delete p_voice.init	// reload the global attributes
-			if (cfmt.transp	// != undefined
-			 && parse.state >= 2) {
-				p_v_sav = curvoice;
-				curvoice = p_voice;
-				curvoice.tr_sco = cfmt.transp
-				set_transp();
-				curvoice = p_v_sav
-			}
 			return p_voice		// default voice
 		}
 	}
@@ -1919,6 +1913,9 @@ function new_voice(id) {
 	}
 
 	voice_tb.push(p_voice);
+	
+	if (cfmt.transp)			// %%transpose
+		p_voice.tr_p = 1
 
 //	par_sy.voices[v] = {
 //		range: -1
@@ -2066,8 +2063,6 @@ function goto_tune() {
 		gene.nbar = 1
 	}
 
-	parse.state = 3				// in tune body
-
 	// if no voice yet, create the default voice
 	if (!voice_tb.length) {
 		get_voice("1");
@@ -2078,6 +2073,8 @@ function goto_tune() {
 	} else {
 		curvoice = voice_tb[staves_found < 0 ? 0 : par_sy.top_voice]
 	}
+
+	parse.state = 3				// in tune body
 
 	// update some voice parameters
 	for (v = 0; v < voice_tb.length; v++) {
