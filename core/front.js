@@ -1,6 +1,6 @@
 // abc2svg - front.js - ABC parsing front-end
 //
-// Copyright (C) 2014-2022 Jean-Francois Moine
+// Copyright (C) 2014-2023 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -437,8 +437,9 @@ function tosvg(in_fname,		// file name
 		// check if the line is a pseudo-comment or I:
 		line0 = file[bol];
 		line1 = file[bol + 1]
-		if (line0 == '%') {
-			if (parse.prefix.indexOf(line1) < 0)
+		if ((line0 == 'I' && line1 == ':')
+		  || line0 == '%') {
+			if (line0 == '%' && parse.prefix.indexOf(line1) < 0)
 				continue		// comment
 
 			// change "%%abc xxxx" to "xxxx"
@@ -452,8 +453,6 @@ function tosvg(in_fname,		// file name
 			} else {
 				pscom = true
 			}
-		} else if (line0 == 'I' && line1 == ':') {
-			pscom = true
 		}
 
 		// pseudo-comments
