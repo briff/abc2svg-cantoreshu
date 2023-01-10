@@ -190,7 +190,7 @@ function nt_trans(nt,
 	}
 
 	// set the microtonal accidental after transposition
-	switch (a) {
+	switch (an) {
 	case -2:
 		if (n > 0)
 			n -= d * 2
