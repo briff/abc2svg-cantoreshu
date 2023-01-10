@@ -1136,7 +1136,7 @@ Abc.prototype.do_pscom = function(text) {
 			cfmt.transp = (cfmt.transp || 0) + val
 			return
 		}
-		curvoice.tr_sco = val
+		cfmt.transp = (cfmt.transp || 0) + val
 		set_transp()
 		return
 	case "tune":
