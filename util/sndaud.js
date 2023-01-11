@@ -310,7 +310,7 @@ function Audio5(i_conf) {
 					if (s.p_v.midictl[0])	// MSB
 						bk[s.v] = (bk[s.v] & ~0x1fc000)
 								+ (s.p_v.midictl[0] << 14)
-					if (p_v.midictl[32])	// LSB
+					if (s.p_v.midictl[32])	// LSB
 						bk[s.v] = (bk[s.v] & ~0x3f80)
 								+ (s.p_v.midictl[32] << 7)
 				}
