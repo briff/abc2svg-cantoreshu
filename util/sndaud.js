@@ -303,16 +303,16 @@ function Audio5(i_conf) {
 			s = s.ts_prev
 
 		for ( ; s; s = s.ts_next) {
-			if (s.v < nv) {			// if new voice
+			if (s.v > nv) {			// if new voice
 				nv = s.v
 				bk[nv] = 0		// bank 0
-				if (p_v.midictl) {
-					if (p_v.midictl[0])	// MSB
+				if (s.p_v.midictl) {
+					if (s.p_v.midictl[0])	// MSB
 						bk[s.v] = (bk[s.v] & ~0x1fc000)
-								+ (p_v.midictl[0] << 14)
+								+ (s.p_v.midictl[0] << 14)
 					if (p_v.midictl[32])	// LSB
 						bk[s.v] = (bk[s.v] & ~0x3f80)
-								+ (p_v.midictl[32] << 7)
+								+ (s.p_v.midictl[32] << 7)
 				}
 			}
 			switch (s.subtype) {
@@ -348,7 +348,7 @@ function Audio5(i_conf) {
 			}
 		}
 		nv = (2 << nv) - 1
-		if (!(nv & vb)			// if some voice(s) without instrument
+		if (nv != vb			// if some voice(s) without instrument
 		 && !params[0]) {
 			params[0] = []		// load the piano
 			f(0, sf2par, sf2pre)
