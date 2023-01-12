@@ -1336,6 +1336,8 @@ function key_transp(s) {
 		curvoice.tr_sco = n		// b40 interval
 	else if (curvoice.tr_sco)
 		curvoice.tr_sco = 0
+	if (!curvoice.tr_sco)
+		return
 
 	b40 = (s.k_b40 + 200 + curvoice.tr_sco) % 40
 	d = abc2svg.b40k[b40] - b40
