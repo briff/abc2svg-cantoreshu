@@ -1,6 +1,6 @@
 // pedline.js - module to draw pedal lines instead of 'Ped .. *'
 //
-// Copyright (C) 2020-2022 Jean-Francois Moine
+// Copyright (C) 2020-2023 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -24,7 +24,7 @@
 
 abc2svg.pedline = {
     draw_all_deco: function(of) {
-    var	de, i,
+    var	de, i, j, x, dp, ds,
 	a_de = this.a_de()
 
 	if (!a_de.length)
@@ -34,18 +34,30 @@ abc2svg.pedline = {
 			de = a_de[i]
 			if (de.dd.name != "ped)")
 				continue
-			if (de.prev
-			 && de.prev.dd.name == "ped)") {
+			j = 0 //false
+			dp = de.prev
+			if (dp && dp.dd.name == "ped)") {
+				ds = de.start
+				while (ds.s.time == dp.s.time) {
+					if (dp.s.v == ds.s.v) {
+						j = 1 //true
+						break
+					}
+				}
+			}
 // ( .. ) ( .. )
 //		\ de
+//	  \ de.start
 //	\ de.prev
 // \ de.prev.start
 // |_____/\____|
+			if (j) {
 				de.defl.nost = true
-				de.prev.defl.noen = true
-				de.x = de.prev.s.x - 5
-				de.val = de.s.x - de.x - 5
-				de.prev.val = de.x - de.prev.x
+				dp.defl.noen = true
+				x = dp.s.x - 5		// x pedal-off - pedal-on
+				de.val += de.x - x
+				de.x = x
+				dp.val = x - dp.x
 			} else {
 				de.x -= 3
 				de.val += 10
