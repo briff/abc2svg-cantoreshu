@@ -52,8 +52,8 @@ abc2svg.pedline = {
 // \ de.prev.start
 // |_____/\____|
 			if (j) {
-				de.defl.nost = true
-				dp.defl.noen = true
+				de.defl.nost =		// /\
+					dp.defl.noen = 2
 				x = dp.s.x - 5		// x pedal-off - pedal-on
 				de.val += de.x - x
 				de.x = x
@@ -74,17 +74,26 @@ abc2svg.pedline = {
 	}
 	this.xypath(x, y + 16)
 	if (defl.nost) {
-		this.out_svg("l2.5 6")
-		val -= 2.5
+		if (defl.nost == 2) {		// \
+			this.out_svg("l2.5 6")
+			val -= 2.5
+		} else {
+			this.out_svg("m0 6")
+		}
 	} else {
 		this.out_svg("v6")
 	}
 	if (defl.noen) {
-		val -= 2.5
-		this.out_svg("h" + val.toFixed(1) + 'l2.5 -6"/>\n')
+		if (defl.noen == 2) {		// /
+			val -= 2.5
+			this.out_svg("h" + val.toFixed(1) + 'l2.5 -6')
+		} else {
+			this.out_svg("h" + val.toFixed(1))
+		}
 	} else {
-		this.out_svg("h" + val.toFixed(1) + 'v-6"/>\n')
+		this.out_svg("h" + val.toFixed(1) + 'v-6')
 	}
+	this.out_svg('"/>\n')
     }, // out_lped()
 
     set_fmt: function(of, cmd, param) {
