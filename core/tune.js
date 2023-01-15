@@ -1378,6 +1378,9 @@ function get_staves(cmd, parm) {
 		a_vf = parse_staves(parm)	// => array of [vid, flags]
 		if (!a_vf)
 			return
+	} else if (staves_found < 0) {
+		syntax(1, errs.bad_val, '%%' + cmd)
+		return
 	}
 
 	/* create a new staff system */
