@@ -567,7 +567,7 @@ function Audio5(i_conf) {
 
 			src.buffer = buf
 			src.connect(ac.destination)
-			src.noteOn(0)
+			src.start(0)
 		}
 
 		// initialize the audio subsystem if not done yet
