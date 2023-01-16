@@ -371,14 +371,19 @@ function Audio5(i_conf) {
 
 		// load the soundfont if not done yet
 		} else if (!parser) {
+		    w_instr++
 		    if (conf.sfu.slice(-3) == ".js") {
 			abc2svg.loadjs(conf.sfu,
 				function() {
 					load_res(s)	// load the instruments
+					if (--w_instr == 0)
+						play_start()
 				},
 				function() {
 					errmsg('could not load the sound file '
 						+ conf.sfu)
+					if (--w_instr == 0)
+						play_start()
 				})
 			return
 		    }
@@ -392,14 +397,20 @@ function Audio5(i_conf) {
 					parser.parse()
 					presets = parser.getPresets()
 					load_res(s)	// load the instruments
+					if (--w_instr == 0)
+						play_start()
 				} else {
 					errmsg('could not load the sound file '
 						+ conf.sfu)
+					if (--w_instr == 0)
+						play_start()
 				}
 			}
 			r.onerror = function() {
 					errmsg('could not load the sound file '
 						+ conf.sfu)
+				if (--w_instr == 0)
+					play_start()
 			}
 			r.send()
 			return
