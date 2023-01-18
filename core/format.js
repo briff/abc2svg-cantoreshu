@@ -1,6 +1,6 @@
 // abc2svg - format.js - formatting functions
 //
-// Copyright (C) 2014-2022 Jean-Francois Moine
+// Copyright (C) 2014-2023 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -208,7 +208,9 @@ function param_set_font(xxxfont, p) {
 
 	// create a new font
 	font = cfmt[xxxfont];
-	if (!font) {			// set-font-<n> or new element
+	if (!font			// set-font-<n> or new element
+	 || (p.indexOf('*') < 0		// or full redefinition
+	  && p.indexOf(' ') > 0)) {
 		font = {
 			pad: 0
 		}
@@ -277,30 +279,6 @@ function param_set_font(xxxfont, p) {
 
 	font.fname = p			// full name for scale factor
 
-	// accept url(...) as the font name
-	if (p[0] == 'u' && p.slice(0, 4) == "url(") {
-		n = p.indexOf(')', 1)
-		if (n < 0) {
-			syntax(1, "No end of url in font family")
-			return
-		}
-		p = p.slice(0, n + 1)
-
-		font.src = p
-		font.fid = font_tb.length
-		font_tb.push(font)
-		font.normal = true
-		p = 'ft' + font.fid
-	} else {
-		if (p[0] == '"') {
-			n = p.indexOf('"', 1)
-			if (n < 0) {
-				syntax(1, "No end of string in font family")
-				return
-			}
-			p = p.slice(1, n)
-		}
-
 		// extract the font attributes
 		a = p.match(/[- ]?[nN]ormal/)
 		if (a) {
@@ -329,6 +307,30 @@ function param_set_font(xxxfont, p) {
 		if (a) {
 			font.style = "oblique"
 			p = p.replace(a[0], '')
+		}
+
+	// accept url(...) as the font name
+	if (p[0] == 'u' && p.slice(0, 4) == "url(") {
+		n = p.indexOf(')', 1)
+		if (n < 0) {
+			syntax(1, "No end of url in font family")
+			return
+		}
+		p = p.slice(0, n + 1)
+
+		font.src = p
+		font.fid = font_tb.length
+		font_tb.push(font)
+		font.normal = true
+		p = 'ft' + font.fid
+	} else {
+		if (p[0] == '"') {
+			n = p.indexOf('"', 1)
+			if (n < 0) {
+				syntax(1, "No end of string in font family")
+				return
+			}
+			p = p.slice(1, n)
 		}
 
 		// here is the font family
