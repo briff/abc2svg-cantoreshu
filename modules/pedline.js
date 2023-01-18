@@ -32,8 +32,9 @@ abc2svg.pedline = {
 	if (this.cfmt().pedline) {
 		for (i = 0; i < a_de.length; i++) {
 			de = a_de[i]
+		    while (1) {
 			if (de.dd.name != "ped)")
-				continue
+				break
 			j = 0 //false
 			dp = de.prev
 			if (dp && dp.dd.name == "ped)") {
@@ -58,10 +59,19 @@ abc2svg.pedline = {
 				de.val += de.x - x
 				de.x = x
 				dp.val = x - dp.x
+
+				if (de.y > dp.y) {
+					de.y = dp.y
+					break
+				}
+				dp.y = de.y
+				de = dp
 			} else {
 				de.x -= 3
 				de.val += 10
+				break
 			}
+		    }
 		}
 	}
 	of()
@@ -72,7 +82,7 @@ abc2svg.pedline = {
 		of(x, y, val, defl)
 		return
 	}
-	this.xypath(x, y + 16)
+	this.xypath(x, y + 8)
 	if (defl.nost) {
 		if (defl.nost == 2) {		// \
 			this.out_svg("l2.5 6")
