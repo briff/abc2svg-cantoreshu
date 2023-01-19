@@ -1,6 +1,6 @@
 // abc2svg - lyrics.js - lyrics
 //
-// Copyright (C) 2014-2022 Jean-Francois Moine
+// Copyright (C) 2014-2023 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -185,7 +185,7 @@ function get_lyrics(text, cont) {
 		case '-':
 		case '_':
 			word = p[i]
-			ln = 2			// line continuation
+			ln = p[i] == '-' ? 2 : 3	// line continuation
 			break
 		case '*':
 			word = ""
@@ -289,7 +289,7 @@ function ly_set(s) {
 			ly = s2.a_ly[i]
 			if (!ly)
 				continue
-			if (ly.ln != 2)
+			if (!ly.ln || ly.ln < 2)
 				break
 		}
 		if (i >= 0)
@@ -303,7 +303,7 @@ function ly_set(s) {
 			continue
 		gene.curfont = ly.font
 		ly.t = p = str2svg(ly.t)
-		if (ly.ln == 2) {
+		if (ly.ln >= 2) {
 			ly.shift = 0
 			continue
 		}
@@ -418,27 +418,28 @@ function draw_lyric_line(p_voice, j, y) {
 		if (ly.font != gene.curfont)		/* font change */
 			gene.curfont = ly.font
 		p = ly.t;
+		ln = ly.ln || 0
 		w = p.wh[0]
 		shift = ly.shift
 		if (hyflag) {
-			if (ly.ln == 2 && p == "_") {	// '_'
-				p = "-"
-			} else if (ly.ln != 2) {	// not '-'
+			if (ln == 3) {			// '_'
+				ln = 2
+			} else if (ln < 2) {		// not '-'
 				out_hyph(lastx, y, s.x - shift - lastx);
 				hyflag = false;
 				lastx = s.x + s.wr
 			}
 		}
 		if (lflag
-		 && (ly.ln != 2 || p != "_")) {	// not '_'
+		 && ln != 3) {				// not '_'
 			out_wln(lastx + 3, y, x0 - lastx + 3);
 			lflag = false;
 			lastx = s.x + s.wr
 		}
-		if (ly.ln == 2) {		// '-' or '_'
+		if (ln >= 2) {				// '-' or '_'
 			if (x0 == 0 && lastx > s.x - 18)
 				lastx = s.x - 18
-			if (p == '-')
+			if (ln == 2)			// '-'
 				hyflag = true
 			else
 				lflag = true;
@@ -446,7 +447,7 @@ function draw_lyric_line(p_voice, j, y) {
 			continue
 		}
 		x0 = s.x - shift;
-		if (ly.ln)			// '-' at end
+		if (ln)					// '-' at end
 			hyflag = true
 		if (user.anno_start || user.anno_stop) {
 			s2 = {
@@ -485,7 +486,7 @@ function draw_lyric_line(p_voice, j, y) {
 			if (!s.a_ly)
 				break
 			ly = s.a_ly[j]
-			if (ly && ly.ln && ly.t == "_") {
+			if (ly && ly.ln == 3) {		 // '_'
 				lflag = true;
 				x0 = realwidth - 15
 				if (x0 < lastx + 12)
