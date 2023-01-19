@@ -196,7 +196,7 @@ function set_font_fac(font) {
 
 // %%xxxfont fontname|* [encoding] [size|*]
 function param_set_font(xxxfont, p) {
-    var	font, n, a
+    var	font, n, a, ft2, k
 
 	// "setfont-<n>" goes to "u<n>font"
 	if (xxxfont[xxxfont.length - 2] == '-') {
@@ -206,27 +206,8 @@ function param_set_font(xxxfont, p) {
 		xxxfont = "u" + n + "font"
 	}
 
-	// create a new font
-	font = cfmt[xxxfont];
-	if (!font			// set-font-<n> or new element
-	 || (p.indexOf('*') < 0		// or full redefinition
-	  && p.indexOf(' ') > 0)) {
-		font = {
-			pad: 0
-		}
-	} else {
-		font = {
-			name: font.name,
-			size: font.size,
-			weight: font.weight,
-			style: font.style,
-			box: font.box,
-			pad: font.pad || 0
-		}
-	}
-	cfmt[xxxfont] = font;
-
 	// fill the values
+	font = {}
 	a = p.match(/\s+(no)?box(\s|$)/)
 	if (a) {				// if box
 		if (a[1]) {
@@ -276,8 +257,6 @@ function param_set_font(xxxfont, p) {
 			font.size = +a[1]
 		p = p.replace(a[0], "")
 	}
-
-	font.fname = p			// full name for scale factor
 
 		// extract the font attributes
 		a = p.match(/[- ]?[nN]ormal/)
@@ -338,7 +317,7 @@ function param_set_font(xxxfont, p) {
 
 		switch (p) {
 		case "":
-		case "*": return
+		case "*": p = ""; break
 		case "Times-Roman":
 		case "Times":	p = "serif"; break
 		case "Helvetica": p = "sans-serif"; break
@@ -351,12 +330,31 @@ function param_set_font(xxxfont, p) {
 			break
 		}
 	}
-	font.name = p
+	if (p)
+		font.name = p
 
 	if (font.size)
 		set_font_fac(font)
-	else
-		font.swfac = 0
+
+	// keep the previous attributes if no font name or no size
+	if (!p || !font.size) {
+		ft2 = cfmt[xxxfont]
+		for (k in ft2) {
+			switch(k) {
+			case "used":
+			case "fid": 
+				continue
+			}
+			if (ft2.hasOwnProperty(k)
+			 && font[k] == undefined)
+				font[k] = ft2[k]
+		}
+	}
+	font.fname = font.name
+	if (font.weight >= 700)
+		font.fname += 'Bold'
+
+	cfmt[xxxfont] = font
 }
 
 // get a length with a unit - return the number of pixels
