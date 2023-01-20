@@ -1,6 +1,6 @@
 // abc2svg - gchord.js - chord symbols
 //
-// Copyright (C) 2014-2022 Jean-Francois Moine
+// Copyright (C) 2014-2023 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -395,9 +395,9 @@ Abc.prototype.draw_gchord = function(i, s, x, y) {
 	}
 
 	if (an.type != '@') {
-		if (y > 24)
+		if (y >= 0)
 			y_set(s.st, 1, x, w, y + h + pad + 2)
-		else if (y < 0)
+		else
 			y_set(s.st, 0, x, w, y - pad)
 	}
 
