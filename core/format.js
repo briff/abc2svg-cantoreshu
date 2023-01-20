@@ -258,6 +258,21 @@ function param_set_font(xxxfont, p) {
 		p = p.replace(a[0], "")
 	}
 
+	// accept url(...) as the font name
+	if (p[0] == 'u' && p.slice(0, 4) == "url(") {
+		n = p.indexOf(')', 1)
+		if (n < 0) {
+			syntax(1, "No end of url in font family")
+			return
+		}
+
+		font.src = p.slice(0, n + 1)
+		font.fid = font_tb.length
+		font_tb.push(font)
+		font.name = 'ft' + font.fid
+		p = p.replace(font.src, '')
+	}
+
 		// extract the font attributes
 		a = p.match(/[- ]?[nN]ormal/)
 		if (a) {
@@ -288,21 +303,7 @@ function param_set_font(xxxfont, p) {
 			p = p.replace(a[0], '')
 		}
 
-	// accept url(...) as the font name
-	if (p[0] == 'u' && p.slice(0, 4) == "url(") {
-		n = p.indexOf(')', 1)
-		if (n < 0) {
-			syntax(1, "No end of url in font family")
-			return
-		}
-		p = p.slice(0, n + 1)
-
-		font.src = p
-		font.fid = font_tb.length
-		font_tb.push(font)
-		font.normal = true
-		p = 'ft' + font.fid
-	} else {
+	if (!font.src) {			// if no url(...)
 		if (p[0] == '"') {
 			n = p.indexOf('"', 1)
 			if (n < 0) {
@@ -330,7 +331,7 @@ function param_set_font(xxxfont, p) {
 			break
 		}
 	}
-	if (p)
+	if (p && !font.name)
 		font.name = p
 
 	if (font.size)
@@ -349,6 +350,10 @@ function param_set_font(xxxfont, p) {
 			 && font[k] == undefined)
 				font[k] = ft2[k]
 		}
+		if (!font.swfac)
+			set_font_fac(font)
+		if (font.pad == undefined)
+			font.pad = 0
 	}
 	font.fname = font.name
 	if (font.weight >= 700)
