@@ -900,12 +900,14 @@ Abc.prototype.set_width = function(s) {
 			s.wl = s.wr = 1		// (!! not 0 !!)
 			return
 		}
+		if (s.prev && s.prev.type == C.STBRK) {
+			s.wl = 6
+			s.wr = 13
+			delete s.clef_small
+			return
+		}
 		s.wl = s.clef_small ? 11 : 12
 		s.wr = s.clef_small ? 8 : 13
-		if (s.prev && s.prev.type == C.STBRK) {
-			s.wl -= 6
-			delete s.next.clef_small
-		}
 		return
 	case C.KEY:
 		if (s.invis) {				// if no accidental
@@ -1017,8 +1019,6 @@ Abc.prototype.set_width = function(s) {
 			ly_set(s)
 		return
 	case C.STBRK:
-		if (s.next && s.next.type == C.CLEF)
-			delete s.next.clef_small	// normal clef
 		s.wl = s.xmx
 		s.wr = 8
 		return
