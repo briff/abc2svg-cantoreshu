@@ -1,6 +1,6 @@
 // abcweb-1.js file to include in html pages
 //
-// Copyright (C) 2014-2022 Jean-Francois Moine
+// Copyright (C) 2014-2023 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -537,16 +537,8 @@ function clean_txt(txt) {
 	abc = new abc2svg.Abc(user)
 	if (typeof follow == "function")	// if snd-1.js loaded
 		follow(abc, user, playconf)	// initialize the play follow
-	if (abc2svg.music[0].t) {
-		abc.tosvg(abc2svg.music[0].n,	// global definitions
-			  abc2svg.music[0].t)
-		if (abc.cfmt().with_source
-		 && abc.cfmt().with_source.indexOf('nohead') < 0) {
-			abc2svg.music[0].d.innerHTML = '<pre class="source">'
-					+ clean_txt(abc2svg.music[0].t)
-					+ '</pre>\n'
-		}
-	}
+	if (abc2svg.music[0].t)
+		musgen(abc2svg.music[0])	// global definitions
 
 	// create a list of all <div>'s
 	abc2svg.alldiv = []
