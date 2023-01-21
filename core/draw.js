@@ -3293,6 +3293,7 @@ function draw_systems(indent) {
 
 		// check if default staff
 		if (cache && cache.st_l == stafflines
+		 && staff_tb[st].staffscale == 1
 		 && cache.st_w == (w | 0)) {
 			xygl(x1, staff_tb[st].y, 'stdef' + cfmt.fullsvg)
 			return
@@ -3325,7 +3326,8 @@ function draw_systems(indent) {
 		}
 		y = staff_tb[st].y
 		if (!cache
-		 && w > get_lwidth() - 10) {
+		 && w > get_lwidth() - 10
+		 && staff_tb[st].staffscale == 1) {
 			cache = {
 				st_l: stafflines,
 				st_w: w | 0
