@@ -352,9 +352,9 @@ function param_set_font(xxxfont, p) {
 		}
 		if (!font.swfac)
 			set_font_fac(font)
-		if (font.pad == undefined)
-			font.pad = 0
 	}
+	if (font.pad == undefined)
+		font.pad = 0
 	font.fname = font.name
 	if (font.weight >= 700)
 		font.fname += 'Bold'
