@@ -338,7 +338,7 @@ function param_set_font(xxxfont, p) {
 		set_font_fac(font)
 
 	// keep the previous attributes if no font name or no size
-	if (!p || !font.size) {
+	if (!font.name || !font.size) {
 		ft2 = cfmt[xxxfont]
 		for (k in ft2) {
 			switch(k) {
