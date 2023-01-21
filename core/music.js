@@ -1017,6 +1017,8 @@ Abc.prototype.set_width = function(s) {
 			ly_set(s)
 		return
 	case C.STBRK:
+		if (s.next && s.next.type == C.CLEF)
+			delete s.next.clef_small	// normal clef
 		s.wl = s.xmx
 		s.wr = 8
 		return
