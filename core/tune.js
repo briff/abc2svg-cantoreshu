@@ -162,10 +162,9 @@ function sort_all() {
 
 	// check if different bars at the same time
 	function b_chk() {
-	    var	ir, bt, s, s2, v
-
+	    var	bt, s, s2, v, tim,
 		ir = 0
-		bt = ""
+
 		while (1) {
 			v = vn[ir++]
 			if (v == undefined)
@@ -175,15 +174,16 @@ function sort_all() {
 				continue
 			if (!bt) {
 				bt = s.bar_type
+				tim = s.time
 				continue
 			}
-			if (s.bar_type != bt)
+			if (s.time == tim
+			 && s.bar_type != bt)
 				break
 		}
 		if (!v)
 			return			// no problem
 
-		
 		if (bt == "::" || bt == ":|") {
 			ir = 0
 			while (1) {
@@ -202,7 +202,7 @@ function sort_all() {
 				s.next = s2
 			}
 		} else {
-			error(2, s, "Different bars $1 and $2",
+			error(1, s, "Different bars $1 and $2",
 				bt, s.bar_type)
 		}
 	} // b_chk()
