@@ -119,16 +119,16 @@ var decos = {
 	fine: "5 dacs 16 14 14 Fine",
 	invertedfermata: "4 hld 12 8 8",
 	segno: "5 sgno 22 8 8",
-	f: "6 f 12,7 4 3",
-	ff: "6 ff 12,7 7 7",
-	fff: "6 fff 12,7 11 10",
-	ffff: "6 ffff 12,7 15 12",
-	mf: "6 mf 12,6 8 10",
-	mp: "6 mp 10,5 9 10",
-	p: "6 p 10,4 4 5",
-	pp: "6 pp 10,4 8 9",
-	ppp: "6 ppp 10,4 14 10",
-	pppp: "6 pppp 10,4 16 16",
+	f: "6 f 12,5 4 6",
+	ff: "6 ff 12,5 7 7",
+	fff: "6 fff 12,5 11 10",
+	ffff: "6 ffff 12,5 15 12",
+	mf: "6 mf 12,5 8 10",
+	mp: "6 mp 12,5 9 10",
+	p: "6 p 12,5 4 6",
+	pp: "6 pp 12,5 8 9",
+	ppp: "6 ppp 12,5 14 10",
+	pppp: "6 pppp 12,5 16 16",
 	pralltriller: "3 umrd 4,4 6 7",
 	sfz: "6 sfz 12,5 9 9",
 	ped: "7 ped 18 6 10",
@@ -1476,9 +1476,7 @@ function draw_deco_near() {
 				ix: a_de.length,
 				defl: {},
 				x: x,
-				y: y,
-//				pos: pos
-//				dy: 0
+				y: y
 			}
 			if (pos)
 				de.pos = pos
