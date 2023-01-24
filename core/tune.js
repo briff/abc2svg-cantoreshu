@@ -1323,9 +1323,6 @@ function generate() {
 
 // transpose a key
 function key_transp(s) {
-	if (s.k_none)			// no key
-		return
-
     var	n, a_acc, b40, d
 
 	// set the score transposition
@@ -1336,7 +1333,8 @@ function key_transp(s) {
 		curvoice.tr_sco = n		// b40 interval
 	else if (curvoice.tr_sco)
 		curvoice.tr_sco = 0
-	if (!curvoice.tr_sco)
+	if (s.k_none				// no key
+	 || !curvoice.tr_sco)
 		return
 
 	b40 = (s.k_b40 + 200 + curvoice.tr_sco) % 40
