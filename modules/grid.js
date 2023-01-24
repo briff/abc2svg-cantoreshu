@@ -1,6 +1,6 @@
 // abc2svg - grid.js - module to insert a chord grid before or after a tune
 //
-// Copyright (C) 2018-2022 Jean-Francois Moine
+// Copyright (C) 2018-2023 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -302,6 +302,7 @@ function build_grid(s, font) {
 	// ----- block_gen() -----
     var	p_voice, n, font, f2
 
+	abc.set_page()
 	img = abc.get_img()
 
 	// set the text style

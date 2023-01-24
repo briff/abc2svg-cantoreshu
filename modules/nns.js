@@ -252,6 +252,7 @@ function build_nns(s, font) {
 	// ----- block_gen() -----
     var	p_voice, n, font, f2
 
+	abc.set_page()
 	img = abc.get_img()
 
 	// set the text style

@@ -1,6 +1,6 @@
 // grid3.js - module to insert a manual chords
 //
-// Copyright (C) 2020-2022 Jean-Francois Moine
+// Copyright (C) 2020-2023 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -40,6 +40,7 @@ abc2svg.grid3 = {
 		return
 	}
 
+	this.set_page()
 	this.blk_flush()
 
     var	abc = this,
