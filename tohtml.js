@@ -1,6 +1,6 @@
 // abc2svg - tohtml.js - HTML+SVG generation
 //
-// Copyright (C) 2014-2022 Jean-Francois Moine
+// Copyright (C) 2014-2023 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -17,7 +17,8 @@
 // You should have received a copy of the GNU General Public License
 // along with abc2svg.  If not, see <http://www.gnu.org/licenses/>.
 
-    var	init_done, pw, ml, mr, pkf, lkf, fn
+    var	init_done, pw, ml, mr, pkf, lkf, fn,
+	h_sty = ""
 
 // replace <>& by XML character references
 function clean_txt(txt) {
@@ -186,6 +187,10 @@ abc2svg.abc_init = function(args) {
 			abc2svg.print(str)
 			return
 		}
+		if (/^<style>[^<]+<\/style>$/.test(str)) {
+			h_sty = str.replace(/^<style>\n|<\/style>$/g,'')
+			return
+		}
 
 		var	header = cfmt.header,
 			footer = cfmt.footer,
@@ -255,7 +260,7 @@ p span {line-height:' + ((cfmt.lineskipfac * 100) | 0).toString() + '%}\n' +
 				(cfmt.pagewidth / 96).toFixed(2) + 'in ' +
 				(cfmt.pageheight / 96).toFixed(2) + 'in;margin:0}')
 
-		abc2svg.print('</style>\n\
+		abc2svg.print(h_sty + '</style>\n\
 <title>' + fn.replace(/.*\//,'')
 			+ '</title>\n\
 <body>')
