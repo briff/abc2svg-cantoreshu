@@ -611,7 +611,11 @@ function play_tune(what) {
 	}
 
 	function gsot(si) {		// go to the first symbol of a tune
-		return syms[si].p_v.sym
+	    var	sym = syms[si].p_v.sym
+
+		while (!sym.seqst)
+			sym = sym.ts_prev
+		return sym
 	}
 	function get_se(si) {			// get the starting symbol
 	    var	sym = syms[si]
