@@ -1131,9 +1131,11 @@ function dh_cnv(s, nt) {
 			error(1, s, "Cannot have !$1! on a head", nm)
 			continue
 		case 9:			// head replacement
-		case 32:		// invisible
 			nt.invis = true
 			break
+		case 32:		// invisible
+			nt.invis = true
+			continue
 		case 10:		// color
 			nt.color = nm
 			continue
