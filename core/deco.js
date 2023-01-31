@@ -1517,7 +1517,7 @@ function draw_deco_near() {
 				ix: 0,
 				defl: {},
 				x: x,
-				y: 3 * (note.pit - 18)
+				y: 3 * (note.pit - 18) - (dd.h - dd.hd) / 2
 //				dy: 0
 			}
 
