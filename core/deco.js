@@ -1882,10 +1882,29 @@ function draw_deco_staff() {
 	for (i = 0; i < nd; i++) {
 		de = a_de[i];
 		dd = de.dd
-		if (!dd				// if error
-		 || dd.func != 6
-		 || dd.ty == '<' || dd.ty == '>' || dd.ty == '@'
-		 || dd.dd_en)			// if start
+		if (!dd)				// if error
+			continue
+
+		// if @x,y offsets, update the top and bottom of the staff
+		if (dd.ty == '@') {
+		    var	y2
+
+			y = de.y
+			if (y > 0) {
+				y2 = y + dd.h + 2
+				if (y2 > staff_tb[de.st].ann_top)
+					staff_tb[de.st].ann_top = y2
+			} else {
+				y2 = y - dd.hd - 2
+				if (y2 < staff_tb[de.st].ann_bot)
+					staff_tb[de.st].ann_bot = y2
+
+			}
+			continue
+		}
+		if (dd.func != 6
+		 || dd.ty == '<' || dd.ty == '>'
+		 || dd.dd_en)				// if start
 			continue
 
 		w = de.val || (dd.wl + dd.wr)
