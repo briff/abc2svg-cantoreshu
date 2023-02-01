@@ -824,6 +824,9 @@ function set_ctrl() {
 				s.part = e.part
 			}
 			if (e.tempo) {
+				e.tempo.v = s.v
+				e.tempo.p_v = s.p_v
+				e.tempo.st = s.st
 				lkvsym(e.tempo, s)
 				lktsym(e.tempo, s)
 			}

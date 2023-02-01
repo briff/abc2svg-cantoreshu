@@ -1074,10 +1074,7 @@ function new_tempo(text) {
 	if (!parse.ctrl[tim])
 		parse.ctrl[tim] = {}
 	parse.ctrl[tim].tempo = s
-	s.v = par_sy.top_voice
-	s.p_v = voice_tb[s.v]
 	s.fmt = cfmt
-	s.st = s.p_v.st
 	s.time = tim
 }
 
