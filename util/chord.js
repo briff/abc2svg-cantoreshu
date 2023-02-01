@@ -242,6 +242,8 @@ abc2svg.chord = function(first,		// first symbol in time
 		},
 		vol: cfmt.chord.vol || .6	// (external default 76.2)
 	}
+	vch.sym.p_v = vch
+	vch.sym.v = vch.v
 	vch.last_sym = vch.sym
 	voice_tb.push(vch)
 	first.ts_next = vch.sym
