@@ -2180,8 +2180,7 @@ function draw_slurs(s, last) {
 
 		if (!s2.grace) {		// if end on a normal note
 			while (s) {
-				if (s.v == v
-				 && !s.invis)
+				if (s.v == v)
 					path.push(s)
 				if (s == s2)
 					break
