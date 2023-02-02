@@ -2096,24 +2096,7 @@ function draw_slurs(s, last) {
 		// handle slurs without start or end
 		switch (sl.loc) {
 		case 'i':			// no start
-			s3 = s.ts_prev
-			for (s = s3; s; s = s.ts_prev) {
-				if (s.dur) {
-					if (s.v == s2.v) {
-						s3 = s
-						break
-					}
-					if (s.st == s2.st) {
-						s3 = s
-						continue
-					} else if (!s3) {
-						s3 = s
-					}
-				} else if (!s3) {
-					s3 = s
-				}
-			}
-			s = s3
+			s = prev_scut(s)
 			break
 		case 'o':			// no end
 			for (s3 = s; s3.ts_next; s3 = s3.ts_next)
