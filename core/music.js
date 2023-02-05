@@ -4944,6 +4944,13 @@ Abc.prototype.set_sym_glue = function(width) {
 			some_grace = s
 		if (s.seqst) {
 			xmin += s.shrink
+			if (xmin > width) {
+				error(1, s, "Line too much shrunk $1 $2 $3",
+					xmin.toFixed(1),
+					xx.toFixed(1),
+					width.toFixed(1))
+				break
+			}
 			if (s.space) {
 				if (s.space < s.shrink) {
 					xse += s.shrink;
@@ -4972,11 +4979,11 @@ Abc.prototype.set_sym_glue = function(width) {
 	// strong shrink
 	s = tsfirst
 	if (xmin >= width) {
-		if (xmin > width)
-			error(1, s, "Line too much shrunk $1 $2 $3",
-				xmin.toFixed(1),
-				xx.toFixed(1),
-				width.toFixed(1));
+//		if (xmin > width)
+//			error(1, s, "Line too much shrunk $1 $2 $3",
+//				xmin.toFixed(1),
+//				xx.toFixed(1),
+//				width.toFixed(1))
 		x = 0
 		for ( ; s; s = s.ts_next) {
 			if (s.seqst)
