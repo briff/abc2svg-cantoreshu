@@ -331,15 +331,19 @@ function get_st_lines(param) {
 
 // create a block symbol in the tune body
 function new_block(subtype) {
-	var	s = {
+    var	c_v,
+	s = {
 			type: C.BLOCK,
 			subtype: subtype,
 			dur: 0
 		}
 
+	c_v = curvoice
 	if (subtype.slice(0, 4) != "midi")	// if not a play command
 		curvoice = voice_tb[0]		// set the block in the first voice
 	sym_link(s)
+	if (c_v)
+		curvoice = c_v
 	return s
 }
 
