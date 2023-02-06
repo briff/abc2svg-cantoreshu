@@ -349,12 +349,12 @@ error(2, s, "Bad linkage")
 	s.seqst = !s.ts_prev
 		|| s.time != s.ts_prev.time
 		|| (w_tb[s.ts_prev.type] != w_tb[s.type]
-		 && w_tb[s.ts_prev.type])
-	if (!next)
+		 && !!w_tb[s.ts_prev.type])
+	if (!next || next.seqst)
 		return
 	next.seqst = next.time != s.time ||
 			(w_tb[s.type] != w_tb[next.type]
-			 && w_tb[s.type])
+			 && !!w_tb[s.type])
 	if (next.seqst) {
 		old_wl = next.wl
 		self.set_width(next)
@@ -2143,6 +2143,7 @@ function cut_tune(lwidth, lsh) {
 			continue
 		} else {
 			s.soln = false
+//fixme what if new line wanted?
 			if (s.time == s2.time)
 				continue	// empty music line!
 			while (!s.seqst)
