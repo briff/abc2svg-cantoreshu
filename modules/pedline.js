@@ -24,7 +24,7 @@
 
 abc2svg.pedline = {
     draw_all_deco: function(of) {
-    var	de, i, j, x, dp, ds,
+    var	de, i, x, dp, ds,
 	a_de = this.a_de()
 
 	if (!a_de.length)
@@ -32,46 +32,32 @@ abc2svg.pedline = {
 	if (this.cfmt().pedline) {
 		for (i = 0; i < a_de.length; i++) {
 			de = a_de[i]
-		    while (1) {
 			if (de.dd.name != "ped)")
-				break
-			j = 0 //false
+				continue
+			ds = de.start
 			dp = de.prev
-			if (dp && dp.dd.name == "ped)") {
-				ds = de.start
-				while (ds.s.time == dp.s.time) {
-					if (dp.s.v == ds.s.v) {
-						j = 1 //true
-						break
-					}
-				}
-			}
 // ( .. ) ( .. )
 //		\ de
 //	  \ de.start
 //	\ de.prev
 // \ de.prev.start
 // |_____/\____|
-			if (j) {
+			if (dp && dp.dd.name == "ped)"
+			 && dp.s.v == ds.s.v) {
 				de.defl.nost =		// /\
 					dp.defl.noen = 2
-				x = dp.s.x - 5		// x pedal-off - pedal-on
-				de.val += de.x - x
-				de.x = x
-				dp.val = x - dp.x
+				de.x = ds.s.x - 10
+				de.val = de.s.x - ds.s.x - 3
+				dp.val = de.x - dp.x
 
-				if (de.y > dp.y) {
+				if (de.y > dp.y)
 					de.y = dp.y
-					break
-				}
 				dp.y = de.y
-				de = dp
 			} else {
-				de.x -= 3
-				de.val += 10
-				break
+				de.x = ds.s.x - 8
+				if (!de.defl.noen)
+					de.val = de.s.x - ds.s.x - de.s.wl
 			}
-		    }
 		}
 	}
 	of()
