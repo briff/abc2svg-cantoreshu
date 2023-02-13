@@ -1820,6 +1820,10 @@ function get_key(parm) {
 			p_voice.ckey = clone(s_key)
 		}
 		parse.ckey = clone(s_key)
+		if (a.length) {
+			memo_kv_parm('*', a)
+			a = []
+		}
 		if (!glovar.ulen)
 			glovar.ulen = C.BLEN / 8;
 		goto_tune()
