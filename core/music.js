@@ -240,7 +240,8 @@ function acc_shift(notes, dx_head) {
 		notes[i1].shac = notes[i2].shac = dx2
 	} else {
 		notes[i1].shac = dx1
-		dx1 += 7
+		if (notes[i1].pit != notes[i2].pit)
+			dx1 += 7
 		notes[i2].shac = dx2 = dx1
 	}
 	dx2 += 7
