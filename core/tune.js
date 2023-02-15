@@ -181,7 +181,7 @@ function sort_all() {
 			 && s.bar_type != bt)
 				break
 		}
-		if (!v)
+		if (v == undefined)
 			return			// no problem
 
 		if (bt == "::" || bt == ":|") {
@@ -786,7 +786,8 @@ function set_transp() {
 		curvoice.key = s = clone(curvoice.okey)
 	} else {
 		s = clone(curvoice.ckey)
-		s.k_old_sf = s.k_sf
+		if (!curvoice.new)
+			s.k_old_sf = s.k_sf
 		sym_link(s)
 	}
 	delete s.invis			// needed if K:C/none at start of tune
@@ -1326,28 +1327,31 @@ function generate() {
 
 // transpose a key
 function key_transp(s) {
-    var	n, a_acc, b40, d
+    var	i, n, a_acc, b40, d
 
-	// set the score transposition
-	n = (curvoice.score | 0)
-		+ (curvoice.shift | 0)
-		+ (cfmt.transp | 0)
-	if (n)
-		curvoice.tr_sco = n		// b40 interval
-	else if (curvoice.tr_sco)
-		curvoice.tr_sco = 0
-	if (s.k_none				// no key
-	 || !curvoice.tr_sco)
+	if (s.k_none)				// no key
 		return
 
-	b40 = (s.k_b40 + 200 + curvoice.tr_sco) % 40
-	d = abc2svg.b40k[b40] - b40
-	if (d) {
-		if (curvoice.tr_sco > 0)
-			curvoice.tr_sco -= d
+	// set the score transposition
+	n = (curvoice.score | 0)		// new transposition
+		+ (curvoice.shift | 0)
+		+ (cfmt.transp | 0)
+	if (curvoice.tr_sco == n)
+		return				// same transposition
+	d = n
+	if (d == 0)
+		d = -curvoice.tr_sco		// revert to no transposition
+
+	curvoice.tr_sco = n			// b40 interval
+
+	b40 = (s.k_b40 + 200 + d) % 40
+	i = abc2svg.b40k[b40] - b40
+	if (i) {
+		if (d > 0)
+			curvoice.tr_sco -= i
 		else
-			curvoice.tr_sco += d
-		b40 += d
+			curvoice.tr_sco += i
+		b40 += i
 	}
 	s.k_b40 = b40
 	s.k_sf = abc2svg.b40sf[b40]
@@ -1356,11 +1360,9 @@ function key_transp(s) {
 	if (!s.k_a_acc)
 		return
 	a_acc = []
-	for (n = 0; n < s.k_a_acc.length; n++) {
-		b40 = abc2svg.pab40(s.k_a_acc[n].pit, s.k_a_acc[n].acc)
-			+ curvoice.tr_sco
-
-		a_acc[n] = {
+	for (i = 0; i < s.k_a_acc.length; i++) {
+		b40 = abc2svg.pab40(s.k_a_acc[i].pit, s.k_a_acc[i].acc) + d
+		a_acc[i] = {
 			pit: abc2svg.b40p(b40),
 			acc: abc2svg.b40a(b40) || 3
 		}
@@ -1830,19 +1832,19 @@ function get_key(parm) {
 	}
 	set_kv_parm(a)
 
-	tr_p = curvoice.tr_p			// transposition change 1=sco, 2=snd
+	tr_p = curvoice.tr_p			// change in score transposition
 	curvoice.tr_p = 0
+	curvoice.tr_sco = 0
 	if (s.k_sf == undefined) {		// if no key
 		if (!s.k_a_acc			// if no accidental list
-		 && !(tr_p & 1))		// and no score transposition
+		 && !tr_p)			// and no score transposition
 			return			// not a key signature
 		s_key.k_sf = curvoice.okey.k_sf	// set the same key
 		s_key.k_b40 = curvoice.okey.k_b40
 	}
 
-	if (tr_p & 1)				// if transpose score
-		key_transp(s)
-	curvoice.okey = clone(s_key)
+	curvoice.okey = clone(s_key)		// keep the original key
+	key_transp(s)
 
 	s_key.k_old_sf = curvoice.ckey.k_sf	// memorize the key changes
 

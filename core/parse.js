@@ -586,10 +586,8 @@ Abc.prototype.set_vp = function(a) {
 	}
 
 	// if transposition
-	if (tr_p) {
-		curvoice.tr_p = tr_p
-
-		// setting curvoice.tr_sco is done in key_transp()
+	curvoice.tr_p = tr_p & 1	// curvoice.tr_sco is set in key_transp()
+	if (tr_p & 2) {
 		tr_p = (curvoice.sound | 0) + (curvoice.shift | 0)
 		if (tr_p)
 			curvoice.tr_snd = abc2svg.b40m(tr_p + 122) - 36
