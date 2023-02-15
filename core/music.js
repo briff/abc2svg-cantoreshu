@@ -2354,6 +2354,8 @@ function mrest_expand() {
 			while (s3 && s3.v < s.v && s3.type == C.BAR)
 				s3 = s3.ts_next	// keep in order
 			if (s3) {
+				if (s3.bar_type)
+					s3.seqst = 0 //false
 				lktsym(s2, s3)
 				if (s3.type == C.BAR)
 					delete s3.bar_num
@@ -2401,6 +2403,8 @@ function mrest_expand() {
 					break
 			}
 			if (s3) {
+				if (s3.dur)
+					s3.seqst = 0 //false
 				lktsym(s4, s3)
 			} else {
 				s3 = s
