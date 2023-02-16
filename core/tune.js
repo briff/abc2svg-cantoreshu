@@ -1336,7 +1336,7 @@ function key_transp(s) {
 	n = (curvoice.score | 0)		// new transposition
 		+ (curvoice.shift | 0)
 		+ (cfmt.transp | 0)
-	if (curvoice.tr_sco == n)
+	if ((curvoice.tr_sco | 0) == n)
 		return				// same transposition
 	d = n
 	if (d == 0)
