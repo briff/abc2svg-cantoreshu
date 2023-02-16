@@ -96,7 +96,7 @@ function Midi5(i_conf) {
 
 	// send a MIDI control
 	function midi_ctrl(po, s, t) {
-		po.op.send(new Uint8Array([0xb0 + s.chn,
+		po.op.send(new Uint8Array([0xb0 + po.v_c[s.v],
 					s.ctrl, s.val]),
 			t * 1000)
 	} // midi_ctrl()
