@@ -137,28 +137,12 @@ var w_tb = new Uint8Array([
 ])
 
 function sort_all() {
-    var	s, s2, time, w, wmin, ir, fmt,
+    var	s, s2, time, w, wmin, ir, fmt, v, p_voice, prev,
 	fl, new_sy,
 	nv = voice_tb.length,
 	vtb = [],
 	vn = [],			// voice indexed by range
-	sy = cur_sy,			// first staff system
-	v = sy.top_voice,
-	p_voice = voice_tb[v],		// top voice
-	prev = {			// symbol defining the first staff system
-		type: C.STAVES,
-		dur: 0,
-		v: v,
-		p_v: p_voice,
-		time: 0,
-		st: 0,
-		sy: sy,
-		next: p_voice.sym,
-		seqst: true
-	}
-
-	if (!p_voice.sym)
-		return
+	sy = cur_sy			// first staff system
 
 	// check if different bars at the same time
 	function b_chk() {
@@ -207,17 +191,35 @@ function sort_all() {
 		}
 	} // b_chk()
 
-	prev.fmt = fmt = p_voice.sym.fmt	// starting format
-
 	// set the first symbol of each voice
 	for (v = 0; v < nv; v++) {
 		s = voice_tb[v].sym
 		vtb[v] = s
-		if (sy.voices[v])
+		if (sy.voices[v]) {
 			vn[sy.voices[v].range] = v
+			if (!prev && s) {
+				fmt = s.fmt
+				p_voice = voice_tb[v]
+				prev = {	// symbol defining the first staff system
+					type: C.STAVES,
+					dur: 0,
+					v: v,
+					p_v: p_voice,
+					time: 0,
+					st: 0,
+					sy: sy,
+					next: s,
+					fmt: fmt,
+					seqst: true
+				}
+			}
+		}
 	}
 
-	// insert the first staff system in the top voice
+	if (!prev)
+		return					// no symbol yet
+
+	// insert the first staff system in the first voice
 	p_voice.sym = tsfirst = s = prev
 	if (s.next)
 		s.next.prev = s
