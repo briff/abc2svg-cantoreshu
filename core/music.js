@@ -870,6 +870,12 @@ Abc.prototype.set_width = function(s) {
 				s.wr = 5
 //			s.notes[0].shhd = (w - 5) * -.5
 
+		// special case for (mainly) "|| !invisible! |:"
+		if (s.invis)
+//fixme
+//		 && s.prev && s.prev.bar_type)
+			s.wl = s.wr = 2
+
 			/* if preceeded by a grace note sequence, adjust */
 			s2 = s.prev
 			if (s2 && s2.type == C.GRACE)

@@ -1412,7 +1412,9 @@ function new_bar() {
 	if (curvoice.ulen < 0)			// L:auto
 		adjust_dur(s);
 
-	if (bar_type == "[" || bar_type == "|:") {
+	// merge ":| |:" into "::" and other cases
+	if ((bar_type == "[" || bar_type == "|:")
+	 && !s.a_gch && !s.invis) {		// no annotation nor invisible
 		s2 = curvoice.last_sym
 		if (s2 && s2.time == curvoice.time) {
 
@@ -1440,8 +1442,8 @@ function new_bar() {
 						s2.bar_type = bar_type
 					if (s.text)
 						s2.text = s.text
-					if (s.a_gch)
-						s2.a_gch = s.a_gch
+//					if (s.a_gch)
+//						s2.a_gch = s.a_gch
 					if (s.norepbra)
 						s2.norepbra = s.norepbra
 					if (s.rbstart)
