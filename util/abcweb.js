@@ -117,7 +117,7 @@ function dom_loaded() {
 			r = mu.d.getBoundingClientRect()
 			if (r.top > wh)
 				break
-			musgeny(mu)
+			musgen(mu)
 			abc2svg.alldiv.shift()
 		}
 		if (abc2svg.alldiv.length) {
@@ -312,6 +312,10 @@ Printing may be bad because the file contains pure HTML and %%pageheight\
 
 			abc2svg.abc_end()	// close the page if %%pageheight
 
+			// mu.d can be null when parameters in query string
+			// and no ABC script with global parameters
+		    if (mu.d) {
+
 			if (err)
 				outb += '<pre class="nop" style="background:#ff8080">'
 					+ err + "</pre>\n"
@@ -338,6 +342,7 @@ Printing may be bad because the file contains pure HTML and %%pageheight\
 				j = j[1]		// tune number
 				tune_lst[j] = null	// get new play references
 			}
+		    } // if (mu.d)
 
 			// if some generation waiting, start it
 			mu.w = busy = 0 //false
