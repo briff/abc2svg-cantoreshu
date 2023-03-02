@@ -402,6 +402,7 @@ function build_grid(s, font) {
 			switch (s.type) {
 			case C.NOTE:
 			case C.REST:
+			case C.SPACE:
 				if (!s.a_gch || chord[beat_i])
 					break
 				bt = cs_filter(s.a_gch)
@@ -419,7 +420,8 @@ function build_grid(s, font) {
 				i = s.bar_num		// check if normal measure bar
 				bt = s.bar_type
 				while (s.ts_next && s.ts_next.time == s.time) {
-					if (s.ts_next.dur)
+					if (s.ts_next.dur
+					 || s.ts_next.type == C.SPACE)
 						break
 					s = s.ts_next
 					if (s.type == C.METER) {
