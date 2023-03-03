@@ -1,6 +1,6 @@
 // page.js - module to generate pages
 //
-// Copyright (C) 2018-2022 Jean-Francois Moine
+// Copyright (C) 2018-2023 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -39,7 +39,7 @@ abc2svg.page = {
     // generate a header or a footer in page.hf and return its height
     gen_hf: function(page, ty) {
     var	a, i, j, k, x, y, y0, s, str,
-	font = page.abc.get_font(ty),
+	font = page.abc.get_font(ty.substr(0, 6)),
 	cfmt = page.abc.cfmt(),
 	fh = font.size * 1.1,
 	pos = [ '">',
@@ -254,6 +254,8 @@ abc2svg.page = {
 	if (page.header) {
 		l = abc.get_font_style().length
 		h = abc2svg.page.gen_hf(page, "header")
+		if (!h && page.pn == 1 && page.header1)
+			h = abc2svg.page.gen_hf(page, "header1")
 		sty = abc.get_font_style().slice(l)		// new style(s)
 		if (cfmt.fullsvg || sty != page.hsty) {
 			page.hsty = sty
@@ -425,6 +427,10 @@ abc2svg.page = {
 				page.footer = cfmt.footer;
 				cfmt.footer = null
 			}
+			if (cfmt.header1) {
+				page.header1 = cfmt.header1
+				cfmt.header1 = null
+			}
 			if (cfmt.header2) {
 				page.header2 = cfmt.header2
 				cfmt.header2 = null
@@ -468,6 +474,7 @@ abc2svg.page = {
 		switch (cmd) {
 		case "header":
 		case "footer":
+		case "header1":
 		case "header2":
 		case "footer2":
 			page[cmd] = parm
