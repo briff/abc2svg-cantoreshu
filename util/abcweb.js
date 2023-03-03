@@ -400,6 +400,8 @@ Printing may be bad because the file contains pure HTML and %%pageheight\
 			include()
 	} // musgen()
 
+abc2svg.musgen = musgen			// used in set_music() below
+
 // -- abc2svg init argument
     user = {
 	read_file: function(fn) {
