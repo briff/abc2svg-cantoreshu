@@ -790,9 +790,9 @@ function set_ctrl() {
 			//fixme: insert at the end
 		} else {
 
-			// put the P: and/or Q: on a note or rest
+			// put the P: and/or Q: on a note, a rest or a space
 			while (s.time == tim && s.ts_next
-			 && !s.dur)
+			 && !s.dur && s.type != C.SPACE)
 				s = s.ts_next
 			if (e.part) {
 //				if (s.time != tim) {
