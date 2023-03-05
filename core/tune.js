@@ -773,32 +773,6 @@ function get_map(text) {
 	}
 }
 
-// set the transposition in the first key signature or in a new key
-function set_transp() {
-    var	s
-
-	if (curvoice.ckey.k_bagpipe || curvoice.ckey.k_drum)
-		return
-
-	if (cfmt.transp && curvoice.shift)	// if %%transpose and shift=
-		syntax(0, "Mix of old and new transposition syntaxes");
-
-	if (is_voice_sig()) {			// if no symbol yet
-		curvoice.okey.fmt = cfmt
-		curvoice.key = s = clone(curvoice.okey)
-	} else {
-		s = clone(curvoice.ckey)
-		if (!curvoice.new)
-			s.k_old_sf = s.k_sf
-		sym_link(s)
-	}
-	delete s.invis			// needed if K:C/none at start of tune
-	key_transp(s)
-	curvoice.ckey = clone(s)
-	if (curvoice.key.k_none)
-		s.k_sf = 0
-}
-
 // set the control values (P: and Q:)
 function set_ctrl() {
     var	s, tim, e
@@ -1143,7 +1117,7 @@ Abc.prototype.do_pscom = function(text) {
 			return
 		}
 		cfmt.transp = (cfmt.transp || 0) + val
-		set_transp()
+		key_trans()
 		return
 	case "tune":
 //fixme: to do
@@ -1327,11 +1301,14 @@ function generate() {
 	}
 }
 
-// transpose a key
-function key_transp(s) {
-    var	i, n, a_acc, b40, d
+// transpose the current key of the voice (called on K: or V:)
+function key_trans() {
+    var	i, n, a_acc, b40,
+	s = curvoice.ckey,			// current key
+	ti = s.time || 0
 
-	if (s.k_none)				// no key
+	if (s.k_bagpipe || s.k_drum
+	 || s.k_none)				// no key
 		return
 
 	// set the score transposition
@@ -1340,21 +1317,35 @@ function key_transp(s) {
 		+ (cfmt.transp | 0)
 	if ((curvoice.tr_sco | 0) == n)
 		return				// same transposition
-	d = n
-	if (d == 0)
-		d = -curvoice.tr_sco		// revert to no transposition
 
+	// get the current key or create a new one
+	if (is_voice_sig()) {			// if no symbol yet
+		curvoice.key = s		// new root key of the voice
+	} else if (curvoice.time != ti) {	// if no K: at this time
+		s = clone(s.orig || s)		// new key
+		if (!curvoice.new)
+			s.k_old_sf = curvoice.ckey.k_sf
+		curvoice.ckey = s
+		sym_link(s)
+	}
+
+	if (cfmt.transp && curvoice.shift)	// if %%transpose and shift=
+		syntax(0, "Mix of old and new transposition syntaxes");
+
+	// define the new key
 	curvoice.tr_sco = n			// b40 interval
 
-	b40 = (s.k_b40 + 200 + d) % 40
+	b40 = (s.k_b40 + 200 + n) % 40		// (s.k_40 is the original K:)
 	i = abc2svg.b40k[b40] - b40
 	if (i) {
-		if (d > 0)
+		if (n > 0)
 			curvoice.tr_sco -= i
 		else
 			curvoice.tr_sco += i
 		b40 += i
 	}
+
+	s.orig = clone(s)			// keep the original K: definition
 	s.k_b40 = b40
 	s.k_sf = abc2svg.b40sf[b40]
 
@@ -1803,27 +1794,29 @@ function get_clef(s) {
 
 // treat K: (kp = key signature + parameters)
 function get_key(parm) {
-    var	v, p_voice, transp, sndtran, tr_p, nt,
+    var	v, p_voice, transp, sndtran, nt,
 //		[s_key, a] = new_key(parm)	// KO with nodejs
 		a = new_key(parm),
 		s_key = a[0],
-		s = s_key
+		s = s_key,
+		empty = s.k_sf == undefined && !s.k_a_acc
 
 	a = a[1]
 
-	if (parse.state == 1) {		// in tune header (first K:)
-		if (s_key.k_sf == undefined && !s_key.k_a_acc) { // empty K:
+	if (empty)
+		s.invis = 1 //true		// don't display empty K:
+
+	if (parse.state == 1) {			// in tune header (first K:)
+		parse.ckey = s			// root key
+		if (empty) {
 			s_key.k_sf = 0;
 			s_key.k_none = true
 			s_key.k_map = abc2svg.keys[7]
 		}
 		for (v = 0; v < voice_tb.length; v++) {
 			p_voice = voice_tb[v];
-			p_voice.key = clone(s_key);
-			p_voice.okey = clone(s_key);
 			p_voice.ckey = clone(s_key)
 		}
-		parse.ckey = clone(s_key)
 		if (a.length) {
 			memo_kv_parm('*', a)
 			a = []
@@ -1831,40 +1824,34 @@ function get_key(parm) {
 		if (!glovar.ulen)
 			glovar.ulen = C.BLEN / 8;
 		goto_tune()
-	}
-	set_kv_parm(a)
-
-	tr_p = curvoice.tr_p			// change in score transposition
-	curvoice.tr_p = 0
-	curvoice.tr_sco = 0
-	if (s.k_sf == undefined) {		// if no key
-		if (!s.k_a_acc			// if no accidental list
-		 && !tr_p)			// and no score transposition
-			return			// not a key signature
-		s_key.k_sf = curvoice.okey.k_sf	// set the same key
-		s_key.k_b40 = curvoice.okey.k_b40
+	} else if (!empty) {
+		s.k_old_sf = curvoice.ckey.k_sf	// memorize the previous key
+		curvoice.ckey = s
+		sym_link(s)
+		if (curvoice.tr_sco)
+			curvoice.tr_sco = 0
 	}
 
-	curvoice.okey = clone(s_key)		// keep the original key
-	key_transp(s)
+	// set the voice parameters
+	if (!curvoice) {			// if first K:
+		if (!voice_tb.length) {
+			curvoice = new_voice("1")
+		    var	def = 1 // true
+		} else {
+			curvoice = voice_tb[staves_found < 0 ? 0 : par_sy.top_voice]
+		}
+	}
 
-	s_key.k_old_sf = curvoice.ckey.k_sf	// memorize the key changes
+	get_voice(curvoice.id + ' ' + a.join(' '))
+	if (def)
+		curvoice.default = 1 //true
 
-	if ((!s_key.k_a_acc || !s_key.k_a_acc.length)
-	 && !s_key.k_sf && !s_key.k_old_sf)
-		s_key.invis = true		// don't display the key signature
-
-	if (!s_key.k_b40)
-		s_key.k_b40 = curvoice.ckey.k_b40
-
-	curvoice.ckey = s_key
-	if (is_voice_sig()) {
-		s_key.fmt = cfmt
-		curvoice.key = clone(s_key)
-		if (s_key.k_none)
-			curvoice.key.k_sf = 0
-	} else {
-		sym_link(s_key)			// (don't move the key)
+	if (s == parse.ckey				// if first K:
+	 && curvoice.clef.clef_type == 'p') {		// and percussion
+		s.k_drum = 1 //true			// no transpose
+		s.k_sf = 0				// no accidental
+		s.k_b40 = 2
+		s.k_map = abc2svg.keys[7]
 	}
 }
 
@@ -1909,9 +1896,8 @@ function new_voice(id) {
 //		cst: 0,
 		ulen: glovar.ulen,
 		dur_fact: 1,
-		key: clone(parse.ckey),		// key at start of tune (parse / gene)
-		ckey: clone(parse.ckey),	// current key (parse / gene)
-		okey: clone(parse.ckey),	// key without transposition (parse)
+//		key: clone(parse.ckey),		// key at start of tune (parse / gene)
+//		ckey: clone(parse.ckey),	// current key (parse / gene)
 		meter: clone(glovar.meter),
 		wmeasure: glovar.meter.wmeasure,
 		staffnonote: 1,
@@ -1927,10 +1913,12 @@ function new_voice(id) {
 	}
 
 	voice_tb.push(p_voice);
-	
-	if (cfmt.transp)			// %%transpose
-		p_voice.tr_p = 1
 
+	if (parse.state == 3) {
+		p_voice.key = parse.ckey
+		p_voice.ckey = clone(parse.ckey)
+	}
+	
 //	par_sy.voices[v] = {
 //		range: -1
 //	}
@@ -1971,7 +1959,7 @@ function do_cloning() {
 	for (i = 0; i < vs.length; i++) {
 		parse = Object.create(parse_sav) // create a new parse context
 		parse.line = Object.create(parse_sav.line)
-		get_voice(vs[i], a)
+		get_voice(vs[i] + ' ' + a.join(' '))
 		tosvg(parse.fname, file, bol, eol)
 	}
 	include--
@@ -2028,11 +2016,23 @@ function get_voice(parm) {
 			curvoice.clone.bol++	// start of new line
 	}
 
+	if (!curvoice.key)			// if new voice
+		curvoice.key = parse.ckey
+
 	set_kv_parm(a)
-	if (curvoice.tr_p) {
-		curvoice.tr_p = 0
-		set_transp()
+
+	if (curvoice.clef.clef_type == 'p') {	// if percussion clef
+	    var	s = curvoice.ckey
+
+		s.k_drum = 1 //true
+		s.k_sf = 0
+		s.k_b40 = 2
+		s.k_map = abc2svg.keys[7]
+		if (curvoice.key = parse.ckey)
+			curvoice.key = s
 	}
+
+	key_trans()
 
 	v = curvoice.v
 	if (curvoice.new) {			// if new voice
@@ -2075,17 +2075,6 @@ function goto_tune() {
 		glovar.new_nbar = 0
 	} else {
 		gene.nbar = 1
-	}
-
-	// if no voice yet, create the default voice
-	if (!voice_tb.length) {
-		get_voice("1");
-		curvoice.clef.istart = curvoice.key.istart;
-		curvoice.clef.iend = curvoice.key.iend;
-//		nstaff = 0;
-		curvoice.default = true
-	} else {
-		curvoice = voice_tb[staves_found < 0 ? 0 : par_sy.top_voice]
 	}
 
 	parse.state = 3				// in tune body
