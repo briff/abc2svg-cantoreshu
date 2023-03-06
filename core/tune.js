@@ -254,6 +254,15 @@ function sort_all() {
 			s = s.next
 			if (!s)
 				return
+			if (s.type == C.PART) {		// move the part
+				s.prev.next =
+					s.prev.ts_next = s.next
+				if (s.next) {
+					s.next.part = s	// to the next symbol
+					s.next.prev = s.prev
+				}
+				continue
+			}
 			s.ts_prev = s.prev
 			s.ts_next = s.next
 			if (s.time != s.prev.time
@@ -315,8 +324,19 @@ function sort_all() {
 			if (!s)
 				continue
 			w = w_tb[s.type]
-			if (s.type == C.GRACE && s.next && s.next.type == C.GRACE)
+		    if (!w) {
+			if (s.type == C.GRACE && s.next && s.next.type == C.GRACE) {
 				w--
+			} else if (s.type == C.PART) {	// move the part
+				vtb[v] = s.next
+				if (s.next) {
+					s.next.part = s	// to the next symbol
+//				} else {
+// ignored
+				}
+				continue
+			}
+		   }
 			if (s.time != time
 			 || w != wmin)
 				continue
@@ -773,43 +793,20 @@ function get_map(text) {
 	}
 }
 
-// set the control values (P: and Q:)
-function set_ctrl() {
-    var	s, tim, e
+// check if a common symbol is already registered
+function new_ctrl(s) {
+    var	ty = abc2svg.sym_name[s.type],
+	tim = curvoice.time
 
-	for (tim in parse.ctrl) {
-//		if (!parse.ctrl.hasOwnProperty(tim))
-//			continue
-		e = parse.ctrl[tim]
-		s = tsfirst
-		while (s.next && s.next.time < tim)
-			s = s.next
-		while (s && s.time < tim)
-			s = s.ts_next
-		if (!s) {
-			//fixme: insert at the end
-		} else {
-
-			// put the P: and/or Q: on a note, a rest or a space
-			while (s.time == tim && s.ts_next
-			 && !s.dur && s.type != C.SPACE)
-				s = s.ts_next
-			if (e.part) {
-//				if (s.time != tim) {
-//					// fixme: insert a part (?)
-//				}
-				s.part = e.part
-			}
-			if (e.tempo) {
-				e.tempo.v = s.v
-				e.tempo.p_v = s.p_v
-				e.tempo.st = s.st
-				lkvsym(e.tempo, s)
-				lktsym(e.tempo, s)
-			}
-		}
-	}
-} // set_ctrl()
+	if (!parse.ctrl)
+		parse.ctrl = {}
+	if (!parse.ctrl[tim])
+		parse.ctrl[tim] = {}
+	if (parse.ctrl[tim][ty])		// already there?
+		return // false
+	parse.ctrl[tim][ty] = 1 //true		// keep the first definition
+	return 1 //true
+} // new_ctrl()
 
 // get a abcm2ps/abcMIDI compatible transposition value as a base-40 interval
 // The value may be
@@ -1275,9 +1272,6 @@ function generate() {
 
 	if (info.P)
 		tsfirst.parts = info.P	// for play
-
-	if (parse.ctrl)
-		set_ctrl()		// set control values
 
 	// give the parser result to the application
 	if (user.get_abcmodel)

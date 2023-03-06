@@ -1062,16 +1062,11 @@ function new_tempo(text) {
 		return
 	}
 
-    var	tim = curvoice.time
 	if (!glovar.tempo)
 		syntax(0, "No previous tempo")
-	if (!parse.ctrl)
-		parse.ctrl = {}
-	if (!parse.ctrl[tim])
-		parse.ctrl[tim] = {}
-	parse.ctrl[tim].tempo = s
-	s.fmt = cfmt
-	s.time = tim
+
+	if (new_ctrl(s))			// already registered?
+		sym_link(s)			// no, keep it
 }
 
 // treat the information fields which may embedded
@@ -1140,24 +1135,16 @@ function do_info(info_type, text) {
 			break
 		}
 
-		// memorize the part in the control
-		tim = curvoice.time
 		s = {
+			type: C.PART,
 			text: text,
 			time: tim
 		}
-		set_ref(s)
+		if (!new_ctrl(s)) 		// already registered
+			break			// yes
+		sym_link(s)
 		if (cfmt.writefields.indexOf(info_type) < 0)
 			s.invis = true
-		if (!parse.ctrl)
-			parse.ctrl = {}
-		if (!parse.ctrl[tim])
-			parse.ctrl[tim] = {}
-		parse.ctrl[tim].part = s
-		s.v = par_sy.top_voice
-		s.p_v = voice_tb[s.v]
-		s.fmt = cfmt
-		s.st = s.p_v.st
 		break
 	case 'Q':
 		if (!parse.state)

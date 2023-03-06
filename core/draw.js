@@ -2799,6 +2799,7 @@ function draw_all_ties(p_voice) {
  *   - staff decorations
  *   - chord symbols
  *   - repeat brackets
+ *   - parts and tempos
  * The buffer output is delayed until the definition of the staff system
  */
 function draw_sym_near() {
@@ -3024,6 +3025,8 @@ function draw_sym_near() {
 
 	draw_deco_staff()
 
+	draw_partempo()			// draw the parts and tempo indications if any
+
 	set_dscale(-1);
 	output = output_sav
 }
@@ -3120,9 +3123,6 @@ function set_staff() {
 				y = val
 		}
 //	}
-
-	/* draw the parts and tempo indications if any */
-	y += draw_partempo(st, y)
 
 	/* set the vertical offset of the 1st staff */
 	y *= p_staff.staffscale;

@@ -2075,66 +2075,27 @@ function draw_measnb() {
 }
 
 /* -- draw the parts and the tempo information -- */
-/* (the staves are being defined) */
-function draw_partempo(st, top) {
-    var	s, s2, some_part, some_tempo, h, w, y,
-	dy = 0,		/* put the tempo indication at top */
-	ht = 0
+// (unscaled delayed output)
+function draw_partempo() {
+    var	s, s2, some_part, some_tempo, h, w, y, st,
+	sy = cur_sy
+
+	// search the top staff
+	for (st = 0; st <= nstaff; st++) {
+		if (sy.st_print[st])
+			break
+	}
+	if (st > nstaff)
+		return				// no visible staff
+	set_dscale(st, 1)			// no scale
 
 	/* get the minimal y offset */
-	var	ymin = staff_tb[st].topbar + 8,
+    var	ymin = staff_tb[st].topbar + 2,
 		dosh = 0,
 		shift = 1,
 		x = -100	// (must be negative for %%soloffs)
 
-	for (s = tsfirst; s; s = s.ts_next) {
-		if (s.type != C.TEMPO || s.invis)
-			continue
-		if (!some_tempo)
-			some_tempo = s;
-		w = s.tempo_wh[0]
-		if (s.time == 0 && s.x > 40)	// at start of tune and no %%soloffs,
-			s.x = 40;	// shift the tempo over the key signature
-		y = y_get(st, true, s.x - 16, w)
-		if (y > ymin)
-			ymin = y
-		if (x >= s.x - 16 && !(dosh & (shift >> 1)))
-			dosh |= shift;
-		shift <<= 1;
-		x = s.x - 16 + w
-	}
-	if (some_tempo) {
-		set_sscale(-1);
-		set_font("tempo");
-		ht = gene.curfont.size + 8;
-		y = 2 - ht;
-		h = y - ht
-		if (dosh != 0)
-			ht *= 2
-		if (top < ymin + ht)
-			dy = ymin + ht - top
-
-		/* draw the tempo indications */
-		for (s = some_tempo; s; s = s.ts_next) {
-			if (s.type != C.TEMPO
-			 || s.invis)		// (displayed by %%titleformat)
-				continue
-			if (user.anno_start || user.anno_stop) {
-				s.wl = 16;
-				s.wr = 30;
-				s.ymn = (dosh & 1) ? h : y;
-				s.ymx = s.ymn + 14;
-				anno_start(s)
-			}
-			writempo(s, s.x - 16, (dosh & 1) ? h : y);
-			anno_stop(s);
-			dosh >>= 1
-		}
-	}
-
-	/* then, put the parts */
-/*fixme: should reduce vertical space if parts don't overlap tempo...*/
-	ymin = staff_tb[st].topbar + 6
+	// output the parts
 	for (s = tsfirst; s; s = s.ts_next) {
 		s2 = s.part
 		if (!s2 || s2.invis)
@@ -2154,27 +2115,70 @@ function draw_partempo(st, top) {
 	}
 	if (some_part) {
 		set_sscale(-1)
-		ht += h
-		if (top + dy < ymin + ht)
-			dy = ymin + ht - top
-
 		for (s = some_part; s; s = s.ts_next) {
 			s2 = s.part
 			if (!s2 || s2.invis)
 				continue
+			w = strwh(s2.text)[0]
 			if (user.anno_start || user.anno_stop) {
-				s2.type = C.PART
-				s2.p_v = s.p_v
-				s2.v = s.v
-				s2.st = s2.wl = 0
-				s2.wr = strwh(s2.text)[0]
-				s2.ymn = -ht
+				s2.wl = 0
+				s2.wr = w
+				s2.ymn = ymin
 				s2.ymx = s2.ymn + h
 				anno_start(s2)
 			}
-			xy_str(s2.x, 2 - ht + gene.curfont.size * .22, s2.text)
+			xy_str(s2.x,
+				ymin + 2 + gene.curfont.pad + gene.curfont.size * .22,
+				s2.text)
+			y_set(st, 1, s2.x, w + 3, ymin + 2 + h)
 			anno_stop(s2)
 		}
 	}
-	return dy /= staff_tb[0].staffscale
+
+	// output the tempos
+	ymin = staff_tb[st].topbar + 6
+	for (s = tsfirst; s; s = s.ts_next) {
+		if (s.type != C.TEMPO || s.invis)
+			continue
+		if (!some_tempo)
+			some_tempo = s
+		w = s.tempo_wh[0]
+//		if (s.time == 0 && s.x > 40)	// at start of tune and no %%soloffs,
+//			s.x = 40	// shift the tempo over the key signature
+		y = y_get(st, true, s.x - 16, w)
+		if (y > ymin)
+			ymin = y
+		if (x >= s.x - 16 && !(dosh & (shift >> 1)))
+			dosh |= shift
+		shift <<= 1
+		x = s.x - 16 + w
+	}
+	if (some_tempo) {
+		set_sscale(-1)
+		set_font("tempo")
+		y = ymin + 2
+		h = y
+		if (dosh != 0)
+			h += gene.curfont.size
+
+		/* draw the tempo indications */
+		for (s = some_tempo; s; s = s.ts_next) {
+			if (s.type != C.TEMPO
+			 || s.invis)		// (displayed by %%titleformat)
+				continue
+			w = s.tempo_wh[0]
+			if (user.anno_start || user.anno_stop) {
+				s.wl = 16
+//				s.wr = 30
+				s.wr = w - 16
+				s.ymn = (dosh & 1) ? h : y
+				s.ymx = s.ymn + 14
+				anno_start(s)
+			}
+			writempo(s, s.x - 16, (dosh & 1) ? h : y)
+			anno_stop(s)
+			y_set(st, 1, s.x - 16, w, (dosh & 1) ? h : y)
+			dosh >>= 1
+		}
+	}
 }
