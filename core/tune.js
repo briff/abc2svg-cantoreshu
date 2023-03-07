@@ -1941,7 +1941,7 @@ function do_cloning() {
 	vs = clone.vs,
 	a = clone.a,
 	bol = clone.bol,
-	eol = parse.istart,
+	eol = parse.eol,
 	parse_sav = parse,
 	file = parse.file
 
