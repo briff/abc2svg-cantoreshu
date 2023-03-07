@@ -2138,6 +2138,8 @@ function cut_tune(lwidth, lsh) {
 				break
 			case "mc_new":
 			case "mc_end":
+				if (!mc)
+					break
 				cfmt.leftmargin = mc.lm
 				cfmt.rightmargin = mc.rm
 				img.chg = 1 //true
@@ -4618,6 +4620,10 @@ Abc.prototype.block_gen = function(s) {
 		self.set_format(s.subtype, s.param)
 		break
 	case "mc_start":		// multicol start
+		if (multicol) {
+			error(1, s, "No end of the previous %%multicol")
+			break
+		}
 		multicol = {
 			posy: posy,
 			maxy: posy,
@@ -4628,6 +4634,10 @@ Abc.prototype.block_gen = function(s) {
 		}
 		break
 	case "mc_new":			// multicol new
+		if (!multicol) {
+			error(1, s, "%%multicol new without start")
+			break
+		}
 		if (posy > multicol.maxy)
 			multicol.maxy = posy
 		cfmt.leftmargin = multicol.lm
@@ -4638,6 +4648,10 @@ Abc.prototype.block_gen = function(s) {
 		img.chg = 1 //true
 		break
 	case "mc_end":			// multicol end
+		if (!multicol) {
+			error(1, s, "%%multicol end without start")
+			break
+		}
 		if (posy < multicol.maxy)
 			posy = multicol.maxy
 		cfmt.leftmargin = multicol.lm

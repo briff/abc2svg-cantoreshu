@@ -127,6 +127,7 @@ user.textrans = {
 	"No end of repeat string": "Cadeia de repetição não terminada",
 	"No end of string in font family":
 			"Cadeia de caracteres incompleta em família de fonte",
+	"No end of the previous %%multicol": "No end of the previous %%multicol",
 	"No end of tuplet": "Quiáltera incompleta",
 	"No end of tuplet in this music line":
 				"Falta terminar quiáltera nesta linha de música",

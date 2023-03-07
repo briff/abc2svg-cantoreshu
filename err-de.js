@@ -120,6 +120,7 @@ user.textrans = {
     "No end of chord symbol/annotation": "kein Ende des Akkordsymbols",
     "No end of repeat string": "kein Ende des Wiederholungszeichens",
 	"No end of string in font family": "No end of string in font family",
+	"No end of the previous %%multicol": "No end of the previous %%multicol",
     "No end of tuplet": "kein Ende des Tuplets",
     "No end of tuplet in this music line":
 			"Kein Ende des Tuplets in dieser Zeile",

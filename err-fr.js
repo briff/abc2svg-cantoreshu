@@ -129,6 +129,7 @@ user.textrans = {
 	"No end of repeat string": "Chaine de répétition non terminée",
 	"No end of string in font family":
 			"Pas de fin de chaine dans le nom de famille de la police",
+	"No end of the previous %%multicol": "Pas de 'end' du %%multicol précédent",
 	"No end of tuplet": "Pas de fin de tuplet",
 	"No end of tuplet in this music line":
 				"Pas de fin de tuplet dans cette ligne de musique",

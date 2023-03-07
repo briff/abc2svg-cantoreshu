@@ -128,6 +128,7 @@ user.textrans = {
 	"No end of grace note sequence": "Sequenza di note di abbellimento non terminata",
 	"No end of repeat string": "Stringa di ripetizione non terminata",
 	"No end of string in font family": "No end of string in font family",
+	"No end of the previous %%multicol": "No end of the previous %%multicol",
 	"No end of tuplet": "Gruppo irregolare non terminato",
 	"No end of tuplet in this music line":
 				"Gruppo irregolare non terminato in questa linea",

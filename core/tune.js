@@ -900,39 +900,27 @@ Abc.prototype.do_pscom = function(text) {
 		}
 		break
 	case "multicol":
-		if (parse.state >= 2) {
-			curvoice = voice_tb[0]
-			s = new_block("mc_" + param)
-			break
-		}
 		switch (param) {
 		case "start":
-			self.block_gen({
-				subtype: "mc_start"
-			})
-			break
 		case "new":
-			if (!multicol) {
-				syntax(1, "%%multicol new without start")
-				break
-			}
-			self.block_gen({
-				subtype: "mc_new"
-			})
-			break
 		case "end":
-			if (!multicol) {
-				syntax(1, "%%multicol end without start")
-				break
-			}
-			self.block_gen({
-				subtype: "mc_end"
-			})
 			break
 		default:
 			syntax(1, "Unknown keyword '$1' in %%multicol", param)
-			break
+			return
 		}
+		s = {
+			typ: C.block,
+			subtype: "mc_" + param,
+			dur: 0
+		}
+		if (parse.state >= 2) {
+			curvoice = voice_tb[0]
+			sym_link(s)
+			return
+		}
+		set_ref(s)
+		self.block_gen(s)
 		return
 	case "ottava":
 		if (parse.state != 3)
