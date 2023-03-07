@@ -260,6 +260,8 @@ function sort_all() {
 				if (s.next) {
 					s.next.part = s	// to the next symbol
 					s.next.prev = s.prev
+					if (s.soln)
+						s.next.soln = 1 //true
 				}
 				continue
 			}
@@ -333,6 +335,9 @@ function sort_all() {
 				vtb[v] = s.next
 				if (s.next) {
 					s.next.part = s	// to the next symbol
+					s.next.prev = s.prev
+					if (s.soln)
+						s.next.soln = 1 //true
 //				} else {
 // ignored
 				}
