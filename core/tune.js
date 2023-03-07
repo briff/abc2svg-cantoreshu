@@ -328,6 +328,8 @@ function sort_all() {
 			if (s.type == C.GRACE && s.next && s.next.type == C.GRACE) {
 				w--
 			} else if (s.type == C.PART) {	// move the part
+				if (s.prev)
+					s.prev.next = s.next
 				vtb[v] = s.next
 				if (s.next) {
 					s.next.part = s	// to the next symbol
