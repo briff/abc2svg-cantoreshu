@@ -254,6 +254,10 @@ function sort_all() {
 			s = s.next
 			if (!s)
 				return
+			if (s.time != s.prev.time
+			 || w_tb[s.prev.type]
+			 || s.type == C.GRACE && s.prev.type == C.GRACE)
+				s.seqst = 1 //true
 			if (s.type == C.PART) {		// move the part
 				s.prev.next =
 					s.prev.ts_next = s.next
@@ -262,15 +266,13 @@ function sort_all() {
 					s.next.prev = s.prev
 					if (s.soln)
 						s.next.soln = 1 //true
+					if (s.seqst)
+						s.next.seqst = 1 //true
 				}
 				continue
 			}
 			s.ts_prev = s.prev
 			s.ts_next = s.next
-			if (s.time != s.prev.time
-			 || w_tb[s.prev.type]
-			 || s.type == C.GRACE && s.prev.type == C.GRACE)
-				s.seqst = 1 //true
 		}
 		// not reached
 	}
@@ -323,13 +325,17 @@ function sort_all() {
 			if (v == undefined)
 				break
 			s = vtb[v]
-			if (!s)
+			if (!s
+			 || s.time != time)
 				continue
 			w = w_tb[s.type]
-		    if (!w) {
-			if (s.type == C.GRACE && s.next && s.next.type == C.GRACE) {
+			if (!w
+			 && s.type == C.GRACE && s.next && s.next.type == C.GRACE)
 				w--
-			} else if (s.type == C.PART) {	// move the part
+			if (w != wmin)
+				continue
+			if (!w
+			 && s.type == C.PART) {		// move the part
 				if (s.prev)
 					s.prev.next = s.next
 				vtb[v] = s.next
@@ -343,10 +349,6 @@ function sort_all() {
 				}
 				continue
 			}
-		   }
-			if (s.time != time
-			 || w != wmin)
-				continue
 			if (s.type == C.STAVES)
 				new_sy = s.sy
 			if (fl) {
@@ -359,7 +361,8 @@ function sort_all() {
 
 			vtb[v] = s.next
 		}
-		fl = wmin		/* start a new sequence if some width */
+		if (wmin)			// if some width
+			fl = 1 //true		// start a new sequence
 	}
 }
 
