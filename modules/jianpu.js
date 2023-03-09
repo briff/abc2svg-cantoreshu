@@ -70,6 +70,8 @@ abc2svg.jianpu = {
 				while (!s1.bar_type) {
 					s1.dy = 14
 					s1.notes[0].pit = 30
+					if (s1.type == C.REST)
+						s1.combine = -1
 					s1 = s1.next
 				}
 				// add deco '}' on s1
