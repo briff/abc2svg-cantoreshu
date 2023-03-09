@@ -327,7 +327,7 @@ abc2svg.jianpu = {
 		p_v = voice_tb[v]
 		if (p_v.jianpu) {
 			set_sym(p_v)
-			if (v > 0 && voice_tb[v - 1].st == p_v.st)
+			if (p_v.second)
 				ov_def(v)
 		}
 	}
