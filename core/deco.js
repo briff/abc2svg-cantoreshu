@@ -2156,10 +2156,8 @@ function draw_partempo() {
 	if (some_tempo) {
 		set_sscale(-1)
 		set_font("tempo")
-		y = ymin + 2
-		h = y
-		if (dosh != 0)
-			h += gene.curfont.size
+		h = gene.curfont.size
+		ymin += 2
 
 		/* draw the tempo indications */
 		for (s = some_tempo; s; s = s.ts_next) {
@@ -2167,17 +2165,20 @@ function draw_partempo() {
 			 || s.invis)		// (displayed by %%titleformat)
 				continue
 			w = s.tempo_wh[0]
+			y = ymin
+			if (dosh & 1)
+				y += h
 			if (user.anno_start || user.anno_stop) {
 				s.wl = 16
 //				s.wr = 30
 				s.wr = w - 16
-				s.ymn = (dosh & 1) ? h : y
+				s.ymn = y
 				s.ymx = s.ymn + 14
 				anno_start(s)
 			}
-			writempo(s, s.x - 16, (dosh & 1) ? h : y)
+			writempo(s, s.x - 16, y)
 			anno_stop(s)
-			y_set(st, 1, s.x - 16, w, (dosh & 1) ? h : y)
+			y_set(st, 1, s.x - 16, w, y + h)
 			dosh >>= 1
 		}
 	}
