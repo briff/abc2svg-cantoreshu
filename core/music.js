@@ -3309,10 +3309,10 @@ function init_music_line() {
 				s.p_v.meter = s
 				insert_meter = cfmt.writefields.indexOf('M') >= 0
 					&& s.a_meter.length
-				if (!insert_meter && s.part)
-					s.next.part = s.part
 				break
 			}
+			if (s.part)
+				s.next.part = s.part
 			unlksym(s)
 			// fall thru
 		case C.TEMPO:
