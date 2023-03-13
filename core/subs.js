@@ -1,6 +1,6 @@
 // abc2svg - subs.js - text output
 //
-// Copyright (C) 2014-2022 Jean-Francois Moine
+// Copyright (C) 2014-2023 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -405,7 +405,7 @@ function write_title(title, is_subtitle) {
 	wh = strwh(title)
 	wh[1] += gene.curfont.pad * 2
 	vskip(wh[1] + h + gene.curfont.pad)
-	h = gene.curfont.pad
+	h = gene.curfont.pad + wh[1] * .22	// + descent
 	if (cfmt.titleleft)
 		xy_str(0, h, title, null, null, wh)
 	else
@@ -678,10 +678,10 @@ function put_history() {
 		xy_str(0, 0, head, null, null, wh);
 		w = wh[0];
 		str = str.split('\n');
-		xy_str(w, 0, str[0])
+		xy_str(w, wh[1] * .22, str[0])
 		for (j = 1; j < str.length; j++) {
 			vskip(h);
-			xy_str(w, 0, str[j])
+			xy_str(w, wh[1] * .22, str[j])
 		}
 		vskip(h * .3);
 		use_font(gene.curfont)
