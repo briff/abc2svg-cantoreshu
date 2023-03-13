@@ -1741,13 +1741,16 @@ function draw_deco_staff() {
 				if (s.rbstop)
 					break
 			}
-			y2 = y_get(p_voice.st, true, s1.x, s.x - s1.x) + 2
+			x = s1.x
+			if (s1.xsh)			// volta shift
+				x += s1.xsh
+			y2 = y_get(p_voice.st, true, x, s.x - x) + 2
 			if (y < y2)
 				y = y2
 
 			// have room for the vertical lines and the repeat numbers
 			if (s1.rbstart == 2) {
-				y2 = y_get(p_voice.st, true, s1.x, 3) + 10
+				y2 = y_get(p_voice.st, true, x, 3) + 10
 				if (y < y2)
 					y = y2
 			}
@@ -1758,7 +1761,7 @@ function draw_deco_staff() {
 			}
 			if (s1.text) {
 				wh = strwh(s1.text);
-				y2 = y_get(p_voice.st, true, s1.x + 4, wh[0]) +
+				y2 = y_get(p_voice.st, true, x + 4, wh[0]) +
 						wh[1]
 				if (y < y2)
 					y = y2
@@ -1787,6 +1790,8 @@ function draw_deco_staff() {
 			if (s1 == s)
 				break
 			x = s1.x
+			if (s1.xsh)			// volta shift
+				x += s1.xsh
 			if (cfmt.measurenb > 0 & s.bar_num
 			 && s.bar_num % cfmt.measurenb)
 				x += 6

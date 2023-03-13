@@ -1572,7 +1572,7 @@ function get_staves(cmd, parm) {
 
 		par_sy.voices[v].second = p_voice.second;
 		st = p_voice.st
-		if (st > 0 && !p_voice.norepbra
+		if (st > 0 && p_voice.norepbra == undefined
 		 && !(par_sy.staves[st - 1].flags & STOP_BAR))
 			p_voice.norepbra = true
 	}

@@ -1361,7 +1361,7 @@ function new_bar() {
 
 	// there cannot be variants on a left repeat bar
 	if (bar_type.slice(-1) == ':') {	// left repeat
-		s.rbstop = 2			// stop the bracket
+		s.rbstop = 1			// end the bracket
 		if (s.text) {
 			syntax(1, "Variant ending on a left repeat bar")
 			delete s.text
@@ -1383,12 +1383,10 @@ function new_bar() {
 			if (curvoice.acc_tie_rep)
 				curvoice.acc_tie = curvoice.acc_tie_rep.slice()
 		}
+		if (curvoice.norepbra
+		 && !curvoice.second)
+			s.norepbra = 1 //true
 	}
-
-	if (s.rbstart
-	 && curvoice.norepbra
-	 && !curvoice.second)
-		s.norepbra = true
 
 	if (curvoice.ulen < 0)			// L:auto
 		adjust_dur(s);
@@ -1414,19 +1412,14 @@ function new_bar() {
 				// remove the invisible repeat bars
 				// when no shift is needed
 				if ((bar_type == "["
-				 && !s2.text
-				 && (!curvoice.st
-				  || (par_sy.staves[curvoice.st - 1].flags & STOP_BAR)
-				  || s.norepbra))
-				 || s2.bar_type == "|") {	// "|" + "|:" => "|:"
-					if (bar_type != "[")
-						s2.bar_type = bar_type
+				  && !s2.text)
+				 || s.norepbra) {
 					if (s.text)
 						s2.text = s.text
 //					if (s.a_gch)
 //						s2.a_gch = s.a_gch
 					if (s.norepbra)
-						s2.norepbra = s.norepbra
+						s2.norepbra = 1 //true
 					if (s.rbstart)
 						s2.rbstart = s.rbstart
 					if (s.rbstop)
@@ -1437,14 +1430,15 @@ function new_bar() {
 
 				// merge back-to-back repeat bars
 				if (bar_type == "|:") {
-					if (s2.bar_type == ":|") {
+					switch (s2.bar_type) {
+					case ":|":		// :| + |: => ::
 						s2.bar_type = "::";
 						s2.rbstop = 2
 						return
-					}
-					if (s2.bar_type == "||") {
-						s2.bar_type = "||:";
-						s2.rbstop = 2
+					case "||":		// || + |: => |:
+					case "|":		// | + |: => |:
+						s2.bar_type = "|:";
+						s2.rbstop = 1
 						return
 					}
 				}
@@ -1483,28 +1477,11 @@ function new_bar() {
 
 	s.st = curvoice.st			/* original staff */
 
-	/* if repeat bar and shift, add a repeat bar */
-	if (s.rbstart
-	 && bar_type != "["
-	 && !curvoice.norepbra
-	 && s.st > 0
-	 && !(par_sy.staves[s.st - 1].flags & STOP_BAR)) {
-		s2 = {
-			type: C.BAR,
-			fname: s.fname,
-			istart: s.istart,
-			iend: s.iend,
-			bar_type: "[",
-			multi: 0,
-			invis: true,
-			text: s.text,
-			rbstart: 2
-		}
-		sym_link(s2);
-		s2.st = s.st
-		delete s.text;
-		s.rbstart = 0
-	}
+	// possibly shift the volta bracket if not on the first staff
+	if (s.text && s.st > 0 && !s.norepbra
+	 && !(par_sy.staves[s.st - 1].flags & STOP_BAR)
+	 && bar_type != '[')
+		s.xsh = 4			// volta shift
 
 	if (!s.bar_dotted && !s.invis)
 		curvoice.acc = []		// no accidental anymore

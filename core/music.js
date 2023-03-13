@@ -1656,70 +1656,62 @@ function set_nl(s) {			// s = start of line
 		while (s.ts_prev
 		 && s.ts_prev.time == so.time) {
 			s = s.ts_prev
-			if (s.bar_type) {
-
-				// if repeat variant, move the new line
-				if (s.bar_type[0] == '['
-				 && s.text
-				 && s.ts_next == so)
-					so = s
+			if (s.bar_type)
 				s1 = s		// first previous bar
-			}
-//			if (s.type == C.GRACE)
-//				so = s		// keep the grace notes in the next line
 		}
 		if (!s1)
 			return so
 
-		// search the insertion point in the new line
-		for (s = so; ; s = s.ts_next) {
-			switch (s.type) {
-//			default:
-//				if (w_tb[s.type])
-//					break
+		if (!s1.bar_type
+		 || (s1.bar_type.slice(-1) != ':'
+		  && !s1.text))
+			return so
+
+		// search the new start of the next line
+		for (so = s1; so.time == s1.time; so = so.ts_prev) {
+			switch (so.ts_prev.type) {
 			case C.KEY:
 			case C.METER:
-			case C.CLEF:
+//			case C.PART:
+			case C.TEMPO:
+			case C.STAVES:
+			case C.STBRK:
 				continue
 			}
 			break
 		}
 
-		while (s1 != so) {
-		    if (s1.bar_type
-		     && s1.next
-		     && (s1.bar_type.slice(-1) == ':'
-		      || s1.text)
-		     && s1.bar_type != ':') {
-			new_type(s1)		// return t1 and t2
+		// put the new bar before the end of music line
+		s = s1				// keep first bar
+		while (s1.bar_type) {
+			new_type(s1)
 			s2 = clone(s1)
-			s1.bar_type = t1
-			delete s1.a_gch
-			if (t1 == '|')
-				delete s1.rbstop // (needed for play variant)
-			s2.bar_type = t2
-			lkvsym(s2, s1.next)	// voice
-			while (1) {
-				if (s.type != C.BAR
-//fixme: pb if inverted voices
-				 || s.v > s2.v)
-					break
-				s = s.ts_next
-			}
-			lktsym(s2, s)		// time
-			if (s1.seqst)
-				s2.seqst = 1
-			if (s == so)
-				so = s2
+			s2.bar_type = t1
+			s1.bar_type = t2
+			s2.ts_prev = so.ts_prev
+			s2.ts_prev.ts_next = s2
+			s2.ts_next = so
+			so.ts_prev = s2
+			if (s1 == s)
+				s2.seqst = 1 //true
+			s2.next = s1
+			if (s2.prev)
+				s2.prev.next = s2
+			s1.prev = s2
+			if (s1.rbstop)
+				s2.rbstop = s1.rbstop
 			if (s1.text) {
-				s2.invis = true
-				delete s1.text
-				delete s1.rbstart
+				s1.invis = 1 //true
+				delete s1.xsh
+				delete s2.text
+				delete s2.rbstart
 			}
-			delete s1.part
-			delete s2.a_dd
-		    }
+			delete s2.part
+			delete s1.a_dd
+
 			s1 = s1.ts_next
+			if (s1.seqst)
+				break
 		}
 		return so
 	} // bardiv()
