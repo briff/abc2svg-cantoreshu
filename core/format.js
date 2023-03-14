@@ -489,6 +489,12 @@ function set_page() {
 		error(0, undefined, "Bad staff width");
 		img.width = img.lm + img.rm + 150
 	}
+
+	// define the SVG width
+	img.lw = (img.width - img.lm - img.rm
+					- 2)	// for bar thickness at eol
+			/ cfmt.scale
+
 	set_posx()
 } // set_page()
 

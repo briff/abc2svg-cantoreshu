@@ -335,14 +335,12 @@ function xy_str(x, y,
 	out_sxsy(x, '" y="', y)
 	switch (action) {
 	case 'c':
-		x -= wh[0] / 2;
 		output += '" text-anchor="middle">'
 		break
 	case 'j':
 		output += '" textLength="' + w.toFixed(1) + '">'
 		break
 	case 'r':
-		x -= wh[0];
 		output += '" text-anchor="end">'
 		break
 	default:
@@ -382,9 +380,9 @@ function trim_title(title, is_subtitle) {
 
 // return the width of the music line
 function get_lwidth() {
-	return (img.width - img.lm - img.rm
-					- 2)	// for bar thickness at eol
-			/ cfmt.scale
+	if (img.chg)
+		set_page()
+	return img.lw
 }
 
 // header generation functions

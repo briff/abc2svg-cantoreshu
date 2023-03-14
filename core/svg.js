@@ -32,8 +32,8 @@ var	output = "",		// output buffer
 	img = {			// image
 		width: cfmt.pagewidth,	// width
 		lm: cfmt.leftmargin,	// left and right margins
-		rm: cfmt.rightmargin
-//		chg: false
+		rm: cfmt.rightmargin,
+		chg: 1 //true
 	},
 	defined_glyph = {},
 	defs = '',
