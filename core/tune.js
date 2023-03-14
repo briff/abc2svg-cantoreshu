@@ -913,7 +913,7 @@ Abc.prototype.do_pscom = function(text) {
 			return
 		}
 		s = {
-			typ: C.block,
+			type: C.BLOCK,
 			subtype: "mc_" + param,
 			dur: 0
 		}
