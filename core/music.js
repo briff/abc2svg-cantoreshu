@@ -1273,7 +1273,7 @@ function add_end_bar(s) {
 // this function is called once for the whole tune
 // and once more for each new music line
 function set_allsymwidth(first) {
-    var	val, st, s_chs, stup, itup, bm,
+    var	val, st, s_chs, stup, itup,
 	s = tsfirst,
 	s2 = s,
 	xa = 0,
@@ -1321,11 +1321,11 @@ function set_allsymwidth(first) {
 		}
 
 		if (!s2.shrink) {
-		    if (!s2.space && s2.type == C.CLEF
+		    if (s2.type == C.CLEF
 		     && !s2.ts_prev.bar_type) {
 			delete s2.seqst;		/* no space */
 			s2.time = tim
-		    } else if (s2.dur) {
+		    } else {
 			s2.shrink = 10			// cannot be null
 		    }
 		}
@@ -1334,15 +1334,12 @@ function set_allsymwidth(first) {
 			break
 
 		// update the min left space per staff
+		for (st = 0; st < wr.length; st++)
+			wr[st] = 0
 		xa = maxx
-		bm = 0					// bit map of staff numbers
 		do {
 			st = s2.st;
 			xl[st] = xa
-			if (!(bm & (1 << st))) {
-				bm |= 1 << st
-				wr[st] = 0
-			}
 			if (s2.wr > wr[st])
 				wr[st] = s2.wr
 			s2 = s2.ts_next
