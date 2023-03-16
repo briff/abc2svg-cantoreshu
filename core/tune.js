@@ -1427,8 +1427,11 @@ function get_staves(cmd, parm) {
 	for (v = 0; v < nv; v++) {
 		p_voice = voice_tb[v]
 		delete p_voice.second
-		delete p_voice.ignore
 		delete p_voice.floating
+		if (p_voice.ignore) {
+			p_voice.ignore = 0 //false
+			p_voice.last_sym = null
+		}
 	}
 	range = 0
 	for (i = 0; i < a_vf.length; i++) {
