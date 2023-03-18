@@ -5148,10 +5148,6 @@ Abc.prototype.output_music = function() {
 
 	self.set_stems()		// set the stem lengths
 
-	gen_init()			// output the blocks and define the page layout
-	if (!tsfirst)
-		return
-
 	set_acc_shft()			// set the horizontal offset of accidentals
 	if (nv > 1) {			// if many voices
 		set_rest_offset();	/* set the vertical offset of rests */
@@ -5177,6 +5173,11 @@ Abc.prototype.output_music = function() {
 		lwidth = get_lwidth();
 		cut_tune(lwidth, lsh)
 	}
+
+	// output the blocks and define the page layout
+	gen_init()
+	if (!tsfirst)
+		return
 
 	// save symbol pointers for play
 	ts1st = tsfirst
