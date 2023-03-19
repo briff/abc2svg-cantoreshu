@@ -1655,6 +1655,9 @@ function set_nl(s) {			// s = start of line
 			s = s.ts_prev
 			if (s.bar_type)
 				s1 = s		// first previous bar
+			else if (!s1 && s.type == C.GRACE && s.seqst)
+				so = s		// if grace note after a bar
+						// move the start of line
 		}
 		if (!s1)
 			return so
