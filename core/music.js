@@ -1787,7 +1787,7 @@ function set_nl(s) {			// s = start of line
 	// put the warning symbols
 	// the new symbols go in the previous line
 	function do_warn(s) {		// start of next line
-	    var s1, s2, s3, s4
+	    var s1, s2, s3, s4, w
 
 		// advance in the next line
 		for (s2 = s; s2; s2 = s2.ts_next) {
@@ -1846,14 +1846,26 @@ function set_nl(s) {			// s = start of line
 					self.set_width(s3)
 					s3.shrink = s3.wl
 					s4 = s3.ts_prev
-					while (!s4.seqst)
+					w = 0
+					while (1) {
+						if (s4.wr > w)
+							w = s4.wr
+						if (s4.seqst)
+							break
 						s4 = s4.ts_prev
-					s3.shrink += s4.wr
+					}
+					s3.shrink += w
 					s3.space = 0
 					s4 = s3.ts_next
-					while (!s4.seqst)
+					w = 0
+					while (1) {
+						if (s4.wl > w)
+							w = s4.wl
 						s4 = s4.ts_next
-					s4.shrink = s3.wr + s4.wl
+						if (s4.seqst)
+							break
+					}
+					s4.shrink = s3.wr + w
 				}
 				delete s3.part
 				continue
@@ -4971,12 +4983,6 @@ function set_piece() {
 	if (!non_empty_gl[nstaff])
 		staff_tb[nstaff].topbar = 0
 
-	/* initialize the music line */
-	init_music_line();
-
-	// keep the array of the staves to be printed
-	gene.st_print = new Uint8Array(non_empty_gl)
-
 	// if not the end of the tune, set the end of the music line
 	if (tsnext) {
 		s = tsnext;
@@ -5004,6 +5010,12 @@ function set_piece() {
 			p_voice.sym = null
 		}
 	}
+
+	// initialize the music line
+	init_music_line()
+
+	// keep the array of the staves to be printed
+	gene.st_print = new Uint8Array(non_empty_gl)
 }
 
 /* -- position the symbols along the staff -- */
