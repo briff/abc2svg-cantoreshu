@@ -1393,6 +1393,7 @@ function new_bar() {
 
 	// merge ":| |:" into "::" and other cases
 	if ((bar_type == "[" || bar_type == "|:")
+	 && !curvoice.eoln
 	 && !s.a_gch && !s.invis) {		// no annotation nor invisible
 		s2 = curvoice.last_sym
 

@@ -172,9 +172,10 @@ function sort_all() {
 		if (bt == '|:'
 		 && !fl) {
 			while (prev.type == C.GRACE) {
-				vtb[prev.v] = prev.prev
+				vtb[prev.v] = prev
 				prev = prev.ts_prev
 			}
+			fl = 1 //true
 		}
 
 		if (v == undefined)
