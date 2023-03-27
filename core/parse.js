@@ -1395,21 +1395,13 @@ function new_bar() {
 	if ((bar_type == "[" || bar_type == "|:")
 	 && !s.a_gch && !s.invis) {		// no annotation nor invisible
 		s2 = curvoice.last_sym
-		if (s2 && s2.time == curvoice.time) {
 
-			// search if a previous bar at this time
-			do {
-				if (s2.type == C.BAR)
-					break
-				if (w_tb[s2.type]) // symbol with a width
-					break
-				s2 = s2.prev
-			} while (s2)
-			if (s2 && s2.type == C.BAR) {
+		// if the previous symbol is also a bar
+		if (s2 && s2.type == C.BAR) {
 //		&& !s2.a_gch && !s2.a_dd
 //		&& !s.a_gch && !s.a_dd) {
 
-				// remove the invisible repeat bars
+				// remove the invisible variant bars
 				// when no shift is needed
 				if ((bar_type == "["
 				  && !s2.text)
@@ -1435,14 +1427,8 @@ function new_bar() {
 						s2.bar_type = "::";
 						s2.rbstop = 2
 						return
-					case "||":		// || + |: => |:
-					case "|":		// | + |: => |:
-						s2.bar_type = "|:";
-						s2.rbstop = 1
-						return
 					}
 				}
-			}
 		}
 	}
 

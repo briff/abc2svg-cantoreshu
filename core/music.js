@@ -1649,7 +1649,66 @@ function set_nl(s) {			// s = start of line
 		}
 	    } // new_typ()
 
-		s = so				// start of sequence
+		// change or add a bar for the voice in the previous line
+		function eol_bar(s,		// bar |:
+				 so,		// start of new line
+				 sst) {		// first bar (for seqst)
+		    var	s1, s2, s3
+
+			// check if a bar in the previous line
+			for (s1 = so.ts_prev ; s1.time == s.time; s1 = s1.ts_prev) {
+				if (s1.v != s.v)
+					continue
+				if (s1.bar_type) {
+					if (s1.bar_type != '|')
+						return	// don't change
+					s2 = s1		// last symbol in previous line
+					break
+				}
+				if (!s3)
+					s3 = s1.next	// possible anchor for the new bar
+			}
+			if (!s2) {			// if no symbol in previous line
+				s2 = clone(s)
+				if (!s3)
+					s3 = s
+				s2.next = s3
+				s2.prev = s3.prev
+				if (s2.prev)
+					s2.prev.next = s2
+				s3.prev = s2
+				s2.ts_prev = so.ts_prev	// time linkage
+				s2.ts_prev.ts_next = s2
+				s2.ts_next = so
+				so.ts_prev = s2
+				if (s == sst)		// if first inserted bar
+					s2.seqst = 1 //true
+				delete s2.part
+			}
+			s2.bar_type = "||"
+		} // eol_bar()
+
+		// check if there is a left repeat bar at start of the new line
+		s = so				// start of new music line
+		while (s && s.time == so.time) {
+			if (s.bar_type && s.bar_type.slice(-1) == ':') {
+				s2 = s
+				break
+			}
+			s = s.ts_next
+		}
+		if (s2) {
+			s = s2
+			while (1) {		// loop on all voices
+				eol_bar(s2, so, s)
+				s2 = s2.ts_next
+				if (!s2 || s2.seqst)
+					break
+			}
+			return so
+		}
+
+		s = so
 		while (s.ts_prev
 		 && s.ts_prev.time == so.time) {
 			s = s.ts_prev
@@ -1659,10 +1718,8 @@ function set_nl(s) {			// s = start of line
 				so = s		// if grace note after a bar
 						// move the start of line
 		}
-		if (!s1)
-			return so
-
-		if (!s1.bar_type
+		if (!s1
+		 || !s1.bar_type
 		 || (s1.bar_type.slice(-1) != ':'
 		  && !s1.text))
 			return so
@@ -1683,7 +1740,7 @@ function set_nl(s) {			// s = start of line
 
 		// put the new bar before the end of music line
 		s = s1				// keep first bar
-		while (s1.bar_type) {
+		while (1) {
 			new_type(s1)
 			s2 = clone(s1)
 			s2.bar_type = t1
@@ -1708,8 +1765,9 @@ function set_nl(s) {			// s = start of line
 			}
 			delete s2.part
 			delete s1.a_dd
-
-			s1 = s1.ts_next
+			do {
+				s1 = s1.ts_next
+			} while (!s1.seqst && !s1.bar_type)
 			if (s1.seqst)
 				break
 		}
