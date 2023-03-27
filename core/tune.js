@@ -165,6 +165,18 @@ function sort_all() {
 			 && s.bar_type != bt)
 				break
 		}
+
+		// if the bar is a left repeat and
+		// if the previous symbol is a grace note at the same offset
+		// remove the grace notes from the previous time sequence
+		if (bt == '|:'
+		 && !fl) {
+			while (prev.type == C.GRACE) {
+				vtb[prev.v] = prev.prev
+				prev = prev.ts_prev
+			}
+		}
+
 		if (v == undefined)
 			return			// no problem
 
