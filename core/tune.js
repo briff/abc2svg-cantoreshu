@@ -166,11 +166,9 @@ function sort_all() {
 				break
 		}
 
-		// if the bar is a left repeat and
-		// if the previous symbol is a grace note at the same offset
+		// if the previous symbol is a grace note at the same offset as the bar
 		// remove the grace notes from the previous time sequence
-		if (bt == '|:'
-		 && !fl) {
+		if (!fl) {
 			while (prev.type == C.GRACE) {
 				vtb[prev.v] = prev
 				prev = prev.ts_prev
