@@ -1782,7 +1782,8 @@ function get_clef(s) {
 	// move the clef before a (not right repeat) bar
     var	s2 = s.prev
 	if (!s.invis			// if not 'K: clef=none'
-	 && s2 && s2.type == C.BAR
+	 && s2 && s2.time == s.time
+	 && s2.type == C.BAR
 	 && s2.bar_type[0] != ':') {
 		s.next = s2
 		s.prev = s2.prev
