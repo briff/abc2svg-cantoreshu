@@ -1790,7 +1790,7 @@ function set_nl(s) {			// s = start of line
 	    var s1, s2, s3, s4, w
 
 		// advance in the next line
-		for (s2 = s; s2; s2 = s2.ts_next) {
+		for (s2 = s; s2 && s2.time == s.time; s2 = s2.ts_next) {
 			switch (s2.type) {
 			case C.KEY:
 				if (!s.fmt.keywarn
@@ -2408,7 +2408,7 @@ function mrest_expand() {
 
 		/* add the bar(s) and rest(s) */
 		tim = s.time + dur
-		s3 = s2 = s
+		s3 = s
 		while (--nb > 0) {
 
 			// add the bar
@@ -2419,7 +2419,7 @@ function mrest_expand() {
 			delete s2.text
 			delete s2.rbstart
 			delete s2.rbstop
-			lkvsym(s2, bar)
+			lkvsym(s2, s.next)	// before symbol at end of rests
 
 			s2.time = tim
 			while (s3.time < tim)
