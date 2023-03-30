@@ -1856,7 +1856,12 @@ function set_nl(s) {			// s = start of line
 					}
 					s3.shrink += w
 					s3.space = 0
-					s4 = s3.ts_next
+					s4 = s3
+					while (1) {
+						if (s4.ts_next.seqst)
+							break
+						s4 = s4.ts_next
+					}
 					w = 0
 					while (1) {
 						if (s4.wl > w)
