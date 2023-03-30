@@ -3671,7 +3671,8 @@ Abc.prototype.draw_symbols = function(p_voice) {
 			if (s.time >= staff_tb[st].clef.time)
 				staff_tb[st].clef = s
 			if (s.second
-			 || !staff_tb[st].topbar)
+			 || !staff_tb[st].topbar
+			 || !gene.st_print[st])
 				break
 			set_color();
 			set_sscale(st);
