@@ -2120,6 +2120,7 @@ function draw_partempo() {
 	}
 	if (some_part) {
 		set_sscale(-1)
+		ymin *= staff_tb[st].staffscale
 		for (s = some_part; s; s = s.ts_next) {
 			s2 = s.part
 			if (!s2 || s2.invis)
@@ -2163,6 +2164,7 @@ function draw_partempo() {
 		set_font("tempo")
 		h = gene.curfont.size
 		ymin += 2
+		ymin *= staff_tb[st].staffscale
 
 		/* draw the tempo indications */
 		for (s = some_tempo; s; s = s.ts_next) {
