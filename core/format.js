@@ -551,7 +551,7 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "stemheight":
 	case "tieheight":
 		f = +param
-		if (isNaN(f)) {
+		if (isNaN(f) || !param || f < 0) {
 			syntax(1, errs.bad_val, '%%' + cmd)
 			break
 		}
@@ -559,6 +559,8 @@ Abc.prototype.set_format = function(cmd, param) {
 		case "scale":			// old scale
 			f /= .75
 		case "pagescale":
+			if (f < .1)
+				f = .1		// smallest scale
 			cmd = "scale";
 			img.chg = true
 			break
