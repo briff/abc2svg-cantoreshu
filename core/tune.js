@@ -146,7 +146,7 @@ function sort_all() {
 
 	// check if different bars at the same time
 	function b_chk() {
-	    var	bt, s, s2, v, tim,
+	    var	bt, s, s2, v,
 		ir = 0
 
 		while (1) {
@@ -154,26 +154,26 @@ function sort_all() {
 			if (v == undefined)
 				break
 			s = vtb[v]
-			if (!s || !s.bar_type || s.invis)
+			if (!s || !s.bar_type || s.invis
+			 || s.time != time)
 				continue
 			if (!bt) {
 				bt = s.bar_type
-				tim = s.time
 				continue
 			}
-			if (s.time == tim
-			 && s.bar_type != bt)
+			if (s.bar_type != bt)
 				break
 		}
 
 		// if the previous symbol is a grace note at the same offset as the bar
 		// remove the grace notes from the previous time sequence
 		if (!fl) {
-			while (prev.type == C.GRACE) {
+			while (prev.type == C.GRACE
+			    && vtb[prev.v] && !vtb[prev.v].bar_type) {
 				vtb[prev.v] = prev
 				prev = prev.ts_prev
+				fl = 1 //true
 			}
-			fl = 1 //true
 		}
 
 		if (v == undefined)
