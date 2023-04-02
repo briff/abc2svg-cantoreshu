@@ -1441,7 +1441,12 @@ function get_staves(cmd, parm) {
 		delete p_voice.floating
 		if (p_voice.ignore) {
 			p_voice.ignore = 0 //false
-			p_voice.last_sym = null
+			s = p_voice.sym
+			if (s) {
+				while (s.next)
+					s = s.next
+			}
+			p_voice.last_sym = s	// set back the last symbol
 		}
 	}
 	range = 0
