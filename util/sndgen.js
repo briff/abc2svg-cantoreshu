@@ -256,16 +256,16 @@ function ToAudio() {
 			    }
 
 			// left repeat
+			} else if (s.bar_type.slice(-1) == ':') {
+				if (b_typ & 4)
+					break
+				b_typ |= 4
+				rst = s			// new possible restart
+				rst_fac = play_fac
 			} else if (s.rbstop == 2) {
-				if (s.bar_type.slice(-1) == ':') {
-					if (b_typ & 4)
-						break
-					b_typ |= 4
-				} else {
-					if (b_typ & 8)
-						break
-					b_typ |= 8
-				}
+				if (b_typ & 8)
+					break
+				b_typ |= 8
 				rst = s			// new possible restart
 				rst_fac = play_fac
 			}
