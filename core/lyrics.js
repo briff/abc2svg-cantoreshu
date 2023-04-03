@@ -661,7 +661,7 @@ function draw_all_lyrics() {
 		st = p_voice.st;
 		if (lyst_tb[st].a) {
 			top = lyst_tb[st].top + 2
-			for (s = p_voice.sym.next; s; s = s.next) {
+			for (s = p_voice.sym; s; s = s.next) {
 /*fixme: may have lyrics crossing a next symbol*/
 				if (s.a_ly) {
 /*fixme:should set the real width*/
@@ -672,7 +672,7 @@ function draw_all_lyrics() {
 		if (lyst_tb[st].b) {
 			bot = lyst_tb[st].bot - 2
 			if (nly_tb[p_voice.v] > 0) {
-				for (s = p_voice.sym.next; s; s = s.next) {
+				for (s = p_voice.sym; s; s = s.next) {
 					if (s.a_ly) {
 /*fixme:should set the real width*/
 						y_set(st, 0, s.x - 2, 10, bot)
