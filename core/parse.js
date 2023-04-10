@@ -1407,8 +1407,13 @@ function new_bar() {
 				if ((bar_type == "["
 				  && !s2.text)
 				 || s.norepbra) {
-					if (s.text)
+					if (s.text) {
 						s2.text = s.text
+						if (curvoice.st && !s.norepbra
+						 && !(par_sy.staves[curvoice.st - 1]
+								.flags & STOP_BAR))
+							s2.xsh = 4	// volta shift
+					}
 //					if (s.a_gch)
 //						s2.a_gch = s.a_gch
 					if (s.norepbra)
