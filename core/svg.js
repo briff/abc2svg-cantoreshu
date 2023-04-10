@@ -1296,18 +1296,14 @@ function svg_flush() {
 		' tune' + tunes.length + '"\n'	// tune index for play
 
 	posy *= cfmt.scale
-	if (user.imagesize) {
-		head += user.imagesize +
-			' viewBox="0 0 ' + img.width.toFixed(0) + ' ' +
-			 posy.toFixed(0) + '">\n'
-	} else {
-		head += ' viewBox="0 0 ' + img.width.toFixed(0) + ' ' +
-			posy.toFixed(0) +
-			'" width="' + img.width.toFixed(0) +
-			'px" height="' + posy.toFixed(0) + 'px">\n'
-	}
-
-	head += fulldefs
+	if (user.imagesize != undefined)
+		head += user.imagesize
+	else
+		head += ' width="' + img.width.toFixed(0)
+			+ 'px" height="' + posy.toFixed(0) + 'px"'
+	head += ' viewBox="0 0 ' + img.width.toFixed(0) + ' '
+		+ posy.toFixed(0) + '">\n'
+		+ fulldefs
 
 	if (style || font_style) {
 		head += '<style>' + font_style
