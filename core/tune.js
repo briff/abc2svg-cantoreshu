@@ -212,6 +212,8 @@ function sort_all() {
 					s2.xsh = 0
 				}
 				s2.next = s.next
+				if (s2.next)
+					s2.next.prev = s2
 				s2.prev = s
 				s.next = s2
 			}
