@@ -146,7 +146,7 @@ function sort_all() {
 
 	// check if different bars at the same time
 	function b_chk() {
-	    var	bt, s, s2, v,
+	    var	bt, s, s2, v, t,
 		ir = 0
 
 		while (1) {
@@ -159,10 +159,16 @@ function sort_all() {
 				continue
 			if (!bt) {
 				bt = s.bar_type
+				if (s.text && bt == '|')
+					t = s.text
 				continue
 			}
 			if (s.bar_type != bt)
 				break
+			if (s.text && !t && bt == '|') {
+				t = s.text
+				break
+			}
 		}
 
 		// if the previous symbol is a grace note at the same offset as the bar
@@ -179,26 +185,39 @@ function sort_all() {
 		if (v == undefined)
 			return			// no problem
 
-		if (bt == "::" || bt == ":|") {
+		// change "::" to ":| |:"
+		// and    "|1" to "| [1"
+		if (bt == "::" || bt == ":|"
+		 || t) {
 			ir = 0
+			bt = t ? '|' : "::"
 			while (1) {
 				v = vn[ir++]
 				if (v == undefined)
 					break
 				s = vtb[v]
 				if (!s || s.invis
-				 || s.bar_type != "::")
+				 || s.bar_type != bt
+				 || (bt == '|' && !s.text))
 					continue
 				s2 = clone(s)
-				s.bar_type = ":|"
-				s2.bar_type = "|:"
+				if (bt == "::") {
+					s.bar_type = ":|"
+					s2.bar_type = "|:"
+				} else {
+					s.bar_type = '|'
+					delete s.text
+					s2.bar_type = '['
+					s2.invis = 1 //true
+					s2.xsh = 0
+				}
 				s2.next = s.next
 				s2.prev = s
 				s.next = s2
 			}
 		} else {
 			error(1, s, "Different bars $1 and $2",
-				bt, s.bar_type)
+				(bt + (t || '')), (s.bar_type + (s.text || '')))
 		}
 	} // b_chk()
 
