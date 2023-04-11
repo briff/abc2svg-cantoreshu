@@ -271,7 +271,7 @@ p span {line-height:' + ((cfmt.lineskipfac * 100) | 0).toString() + '%}\n' +
 				gen_hf("footer", footer)
 
 			abc2svg.print('\
-<table style="margin:0">\n\
+<table style="margin:0" width="100%">\n\
   <thead><tr><td>\n\
     <div class="h-sp">&nbsp;</div>\n\
   </td></tr></thead>\n\
