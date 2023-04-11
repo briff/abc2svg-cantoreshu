@@ -1683,6 +1683,14 @@ function set_nl(s) {			// s = start of line
 				so.ts_prev = s2
 				if (s == sst)		// if first inserted bar
 					s2.seqst = 1 //true
+				if (s2.seqst) {
+					for (s = s2.ts_next; !s.seqst; s = s.ts_next)
+						;
+					s2.shrink = s.shrink
+					s.shrink = s2.wr + s.wl
+					s2.space = s.space
+					s.space = 0
+				}
 				delete s2.part
 			}
 			s2.bar_type = "||"

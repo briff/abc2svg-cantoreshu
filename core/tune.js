@@ -1801,27 +1801,40 @@ function get_clef(s) {
 		return
 	}
 
-	// clef change
-	sym_link(s);
-	s.clef_small = true
+	s.clef_small = 1 //true
 
-	// move the clef before a (not right repeat) bar
-    var	s2 = s.prev
-	if (!s.invis			// if not 'K: clef=none'
-	 && s2 && s2.time == s.time
-	 && s2.type == C.BAR
-	 && s2.bar_type[0] != ':') {
-		s.next = s2
-		s.prev = s2.prev
-		if (s.prev)
-			s.prev.next = s
-		s2.prev = s
-		s2.next = null
+	// move the clef before a key and/or a (not right repeat) bar
+    var	s2, s3
+
+	for (s2 = curvoice.last_sym;
+	     s2 && s2.time == curvoice.time;
+	     s2 = s2.prev) {
+		if (w_tb[s2.type])
+			break
+	}
+	if (s2
+	 && s2.time == curvoice.time		// if no time skip
+	 && s2.k_sf != undefined) {
+		s3 = s2				// move before a key signature
+		s2 = s2.prev
+	}
+	if (s2
+	 && s2.time == curvoice.time
+	 && s2.bar_type && s2.bar_type[0] != ':')
+		s3 = s2				// move before a measure bar
+	if (s3) {
+		s2 = curvoice.last_sym
+		curvoice.last_sym = s3.prev
+		sym_link(s)
+		s.next = s3
+		s3.prev = s
 		curvoice.last_sym = s2
 		if (s.soln) {
 			delete s.soln
 			curvoice.eoln = true
 		}
+	} else {
+		sym_link(s)
 	}
 }
 
