@@ -36,6 +36,23 @@ abc2svg.page = {
 	of()
     }, // abc_end()
 
+    // output the SVG tag
+    svg_tag: function(w, h) {
+	abc2svg.page.user_out(
+		'<svg xmlns="http://www.w3.org/2000/svg" version="1.1"\n\
+	xmlns:xlink="http://www.w3.org/1999/xlink"\n'
+		+ (user.imagesize != undefined
+			? ('	viewBox="0 0 ' + Math.ceil(w)
+				+ ' ' + Math.ceil(h) + '">'
+			)
+			: ('	width="' + Math.ceil(w)
+				+ 'px" height="' + Math.ceil(h)
+				+ 'px">'
+			)
+		)
+	)
+    }, // svg_tag()
+
     // generate a header or a footer in page.hf and return its height
     gen_hf: function(page, ty) {
     var	a, i, j, k, x, y, y0, s, str,
@@ -263,24 +280,16 @@ abc2svg.page = {
 		} else {
 			sty = ''
 		}
-		abc2svg.page.user_out(
-			'<svg xmlns="http://www.w3.org/2000/svg" version="1.1"\n\
-	xmlns:xlink="http://www.w3.org/1999/xlink"\n\
-	width="' + cfmt.pagewidth.toFixed(0) +
-			'px" height="' + (ht + h).toFixed(0) +
-			'px">\n' + sty +
+		abc2svg.page.svg_tag(cfmt.pagewidth, ht + h)
+		abc2svg.page.user_out(sty +
 			'<g transform="translate(0,' +
-				page.topmargin.toFixed(1) + ')">' +
+				page.topmargin.toFixed(1) + ')">\n' +
 				page.hf + '</g>\n</svg>')
 		page.hmax -= h;
 		page.hf = ''
 	} else {
-		abc2svg.page.user_out(
-			'<svg xmlns="http://www.w3.org/2000/svg" version="1.1"\n\
-	xmlns:xlink="http://www.w3.org/1999/xlink"\n\
-	width="' + cfmt.pagewidth.toFixed(0) +
-			'px" height="' + ht.toFixed(0) +
-			'px">\n</svg>')
+		abc2svg.page.svg_tag(cfmt.pagewidth, ht)
+		abc2svg.page.user_out('\n</svg>')
 	}
 	if (page.footer) {
 		l = abc.get_font_style().length
@@ -305,14 +314,10 @@ abc2svg.page = {
 	page.in_page = false
 	if (page.footer) {
 		h = page.hmax + page.fh - page.h
-		abc2svg.page.user_out(
-			'<svg xmlns="http://www.w3.org/2000/svg" version="1.1"\n\
-	xmlns:xlink="http://www.w3.org/1999/xlink"\n\
-	width="' + cfmt.pagewidth.toFixed(0) +
-			'px" height="' + h.toFixed(0) +
-			'px">\n' + page.ffsty +
+		abc2svg.page.svg_tag(cfmt.pagewidth, h)
+		abc2svg.page.user_out(page.ffsty +
 			'<g transform="translate(0,' +
-				(h - page.fh).toFixed(1) + ')">' +
+				(h - page.fh).toFixed(1) + ')">\n' +
 			page.hf + '</g>\n</svg>')
 	}
 	abc2svg.page.user_out('</div>')
