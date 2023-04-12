@@ -116,20 +116,20 @@ function sym_add(p_voice, type) {
 /* -- sort all symbols by time and vertical sequence -- */
 // weight of the symbols !! depends on the symbol type !!
 var w_tb = new Uint8Array([
-	5,	// bar
-	1,	// clef
+	6,	// bar
+	2,	// clef
 	8,	// custos
 	6,	// sm (sequence marker, after bar)
 	0,	// grace (must be null)
-	2,	// key
-	3,	// meter
+	3,	// key
+	4,	// meter
 	9,	// mrest
 	9,	// note
 	0,	// part
 	9,	// rest
-	4,	// space (before bar)
+	5,	// space (before bar)
 	0,	// staves
-	7,	// stbrk
+	1,	// stbrk
 	0,	// tempo
 	0,	// (free)
 	0,	// block
@@ -347,7 +347,7 @@ function sort_all() {
 			break			// done
 
 		// check the type of the measure bars
-		if (wmin == 5)			// weight of bars
+		if (wmin == 6)			// !! weight of bars
 			b_chk()
 
 		/* link the vertical sequence */
