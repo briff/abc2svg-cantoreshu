@@ -14,6 +14,7 @@ rule cpm
 rule font
   command = fontforge -c 'open("font/abc2svg.sfd").generate("abc2svg.ttf")';$
    fontforge -c 'open("font/abc2svg.sfd").generate("abc2svg.woff")';$
+   fontforge -c 'open("font/abc2svg.sfd").generate("abc2svg.woff2")';$
    echo '// abc2svg music font' > font.js;$
    echo "var musicfont = 'url(\"data:application/octet-stream;base64,\\" >> font.js;$
    base64 abc2svg.ttf | sed 's/$$/\\/' >> font.js;$
