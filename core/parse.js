@@ -1290,25 +1290,6 @@ function new_bar() {
 	if (a_dcn.length)
 		deco_cnv(s)
 
-	// set the start/stop of ottava
-	if (parse.ottava.length) {
-		s2 = s
-		if (curvoice.cst != curvoice.st) {	// if staff change
-			s2 = {
-				type: C.SPACE,		// put the decoration on a ...
-				fname: parse.fname,
-				istart: parse.bol + line.index,
-				dur: 0,
-				multi: 0,
-				invis: true,
-				width: 1		// .. small space
-			}
-			sym_link(s2)
-		}
-		s2.ottava = parse.ottava
-		parse.ottava = []
-	}
-
 	/* if the last element is '[', it may start
 	 * a chord or an embedded header */
 	if (bar_type.slice(-1) == '['
@@ -2404,13 +2385,8 @@ Abc.prototype.new_note = function(grace, sls) {
 		a_dcn = a_dcn_sav
 		deco_cnv(s, s.prev)
 	}
-	if (parse.ottava.length) {
-		if (grace)
-			grace.ottava = parse.ottava
-		else
-			s.ottava = parse.ottava
-		parse.ottava = []
-	}
+	if (grace && s.ottava)
+		grace.ottava = s.ottava
 	if (parse.stemless)
 		s.stemless = true
 	s.iend = parse.bol + line.index
@@ -2467,12 +2443,7 @@ function get_deco() {
 			break
 		dcn += c
 	}
-	if (ottava[dcn] != undefined) {
-		glovar.ottava = true;
-		parse.ottava.push(ottava[dcn])
-	} else {
-		a_dcn.push(dcn)
-	}
+	a_dcn.push(dcn)
 } // get_deco()
 
 // characters in the music line (ASCII only)
@@ -2513,9 +2484,7 @@ var nil = "0",
 		"!downbow!", "d",	/* t u v w */
 	"n", "n", "n", "{",		/* x y z { */
 	"|", "}", "!gmark!", nil,	/* | } ~ (del) */
-],
-    ottava = {"8va(":1, "8va)":0, "15ma(":2, "15ma)":0,
-	"8vb(":-1, "8vb)":0, "15mb(":-2, "15mb)":0}
+] // char_tb[]
 
 function parse_music_line() {
 	var	grace, last_note_sav, a_dcn_sav, no_eol, s, tps,

@@ -933,7 +933,7 @@ function get_dd(nm) {
 
 /* -- convert the decorations -- */
 function deco_cnv(s, prev) {
-    var	j, dd, nm, note, s1, court
+    var	i, j, dd, nm, note, s1, court
 
 	while (1) {
 		nm = a_dcn.shift()
@@ -957,6 +957,19 @@ function deco_cnv(s, prev) {
 			if (!s.notes) {
 				error(1, s, errs.must_note_rest, nm)
 				continue
+			}
+			break
+		case 4:			// below the staff
+		case 5:			// above the staff
+			i = nm.match(/1?[85]([vm])([ab])([()])/)
+			if (i) {				// if ottava
+				j = i[1] == 'v' ? 1 : 2
+				if (i[2] == 'b')
+					j = -j
+				if (!s.ottava)
+					s.ottava = []
+				s.ottava[i[3] == '(' ? 0 : 1] = j
+				glovar.ottava = 1 //true
 			}
 			break
 		case 8:			// gliss

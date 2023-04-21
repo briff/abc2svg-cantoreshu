@@ -961,12 +961,20 @@ Abc.prototype.do_pscom = function(text) {
 		if (parse.state != 3)
 			return
 		n = parseInt(param)
-		if (isNaN(n) || n < -2 || n > 2) {
+		if (isNaN(n) || n < -2 || n > 2
+		 || (!n && !curvoice.ottava)) {
 			syntax(1, errs.bad_val, "%%ottava")
 			return
 		}
-		glovar.ottava = true;
-		parse.ottava.push(n)
+		k = n
+		if (n) {
+			curvoice.ottava = n
+		} else {
+			n = curvoice.ottava
+			curvoice.ottava = 0
+		}
+		a_dcn.push(["15mb", "8vb", "", "8va", "15ma"][n + 2]
+			+ (k ? '(' : ')'))
 		return
 	case "repbra":
 		if (curvoice)

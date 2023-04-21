@@ -2322,74 +2322,89 @@ function set_yval(s) {
 	}
 }
 
-// set the ottava decorations and the associated pitch shift
+// set the pitch of the notes under an ottava sequence
 function set_ottava() {
-    var	s, st, delta, note, g, o,
+    var	s, s1, st, o, d,
 	m = nstaff + 1,
-	staff_d = new Int16Array(new Array(m * 2)),	// (-ottava)
-	staff_noo = new Int8Array(new Array(m))		// number of ottava values
+	staff_d = new Int8Array(m)
 
-	// add an ottava decoration
-	function ottava_add(s, ottava, start) {
-	    var	dc_st = ["15mb(", "8vb(", null, "8va(", "15ma("],
-		dc_en = ["15mb)", "8vb)", null, "8va)", "15ma)"];
+	// update the pitches of a symbol
+	function sym_ott(s, d) {
+	    var	g, m, note
 
-		a_dcn.push((start ? dc_st : dc_en)[2 + ottava])
-		deco_cnv(s)
-	}
-
-	for (st = 0; st <= nstaff; st++) {
-		staff_d[st] = 0;
-		staff_noo[st] = 0
-	}
-	for (s = tsfirst; s; s = s.ts_next) {
-		st = s.st
-		if (s.ottava != undefined)
-		    while (s.ottava.length) {
-			o = s.ottava.shift()
-			if (o) {
-				if (staff_noo[st]++ == 0) {	// if first ottava
-					ottava_add(s, o, true)
-					staff_d[st] = -o * 7
-				}
-			} else {
-				if (--staff_noo[st] == 0) {	// if last ottava
-					ottava_add(s, -staff_d[st] / 7);
-					staff_d[st] = 0
-				}
-			}
-		}
 		switch (s.type) {
 		case C.REST:
 			if (voice_tb.length == 1)
 				break
 		case C.NOTE:
-			delta = staff_d[st]
-			if (delta
-			 && !s.p_v.ckey.k_drum) {
+			if (!s.p_v.ckey.k_drum) {
 				for (m = s.nhd; m >= 0; m--) {
 					note = s.notes[m];
 					if (!note.opit)
 						note.opit = note.pit;
-					note.pit += delta
+					note.pit += d
 				}
 			}
 			break
 		case C.GRACE:
 			for (g = s.extra; g; g = g.next) {
-				delta = staff_d[st]
-				if (delta
-				 && !s.p_v.ckey.k_drum) {
+				if (!s.p_v.ckey.k_drum) {
 					for (m = 0; m <= g.nhd; m++) {
 						note = g.notes[m]
 						if (!note.opit)
 							note.opit = note.pit
-						note.pit += delta
+						note.pit += d
 					}
 				}
 			}
 			break
 		}
+	} // sym_ott()
+
+	// remove the ottava decorations of a symbol
+	function deco_rm(s) {
+		for (var i = s.a_dd.length; --i >= 0;) {
+			if (s.a_dd[i].name.match(/1?[85][vm][ab]/))
+				s.a_dd.splice(i, 1)
+		}
+	} // deco_rm()
+
+	for (s = tsfirst; s; s = s.ts_next) {
+		st = s.st
+		o = s.ottava
+		if (o) {				// some ottava start or stop
+			if (o[0]) {
+				if (staff_d[st] && !o[1]) {
+					sym_ott(s, staff_d[st])
+					deco_rm(s)
+					continue	// same ottava
+				}
+			} else if (!staff_d[st]) {
+				deco_rm(s)
+				continue		// already no ottava
+			}
+			s1 = s
+			while (s1 && !s1.seqst)
+				s1 = s1.ts_prev
+			if (s1) {			// update the previous symbols
+				while (s1 != s) {
+					if (s1.st == st) {
+						if (o[1])
+							sym_ott(s1, -staff_d[st])
+						if (o[0])
+							sym_ott(s1, -o[0] * 7)
+					}
+					s1 = s1.ts_next
+				}
+			}
+			if (o[0]) {			// ottava start
+				staff_d[st] = -o[0] * 7
+			} else {
+				staff_d[st] = 0
+			}
+		}
+		if (staff_d[st])
+			sym_ott(s, staff_d[st])
 	}
 }
 
