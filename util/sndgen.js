@@ -52,6 +52,76 @@ function ToAudio() {
 	b_tim,			// time of last measure bar
 	b_typ			// type of last measure bar
 
+	function get_beat() {
+	    var	s = first.p_v.meter
+
+		if (!s.a_meter[0] || s.a_meter[0].top[0] == 'C'
+		 || !s.a_meter[0].bot)
+			return C.BLEN / 4
+		if (s.a_meter[0].bot[0] == 8
+		 && s.a_meter[0].top[0] % 3 == 0)
+			return C.BLEN / 8 * 3
+		return C.BLEN / s.a_meter[0].bot[0] | 0
+	} // get_beat()
+
+	// create the starting beats
+	function def_beats() {
+	    var	i, s2, s3, tim,
+		beat = get_beat(),		// time between two beats
+		d = first.p_v.meter.wmeasure,	// duration of a measure
+		nb = d / beat | 0,		// number of beats in a measure
+		v = voice_tb.length,		// beat voice number
+		p_v = {				// voice for the beats
+			id: "_beats",
+			v: v,
+//			time:
+			sym: {
+				type: C.BLOCK,
+				v: v,
+//				p_v: p_v,
+				subtype: "midiprog",
+				chn: 9,			// percussion channel
+				instr: 16384,	// percussion bank
+//				time:
+//				next:
+				ts_prev: first
+//				ts_next: 
+			}
+//			vol:
+		},
+		s = {
+			type: C.NOTE,
+			v: v,
+			p_v: p_v,
+//			time:
+			dur: beat,
+			nhd: 0,
+			notes: [{
+				midi: 37	// Side Stick
+			}]
+		}
+
+		voice_tb[v] = p_v
+		p_v.sym.p_v = p_v
+		s2 = p_v.sym			// midiprog
+		tim =
+			abc_time = -d		// start time of the beat ticks
+		first.time = s2.time = tim
+		for (i = 0; i < nb; i++) {
+			s3 = Object.assign({}, s) // new beat tick
+			s3.time = tim
+			s3.prev = s2
+			s2.next = s3
+			s3.ts_prev = s2
+			s2.ts_next = s3
+			s2 = s3
+			tim += beat
+		}
+		s2.ts_next = first.ts_next
+		s2.ts_next.ts_prev = s2
+		first.ts_next = p_v.sym
+	} // def_beats()
+
 	// build the information about the parts (P:)
 	function build_parts(first) {
 	    var	i, j, c, n, v,
@@ -187,9 +257,13 @@ function ToAudio() {
 
 	// add() main
 
-	// if some MIDI stuff, load the associated module
+	// if some chord stuff, set the accompaniment data
 	if (cfmt.chord)
 		abc2svg.chord(first, voice_tb, cfmt)
+
+	// if %%playbeats, create the sounds
+	if (cfmt.playbeats)
+		def_beats()
 
 	if (s.parts)
 		build_parts(s)
@@ -399,8 +473,7 @@ abc2svg.play_next = function(po) {
 		s = {
 			subtype: "midictl",
 			p_v: p_v,
-			v: p_v.v,
-			chn: p_v.chn
+			v: s2.v
 		}
 
 		for (i in p_v.midictl) { // MIDI controls at voice start time
