@@ -234,6 +234,7 @@ function sort_all() {
 				p_voice = voice_tb[v]
 				prev = {	// symbol defining the first staff system
 					type: C.STAVES,
+					fname: parse.fname,
 					dur: 0,
 					v: v,
 					p_v: p_voice,
