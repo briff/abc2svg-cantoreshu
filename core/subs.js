@@ -114,7 +114,7 @@ var strwh
     // .. by the browser
 
 	// create a text element if not done yet
-    var	el = abc2svg.eltxt
+      var	el
 
 	// change the function
 	strwh = function(str) {
@@ -126,7 +126,6 @@ var strwh
 			el.style.top = '-1000px'
 			el.style.padding = '0'
 			document.body.appendChild(el)
-			abc2svg.eltxt = el	// reused after new Abc()
 		}
 
 	    var	c,
