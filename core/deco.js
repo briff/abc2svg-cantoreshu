@@ -1851,7 +1851,7 @@ function draw_deco_staff() {
 			y_set(s1.st, true, x, w, y + 2)
 
 			if (s.rbstart)
-				s = s.prev.prev
+				s = s.prev
 		}
 	} // draw_repbra()
 
