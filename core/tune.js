@@ -205,8 +205,9 @@ function sort_all() {
 					s.bar_type = ":|"
 					s2.bar_type = "|:"
 				} else {
-					s.bar_type = '|'
+//					s.bar_type = '|'
 					delete s.text
+					delete s.rbstart
 					s2.bar_type = '['
 					s2.invis = 1 //true
 					s2.xsh = 0
