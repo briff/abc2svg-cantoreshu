@@ -278,10 +278,6 @@ function param_set_font(xxxfont, p) {
 		if (a) {
 			font.normal = true
 			p = p.replace(a[0], '')
-			if (font.weight)
-				font.weight = null
-			if (font.style)
-				font.style = null
 		}
 
 		// font weight
@@ -341,14 +337,22 @@ function param_set_font(xxxfont, p) {
 	if (!font.name || !font.size) {
 		ft2 = cfmt[xxxfont]
 		for (k in ft2) {
-			switch(k) {
-			case "used":
-			case "fid": 
+			if (!ft2.hasOwnProperty(k)
+			 || font[k] != undefined)
 				continue
-			}
-			if (ft2.hasOwnProperty(k)
-			 && font[k] == undefined)
+			switch (k) {
+			case "fid":
+			case "used":
+				break
+			case "style":
+			case "weight":
+				if (font.normal)
+					break
+				// fall thru
+			default:
 				font[k] = ft2[k]
+				break
+			}
 		}
 		if (!font.swfac)
 			set_font_fac(font)
