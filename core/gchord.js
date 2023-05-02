@@ -176,9 +176,8 @@ function parse_gchord(type) {
 var	note_names = "CDEFGAB",
 	acc_name = ["bb", "b", "", "#", "##"]
 
-	function gch_tr1(p) {
+	function gch_tr1(p, tr) {
 	    var	i, o, n, a, ip, b40,
-		tr = curvoice.tr_sco,
 		csa = p.split('/')
 
 		for (i = 0; i < csa.length; i++) {	// main and optional bass
@@ -228,7 +227,7 @@ function csan_add(s) {
 		for (i = 0; i < a_gch.length; i++) {
 			gch = a_gch[i]
 			if (gch.type == 'g')
-				gch.text = gch_tr1(gch.text)
+				gch.text = gch_tr1(gch.text, curvoice.tr_sco)
 		}
 	}
 
