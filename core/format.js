@@ -17,9 +17,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with abc2svg-core.  If not, see <http://www.gnu.org/licenses/>.
 
-var	font_tb = [],
-	font_st = {},	// font style => font_tb index for incomplete user fonts
-	font_scale_tb = {
+    var	font_scale_tb = {
 		serif: 1,
 		serifBold: 1,
 		'sans-serif': 1,
@@ -267,8 +265,8 @@ function param_set_font(xxxfont, p) {
 		}
 
 		font.src = p.slice(0, n + 1)
-		font.fid = font_tb.length
-		font_tb.push(font)
+		font.fid = abc2svg.font_tb.length
+		abc2svg.font_tb.push(font)
 		font.name = 'ft' + font.fid
 		p = p.replace(font.src, '')
 	}
@@ -890,8 +888,8 @@ function use_font(font) {
 	if (!font.used) {
 		font.used = true;
 		if (font.fid == undefined) {	// if default font
-			font.fid = font_tb.length
-			font_tb.push(font)
+			font.fid = abc2svg.font_tb.length
+			abc2svg.font_tb.push(font)
 			if (!font.swfac)
 				set_font_fac(font)
 			if (!font.pad)
@@ -946,10 +944,10 @@ function get_font(fn) {
 			font2.class = font.class
 			st += ' '+ font.class
 		}
-		fid = font_st[st]
+		fid = abc2svg.font_st[st]
 		if (fid != undefined)
-			return font_tb[fid]
-		font_st[st] = font_tb.length	// will be the font id
+			return abc2svg.font_tb[fid]
+		abc2svg.font_st[st] = abc2svg.font_tb.length	// will be the font id
 		font2.fid = font2.used = undefined
 		font = font2
 	}

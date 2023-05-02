@@ -179,6 +179,10 @@ abc2svg.ch_alias = {
 	"7sus": "7sus4"
 } // ch_alias
 
+// global fonts
+abc2svg.font_tb = []	// fonts - index = font.fid
+abc2svg.font_st = {}	// font style => font_tb index for incomplete user fonts
+
 // font weight
 // reference:
 //	https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight

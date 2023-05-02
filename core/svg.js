@@ -1348,8 +1348,8 @@ function svg_flush() {
 	font_style = ''
 	if (cfmt.fullsvg) {
 		defined_glyph = {}
-		for (i = 0; i < font_tb.length; i++)
-			font_tb[i].used = false
+		for (i = 0; i < abc2svg.font_tb.length; i++)
+			abc2svg.font_tb[i].used = false
 	} else {
 		style = '';
 		fulldefs = ''
