@@ -867,10 +867,10 @@ function get_transp(param) {
 			return
 		}
 		val += 36
-		return (((val / 12) | 0) - 3) * 40 +
-			(param.slice(-1) == 'b' ?
-					abc2svg.ifb40 :
-					abc2svg.isb40)[val % 12]
+		val = ((val / 12 | 0) - 3) * 40 + abc2svg.isb40[val % 12]
+		if (param.slice(-1) == 'b')
+			val += 4
+		return val
 	}
 	// return undefined
 } // get_transp()
@@ -1371,11 +1371,8 @@ function key_trans() {
 
 	b40 = (s.k_b40 + 200 + n) % 40		// (s.k_40 is the original K:)
 	i = abc2svg.b40k[b40] - b40
-	if (i) {
-		if (n > 0)
-			curvoice.tr_sco -= i
-		else
-			curvoice.tr_sco += i
+	if (i) {				// no chord here
+		curvoice.tr_sco += i		// set an enharmonic one
 		b40 += i
 	}
 
