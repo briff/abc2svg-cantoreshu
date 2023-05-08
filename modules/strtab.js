@@ -221,13 +221,13 @@ abc2svg.strtab = {
 				continue
 
 			// create the smaller font if not done yet
-			if (!fmt.cstfont) {
+			if (!fmt.cstabfont) {
 			    var	f = gch.font
 
-				this.param_set_font("cstfont",
+				this.param_set_font("cstabfont",
 						f.name + ' ' + (f.size / 1.6).toFixed(1))
 			}
-			gch.font = fmt.cstfont
+			gch.font = fmt.cstabfont
 		}
 	}
 	of(s)
@@ -235,7 +235,11 @@ abc2svg.strtab = {
 
     // set a format parameter
     set_fmt: function(of, cmd, parm) {
-	if (cmd == "strtab") {
+	switch (cmd) {
+	case "cstabfont":
+		this.param_set_font("cstabfont", parm)
+		return
+	case "strtab":
 		if (!parm)
 			return
 	    var	p_v = this.get_curvoice()
@@ -250,8 +254,7 @@ abc2svg.strtab = {
 		}
 		this.set_v_param("strings", parm)
 		return
-	}
-	if (cmd == "minfret") {
+	case "minfret":
 		this.set_v_param("minfret", parm)
 		return
 	}
