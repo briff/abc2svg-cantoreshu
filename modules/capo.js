@@ -23,6 +23,9 @@
 //	%%capo n	'n' is the capo fret number
 
 abc2svg.capo = {
+    // b40 intervals of capo
+    icb40: [0, 5, 6,11,16,17,22,23,28,33,34,39],
+//	    e  f ^f  g _a  a _b  b  c _d  d _e
 
     gch_build: function(of, s) {
     var	t, i, gch, gch2, i2,
@@ -45,7 +48,7 @@ abc2svg.capo = {
 		}
 		gch2 = Object.create(gch)
 		gch2.capo = false	// (would be erased when setting gch)
-		gch2.text = abc.gch_tr1(gch2.text, -abc2svg.ifb40[t % 12])
+		gch2.text = abc.gch_tr1(gch2.text, -abc2svg.capo.icb40[t % 12])
 		if (!p_v.capo_first) {		// if new voice
 			p_v.capo_first = true
 			gch2.text += "  (capo: " + t.toString() + ")"
