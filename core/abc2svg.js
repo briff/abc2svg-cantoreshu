@@ -122,7 +122,7 @@ abc2svg.b40k =  new Int8Array(		// base-40 interval to possible transposition
 	 8,13,14,19,20,13,14,19,20,25, 2,19,24,25,30,31, 2,
 //					    20
 //	       A		 B
-	25,30,31,36,37, 2,31,36,37, 2, 3 ])
+	25,30,31,36,37, 2,31,36,37,42,43])
 //				    2
 abc2svg.b40sf = new Int8Array(		// base-40 interval to key signature
 //		        C		   D
