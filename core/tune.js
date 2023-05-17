@@ -1895,7 +1895,13 @@ function get_key(parm) {
 		}
 	}
 
+	p_voice = curvoice.clone
+	if (p_voice)
+		curvoice.clone = null		// don't stop the multi-voice sequence
 	get_voice(curvoice.id + ' ' + a.join(' '))
+	if (p_voice)
+		curvoice.clone = p_voice
+
 	if (def)
 		curvoice.default = 1 //true
 
