@@ -324,8 +324,7 @@ function ly_set(s) {
 				else
 					sz = w * .2
 			}
-			w -= sz
-			shift = w * .4
+			shift = (w - sz) * .4
 			if (shift > 14)
 				shift = 14
 			shift += sz
