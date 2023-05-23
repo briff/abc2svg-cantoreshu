@@ -1808,8 +1808,6 @@ function get_clef(s) {
 		return
 	}
 
-	s.clef_small = 1 //true
-
 	// move the clef before a key and/or a (not right repeat) bar
     var	s2, s3
 
@@ -1843,6 +1841,9 @@ function get_clef(s) {
 	} else {
 		sym_link(s)
 	}
+
+	if (s.prev)				// if not the first clef of the voice
+		s.clef_small = 1 //true		// have a small clef
 }
 
 // treat K: (kp = key signature + parameters)
