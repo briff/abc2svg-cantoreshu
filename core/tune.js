@@ -1359,9 +1359,9 @@ function key_trans() {
 		s = clone(s.orig || s)		// new key
 		if (!curvoice.new)
 			s.k_old_sf = curvoice.ckey.k_sf
-		curvoice.ckey = s
 		sym_link(s)
 	}
+	curvoice.ckey = s			// current key
 
 	if (cfmt.transp && curvoice.shift)	// if %%transpose and shift=
 		syntax(0, "Mix of old and new transposition syntaxes");
@@ -1801,6 +1801,19 @@ function is_voice_sig() {
 
 // treat a clef found in the tune body
 function get_clef(s) {
+    var	s2, s3
+
+	// special case for percussion
+	if (s.clef_type == 'p') {		// if percussion clef
+		s2 = curvoice.ckey
+		s2.k_drum = 1 //true
+		s2.k_sf = 0
+		s2.k_b40 = 2
+		s2.k_map = abc2svg.keys[7]
+		if (!curvoice.key)
+			curvoice.key = s2	// new root key
+	}
+
 	if (!curvoice.time		// (force a clef when new voice)
 	 && is_voice_sig()) {
 		curvoice.clef = s
@@ -1809,8 +1822,6 @@ function get_clef(s) {
 	}
 
 	// move the clef before a key and/or a (not right repeat) bar
-    var	s2, s3
-
 	for (s2 = curvoice.last_sym;
 	     s2 && s2.time == curvoice.time;
 	     s2 = s2.prev) {
@@ -1905,14 +1916,6 @@ function get_key(parm) {
 
 	if (def)
 		curvoice.default = 1 //true
-
-	if (s == parse.ckey				// if first K:
-	 && curvoice.clef.clef_type == 'p') {		// and percussion
-		s.k_drum = 1 //true			// no transpose
-		s.k_sf = 0				// no accidental
-		s.k_b40 = 2
-		s.k_map = abc2svg.keys[7]
-	}
 }
 
 // get / create a new voice
@@ -1975,7 +1978,7 @@ function new_voice(id) {
 	voice_tb.push(p_voice);
 
 	if (parse.state == 3) {
-		p_voice.key = parse.ckey
+//		p_voice.key = parse.ckey	// (done later in music.js)
 		p_voice.ckey = clone(parse.ckey)
 	}
 	
@@ -2076,21 +2079,7 @@ function get_voice(parm) {
 			curvoice.clone.bol++	// start of new line
 	}
 
-	if (!curvoice.key)			// if new voice
-		curvoice.key = parse.ckey
-
 	set_kv_parm(a)
-
-	if (curvoice.clef.clef_type == 'p') {	// if percussion clef
-	    var	s = curvoice.ckey
-
-		s.k_drum = 1 //true
-		s.k_sf = 0
-		s.k_b40 = 2
-		s.k_map = abc2svg.keys[7]
-		if (curvoice.key = parse.ckey)
-			curvoice.key = s
-	}
 
 	key_trans()
 
