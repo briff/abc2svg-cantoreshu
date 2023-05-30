@@ -3775,7 +3775,7 @@ function set_global() {
 	for (v = 0; v < nv; v++) {
 		p_voice = voice_tb[v];
 		set_words(p_voice)
-		p_voice.ckey = p_voice.key || parse.ckey	// starting key
+		p_voice.ckey = p_voice.key	// starting key
 // (test removed because v.second may change after %%staves)
 //		if (!p_voice.second && !p_voice.norepbra)
 			set_rb(p_voice)

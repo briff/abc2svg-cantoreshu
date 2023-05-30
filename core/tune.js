@@ -1304,6 +1304,10 @@ function generate() {
 	sort_all()			/* define the time / vertical sequences */
 
     if (tsfirst) {
+	for (v = 0; v < voice_tb.length; v++) {
+		if (!voice_tb[v].key)
+			voice_tb[v].key = parse.ckey	// set the starting key
+	}
 	if (user.anno_start)
 		anno_start = a_start
 	if (user.anno_stop)
