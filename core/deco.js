@@ -1659,7 +1659,7 @@ function draw_deco_near() {
 				y: s.y,
 				ldst: true
 			}
-			de.x = de.s.x
+			de.x = de.s.x + de.s.wr
 			if (de2.m != undefined)
 				de.m = de2.m;
 			a_de.push(de);

@@ -1134,12 +1134,56 @@ var deco_l_tb = {
 }
 
 function out_deco_long(x, y, de) {
-	var	name = de.dd.glyph
+    var	s, p_v, m, nt, i,
+	name = de.dd.glyph,
+	de1 = de.start
 
-	if (deco_l_tb[name])
-		deco_l_tb[name](x, y, de)
-	else
+	if (!deco_l_tb[name]) {
 		error(1, null, "No function for decoration '$1'", name)
+		return
+	}
+
+	// if no start or no end, get the y offset of the other end
+	p_v = de.s.p_v				// voice
+	if (de.defl.noen) {			// if no end
+		s = p_v.s_next			// start of the next music line
+		while (s && !s.dur)
+			s = s.next
+		if (s) {
+			for (m = 0; m <= s.nhd; m++) {
+				nt = s.notes[m]
+				if (!nt.a_dd)
+					continue
+				for (i = 0; i < nt.a_dd.length; i++) {
+					if (nt.a_dd[i].name == de.dd.name) {
+						y = 3 * (nt.pit - 18)
+							+ staff_tb[de.s.st].y
+						break
+					}
+				}
+			}
+		}
+		x += 8				// (there is no note width)
+	} else if (de.defl.nost) {		// no start
+		s = p_v.s_prev			// end of the previous music line
+		while (s && !s.dur)
+			s = s.prev
+		if (s) {
+			for (m = 0; m <= s.nhd; m++) {
+				nt = s.notes[m]
+				if (!nt.a_dd)
+					continue
+				for (i = 0; i < nt.a_dd.length; i++) {
+					if (nt.a_dd[i].name == de1.dd.name) {
+						de1.y = 3 * (nt.pit - 18)
+						break
+					}
+				}
+			}
+		}
+		de1.x -= 8			// (there is no note width)
+	}
+	deco_l_tb[name](x, y, de)
 }
 
 // return a tempo note
