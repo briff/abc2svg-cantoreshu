@@ -1,6 +1,6 @@
 // equalbars.js - module to set equal spaced measure bars
 //
-// Copyright (C) 2018-2022 Jean-Francois Moine
+// Copyright (C) 2018-2023 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -45,7 +45,7 @@ abc2svg.equalbars = {
     // only the bars of the first voice are treated
     set_sym_glue: function(of, width) {
     var	C = abc2svg.C,
-	s, s2, w, i, n, x, g, t, t0,
+	s, s2, d, w, i, n, x, g, t, t0,
 	bars = [],
 	tsfirst = this.get_tsfirst();
 
@@ -109,7 +109,7 @@ abc2svg.equalbars = {
 	}
 
 	// set the measure parameters
-	x = s2.type == C.GRACE ? s2.extra.x : s2.x;
+	x = s2.type == C.GRACE ? s2.extra.x : (s2.x - s2.wl)
 	if (this.equalbars_d < x)
 		this.equalbars_d = x		// new offset of the first note/rest
 
@@ -118,8 +118,13 @@ abc2svg.equalbars = {
 
 	// loop on the bars
 	for (i = 0; i < n; i++) {
-		do {				// don't shift the 1st note
-			s2.x = d + s2.x - x	// from the bar
+		do {			// don't shift the 1st note from the bar
+			if (s2.type == C.GRACE) {
+				for (g = s2.extra; g; g = g.next)
+					g.x = d + g.x - x
+			} else {
+				s2.x = d + s2.x - x
+			}
 			s2 = s2.ts_next
 		} while (!s2.seqst)
 
@@ -131,7 +136,8 @@ abc2svg.equalbars = {
 			if (s2.type == C.GRACE) {
 				for (g = s2.extra; g; g = g.next)
 					g.x = d + (g.x - x) * f
-			} else if (s2.x) {
+//			} else if (s2.x) {
+			} else {
 				s2.x = d + (s2.x - x) * f
 			}
 		}
