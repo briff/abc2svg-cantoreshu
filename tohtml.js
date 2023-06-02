@@ -183,6 +183,8 @@ abc2svg.abc_init = function(args) {
 
 	// output the html header
 	user.img_out = function(str) {
+		if (!str)
+			return
 		if (init_done) {
 			abc2svg.print(str)
 			return
