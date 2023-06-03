@@ -1334,8 +1334,12 @@ function set_allsymwidth(first) {
 			break
 
 		// update the min left space per staff
-		for (st = 0; st < wr.length; st++)
-			wr[st] = 0
+		s = s2
+		do {
+			wr[s.st] = 0
+			s = s.ts_next
+		} while (!s.seqst)
+
 		xa = maxx
 		do {
 			st = s2.st;
