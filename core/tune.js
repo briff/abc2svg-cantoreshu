@@ -1345,8 +1345,7 @@ function key_trans() {
 	s = curvoice.ckey,			// current key
 	ti = s.time || 0
 
-	if (s.k_bagpipe || s.k_drum
-	 || s.k_none)				// no key
+	if (s.k_bagpipe || s.k_drum)
 		return
 
 	// set the score transposition
@@ -1382,6 +1381,7 @@ function key_trans() {
 
 	s.orig = clone(s)			// keep the original K: definition
 	s.k_b40 = b40
+    if (!s.k_none)				// if some key
 	s.k_sf = abc2svg.b40sf[b40]
 
 	// transpose the accidental list
