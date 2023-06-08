@@ -55,13 +55,16 @@ function ToAudio() {
 	function get_beat() {
 	    var	s = first.p_v.meter
 
-		if (!s.a_meter[0] || s.a_meter[0].top[0] == 'C'
-		 || !s.a_meter[0].bot)
+		if (!s.a_meter[0])
 			return C.BLEN / 4
-		if (s.a_meter[0].bot[0] == 8
-		 && s.a_meter[0].top[0] % 3 == 0)
+		if (!s.a_meter[0].bot)
+			return (s.a_meter[1]
+				&& s.a_meter[1].top == '|')	// (cut time)
+					? C.BLEN / 2 : C.BLEN / 4
+		if (s.a_meter[0].bot == "8"
+		 && s.a_meter[0].top % 3 == 0)
 			return C.BLEN / 8 * 3
-		return C.BLEN / s.a_meter[0].bot[0] | 0
+		return C.BLEN / s.a_meter[0].bot | 0
 	} // get_beat()
 
 	// create the starting beats
@@ -101,14 +104,29 @@ function ToAudio() {
 			}]
 		}
 
+		// add the tempo
+		s2 = p_v.sym			// midiprog
+		for (s3 = first; s3 && !s3.time; s3 = s3.ts_next) {
+			if (s3.type == C.TEMPO) {
+				s3 = Object.create(s3)	// new tempo
+				s3.v = v
+				s3.p_v = p_v
+				s3.prev =
+					s3.ts_prev = s2
+				s2.next =
+					s2.ts_next = s3
+				s2 = s3
+				break
+			}
+		}
+
 		voice_tb[v] = p_v
 		p_v.sym.p_v = p_v
-		s2 = p_v.sym			// midiprog
 		tim =
 			abc_time = -d		// start time of the beat ticks
 		first.time = s2.time = tim
 		for (i = 0; i < nb; i++) {
-			s3 = Object.assign({}, s) // new beat tick
+			s3 = Object.create(s)	// new beat tick
 			s3.time = tim
 			s3.prev = s2
 			s2.next = s3
