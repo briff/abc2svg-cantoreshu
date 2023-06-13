@@ -110,7 +110,9 @@ abc2svg.page = {
 				d = strftime(cfmt.dateformat, d)
 				break
 			case 'F':
-				d = page.abc.parse.fname
+				d = typeof document != "undefined"
+					? window.location.href
+					: page.abc.parse.fname
 				break
 			case 'I':
 				c = str[++i]
