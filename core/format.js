@@ -670,13 +670,15 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "writefields":
 		set_writefields(param)
 		break
+	case "volume":
+		cmd = "dynamic"
+		// fall thru
 	case "dynamic":
 	case "gchord":
 	case "gstemdir":
 	case "ornament":
 	case "stemdir":
 	case "vocal":
-	case "volume":
 		set_pos(cmd, param)
 		break
 	case "font":
@@ -781,6 +783,8 @@ Abc.prototype.set_format = function(cmd, param) {
 			}
 			break
 		}
+		if (cmd[1].slice(0, 3) == "vol")
+			cmd[1] = "dyn"			// compatibility
 		set_pos(cmd[1], cmd[2])
 		break
 	case "sounding-score":
