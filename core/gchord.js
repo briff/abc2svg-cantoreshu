@@ -414,7 +414,7 @@ Abc.prototype.draw_gchord = function(i, s, x, y) {
 
 // draw all chord symbols
 function draw_all_chsy() {
-    var	s, san1, an, i, y, w,
+    var	s, san1, an, i, x, y, w,
 	n_an = 0,		// max number of annotations
 	minmax = new Array(nstaff + 1)
 
@@ -435,9 +435,10 @@ function draw_all_chsy() {
 				w = an.text.wh[0]
 				if (w && x + w > realwidth)
 					x = realwidth - w // let the text in the page
-				y = y_get(s.st, 1, x, w) + 2	// y / staff
-				if (an.type == 'g' && y < minmax[s.st].yup)
+				if (an.type == 'g')
 					y = minmax[s.st].yup
+				else
+					y = y_get(s.st, 1, x, w) + 2	// y / staff
 			} else if (an.pos == C.SL_BELOW
 				|| an.pos == C.SL_HIDDEN) {
 				continue
@@ -464,9 +465,10 @@ function draw_all_chsy() {
 			w = an.text.wh[0]
 			if (w && x + w > realwidth)	// let the text inside the page
 				x = realwidth - w
-			y = y_get(s.st, 0, x, w) - 2	// y / staff
-			if (an.type == 'g' && y > minmax[s.st].ydn)
+			if (an.type == 'g')
 				y = minmax[s.st].ydn
+			else
+				y = y_get(s.st, 0, x, w) - 2	// y / staff
 			self.draw_gchord(i, s, x, y)
 		}
 	} // set_an_yl()
@@ -490,13 +492,16 @@ function draw_all_chsy() {
 		while (--i >= 0) {
 			if (an[i].type == 'g') {
 				an = an[i]
+				x = s.x + an.x
 				w = an.text.wh[0]
+				if (w && x + w > realwidth)
+					x = realwidth - w
 				if (an.pos == C.SL_ABOVE) {
-					y = y_get(s.st, true, s.x, w) + 2
+					y = y_get(s.st, true, x, w) + 2
 					if (y > minmax[s.st].yup)
 						minmax[s.st].yup = y
 				} else if (an.pos == C.SL_BELOW) {
-					y = y_get(s.st, false, s.x, w) - 2
+					y = y_get(s.st, false, x, w) - 2
 					if (y < minmax[s.st].ydn)
 						minmax[s.st].ydn = y
 				}
