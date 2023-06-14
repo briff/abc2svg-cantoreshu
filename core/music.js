@@ -2968,6 +2968,13 @@ Abc.prototype.set_pitch = function(last_s) {
 			s.ymn = -2
 			break
 		case C.REST:
+			if (s.rep_nb > 1		// if measure repeat
+			 || s.bar_mrep) {
+				s.y = 12
+				s.ymx = 38		// (24 + 14)
+				s.ymn = 0
+				break
+			}
 			if (voice_tb.length == 1) {
 				s.y = 12;		/* rest single voice */
 //				s.ymx = 12 + 8;
