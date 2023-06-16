@@ -1540,6 +1540,8 @@ function set_repeat(s) {	// first note
 					break
 				continue
 			}
+			if (!s2.dur)
+				continue
 			s2.invis = s2.play = true
 			if (s2.seqst && s2.ts_next.seqst)
 				s2.seqst = false
@@ -1562,6 +1564,8 @@ function set_repeat(s) {	// first note
 					break
 				continue
 			}
+			if (!s2.dur)
+				continue
 			s2.invis = s2.play = true
 			if (s2.seqst && s2.ts_next.seqst)
 				s2.seqst = false
