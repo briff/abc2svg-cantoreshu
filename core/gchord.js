@@ -281,8 +281,18 @@ Abc.prototype.gch_build = function(s) {
 		switch (gch.type) {
 		case '@':
 			break
-		case '^':			/* above */
-		case '_':			/* below */
+		case 'g':			// chord symbol
+			if (!s.time		
+			 || (s.prev
+			  && (s.prev.type == C.CLEF
+			   || s.prev.type == C.KEY))) {
+				gch.x = -5	// smaller shift at start of staff
+				break
+			}
+			// fall thru
+		default:
+//		case '^':			/* above */
+//		case '_':			/* below */
 			xspc = wh[0] * GCHPRE
 			if (xspc > 8)
 				xspc = 8;
@@ -297,12 +307,6 @@ Abc.prototype.gch_build = function(s) {
 			gch.x = 6;
 			y_right -= wh[1];
 			gch.y = y_right + wh[1] / 2
-			break
-		default:			// chord symbol
-			xspc = wh[0] * GCHPRE
-			if (xspc > 8)
-				xspc = 8;
-			gch.x = -xspc;
 			break
 		}
 	}
