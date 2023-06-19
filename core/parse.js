@@ -530,6 +530,10 @@ Abc.prototype.set_vp = function(a) {
 			else
 				curvoice.staffscale = val
 			break
+		case "tacet=":
+			val = a.shift()
+			curvoice.tacet = val || undefined
+			break
 		case "transpose=":		// (abcMIDI compatibility)
 			if (cfmt.nedo) {
 				syntax(1, errs.notransp)
@@ -2022,6 +2026,10 @@ Abc.prototype.new_note = function(grace, sls) {
 			}]
 		} else {
 			glovar.mrest_p = true
+			if (par_sy.voices.length == 1) {
+				s.tacet = curvoice.tacet
+				delete s.invis	// show the 'H' when 'Xn'
+			}
 		}
 		break
 	case 'y':

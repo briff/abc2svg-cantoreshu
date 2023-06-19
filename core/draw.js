@@ -1189,6 +1189,11 @@ function draw_mrest(s) {
 	output += 'v2.7h-1.4v-10.8h1.4v2.7h'
 		+ ((x2 - x1 - 2.8) / stv_g.scale).toFixed(1)
 		+ 'v-2.7h1.4v10.8h-1.4v-2.7z"/>\n'
+    if (s.tacet)
+	out_XYAB('<text x ="X" y="Y" style="font-size:12px;font-weight:700"\
+ text-anchor="middle">A</text>\n',
+		s.x, y + 18, s.tacet)
+    else
 	out_XYAB('<text x ="X" y="Y" text-anchor="middle">A</text>\n',
 		s.x, y + 22, m_gl(p))
 	anno_a.push(s)

@@ -1106,6 +1106,10 @@ Abc.prototype.do_pscom = function(text) {
 		}
 		sym_link(s)
 		return
+	case "tacet":
+		if (param[0] == '"')
+			param = param.slice(1, -1)
+		// fall thru
 	case "stafflines":
 	case "staffscale":
 	case "staffnonote":
