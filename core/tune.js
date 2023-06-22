@@ -453,6 +453,11 @@ function voice_adj(sys_chg) {
 		do_cloning()
 	}
 
+	// if only one voice and a time skip,
+	// fill the voice with the sequence "Z |" (multi-rest and bar)
+	if (par_sy.one_v)			// if one voice
+		fill_mr_ba(voice_tb[par_sy.top_voice])
+
 	for (v = 0; v < voice_tb.length; v++) {
 		p_voice = voice_tb[v]
 		if (!sys_chg) {			// if not %%score
@@ -1402,6 +1407,58 @@ function key_trans() {
 	s.k_a_acc = a_acc
 }
 
+// fill a voice with a multi-rest and a bar
+function fill_mr_ba(p_v) {
+    var	v, p_v2,
+	mxt = 0
+
+	for (v = 0; v < voice_tb.length; v++) {
+		if (voice_tb[v].time > mxt) {
+			p_v2 = voice_tb[v]
+			mxt = p_v2.time
+		}
+	}
+	if (p_v.time >= mxt)
+		return
+
+    var	p_v_sav = curvoice,
+	dur = mxt - p_v.time,
+	s = {
+		type: C.MREST,
+		stem: 0,
+		multi: 0,
+		nhd: 0,
+		xmx: 0,
+		frm: 1, //true			// full measure rest
+		dur: dur,
+		dur_orig: dur,
+		nmes: dur / p_v.wmeasure,
+		notes: [{
+			pit: 18,
+			dur: dur
+		}],
+		tacet: p_v.tacet
+	},
+	s2 = {
+		type: C.BAR,
+		bar_type: '|',
+		dur: 0,
+		multi: 0
+	}
+
+	if (p_v2.last_sym.bar_type)
+		s2.bar_type = p_v2.last_sym.bar_type
+//	s2.soln = p_v2.last_sym.soln
+
+	glovar.mrest_p = 1 //true
+
+	curvoice = p_v
+	sym_link(s)
+	sym_link(s2)
+
+	curvoice = p_v_sav
+} // fill_mr_ba()
+
 /* -- get staves definition (%%staves / %%score) -- */
 function get_staves(cmd, parm) {
     var	s, p_voice, p_voice2, i, flags, v, vid, a_vf,
@@ -1428,8 +1485,7 @@ function get_staves(cmd, parm) {
 		par_sy.staves = []
 		par_sy.voices = []
 	} else {
-
-		if (nv)					// if many voices
+//		if (nv)					// if many voices
 			voice_adj(true)
 		/*
 		 * create a new staff system and
@@ -1506,6 +1562,8 @@ function get_staves(cmd, parm) {
 		}
 	}
 	par_sy.top_voice = a_vf[0][0].v
+	if (a_vf.length == 1)
+		par_sy.one_v = 1 //true			// one voice
 
 	/* change the behavior from %%staves to %%score */
 	if (cmd[1] == 't') {				/* if %%staves */
@@ -1631,8 +1689,9 @@ function get_staves(cmd, parm) {
 		 && !(par_sy.staves[st - 1].flags & STOP_BAR))
 			p_voice.norepbra = true
 	}
-	if (!maxtime && nv)		// if first staff system and many voices
-		voice_adj(true)
+//--fixme: is this useful?
+//	if (!maxtime && nv)		// if first staff system and many voices
+//		voice_adj(true)
 
 	curvoice = parse.state >= 2 ? voice_tb[par_sy.top_voice] : null
 }
