@@ -116,6 +116,7 @@ function ToAudio() {
 				s2.next =
 					s2.ts_next = s3
 				s2 = s3
+				play_fac = set_tempo(s2)
 				break
 			}
 		}
@@ -125,6 +126,8 @@ function ToAudio() {
 		tim =
 			abc_time = -d		// start time of the beat ticks
 		first.time = s2.time = tim
+		if (s3)
+			p_v.sym.time = tim
 		for (i = 0; i < nb; i++) {
 			s3 = Object.create(s)	// new beat tick
 			s3.time = tim
