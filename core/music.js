@@ -809,6 +809,9 @@ Abc.prototype.set_width = function(s) {
 					break
 				// fall thru
 			case C.KEY:
+				if (s.a_gch)
+					wlw += 4 // have some room for the chord symbols
+				// fall thru
 			case C.METER:
 				wlw += 3
 				break

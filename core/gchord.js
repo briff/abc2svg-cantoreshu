@@ -281,16 +281,8 @@ Abc.prototype.gch_build = function(s) {
 		switch (gch.type) {
 		case '@':
 			break
-		case 'g':			// chord symbol
-			if (!s.time		
-			 || (s.prev
-			  && (s.prev.type == C.CLEF
-			   || s.prev.type == C.KEY))) {
-				gch.x = -5	// smaller shift at start of staff
-				break
-			}
-			// fall thru
 		default:
+//		case 'g':			// chord symbol
 //		case '^':			/* above */
 //		case '_':			/* below */
 			xspc = wh[0] * GCHPRE
