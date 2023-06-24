@@ -3570,6 +3570,9 @@ function init_music_line() {
 
 	for (s = last_s; s.ts_next && !s.ts_next.seqst; s = s.ts_next)
 		;
+	if (s.ts_next)		// a bit further in case different keys per voice
+		for (s = s.ts_next; s.ts_next && !s.ts_next.seqst; s = s.ts_next)
+			;
 	s2 = s.ts_next
 	s.ts_next = null
 	set_allsymwidth()
