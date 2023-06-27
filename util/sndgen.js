@@ -69,7 +69,7 @@ function ToAudio() {
 
 	// create the starting beats
 	function def_beats() {
-	    var	i, s2, s3, tim,
+	    var	i, s2, s3, tim, last_d,
 		beat = get_beat(),		// time between two beats
 		d = first.p_v.meter.wmeasure,	// duration of a measure
 		nb = d / beat | 0,		// number of beats in a measure
@@ -104,6 +104,15 @@ function ToAudio() {
 			}]
 		}
 
+		// check for an anacrusis
+		for (s2 = first; s2; s2 = s2.ts_next) {
+			if (s2.bar_type && s2.time) {
+				nb = (2 * d - s2.time) / beat | 0
+				last_d = beat - s2.time
+				break
+			}
+		}
+
 		// add the tempo
 		s2 = p_v.sym			// midiprog
 		for (s3 = first; s3 && !s3.time; s3 = s3.ts_next) {
@@ -136,6 +145,11 @@ function ToAudio() {
 			s3.ts_prev = s2
 			s2.ts_next = s3
 			s2 = s3
+			if (last_d && i == nb - 1) {	// if an anacrusis
+				s3.dur =
+					s3.dur_orig =
+						s3.notes[0].dur = last_d
+			}
 			tim += beat
 		}
 		s2.ts_next = first.ts_next
