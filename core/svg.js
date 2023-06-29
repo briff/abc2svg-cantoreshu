@@ -973,7 +973,6 @@ function out_ltr(x, y, val) {
 	}
 }
 Abc.prototype.out_lped = function(x, y, val, defl) {
-	y += 4;
 	if (!defl.nost)
 		xygl(x, y, "ped");
 	if (!defl.noen)

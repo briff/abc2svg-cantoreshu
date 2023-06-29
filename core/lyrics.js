@@ -512,9 +512,10 @@ function draw_lyrics(p_voice, nly, a_h, y,
 		y *= sc
 		for (j = 0; j < nly; j++) {
 			y -= a_h[j] * 1.1;
-			draw_lyric_line(p_voice, j, y)
+			draw_lyric_line(p_voice, j,
+				y + a_h[j] * .22)	// (descent)
 		}
-		return (y - a_h[j - 1] / 6) / sc
+		return y / sc
 	}
 
 	/* above the staff */
@@ -523,7 +524,7 @@ function draw_lyrics(p_voice, nly, a_h, y,
 		y = top;
 	y *= sc
 	for (j = nly; --j >= 0;) {
-		draw_lyric_line(p_voice, j, y);
+		draw_lyric_line(p_voice, j, y + a_h[j] * .22)
 		y += a_h[j] * 1.1
 	}
 	return y / sc

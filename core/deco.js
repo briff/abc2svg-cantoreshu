@@ -131,10 +131,10 @@ var decos = {
 	pppp: "6 pppp 12,5 16 16",
 	pralltriller: "3 umrd 4,4 6 7",
 	sfz: "6 sfz 12,5 9 9",
-	ped: "7 ped 18 6 10",
+	ped: "7 ped 14 6 10",
 	"ped-up": "7 pedoff 12 4 4",
-	"ped(": "7 lped 6 1 1",
-	"ped)": "7 lped 6 1 1",
+	"ped(": "7 lped 14 1 1",
+	"ped)": "7 lped 14 1 1",
 	"crescendo(": "6 cresc 15,2 0 0",
 	"crescendo)": "6 cresc 15,2 0 0",
 	"<(": "6 cresc 15,2 0 0",
@@ -1863,9 +1863,10 @@ function draw_deco_staff() {
 		if (dd.dd_en			// if start
 		 || dd.name.slice(0, 3) != "ped")
 			continue
-		y = y_get(de.st, 0, de.x, de.val) - dd.h
-		de.y = y
-		y_set(de.st, 0, de.x, de.val, de.y - dd.hd)
+		w = de.val || 10
+		de.y = y_get(de.st, 0, de.x, w)
+			- (dd.dd_st && cfmt.pedline ? 10 : dd.h)
+		y_set(de.st, 0, de.x, w, de.y)	// (no descent)
 	}
 
 	draw_all_chsy()		// draw all chord symbols
