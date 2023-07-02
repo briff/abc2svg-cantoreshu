@@ -2122,7 +2122,7 @@ function draw_slurs(s, last) {
 
 		// if the slur continues on the next music line,
 		// stop it at the end of the current line
-		if (tsnext && s2.time >= tsnext.time) {
+		if (s.p_v.s_next && s2.time >= tsnext.time) {
 		    if (s2.grace && s2.time == tsnext.time) {
 			for (s3 = tsnext; s3 && s3.time == s2.time; s3 = s3.ts_next) {
 				if (s3.type == C.GRACE)

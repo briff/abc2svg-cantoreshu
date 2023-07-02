@@ -5202,6 +5202,7 @@ function set_sym_line() {
 		if (p_v.sym && p_v.s_prev)
 			p_v.sym.prev = p_v.s_prev
 		s = p_v.s_next			// (set in set_piece)
+		p_v.s_next = null
 		p_v.sym = s
 		if (s) {
 			if (s.prev)
