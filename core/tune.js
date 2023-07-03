@@ -958,6 +958,7 @@ Abc.prototype.do_pscom = function(text) {
 		}
 		if (parse.state >= 2) {
 			curvoice = voice_tb[0]
+			curvoice.eoln = 1 //true
 			sym_link(s)
 			return
 		}
