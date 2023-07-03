@@ -2123,16 +2123,26 @@ function draw_slurs(s, last) {
 		// if the slur continues on the next music line,
 		// stop it at the end of the current line
 		if (s.p_v.s_next && s2.time >= tsnext.time) {
-		    if (s2.grace && s2.time == tsnext.time) {
+		  if (s2.time == tsnext.time) {
+		    if (s2.grace) {
 			for (s3 = tsnext; s3 && s3.time == s2.time; s3 = s3.ts_next) {
-				if (s3.type == C.GRACE)
-//fixme: check if s2 in the grace notes
+				if (s3.type == C.GRACE) {
+					s3 = null
 					break
+				}
 			}
-			if (s3.type == C.GRACE)
-				s3 = null
+		    } else {
+			for (s3 = tsnext; s3.time == s2.time; s3 = s3.ts_next) {
+				if (s3 == s2) {
+					s3 = null	// end of slur in next line
+					break
+				}
+			}
 		    }
-		    if (!s2.grace || s2.time == tsnext.time || !s3) {
+		  } else {
+			s3 = null
+		  }
+		    if (!s3) {
 			s.p_v.sls.push(sl);		// continuation on next line
 			s2 = s.p_v.s_next.prev		// one voice
 			while (s2.next)
