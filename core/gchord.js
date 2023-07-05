@@ -431,10 +431,9 @@ function draw_all_chsy() {
 				w = an.text.wh[0]
 				if (w && x + w > realwidth)
 					x = realwidth - w // let the text in the page
+				y = y_get(s.st, 1, x, w) + 2	// y / staff
 				if (an.type == 'g' && y < minmax[s.st].yup)
 					y = minmax[s.st].yup
-				else
-					y = y_get(s.st, 1, x, w) + 2	// y / staff
 			} else if (an.pos == C.SL_BELOW
 				|| an.pos == C.SL_HIDDEN) {
 				continue
@@ -461,10 +460,9 @@ function draw_all_chsy() {
 			w = an.text.wh[0]
 			if (w && x + w > realwidth)	// let the text inside the page
 				x = realwidth - w
+			y = y_get(s.st, 0, x, w) - 2	// y / staff
 			if (an.type == 'g' && y > minmax[s.st].ydn)
 				y = minmax[s.st].ydn
-			else
-				y = y_get(s.st, 0, x, w) - 2	// y / staff
 			self.draw_gchord(i, s, x, y)
 		}
 	} // set_an_yl()
