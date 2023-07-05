@@ -73,14 +73,14 @@ abc2svg.equalbars = {
 	// build an array of the bars
 	t0 = t = s2.time
 	for (s = s2; s.next; s = s.next) {
-		if (s.type == C.BAR && s.seqst) {
+		if (s.type == C.BAR && s.seqst && s.time != t) {
 			bars.push([s, s.time - t]);
 			t = s.time
 		}
 	}
 
-	// push the last bar if it is not the invisible bar after a key change
-	if (!s.invis || (s.prev && s.prev.type != C.KEY))
+	// push the last bar or replace it in the array
+	if (s.time != t)
 		bars.push([s, s.time - t])
 	else
 		bars[bars.length - 1][0] = s	// replace the last bar
