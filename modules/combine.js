@@ -1,6 +1,6 @@
 // combine.js - module to add a combine chord line
 //
-// Copyright (C) 2018-2022 Jean-Francois Moine
+// Copyright (C) 2018-2023 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -21,6 +21,9 @@
 //
 // Parameters
 //	%%voicecombine n	'n' is the combine level
+
+if (typeof abc2svg == "undefined")
+    var	abc2svg = {}
 
 abc2svg.combine = {
 
@@ -280,7 +283,6 @@ function do_combine(s) {
     }
 } // combine
 
-abc2svg.modules.hooks.push(abc2svg.combine.set_hooks);
-
-// the module is loaded
-abc2svg.modules.voicecombine.loaded = true
+if (!abc2svg.mhooks)
+	abc2svg.mhooks = {}
+abc2svg.mhooks.combine = abc2svg.combine.set_hooks

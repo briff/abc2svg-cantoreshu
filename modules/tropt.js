@@ -1,6 +1,6 @@
 // tropt.js - module to optimize the notes after transposition
 //
-// Copyright (C) 2022 Jean-Francois Moine
+// Copyright (C) 2022-2023 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -18,6 +18,9 @@
 // along with abc2svg.  If not, see <http://www.gnu.org/licenses/>.
 //
 // This module is loaded when "%%tropt" appears in a ABC source.
+
+if (typeof abc2svg == "undefined")
+    var	abc2svg = {}
 
 abc2svg.tropt = {
 
@@ -148,7 +151,6 @@ abc2svg.tropt = {
     }
 } // tropt
 
-abc2svg.modules.hooks.push(abc2svg.tropt.set_hooks)
-
-// the module is loaded
-abc2svg.modules.tropt.loaded = 1 //true
+if (!abc2svg.mhooks)
+	abc2svg.mhooks = {}
+abc2svg.mhooks.tropt = abc2svg.tropt.set_hooks

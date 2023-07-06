@@ -32,6 +32,9 @@
 //			=2: lowercase letters for minor chords
 //	%%nnsfont font_name size (default: 'monospace 16')
 
+if (typeof abc2svg == "undefined")
+    var	abc2svg = {}
+
 abc2svg.nns = {
     note_nm: "CDEFGAB",
 
@@ -535,7 +538,6 @@ function build_nns(s, font) {
     }
 } // nns
 
-abc2svg.modules.hooks.push(abc2svg.nns.set_hooks)
-
-// the module is loaded
-abc2svg.modules.nns.loaded = true
+if (!abc2svg.mhooks)
+	abc2svg.mhooks = {}
+abc2svg.mhooks.nns = abc2svg.nns.set_hooks

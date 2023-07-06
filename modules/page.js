@@ -22,6 +22,9 @@
 // Parameters
 //	%%pageheight <unit>
 
+if (typeof abc2svg == "undefined")
+    var	abc2svg = {}
+
 abc2svg.page = {
 
     // function called at end of generation
@@ -521,7 +524,6 @@ abc2svg.page = {
     }
 } // page
 
-abc2svg.modules.hooks.push(abc2svg.page.set_hooks);
-
-// the module is loaded
-abc2svg.modules.pageheight.loaded = true
+if (!abc2svg.mhooks)
+	abc2svg.mhooks = {}
+abc2svg.mhooks.page = abc2svg.page.set_hooks

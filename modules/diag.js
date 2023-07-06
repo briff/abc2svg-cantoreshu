@@ -1,6 +1,6 @@
 // diag.js - module to insert guitar chord diagrams
 //
-// Copyright (C) 2018-2021 Jean-Francois Moine
+// Copyright (C) 2018-2023 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -40,6 +40,9 @@
 //	<fingers> = finger numbers ou 'x' (mute) or '0'/'y' (no finger)
 //	barre=<num>-<num> draw a bar between the two string numbers in the first fret
 //				(numbering order 654321 for E,A,D,GBe)
+
+if (typeof abc2svg == "undefined")
+    var	abc2svg = {}
 
 abc2svg.diag = {
 
@@ -255,7 +258,6 @@ M-10.2 -34.5h20.4"/>'
     }
 } // diag
 
-abc2svg.modules.hooks.push(abc2svg.diag.set_hooks);
-
-// the module is loaded
-abc2svg.modules.diagram.loaded = true
+if (!abc2svg.mhooks)
+	abc2svg.mhooks = {}
+abc2svg.mhooks.diag = abc2svg.diag.set_hooks

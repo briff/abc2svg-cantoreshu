@@ -30,6 +30,9 @@
 //		'parts' displays the parts on the left side of the grid
 //	%%gridfont font_name size (default: 'serif 16')
 
+if (typeof abc2svg == "undefined")
+    var	abc2svg = {}
+
 abc2svg.grid = {
     pl: '<path class="stroke" stroke-width="1" d="M',
 
@@ -586,7 +589,6 @@ function build_grid(s, font) {
     }
 } // grid
 
-abc2svg.modules.hooks.push(abc2svg.grid.set_hooks);
-
-// the module is loaded
-abc2svg.modules.grid.loaded = true
+if (!abc2svg.mhooks)
+	abc2svg.mhooks = {}
+abc2svg.mhooks.grid = abc2svg.grid.set_hooks

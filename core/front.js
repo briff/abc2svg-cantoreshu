@@ -19,7 +19,8 @@
 
     var	sav = {},	// save global (between tunes) definitions
 	mac = {},	// macros (m:)
-	maci = {}	// first letters of macros
+	maci = {},	// first letters of macros
+	modone = {}	// hooks done by module
 
 // translation table from the ABC draft version 2.2
 var abc_utf = {
@@ -382,9 +383,14 @@ function tosvg(in_fname,		// file name
 	} // tune_filter()
 
 	// export functions and/or set module hooks
-	if (abc2svg.modules
-	 && (abc2svg.modules.hooks.length || abc2svg.modules.g_hooks.length))
-		set_hooks()
+	if (abc2svg.mhooks) {
+		for (i in abc2svg.mhooks) {
+			if (!modone[i]) {
+				modone[i] = 1 //true
+				abc2svg.mhooks[i](self)
+			}
+		}
+	}
 
 	// initialize
 	parse.file = file;		// used for errors

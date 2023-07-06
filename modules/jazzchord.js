@@ -1,6 +1,6 @@
 // abc2svg - jazzchord.js - Adds jazz chord styling to chord symbols
 //
-// Copyright (C) 2020-2022 Jean-Francois Moine
+// Copyright (C) 2020-2023 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -24,6 +24,9 @@
 //
 // Parameters
 //	%%jazzchord [ string '=' replacement-string ]*
+
+if (typeof abc2svg == "undefined")
+    var	abc2svg = {}
 
 abc2svg.jazzchord = {
 
@@ -169,5 +172,6 @@ abc2svg.jazzchord = {
     } // set_hooks()
 } // jazzchord
 
-abc2svg.modules.hooks.push(abc2svg.jazzchord.set_hooks)
-abc2svg.modules.jazzchord.loaded = true
+if (!abc2svg.mhooks)
+	abc2svg.mhooks = {}
+abc2svg.mhooks.jazzchord = abc2svg.jazzchord.set_hooks

@@ -95,34 +95,6 @@ Abc.prototype.use_font = use_font;
 Abc.prototype.vskip = vskip
 Abc.prototype.xy_str = xy_str;
 Abc.prototype.xygl = xygl;
-
-    var	hook_init		// set after setting the first module hooks
-
-    // export functions and/or set module hooks
-    function set_hooks() {
-    var	h = abc2svg.modules.hooks,
-	gh = abc2svg.modules.g_hooks
-
-	function set_hs(hs) {
-		for (var k = 0; k < hs.length; k++)
-			hs[k](self)
-	} // set_hs()
-
-	if (hook_init) {			// if new modules
-		if (h.length) {
-			set_hs(h);
-			gh.push.apply(gh, h);
-			abc2svg.modules.hooks = []
-		}
-	} else {				// all modules
-		if (h.length) {
-			gh.push.apply(gh, h);
-			abc2svg.modules.hooks = []
-		}
-		set_hs(gh);
-		hook_init = true
-	}
-    } // set_hooks()
 }	// end of Abc()
 
 // compatibility

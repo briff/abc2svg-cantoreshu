@@ -22,6 +22,9 @@
 // Parameters (none)
 //	%%jianpu 1
 
+if (typeof abc2svg == "undefined")
+    var	abc2svg = {}
+
 abc2svg.jianpu = {
 
   k_tb: [ "Cb", "Gb", "Db", "Ab", "Eb", "Bb", "F",
@@ -605,7 +608,6 @@ abc2svg.jianpu = {
     } // set_hooks()
 } // jianpu
 
-abc2svg.modules.hooks.push(abc2svg.jianpu.set_hooks)
-
-// the module is loaded
-abc2svg.modules.jianpu.loaded = true
+if (!abc2svg.mhooks)
+	abc2svg.mhooks = {}
+abc2svg.mhooks.jianpu = abc2svg.jianpu.set_hooks

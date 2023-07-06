@@ -39,6 +39,9 @@
 //	%%percmap g 42 x
 // but this is not abcMIDI compatible!
 
+if (typeof abc2svg == "undefined")
+    var	abc2svg = {}
+
 abc2svg.MIDI = {
 
     // parse %%MIDI commands
@@ -342,7 +345,6 @@ abc2svg.MIDI = {
     }
 } // MIDI
 
-abc2svg.modules.hooks.push(abc2svg.MIDI.set_hooks);
-
-// the module is loaded
-abc2svg.modules.MIDI.loaded = true
+if (!abc2svg.mhooks)
+	abc2svg.mhooks = {}
+abc2svg.mhooks.MIDI = abc2svg.MIDI.set_hooks

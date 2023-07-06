@@ -35,6 +35,9 @@
 // This module accepts Willem Vree's tablature syntax:
 //	https://wim.vree.org/svgParse/abc2xml.html#tab
 
+if (typeof abc2svg == "undefined")
+    var	abc2svg = {}
+
 abc2svg.strtab = {
 
     // draw the tablature
@@ -693,5 +696,6 @@ abc2svg.strtab = {
     } // set_hooks()
 } // strtab
 
-abc2svg.modules.hooks.push(abc2svg.strtab.set_hooks)
-abc2svg.modules.strtab.loaded = true
+if (!abc2svg.mhooks)
+	abc2svg.mhooks = {}
+abc2svg.mhooks.strtab = abc2svg.strtab.set_hooks

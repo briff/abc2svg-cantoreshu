@@ -31,6 +31,9 @@
 // above the staff system.
 // When 'noprint' is also present, the grid itself is not displayed.
 
+if (typeof abc2svg == "undefined")
+    var	abc2svg = {}
+
 abc2svg.grid3 = {
 
 // generate the grid
@@ -469,7 +472,6 @@ abc2svg.grid3 = {
     }
 } // grid3
 
-abc2svg.modules.hooks.push(abc2svg.grid3.set_hooks)
-
-// the module is loaded
-abc2svg.modules.begingrid.loaded = true
+if (!abc2svg.mhooks)
+	abc2svg.mhooks = {}
+abc2svg.mhooks.grid3 = abc2svg.grid3.set_hooks

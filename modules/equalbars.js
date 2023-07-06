@@ -22,6 +22,9 @@
 // Parameters
 //	%%equalbars bool
 
+if (typeof abc2svg == "undefined")
+    var	abc2svg = {}
+
 abc2svg.equalbars = {
 
     // new tune - clear the width of the start of the staff
@@ -161,7 +164,6 @@ abc2svg.equalbars = {
     }
 } // equalbars
 
-abc2svg.modules.hooks.push(abc2svg.equalbars.set_hooks);
-
-// the module is loaded
-abc2svg.modules.equalbars.loaded = true
+if (!abc2svg.mhooks)
+	abc2svg.mhooks = {}
+abc2svg.mhooks.equalbars = abc2svg.equalbars.set_hooks

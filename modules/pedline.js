@@ -22,6 +22,9 @@
 // Parameters
 //	%%pedline 1
 
+if (typeof abc2svg == "undefined")
+    var	abc2svg = {}
+
 abc2svg.pedline = {
     draw_all_deco: function(of) {
     var	de, i, x, dp, ds,
@@ -106,7 +109,6 @@ abc2svg.pedline = {
     } // set_hooks()
 } // pedline
 
-abc2svg.modules.hooks.push(abc2svg.pedline.set_hooks)
-
-// the module is loaded
-abc2svg.modules.pedline.loaded = true
+if (!abc2svg.mhooks)
+	abc2svg.mhooks = {}
+abc2svg.mhooks.pedline = abc2svg.pedline.set_hooks
