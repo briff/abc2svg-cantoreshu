@@ -748,7 +748,7 @@ Abc.prototype.set_width = function(s) {
 
 		/* room for the decorations */
 		if (s.a_dd)
-			wlnote += deco_width(s)
+			wlnote = deco_width(s, wlnote)
 
 		/* space for flag if stem goes up on standalone note */
 		if (s.beam_st && s.beam_end

@@ -59,39 +59,39 @@ var	dd_tb = {},		// definition of the decorations
 var decos = {
 	dot: "0 stc 6 1.5 1",
 	tenuto: "0 emb 6 4 3",
-	slide: "1 sld 3 7 0",
-	arpeggio: "2 arp 12 10 2",
+	slide: "1 sld 3 7 1",
+	arpeggio: "2 arp 12 10 3",
 	roll: "3 roll 5,4 5 6",
-	lowermordent: "3 lmrd 4,4 6 7",
-	uppermordent: "3 umrd 4,4 6 7",
-	trill: "3 trl 14 5 5",
+	lowermordent: "3 lmrd 6,5 4 6",
+	uppermordent: "3 umrd 6,5 4 6",
+	trill: "3 trl 14 5 8",
 	upbow: "3 upb 10,2 3 7",
 	downbow: "3 dnb 9 4 6",
-	gmark: "3 grm 6 3 7",
+	gmark: "3 grm 7 4 6",
 	wedge: "0 wedge 8 1.5 1",		// (staccatissimo or spiccato)
 	longphrase: "5 lphr 0 1 16",
 	mediumphrase: "5 mphr 0 1 16",
 	shortphrase: "5 sphr 0 1 16",
-	turnx: "3 turnx 6,1 5 7",
-	invertedturn: "3 turn 6,1 5 7",
+	turnx: "3 turnx 7,2.5 5 6",
+	invertedturn: "3 turn 7,2 5 6",
 	"0": "3 fng 5,5 3 3 0",
 	"1": "3 fng 5,5 3 3 1",
 	"2": "3 fng 5,5 3 3 2",
 	"3": "3 fng 5,5 3 3 3",
 	"4": "3 fng 5,5 3 3 4",
 	"5": "3 fng 5,5 3 3 5",
-	plus: "3 dplus 7 2 4",
-	"+": "3 dplus 7 2 4",
+	plus: "3 dplus 8,2 2 4",
+	"+": "3 dplus 8,2 2 4",
 	">": "5 accent 3.5,3.5 4 4",
 	accent: "5 accent 3.5,3.5 4 4",
 	emphasis: "5 accent 3.5,3.5 4 4",
-	marcato: "3 marcato 9 4 4",
-	"^": "3 marcato 9 4 4",
-	mordent: "3 lmrd 4,4 6 7",
-	open: "3 opend 10 3 3",
-	snap: "3 snap 14 3 3",
-	thumb: "3 thumb 14 3 3",
-	turn: "3 turn 6,1 5 7",
+	marcato: "3 marcato 9 5 5",
+	"^": "3 marcato 9 5 5",
+	mordent: "3 lmrd 6,5 4 6",
+	open: "3 opend 8 3 3",
+	snap: "3 snap 10 3 3",
+	thumb: "3 thumb 10 3 3",
+	turn: "3 turn 7,2.5 5 6",
 	"trill(": "5 ltr 8 0 0",
 	"trill)": "5 ltr 8 0 0",
 	"8va(": "5 8va 12 6 6",
@@ -106,7 +106,7 @@ var decos = {
 	caesura: "5 caes 0 1 20",
 	short: "5 short 0 1 16",
 	tick: "5 tick 0 1 16",
-	coda: "5 coda 22,5 11 8",
+	coda: "5 coda 22,5 10 10",
 	dacapo: "5 dacs 16 20 20 Da Capo",
 	dacoda: "5 dacs 16 20 20 Da Coda",
 	"D.C.": "5 dcap 16,3 12 12",
@@ -118,18 +118,18 @@ var decos = {
 	fermata: "5 hld 12 7.5 7.5",
 	fine: "5 dacs 16 14 14 Fine",
 	invertedfermata: "7 hld 12 8 8",
-	segno: "5 sgno 22,2 4 8",
-	f: "6 f 12,5 4 6",
-	ff: "6 ff 12,5 7 7",
-	fff: "6 fff 12,5 11 10",
+	segno: "5 sgno 22,2 5 5",
+	f: "6 f 12,5 3 4",
+	ff: "6 ff 12,5 8 5",
+	fff: "6 fff 12,5 11 9",
 	ffff: "6 ffff 12,5 15 12",
 	mf: "6 mf 12,5 8 10",
 	mp: "6 mp 12,5 9 10",
-	p: "6 p 12,5 4 6",
+	p: "6 p 12,5 3 6",
 	pp: "6 pp 12,5 8 9",
-	ppp: "6 ppp 12,5 14 10",
-	pppp: "6 pppp 12,5 16 16",
-	pralltriller: "3 umrd 4,4 6 7",
+	ppp: "6 ppp 12,5 14 11",
+	pppp: "6 pppp 12,5 14 17",
+	pralltriller: "3 umrd 6,5 4 6",
 	sfz: "6 sfz 12,5 9 9",
 	ped: "7 ped 14 6 10",
 	"ped-up": "7 pedoff 12 4 4",
@@ -597,9 +597,6 @@ function d_upstaff(de) {
 	case '<':
 	case '>':
 		y = de.y
-		break
-	default:
-		de.x = x - dd.wl
 		break
 	}
 	if (y == undefined) {
@@ -1076,9 +1073,10 @@ function deco_update(s, dx) {
 }
 
 /* -- adjust the symbol width -- */
-function deco_width(s) {
+function deco_width(s, wlnt) {
     var	dd, i, w,
-		wl = 0,
+	wl = wlnt,
+	wr = s.wr,
 		a_dd = s.a_dd,
 		nd = a_dd.length
 
@@ -1086,12 +1084,9 @@ function deco_width(s) {
 		dd =  a_dd[i]
 		switch (dd.func) {
 		case 1:			/* slide */
-			if (wl < 7)
-				wl = 7
-			break
 		case 2:			/* arpeggio */
-			if (wl < 14)
-				wl = 14
+			if (wl < 12)
+				wl = 12
 			break
 		case 3:
 			switch (dd.glyph) {
@@ -1102,17 +1097,22 @@ function deco_width(s) {
 				if (s.wr < 20)
 					s.wr = 20
 				break
+			default:
+				w = dd.wl + 2
+				if (wl < w)
+					wl = w
+				break
 			}
 			// fall thru
 		default:
 			switch (dd.ty) {
 			case '<':
-				w = dd.wl + dd.wr + 6
+				w = wlnt + dd.wl + dd.wr + 6
 				if (wl < w)
 					wl = w
 				break
 			case '>':
-				w = dd.wl + dd.wr + 8
+				w = wr + dd.wl + dd.wr + 6
 				if (s.wr < w)
 					s.wr = w
 				break
@@ -1120,8 +1120,6 @@ function deco_width(s) {
 			break
 		}
 	}
-	if (wl && s.prev && s.prev.type == C.BAR)
-		wl -= 3
 	return wl
 }
 
@@ -1357,11 +1355,11 @@ function draw_deco_near() {
 			case '>':
 				pos = (pos & 0x07) | C.SL_CLOSE
 				if (dd.ty == '<') {
-					x -= dd.wl + dd.wr + 8
+					x -= dd.wr + 8
 					if (s.notes[0].acc)
 						x -= 8
 				} else {
-					x += 8
+					x += dd.wl + 8
 				}
 				y = 3 * (s.notes[0].pit - 18)
 						- (dd.h - dd.hd) / 2
@@ -1460,11 +1458,11 @@ function draw_deco_near() {
 				} else {
 					de.y -= (dd.h - dd.hd) / 2	// center
 					if (dd.ty == '<') {
-						de.x -= dd.wl + dd.wr + 6
+						de.x -= dd.wr + 8
 						if (s.notes[m].acc)
 							x -= 8
 					} else if (dd.ty == '>') {
-						de.x += 6
+						de.x += dd.wl + 8
 					}
 				}
 			}

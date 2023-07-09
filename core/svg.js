@@ -62,10 +62,10 @@ var tgls = {
   short: {x:0, y:32, c:"\ue038"},
   tick: {x:0, y:29, c:"\ue039"},
   rdots: {x:-1, y:0, c:"\ue043"},	// repeat dots
-  dsgn: {x:0, y:0, c:"\ue045"},		// D.S.
-  dcap: {x:0, y:0, c:"\ue046"},		// D.C.
-  sgno: {x:0, y:0, c:"\ue047"},		// segno
-  coda: {x:0, y:0, c:"\ue048"},
+  dsgn: {x:-12, y:0, c:"\ue045"},	// D.S.
+  dcap: {x:-12, y:0, c:"\ue046"},	// D.C.
+  sgno: {x:-5, y:0, c:"\ue047"},	// segno
+  coda: {x:-10, y:0, c:"\ue048"},
   tclef: {x:-8, y:0, c:"\ue050"},
   cclef: {x:-8, y:0, c:"\ue05c"},
   bclef: {x:-8, y:0, c:"\ue062"},
@@ -131,12 +131,12 @@ var tgls = {
  "acc-3_2": {x:-3, y:0, c:"\ue281"},	// three-quarter-tones flat
   acc1_2: {x:-1, y:0, c:"\ue282"},	// quarter-tone sharp
   acc3_2: {x:-3, y:0, c:"\ue283"},	// three-quarter-tones sharp
-  accent: {x:0, y:2.5, c:"\ue4a0"},
+  accent: {x:-3, y:2, c:"\ue4a0"},
   stc: {x:0, y:-2, c:"\ue4a2"},		// staccato
   emb: {x:0, y:-2, c:"\ue4a4"},
   wedge: {x:0, y:0, c:"\ue4a8"},
-  marcato: {x:0, y:-2, c:"\ue4ac"},
-  hld: {x:0, y:-2, c:"\ue4c0"},		// fermata
+  marcato: {x:-3, y:-2, c:"\ue4ac"},
+  hld: {x:-7, y:-2, c:"\ue4c0"},		// fermata
   brth: {x:0, y:0, c:"\ue4ce"},
   caes: {x:0, y:8, c:"\ue4d1"},
   r00: {x:-1.5, y:0, c:"\ue4e1"},
@@ -152,31 +152,31 @@ var tgls = {
 //  mrest: {x:-10, y:0, c:"\ue4ee"},
   mrep: {x:-6, y:0, c:"\ue500"},
   mrep2: {x:-9, y:0, c:"\ue501"},
-  p: {x:0, y:0, c:"\ue520"},
-  f: {x:1, y:0, c:"\ue522"},
-  pppp: {x:0, y:0, c:"\ue529"},
-  ppp: {x:0, y:0, c:"\ue52a"},
-  pp: {x:0, y:0, c:"\ue52b"},
-  mp: {x:0, y:0, c:"\ue52c"},
-  mf: {x:0, y:0, c:"\ue52d"},
-  ff: {x:1, y:0, c:"\ue52f"},
-  fff: {x:1, y:0, c:"\ue530"},
-  ffff: {x:1, y:0, c:"\ue531"},
-  sfz: {x:0, y:0, c:"\ue539"},
-  trl: {x:0, y:-2, c:"\ue566"},	// trill
-  turn: {x:0, y:0, c:"\ue567"},
-  turnx: {x:0, y:0, c:"\ue569"},
-  umrd: {x:0, y:2, c:"\ue56c"},
-  lmrd: {x:0, y:2, c:"\ue56d"},
-  dplus: {x:0, y:0, c:"\ue582"},	// plus
+  p: {x:-3, y:0, c:"\ue520"},
+  f: {x:-3, y:0, c:"\ue522"},
+  pppp: {x:-15, y:0, c:"\ue529"},
+  ppp: {x:-14, y:0, c:"\ue52a"},
+  pp: {x:-8, y:0, c:"\ue52b"},
+  mp: {x:-8, y:0, c:"\ue52c"},
+  mf: {x:-8, y:0, c:"\ue52d"},
+  ff: {x:-7, y:0, c:"\ue52f"},
+  fff: {x:-10, y:0, c:"\ue530"},
+  ffff: {x:-14, y:0, c:"\ue531"},
+  sfz: {x:-10, y:0, c:"\ue539"},
+  trl: {x:-5, y:-2, c:"\ue566"},	// trill
+  turn: {x:-5, y:0, c:"\ue567"},
+  turnx: {x:-5, y:0, c:"\ue569"},
+  umrd: {x:-6, y:2, c:"\ue56c"},
+  lmrd: {x:-6, y:2, c:"\ue56d"},
+  dplus: {x:-3, y:0, c:"\ue582"},	// plus
   sld: {x:-8, y:12, c:"\ue5d0"},	// slide
-  grm: {x:0, y:-2, c:"\ue5e2"},		// grace mark
-  dnb: {x:0, y:0, c:"\ue610"},		// down bow
-  upb: {x:0, y:0, c:"\ue612"},		// up bow
-  opend: {x:0, y:-2, c:"\ue614"},	// harmonic
-  roll: {x:5, y:0, c:"\ue618"},
-  thumb: {x:0, y:-2, c:"\ue624"},
-  snap: {x:0, y:-2, c:"\ue630"},
+  grm: {x:-3, y:-2, c:"\ue5e2"},	// grace mark
+  dnb: {x:-3, y:0, c:"\ue610"},		// down bow
+  upb: {x:-2, y:0, c:"\ue612"},		// up bow
+  opend: {x:-2, y:-2, c:"\ue614"},	// harmonic
+  roll: {x:0, y:0, c:"\ue618"},
+  thumb: {x:-2, y:-2, c:"\ue624"},
+  snap: {x:-2, y:-2, c:"\ue630"},
   ped: {x:-10, y:0, c:"\ue650"},
   pedoff: {x:-5, y:0, c:"\ue655"},
 // "mtro.": {x:0, y:0, c:"\ue910"},	// (unused)
@@ -888,7 +888,8 @@ var deco_str_style = {
 crdc:	{
 		dx: 0,
 		dy: 5,
-		style: 'font:italic 14px text,serif'
+		style: 'font:italic 14px text,serif',
+		anchor: ' text-anchor="middle"'
 	},
 dacs:	{
 		dx: 0,
@@ -912,10 +913,10 @@ function out_deco_str(x, y, name, str) {
 	if (name == 'fng') {
 		out_XYAB('\
 <text x="X" y="Y" style="font-size:14px">A</text>\n',
-			x, y, m_gl(str))
+			x - 2, y, m_gl(str))
 		return
 	}
-	var	a, f,
+    var	f,
 		a_deco = deco_str_style[name]
 
 	if (!a_deco) {
