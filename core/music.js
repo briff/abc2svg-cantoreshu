@@ -838,7 +838,7 @@ Abc.prototype.set_width = function(s) {
 		if (s.a_gch)
 			xx = gchord_width(s, xx, xx)
 		if (s.a_dd)
-			xx += deco_width(s);
+			xx = deco_width(s, xx)
 		s.wl = xx
 		return
 	case C.BAR:
@@ -892,7 +892,7 @@ Abc.prototype.set_width = function(s) {
 			}
 
 		if (s.a_dd)
-			s.wl += deco_width(s)
+			s.wl = deco_width(s, s.wl)
 
 		/* have room for the repeat numbers / chord indication */
 		if (s.text && s.text.length < 4
