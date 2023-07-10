@@ -2048,6 +2048,12 @@ function new_voice(id) {
 	if (parse.state == 3) {
 //		p_voice.key = parse.ckey	// (done later in music.js)
 		p_voice.ckey = clone(parse.ckey)
+		if (p_voice.ckey.k_bagpipe
+		 && !p_voice.pos.stm) {
+			p_voice.pos = clone(p_voice.pos)
+			p_voice.pos.stm &= ~0x07
+			p_voice.pos.stm |= C.SL_BELOW
+		}
 	}
 	
 //	par_sy.voices[v] = {
@@ -2200,7 +2206,7 @@ function goto_tune() {
 	for (v = 0; v < voice_tb.length; v++) {
 		p_voice = voice_tb[v];
 		p_voice.ulen = glovar.ulen
-		if (p_voice.ckey.k_bagpipe
+		if (parse.ckey.k_bagpipe
 		 && !p_voice.pos.stm) {
 			p_voice.pos = clone(p_voice.pos)
 			p_voice.pos.stm &= ~0x07
