@@ -577,7 +577,7 @@ function d_upstaff(de) {
 		if (s.type == C.BAR) {
 			s.invis = 1
 		} else {
-		if (dd.glyph == "brth" && y < s.ymx)
+			if (dd.glyph == "brth" && y < s.ymx)
 				y = s.ymx
 			for (s = s.ts_next; s; s = s.ts_next)
 				if (s.seqst)
