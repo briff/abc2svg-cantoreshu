@@ -677,10 +677,14 @@ function put_history() {
 		str = str.split('\n');
 		xy_str(w, wh[1] * .22, str[0])
 		for (j = 1; j < str.length; j++) {
+			if (!str[j]) {			// new paragraph
+				vskip(gene.curfont.size * cfmt.parskipfac)
+				continue
+			}
 			vskip(h);
 			xy_str(w, wh[1] * .22, str[j])
 		}
-		vskip(h * .3);
+		vskip(h * cfmt.parskipfac)
 		use_font(gene.curfont)
 	}
 }
