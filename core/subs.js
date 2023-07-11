@@ -672,7 +672,7 @@ function put_history() {
 			head = head.slice(1, -1);
 		vskip(h);
 		wh = strwh(head);
-		xy_str(0, 0, head, null, null, wh);
+		xy_str(0, wh[1] * .22, head, null, null, wh);
 		w = wh[0];
 		str = str.split('\n');
 		xy_str(w, wh[1] * .22, str[0])
