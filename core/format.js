@@ -414,7 +414,14 @@ var textopt = {
 	obeylines: 'l',
 	ragged: 'f',
 	right: 'r',
-	skip: 's'
+	skip: 's',
+// abcm2ps compatibility
+	"0": 'l',
+	"1": 'j',
+	"2": 'f',
+	"3": 'c',
+	"4": 's',
+	"5": 'r'
 }
 function get_textopt(v) {
     var	i = v.indexOf(' ')
