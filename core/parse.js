@@ -1214,23 +1214,7 @@ function adjust_dur(s) {
 	auto_time = curvoice.time - time
 	fac = curvoice.wmeasure / auto_time
 
-	/* remove the invisible rest at start of tune */
-	if (!time) {
-		while (s2 && !s2.dur)
-			s2 = s2.next
-		if (s2 && s2.type == C.REST
-		 && s2.invis) {
-			time += s2.dur * fac
-			if (s2.prev)
-				s2.prev.next = s2.next
-			else
-				curvoice.sym = s2.next
-			if (s2.next)
-				s2.next.prev = s2.prev;
-			s2 = s2.next
-		}
-	}
-	if (curvoice.wmeasure == auto_time)
+	if (fac == 1)
 		return				/* already good duration */
 
 	for ( ; s2; s2 = s2.next) {
