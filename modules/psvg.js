@@ -1,6 +1,6 @@
 // psvg.js - small PS to SVG convertor for abc2svg
 
-// Copyright (C) 2014-2021 Jean-Francois Moine
+// Copyright (C) 2014-2023 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -16,6 +16,9 @@
 //
 // You should have received a copy of the GNU Lesser General Public License
 // along with abc2svg.  If not, see <http://www.gnu.org/licenses/>.
+
+if (typeof abc2svg == "undefined")
+    var	abc2svg = {}
 
 function Psvg(abcobj_r) {
     var	svgbuf = '',
@@ -772,7 +775,6 @@ abc2svg.psvg = {
     }
 } // psvg
 
-abc2svg.modules.hooks.push(abc2svg.psvg.set_hooks);
-
-// the module is loaded
-abc2svg.modules.beginps.loaded = true
+if (!abc2svg.mhooks)
+	abc2svg.mhooks = {}
+abc2svg.mhooks.page = abc2svg.psvg.set_hooks
