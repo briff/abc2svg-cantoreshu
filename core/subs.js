@@ -930,7 +930,6 @@ function write_heading() {
 	}
 
 	/* rhythm, composer, origin */
-//	down1 = cfmt.composerspace + gene.curfont.size
 	down1 = down2 = 0
 	if (parse.ckey.k_bagpipe
 	 && !cfmt.infoline
@@ -938,8 +937,8 @@ function write_heading() {
 		rhythm = info.R
 	if (rhythm) {
 		set_font("composer");
-		xy_str(0, -cfmt.composerspace, rhythm);
-		down1 = cfmt.composerspace
+		down1 = cfmt.composerspace + gene.curfont.size + 2
+		xy_str(0, -down1 + gene.curfont.size *.22, rhythm)
 	}
 	area = info.A
 	if (cfmt.writefields.indexOf('C') >= 0)
@@ -950,7 +949,6 @@ function write_heading() {
 		var xcomp, align;
 
 		set_font("composer");
-		vskip(cfmt.composerspace)
 		if (cfmt.aligncomposer < 0) {
 			xcomp = 0;
 			align = ' '
@@ -961,31 +959,26 @@ function write_heading() {
 			xcomp = lwidth;
 			align = 'r'
 		}
-		down2 = down1
 		if (composer || origin) {
-			if (cfmt.aligncomposer >= 0
-			 && down1 != down2)
-				vskip(down1 - down2);
+			down2 = cfmt.composerspace + 2
 			i = 0
 			while (1) {
-				vskip(gene.curfont.size)
+				down2 += gene.curfont.size
 				if (composer)
 					j = composer.indexOf("\n", i)
 				else
 					j = -1
 				if (j < 0) {
-					put_inf2r(xcomp, 0,
+					put_inf2r(xcomp, -down2 + gene.curfont.size *.22,
 						composer ? composer.substring(i) : null,
 						origin,
 						align)
 					break
 				}
-				xy_str(xcomp, 0, composer.slice(i, j), align);
-				down1 += gene.curfont.size;
+				xy_str(xcomp, -down2 + gene.curfont.size *.22,
+					composer.slice(i, j), align);
 				i = j + 1
 			}
-			if (down2 > down1)
-				vskip(down2 - down1)
 		}
 
 		rhythm = rhythm ? null : info.R
@@ -994,26 +987,25 @@ function write_heading() {
 			/* if only one of rhythm or area then do not use ()'s
 			 * otherwise output 'rhythm (area)' */
 			set_font("info");
-			vskip(gene.curfont.size + cfmt.infospace);
-			put_inf2r(lwidth, 0, rhythm, area, 'r');
-			down1 += gene.curfont.size + cfmt.infospace
+			down2 += cfmt.infospace + gene.curfont.size
+			put_inf2r(lwidth, -down2 + gene.curfont.size *.22,
+				rhythm, area, 'r')
 		}
-//		down2 = 0
-	} else {
-		down2 = cfmt.composerspace
 	}
 
 	/* parts */
 	if (info.P
 	 && cfmt.writefields.indexOf('P') >= 0) {
 		set_font("parts");
-		down1 = cfmt.partsspace + gene.curfont.size - down1
-		if (down1 > 0)
-			down2 += down1
-		if (down2 > .01)
-			vskip(down2);
-		xy_str(0, 0, info.P);
-		down2 = 0
+		i = cfmt.partsspace + gene.curfont.size + gene.curfont.pad
+		if (down1 + i > down2)
+			down2 = down1 + i
+		else
+			down2 += i
+		xy_str(0, -down2 + gene.curfont.size *.22, info.P)
+		down2 += gene.curfont.pad
+	} else if (down1 > down2) {
+		down2 = down1
 	}
 	vskip(down2 + cfmt.musicspace)
 }
