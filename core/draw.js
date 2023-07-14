@@ -3648,6 +3648,10 @@ Abc.prototype.draw_symbols = function(p_voice) {
 	for (s = p_voice.sym; s; s = s.next) {
 		if (s.invis) {
 			switch (s.type) {
+			case C.CLEF:
+				if (s.time >= staff_tb[s.st].clef.time)
+					staff_tb[s.st].clef = s
+				continue
 			case C.KEY:
 				p_voice.ckey = s
 			default:
