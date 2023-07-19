@@ -2109,7 +2109,7 @@ function draw_partempo() {
 			}
 			writempo(s, s.x - 16, y)
 			anno_stop(s)
-			y_set(st, 1, s.x - 16, w, y + h)
+			y_set(st, 1, s.x - 16, w, y + h + 2)
 			dosh >>= 1
 		}
 	}
