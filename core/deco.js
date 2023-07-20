@@ -2022,7 +2022,8 @@ function draw_partempo() {
     var	ymin = staff_tb[st].topbar + 2,
 		dosh = 0,
 		shift = 1,
-		x = -100	// (must be negative for %%soloffs)
+		x = -100,	// (must be negative for %%soloffs)
+	yn = 0			// y min when x < 0
 
 	// output the parts
 	for (s = tsfirst; s; s = s.ts_next) {
@@ -2061,6 +2062,8 @@ function draw_partempo() {
 				ymin + 2 + gene.curfont.pad + gene.curfont.size * .22,
 				s2.text)
 			y_set(st, 1, s2.x, w + 3, ymin + 2 + h)
+			if (s2.x < 0)
+				yn = ymin + 2 + h
 			anno_stop(s2)
 		}
 	}
@@ -2076,6 +2079,8 @@ function draw_partempo() {
 //		if (s.time == 0 && s.x > 40)	// at start of tune and no %%soloffs,
 //			s.x = 40	// shift the tempo over the key signature
 		y = y_get(st, true, s.x - 16, w)
+		if (s.x - 16 < 0)
+			y = yn
 		if (y > ymin)
 			ymin = y
 		if (x >= s.x - 16 && !(dosh & (shift >> 1)))
