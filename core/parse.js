@@ -1729,6 +1729,10 @@ function set_map(note, acc) {
 	if (map[1]) {				// if print map
 		note.pit = pit = map[1].pit
 		note.acc = map[1].acc
+		if (map[1].notrp) {
+			note.notrp = 1 //true	// no transpose
+			note.noplay = 1 //true	// no play
+		}
 	}
 	if (map[2])				// if color
 		note.color = map[2]
@@ -2131,7 +2135,8 @@ Abc.prototype.new_note = function(grace, sls) {
 				note.midi = pit2mid(apit, i)
 
 			// transpose
-			if (curvoice.tr_sco) {
+			if (curvoice.tr_sco
+			 && !note.notrp) {
 				i = nt_trans(note, i)
 				if (i == -3) {		// if triple sharp/flat
 					error(1, s, "triple sharp/flat")

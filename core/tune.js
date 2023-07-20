@@ -819,6 +819,7 @@ function get_map(text) {
 			break
 		case "print=":
 		case "play=":
+		case "print_notrp=":
 			if (!a[++i]) {
 				syntax(1, not_enough_p)
 				break
@@ -826,6 +827,8 @@ function get_map(text) {
 			tmp = new scanBuf;
 			tmp.buffer = a[i];
 			note = parse_acc_pit(tmp)
+			if (a[i - 1][5] == '_')		// if print no transpose
+				note.notrp = 1 //true
 			if (a[i - 1][1] == 'r')
 				map[1] = note
 			else
