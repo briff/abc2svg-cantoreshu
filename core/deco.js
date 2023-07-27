@@ -417,7 +417,7 @@ function d_trill(de) {
     var	y, w, tmp,
 	dd = de.dd,
 	de2 = de.prev,
-	up = de.up,
+	up = de.start.up,
 		s2 = de.s,
 		st = s2.st,
 		s = de.start.s,
@@ -488,6 +488,7 @@ function d_trill(de) {
 			de2.val = 8
 	}
 	de.st = st
+	de.up = up
 
 	sh_st()				// shift the starting point?
 
