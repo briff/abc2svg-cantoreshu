@@ -108,7 +108,7 @@ function ToAudio() {
 		for (s2 = first; s2; s2 = s2.ts_next) {
 			if (s2.bar_type && s2.time) {
 				nb = (2 * d - s2.time) / beat | 0
-				last_d = beat - s2.time
+				last_d = d - s2.time
 				break
 			}
 		}
