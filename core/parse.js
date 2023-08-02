@@ -1910,8 +1910,6 @@ function do_ties(s, tie_s) {
 				  || !not1.tie_e)) {	// (if unison)
 					not2.tie_s = not1
 					not2.s = s
-					if (not1.pit == not2.pit) // (not enharmonic)
-						delete not2.acc	// (if transposition)
 					if (se) {
 						not1.tie_e = not2
 						not1.s = tie_s
