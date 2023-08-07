@@ -3503,6 +3503,22 @@ function draw_systems(indent) {
 		}
 	} // hl_rest()
 
+	// return the left x offset of a new staff
+	// s is the %%staves
+	function st1(st, s) {
+	    var	tim = s.time
+
+		do {			// search a voice of this staff
+			s = s.ts_next
+		} while (s.st != st)
+		while (s.prev		// search the first symbol of this voice
+		    && s.prev.time >= tim)
+			s = s.prev
+		if (s.bar_type)
+			return s.x
+		return s.x - s.wl
+	} // st1()
+
 	// ---- draw_systems() ----
 
 	/* draw the staff, skipping the staff breaks */
@@ -3520,13 +3536,7 @@ function draw_systems(indent) {
 				x = xstaff[st]
 				if (x < 0) {		// no staff yet
 					if (sy.st_print[st]) {
-						if (s.ts_prev.bar_type)
-							xstaff[st] = s.ts_prev.x
-						else if (s.ts_next.bar_type)
-							xstaff[st] = s.x
-						else
-							xstaff[st] = s.ts_prev.x
-								+ s.ts_prev.wr
+						xstaff[st] = st1(st, s)
 						stl[st] = true
 					}
 					continue
