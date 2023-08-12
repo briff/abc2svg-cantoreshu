@@ -847,16 +847,19 @@ function get_map(text) {
 
 // check if a common symbol is already registered
 function new_ctrl(s) {
-    var	ty = abc2svg.sym_name[s.type],
-	tim = curvoice.time
+    var	a,
+	ty = (s.type + curvoice.time).toString()
 
 	if (!parse.ctrl)
 		parse.ctrl = {}
-	if (!parse.ctrl[tim])
-		parse.ctrl[tim] = {}
-	if (parse.ctrl[tim][ty])		// already there?
-		return // false
-	parse.ctrl[tim][ty] = 1 //true		// keep the first definition
+	a = parse.ctrl[ty]
+	if (a) {				// symbol already declared
+		if (a & 1 << curvoice.v)	// in this voice?
+			return 1 //true		// yes, keep it (case second Q:)
+		parse.ctrl[ty] = a | 1 << curvoice.v
+		return // false			// no, ignore
+	}
+	parse.ctrl[ty] = 1 << curvoice.v
 	return 1 //true
 } // new_ctrl()
 
