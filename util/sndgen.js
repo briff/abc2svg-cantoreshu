@@ -155,6 +155,7 @@ function ToAudio() {
 		s2.ts_next = first.ts_next
 		s2.ts_next.ts_prev = s2
 		first.ts_next = p_v.sym
+		rst = s2.ts_next
 	} // def_beats()
 
 	// build the information about the parts (P:)
