@@ -1753,24 +1753,20 @@ function slur_out(x1, y1, x2, y2, dir, height, dotted) {
 /* (delayed output) */
 /* (not a pretty routine, this) */
 function draw_slur(path,	// list of symbols under the slur
-		sl) {		// slur variables: type, end symbol, note
+		   sl,		// slur variables: type, end symbol, note
+		   recurr) {	// recurrent call when slur on two staves
     var	i,
-	k, g, x1, y1, x2, y2, height, addy,
+	k, g, x1, y1, x2, y2, height, addy, s_st2,
 	a, y, z, h, dx, dy,
 	ty = sl.ty,
 	dir = (ty & 0x07) == C.SL_ABOVE ? 1 : -1,
 	n = path.length,
 	i1 = 0,
 	i2 = n - 1,
-	not1 = sl.nts,		// if the slur start on a note
+	not1 = sl.nts,		// if the slur starts on a note
 	k1 = path[0],
-	k2 = path[i2]
-
-/*fixme: if two staves, may have upper or lower slur*/
-
-	var	nn = 1,
-		upstaff = k1.st,
-		two_staves = false
+	k2 = path[i2],
+	nn = 1
 
 	set_dscale(k1.st)
 
@@ -1778,15 +1774,104 @@ function draw_slur(path,	// list of symbols under the slur
 		k = path[i]
 		if (k.type == C.NOTE || k.type == C.REST) {
 			nn++
-			if (k.st != upstaff) {
-				two_staves = true
-				if (k.st < upstaff)
-					upstaff = k.st
-			}
+			if (k.st != k1.st
+			 && !s_st2)
+				s_st2 = k
 		}
 	}
-/*fixme: KO when two staves*/
-if (two_staves) error(2, k1, "*** multi-staves slurs not treated yet");
+
+	// if slur on 2 staves, define it, but don't output it now
+	// this will be done in draw_sl2()
+	if (s_st2 && !recurr) {			// if not 2nd call to draw_slur()
+		if (!gene.a_sl)
+			gene.a_sl = []
+
+		// replace the symbols of the other staff with sumbols
+		// in the current staff but with updated y offsets
+		h = 24 + k1.fmt.sysstaffsep		// delta y
+		if (s_st2.st > k1.st)
+			h = -h
+		for (i = 0; i < n; i++) {
+			k = path[i]
+			if (k.st == k1.st) {
+				if (k.dur)
+					a = k		// (used for types // and \\)
+				continue
+			}
+			k = clone(k)
+			if (path[i] == s_st2)
+				s_st2 = k
+			path[i] = k
+			if (k.dur) {
+				k.notes = clone(k.notes)
+				k.notes[0] = clone(k.notes[0])
+				if (sl.ty & C.SL_CENTER) {
+					if (k.st != a.st) {
+						sl.ty = (sl.ty & ~0x07)
+							 | (a.st < k.st
+								? C.SL_BELOW
+								: C.SL_ABOVE)
+						z = k1.ymn
+						h = k2.ymx
+						if (k.st < a.st) {
+							for (i1 = 1; i1 < i; i1++) {
+								a = path[i1]
+								if (a.ymn < z)
+									z = a.ymn
+							}
+							for (i1 = i; i1 < i2; i1++) {
+								a = path[i1]
+								if (a.ymx > h)
+									h = a.ymx
+							}
+						} else {
+							for (i1 = 1; i1 < i; i1++) {
+								a = path[i1]
+								if (a.ymx > h)
+									h = a.ymx
+							}
+							for (i1 = i; i1 < i2; i1++) {
+								a = path[i1]
+								if (a.ymn < z)
+									z = a.ymn
+							}
+						}
+						h += z
+						a = k
+					}
+					k.y = h - k.y
+					k.notes[0].pit = (k.y / 3 | 0) + 18
+					k.ys = h - k.ys
+					y = k.ymx
+					k.ymx = h - k.ymn
+					k.ymn = h - y
+					k.stem = -k.stem
+				} else {
+					k.notes[0].pit += h / 3 | 0
+					k.ys += h
+					k.y += h
+					k.ymx += h
+					k.ymn += h
+				}
+			}
+//			k.st = k1.st	// keep the staff number for draw_sl2()
+		}
+
+		ty = k1.st > s_st2.st ? '/' : '\\'
+		if (sl.ty & C.SL_CENTER)
+			ty = ty + ty			// type = // or \\
+		else if (k1.st == k2.st)
+			ty = ty == '/' ? '/\\' : '\\/'	// type = /\ or \/
+		else
+			ty += dir > 0 ? '+' : '-'	// type = .+ or .-
+
+	    var	savout = output
+		output = ""
+		draw_slur(path, sl, 1 /*true*/)
+		gene.a_sl.push([k1, s_st2, ty, output])
+		output = savout
+		return
+	}
 
 	/* fix endpoints */
 	x1 = k1.x
@@ -1967,8 +2052,6 @@ if (two_staves) error(2, k1, "*** multi-staves slurs not treated yet");
 	    addy = y1 - a * x1
 	    for (i = 1; i < i2; i++) {
 		k = path[i]
-		if (k.st != upstaff)
-			continue
 		switch (k.type) {
 		case C.NOTE:
 		case C.REST:
@@ -2059,28 +2142,28 @@ if (two_staves) error(2, k1, "*** multi-staves slurs not treated yet");
 		addy -= 4 * Math.sqrt(-height) - 2
 	for (i = 0; i < i2; i++) {
 		k = path[i]
-		if (k.st != upstaff || k.type == C.BAR)
+		if (k.st != k1.st || k.type == C.BAR)
 			continue
 		y = a * k.x + addy
 		if (k.ymx < y)
 			k.ymx = y
 		else if (k.ymn > y)
 			k.ymn = y
+		if (recurr)			// no room when slur on 2 staves
+			continue
 		if (i == i2 - 1) {
 			dx = x2
 			if (sl.nte)
 				dx -= 5;
-			if (i)
-				y -= height / 3
 		} else {
-			dx = path[i + 1].x
+			dx = k.x + k.wr
 		}
 		if (i != 0)
 			x1 = k.x
-		else
+		if (!i || i == i2)
 			y -= height / 3
-		dx -= x1;
-		y_set(upstaff, dir > 0, x1, dx, y)
+		dx -= x1 - k.wl
+		y_set(k1.st, dir > 0, x1 - k.wl, dx, y)
 	}
 }
 
@@ -3784,6 +3867,101 @@ function draw_all_sym() {
     var	p_voice, v,
 	n = voice_tb.length
 
+	// draw the slurs on 2 staves
+	// sl = [symbol of 1st staff, symbol of 2nd staff, slur type, <path .../>
+	function draw_sl2() {
+	    var	i, a, d, dy, dy2, dy2o, dz, n, sl
+
+		while (1) {
+			sl = gene.a_sl.shift()
+			if (!sl)
+				break
+
+			// extract the path header and the values
+			i = sl[3].indexOf('d="M') + 4
+			output += sl[3].slice(0, i)	// <path .. >d="M
+
+			a = new Float32Array(sl[3].slice(i).match(/[\d.-]+/g))
+
+			// update the starting point of the slur
+			a[1] -= staff_tb[sl[0].st].y	// absolute vertical offset
+
+// [0][1] = M
+// [2][3] [4][5] [6][7] = c
+// [8] = v			second curve if not dotted
+// [9][10] [11][12] [13][14] = c
+//
+// y:      3-------5
+//	  / 12---10 \
+//	 / /       \ \
+//	/ /         \ \ 7
+//     1 14          \| 8
+//
+// x:  0   2       4    6
+//       13 11    9	
+
+			// deltas between staves, original and now
+			dy2o = sl[0].fmt.sysstaffsep + 24
+			dy2 = staff_tb[sl[1].st].y - staff_tb[sl[0].st].y
+
+			switch (sl[2]) {		// slur type
+			case "//":			// '~' like
+			case "\\\\":
+
+				// get the middle of the '~' slur (* 2)
+				d = -(sl[1].prev.prev.y + staff_tb[sl[0].st].y
+					+ sl[1].prev.next.y + staff_tb[sl[1].st].y)
+					- 2 * (a[1] - posy)
+				a[5] = d - a[5]
+				a[7] = d - a[7]
+				if (a.length > 8) {
+					d = sl[2][0] == '/' ? 3 : -3
+					a[8] = -a[8]
+					a[10] = -a[3] + d
+					a[12] = -a[5] + d
+					a[14] = -a[7]
+				}
+				break
+			case "/\\":
+			case "\\/":
+				d = sl[2][0] == '/'
+					? dy2 - dy2o - 10
+					: dy2 + dy2o + 10
+				a[3] += d
+				a[5] += d
+				if (a.length > 8) {
+					a[10] += d
+					a[12] += d
+				}
+				break
+			default:			// /+, /-, \+ or \-
+				d = sl[2][0] == '/' ? dy2 - dy2o : -dy2 - dy2o
+				a[5] += d
+				a[7] += d
+				if (a.length > 8) {
+					a[12] -= d
+					a[14] -= d
+				}
+				break
+			}
+
+			// output the slur
+			output += a[0].toFixed(1) + ' ' + a[1].toFixed(1)
+				+ 'c' + a[2].toFixed(1) + ' ' + a[3].toFixed(1)
+				+ ' ' + a[4].toFixed(1) + ' ' + a[5].toFixed(1)
+				+ ' ' + a[6].toFixed(1) + ' ' + a[7].toFixed(1)
+			if (a.length > 8)
+				output += 'v' + a[8].toFixed(1)
+					+ 'c' + a[9].toFixed(1)
+						+ ' ' + a[10].toFixed(1)
+					+ ' ' + a[11].toFixed(1)
+						+ ' ' + a[12].toFixed(1)
+					+ ' ' + a[13].toFixed(1)
+						+ ' ' + a[14].toFixed(1)
+			output += '"/>\n'
+		}
+	} // draw_sl2()
+
 	for (v = 0; v < n; v++) {
 		p_voice = voice_tb[v]
 		if (p_voice.sym
@@ -3798,7 +3976,11 @@ function draw_all_sym() {
 	self.draw_all_deco()
 	glout()			// output the symbols
 	anno_put()		// before outputting the symbol annotations
+
 	set_sscale(-1)				/* restore the scale */
+
+	if (gene.a_sl)		// if slurs on two staves
+		draw_sl2()
 }
 
 /* -- set the tie directions for one voice -- */
