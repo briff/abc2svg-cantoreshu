@@ -1775,6 +1775,9 @@ function parse_vpos() {
 	case ",":
 		line.index++
 		return ty + C.SL_BELOW
+	case '?':				// slur between staves (like ~)
+		line.index++
+		return ty + C.SL_CENTER
 	}
 	return ty + C.SL_AUTO
 }
