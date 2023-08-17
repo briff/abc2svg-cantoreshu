@@ -115,6 +115,8 @@ abc2svg.ambitus = {
 			if (s && s.nhd) {	// draw the helper lines if any
 				s.x -= 26
 				this.draw_hl(s)
+				s.ymn = 3 * (s.notes[0].pit - 18) - 2
+				s.ymx = 3 * (s.notes[1].pit - 18) + 2
 				s.x += 26
 			}
 		}
