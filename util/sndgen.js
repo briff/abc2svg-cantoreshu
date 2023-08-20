@@ -69,7 +69,7 @@ function ToAudio() {
 
 	// create the starting beats
 	function def_beats() {
-	    var	i, s2, s3, tim, last_d,
+	    var	i, s2, s3, tim,
 		beat = get_beat(),		// time between two beats
 		d = first.p_v.meter.wmeasure,	// duration of a measure
 		nb = d / beat | 0,		// number of beats in a measure
@@ -104,11 +104,13 @@ function ToAudio() {
 			}]
 		}
 
+		abc_time = -d			// start time of the beat ticks
+
 		// check for an anacrusis
 		for (s2 = first; s2; s2 = s2.ts_next) {
 			if (s2.bar_type && s2.time) {
 				nb = (2 * d - s2.time) / beat | 0
-				last_d = d - s2.time
+				abc_time -= d - s2.time
 				break
 			}
 		}
@@ -132,9 +134,7 @@ function ToAudio() {
 
 		voice_tb[v] = p_v
 		p_v.sym.p_v = p_v
-		tim =
-			abc_time = -d		// start time of the beat ticks
-		first.time = s2.time = tim
+		first.time = s2.time = tim = abc_time
 		if (s3)
 			p_v.sym.time = tim
 		for (i = 0; i < nb; i++) {
@@ -145,11 +145,6 @@ function ToAudio() {
 			s3.ts_prev = s2
 			s2.ts_next = s3
 			s2 = s3
-			if (last_d && i == nb - 1) {	// if an anacrusis
-				s3.dur =
-					s3.dur_orig =
-						s3.notes[0].dur = last_d
-			}
 			tim += beat
 		}
 		s2.ts_next = first.ts_next
