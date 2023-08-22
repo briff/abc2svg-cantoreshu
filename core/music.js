@@ -5047,7 +5047,7 @@ function set_piece() {
 			p_voice = voice_tb[v]
 			if (p_voice.sym
 			 && p_voice.sym.time <= tsnext.time) {
-				for (s = tsnext.ts_prev; s; s = s.ts_prev) {
+				for (s = last; s; s = s.ts_prev) {
 					if (s.v == v) {
 						p_voice.s_next = s.next;
 						s.next = null;
@@ -5202,6 +5202,8 @@ function set_sym_line() {
 		p_v = voice_tb[v]
 		if (p_v.sym && p_v.s_prev)
 			p_v.sym.prev = p_v.s_prev
+			p_v.s_prev.next = p_v.sym
+		}
 		s = p_v.s_next			// (set in set_piece)
 		p_v.s_next = null
 		p_v.sym = s
