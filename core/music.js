@@ -5200,7 +5200,7 @@ function set_sym_line() {
 	// set the first symbol of each voice
 	while (--v >= 0) {
 		p_v = voice_tb[v]
-		if (p_v.sym && p_v.s_prev)
+		if (p_v.sym && p_v.s_prev) {
 			p_v.sym.prev = p_v.s_prev
 			p_v.s_prev.next = p_v.sym
 		}
