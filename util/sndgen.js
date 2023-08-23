@@ -367,12 +367,13 @@ function ToAudio() {
 				b_typ |= 4
 				rst = s			// new possible restart
 				rst_fac = play_fac
-			} else if (s.rbstop == 2) {
-				if (b_typ & 8)
-					break
-				b_typ |= 8
-				rst = s			// new possible restart
-				rst_fac = play_fac
+// fixme: does not work when |1 split at end of line
+//			} else if (s.rbstop == 2) {
+//				if (b_typ & 8)
+//					break
+//				b_typ |= 8
+//				rst = s			// new possible restart
+//				rst_fac = play_fac
 			}
 			break
 		case C.GRACE:
