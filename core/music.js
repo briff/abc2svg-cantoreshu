@@ -2910,7 +2910,7 @@ Abc.prototype.set_pitch = function(last_s) {
 	var	s, s2, g, st, delta, pitch, note,
 		dur = C.BLEN,
 		m = nstaff + 1,
-		staff_delta = new Int16Array(new Array(m * 2)),	// delta clef
+		staff_delta = new Int16Array(m * 2),	// delta clef
 		sy = cur_sy
 
 	// set the starting clefs of the staves
@@ -4914,7 +4914,8 @@ function set_piece() {
 			p_staff.hll = 17 + i * 2	// pitch of lowest note
 							// without helper line
 							// ('D' when standard staff)
-			p_staff.hlmap = new Int8Array(new Array((l - i + 1) * 2))
+			p_staff.hlmap = new Int8Array((l - i + 1) * 2
+						+ 2)	// (bug android 4.0)
 			for (j = 1; i < l; i++, j += 2) {
 				switch (p_staff.stafflines[i]) {
 				case '|':
