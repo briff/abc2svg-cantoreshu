@@ -41,18 +41,17 @@ abc2svg.page = {
 
     // output the SVG tag
     svg_tag: function(w, h) {
+	w = Math.ceil(w)
+	h = Math.ceil(h)
 	abc2svg.page.user_out(
 		'<svg xmlns="http://www.w3.org/2000/svg" version="1.1"\n\
 	xmlns:xlink="http://www.w3.org/1999/xlink"\n'
 		+ (user.imagesize != undefined
-			? ('	viewBox="0 0 ' + Math.ceil(w)
-				+ ' ' + Math.ceil(h) + '">'
-			)
-			: ('	width="' + Math.ceil(w)
-				+ 'px" height="' + Math.ceil(h)
-				+ 'px">'
-			)
+			? ('	' + user.imagesize)
+			: ('	width="' + w + 'px" height="' + h + 'px"')
 		)
+		+ ('	viewBox="0 0 ' + w + ' ' + h + '">')
+
 	)
     }, // svg_tag()
 
