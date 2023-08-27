@@ -40,18 +40,19 @@ abc2svg.page = {
     }, // abc_end()
 
     // output the SVG tag
-    svg_tag: function(w, h) {
+    svg_tag: function(w, h, ty) {
 	w = Math.ceil(w)
 	h = Math.ceil(h)
 	abc2svg.page.user_out(
 		'<svg xmlns="http://www.w3.org/2000/svg" version="1.1"\n\
-	xmlns:xlink="http://www.w3.org/1999/xlink"\n'
+ xmlns:xlink="http://www.w3.org/1999/xlink"\n\
+ class="'
+		+ ty + '" '
 		+ (user.imagesize != undefined
-			? ('	' + user.imagesize)
-			: ('	width="' + w + 'px" height="' + h + 'px"')
+			? (user.imagesize)
+			: ('width="' + w + 'px" height="' + h + 'px"')
 		)
-		+ ('	viewBox="0 0 ' + w + ' ' + h + '">')
-
+		+ ' viewBox="0 0 ' + w + ' ' + h + '">'
 	)
     }, // svg_tag()
 
@@ -284,7 +285,7 @@ abc2svg.page = {
 		} else {
 			sty = ''
 		}
-		abc2svg.page.svg_tag(cfmt.pagewidth, ht + h)
+		abc2svg.page.svg_tag(cfmt.pagewidth, ht + h, "header")
 		abc2svg.page.user_out(sty +
 			'<g transform="translate(0,' +
 				page.topmargin.toFixed(1) + ')">\n' +
@@ -292,7 +293,7 @@ abc2svg.page = {
 		page.hmax -= h;
 		page.hf = ''
 	} else {
-		abc2svg.page.svg_tag(cfmt.pagewidth, ht)
+		abc2svg.page.svg_tag(cfmt.pagewidth, ht, "header")
 		abc2svg.page.user_out('\n</svg>')
 	}
 	if (page.footer) {
@@ -318,7 +319,7 @@ abc2svg.page = {
 	page.in_page = false
 	if (page.footer) {
 		h = page.hmax + page.fh - page.h
-		abc2svg.page.svg_tag(cfmt.pagewidth, h)
+		abc2svg.page.svg_tag(cfmt.pagewidth, h, "footer")
 		abc2svg.page.user_out(page.ffsty +
 			'<g transform="translate(0,' +
 				(h - page.fh).toFixed(1) + ')">\n' +
