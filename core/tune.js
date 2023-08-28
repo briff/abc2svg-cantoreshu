@@ -691,12 +691,12 @@ Abc.prototype.set_bar_num = function() {
 			if (txt) {
 				if (txt[0] == '1') {
 					if (!cfmt.contbarnb)
-						rep_tim = tim
+						rep_tim = tim - bar_tim
 					if (!nu)
 						s.bar_num = n
 				} else {
 					if (!cfmt.contbarnb)
-						bar_tim = tim + rep_tim
+						bar_tim = tim - rep_tim
 					n = bar_num + (tim - bar_tim) / wmeasure
 					if (n == (n | 0))
 						s.bar_num = n
