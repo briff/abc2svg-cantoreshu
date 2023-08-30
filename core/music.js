@@ -3472,9 +3472,11 @@ function init_music_line() {
 		delete s.clef_small;
 		delete s.part
 		s.second = cur_sy.voices[v].second
-// (fixme: needed for sample5 X:3 Fugue & staffnonote.xhtml)
+// (fixme: needed for sample5 X:3 Fugue & staffnonote.html)
 		if (!cur_sy.st_print[st])
 			s.invis = true
+		else
+			delete s.invis
 		s.fmt = fmt
 	}
 
