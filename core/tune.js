@@ -372,6 +372,8 @@ function sort_all() {
 			 && s.type == C.PART) {		// move the part
 				if (s.prev)
 					s.prev.next = s.next
+				else
+					s.p_v.sym = s.next
 				vtb[v] = s.next
 				if (s.next) {
 					s.next.part = s	// to the next symbol
