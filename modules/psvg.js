@@ -777,4 +777,4 @@ abc2svg.psvg = {
 
 if (!abc2svg.mhooks)
 	abc2svg.mhooks = {}
-abc2svg.mhooks.page = abc2svg.psvg.set_hooks
+abc2svg.mhooks.psvg = abc2svg.psvg.set_hooks
