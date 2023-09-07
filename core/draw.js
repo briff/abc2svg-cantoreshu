@@ -1786,8 +1786,8 @@ function draw_slur(path,	// list of symbols under the slur
 		if (!gene.a_sl)
 			gene.a_sl = []
 
-		// replace the symbols of the other staff with sumbols
-		// in the current staff but with updated y offsets
+		// replace the symbols of the other staff
+		// by symbols in the current staff but with updated y offsets
 		h = 24 + k1.fmt.sysstaffsep		// delta y
 		if (s_st2.st > k1.st)
 			h = -h
@@ -3190,10 +3190,12 @@ function draw_vname(indent, stl) {
 
 // -- set the y offset of the staves and return the height of the whole system --
 function set_staff() {
-    var	i, st, prev_staff, v,
+    var	i, st, prev_staff, v, fmt, s,
 	y, staffsep, dy, maxsep, mbot, val, p_voice, p_staff,
-	fmt = tsfirst.fmt,
 	sy = cur_sy
+
+	// the last values of {,max}{,sys}staffsep are in the last format
+	fmt = tsnext ? tsnext.fmt : cfmt
 
 	/* set the scale of the voices */
 	for (v = 0; v < voice_tb.length; v++) {
@@ -3224,7 +3226,7 @@ function set_staff() {
 
 	/* set the vertical offset of the 1st staff */
 	y *= p_staff.staffscale;
-	staffsep = fmt.staffsep * .5 +
+	staffsep = tsfirst.fmt.staffsep / 2 +
 			p_staff.topbar * p_staff.staffscale
 	if (y < staffsep)
 		y = staffsep
@@ -3243,8 +3245,8 @@ function set_staff() {
 		if (!gene.st_print[st])
 			continue
 		p_staff = staff_tb[st]
-		staffsep = sy_staff_prev.sep || cfmt.sysstaffsep;
-		maxsep = sy_staff_prev.maxsep || cfmt.maxsysstaffsep;
+		staffsep = sy_staff_prev.sep || fmt.sysstaffsep;
+		maxsep = sy_staff_prev.maxsep || fmt.maxsysstaffsep;
 
 		dy = 0
 		if (p_staff.staffscale == staff_tb[prev_staff].staffscale) {
