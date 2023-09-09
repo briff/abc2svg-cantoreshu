@@ -909,11 +909,13 @@ pf:	{
 	}
 }
 
-function out_deco_str(x, y, name, str) {
+function out_deco_str(x, y, de) {
+    var	name = de.dd.glyph
+
 	if (name == 'fng') {
 		out_XYAB('\
 <text x="X" y="Y" style="font-size:14px">A</text>\n',
-			x - 2, y, m_gl(str))
+			x - 2, y, m_gl(de.dd.str))
 		return
 	}
     var	f,
@@ -932,7 +934,7 @@ function out_deco_str(x, y, name, str) {
 	out_XYAB('<text x="X" y="Y" class="A"B>', x, y,
 		name, a_deco.anchor || "");
 	set_font("annotation");
-	out_str(str);
+	out_str(de.dd.str)
 	output += '</text>\n'
 }
 

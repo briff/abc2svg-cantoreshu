@@ -568,10 +568,11 @@ function pscall(f, x, y, script) {
 }
 
 // try to generate a decoration by PS
-Psvg.prototype.psdeco = function(f, x, y, de) {
+Psvg.prototype.psdeco = function(x, y, de) {
 	var	dd, de2, script, defl,
 		Os = wps.parse('/' + f + ' where'),
 		A = Os.pop(),
+	f = de.dd.glyph,
 	staff_tb = abcobj.get_staff_tb()
 
 	if (!A)
@@ -757,10 +758,10 @@ abc2svg.psvg = {
 			this.psvg = new Psvg(this);
 		this.psvg.ps_eval.call(this.psvg, text)
 	},
-	psdeco: function(of, f, x, y, de) {
+	psdeco: function(of, x, y, de) {
 		if (!this.psvg)			// no %%beginps yet
 			return false
-		return this.psvg.psdeco.call(this.psvg, f, x, y, de)
+		return this.psvg.psdeco.call(this.psvg, x, y, de)
 	},
 	psxygl: function(of, x, y, gl) {
 		if (!this.psvg)

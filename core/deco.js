@@ -724,10 +724,15 @@ function deco_def(nm, nmd) {
 	if (str) {				// optional string
 		if (str[0] == '"')
 			str = str.slice(1, -1);
-		if (str[0] == '@'
-		 && !str.match(/^@([0-9.-]+),([0-9.-]+);?/)) {
+		if (str[0] == '@') {
+			c = str.match(/^@([0-9.-]+),([0-9.-]+);?/)
+		    if (!c) {
 			error(1, null, "%%deco: bad position '$1'", str)
 			return
+		    }
+			dd.dx = +c[1]		// x and y offsets
+			dd.dy = +c[2]
+			str = str.replace(c[0], '')
 		}
 		dd.str = str
 	}
@@ -1189,8 +1194,8 @@ Abc.prototype.draw_all_deco = function() {
 		st = de.st;
 		if (!staff_tb[st].topbar)
 			continue		// invisible staff
-		x = de.x;
-		y = de.y + staff_tb[st].y
+		x = de.x + (dd.dx || 0)
+		y = de.y + staff_tb[st].y + (dd.y || 0)
 
 		// update the coordinates if head decoration
 		if (de.m != undefined) {
@@ -1247,7 +1252,7 @@ Abc.prototype.draw_all_deco = function() {
 		}
 
 		// check if user PS definition
-		if (self.psdeco(f, x, y, de))
+		if (self.psdeco(x, y, de))
 			continue
 
 		anno_start(s, 'deco')
@@ -1270,16 +1275,8 @@ Abc.prototype.draw_all_deco = function() {
 			if (de.cont)
 				new_de.push(de.start)	// to be continued next line
 		} else if (dd.str != undefined) {
-			str = dd.str
-			if (str[0] == '@') {
-				a = str.match(/^@([0-9.-]+),([0-9.-]+);?/);
-				x += Number(a[1]);
-				y += Number(a[2]);
-				str = str.replace(a[0], "")
-			}
-//			out_deco_str(x, y + de.dy,	// - dd.h * .2,
 			out_deco_str(x, y,		// - dd.h * .2,
-					f, str)
+					de)
 		} else if (de.lden) {
 			out_deco_long(x, y, de)
 		} else {
