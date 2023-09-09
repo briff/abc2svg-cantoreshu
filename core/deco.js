@@ -1238,10 +1238,12 @@ Abc.prototype.draw_all_deco = function() {
 		}
 
 		// check if user JS decoration
-		uf = user[f]
-		if (uf && typeof(uf) == "function") {
-			uf(x, y, de)
-			continue
+		if (user.deco) {
+			uf = user.deco[f]
+			if (uf && typeof(uf) == "function") {
+				uf.call(self, x, y, de)
+				continue
+			}
 		}
 
 		// check if user PS definition
