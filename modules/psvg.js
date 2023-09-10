@@ -570,9 +570,9 @@ function pscall(f, x, y, script) {
 // try to generate a decoration by PS
 Psvg.prototype.psdeco = function(x, y, de) {
 	var	dd, de2, script, defl,
+	f = de.dd.glyph,
 		Os = wps.parse('/' + f + ' where'),
 		A = Os.pop(),
-	f = de.dd.glyph,
 	staff_tb = abcobj.get_staff_tb()
 
 	if (!A)
