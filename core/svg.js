@@ -885,32 +885,23 @@ function out_wln(x, y, w) {
 
 // decorations with string
 var deco_str_style = {
-crdc:	{
+crdc:	{				// cresc., decresc., dim., ...
 		dx: 0,
 		dy: 5,
 		style: 'font:italic 14px text,serif',
 		anchor: ' text-anchor="middle"'
 	},
-dacs:	{
+dacs:	{				// long repeats (da capo, fine...)
 		dx: 0,
 		dy: 3,
-		style: 'font:16px text,serif',
+		style: 'font:bold 15px text,serif',
 		anchor: ' text-anchor="middle"'
-	},
-pf:	{
-		dx: 0,
-		dy: 5,
-		style: 'font:italic bold 16px text,serif'
-	},
-'@':	{
-		dx: 0,
-		dy: 5,
-		style: 'font:12px text,sans-serif'
 	}
 }
+deco_str_style.at = deco_str_style.crdc
 
 function out_deco_str(x, y, de) {
-    var	name = de.dd.glyph
+    var	name = de.dd.glyph			// class
 
 	if (name == 'fng') {
 		out_XYAB('\
@@ -918,19 +909,26 @@ function out_deco_str(x, y, de) {
 			x - 2, y, m_gl(de.dd.str))
 		return
 	}
+
+	if (name == '@') {			// compatibility
+		name = 'at'
+	} else if (!/^[A-Za-z][A-Za-z\-_]*$/.test(name)) {
+		error(1, de.s, "No function for decoration '$1'", de.dd.name)
+		return
+	}
+
     var	f,
 		a_deco = deco_str_style[name]
 
-	if (!a_deco) {
-		xygl(x, y, name)
-		return
-	}
+	if (!a_deco)
+		a_deco = deco_str_style.crdc	// default style
+
 	x += a_deco.dx;
 	y += a_deco.dy;
-	if (!a_deco.def) {
-		style += "\n." + name + " {" + a_deco.style + "}";
-		a_deco.def = true
-	}
+
+	// don't add the style if it is already defined for this class
+	if (style.indexOf('.' + name) < 0)
+		style += "\n." + name + " {" + a_deco.style + "}"
 	out_XYAB('<text x="X" y="Y" class="A"B>', x, y,
 		name, a_deco.anchor || "");
 	set_font("annotation");
