@@ -431,7 +431,7 @@ function draw_all_chsy() {
 				w = an.text.wh[0]
 				if (w && x + w > realwidth)
 					x = realwidth - w // let the text in the page
-				y = y_get(s.st, 1, x, w) + 2	// y / staff
+				y = y_get(s.st, 1, x, w)	// y / staff
 				if (an.type == 'g' && y < minmax[s.st].yup)
 					y = minmax[s.st].yup
 			} else if (an.pos == C.SL_BELOW
@@ -491,7 +491,7 @@ function draw_all_chsy() {
 				if (w && x + w > realwidth)
 					x = realwidth - w
 				if (an.pos == C.SL_ABOVE) {
-					y = y_get(s.st, true, x, w) + 2
+					y = y_get(s.st, true, x, w)
 					if (y > minmax[s.st].yup)
 						minmax[s.st].yup = y
 				} else if (an.pos == C.SL_BELOW) {
