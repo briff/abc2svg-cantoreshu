@@ -95,6 +95,8 @@ Abc.prototype.use_font = use_font;
 Abc.prototype.vskip = vskip
 Abc.prototype.xy_str = xy_str;
 Abc.prototype.xygl = xygl;
+Abc.prototype.y_get = y_get
+Abc.prototype.y_set = y_set
 }	// end of Abc()
 
 // compatibility
