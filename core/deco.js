@@ -335,11 +335,6 @@ function d_near(de) {
 		s = de.s,
 		dd = de.dd
 
-	if (dd.str) {			// annotation like decoration
-//		de.x = s.x;
-//		de.y = s.y;
-		return
-	}
 	y = up ? s.ymx : s.ymn
 	if (y > 0 && y < 24) {
 		y = (((y + 9) / 6) | 0) * 6 - 6	// between lines
@@ -1274,7 +1269,8 @@ Abc.prototype.draw_all_deco = function() {
 				out_deco_val(x, y, f, de.val, de.defl)
 			if (de.cont)
 				new_de.push(de.start)	// to be continued next line
-		} else if (dd.str != undefined) {
+		} else if (dd.str != undefined		// string
+			&& !glyphs[dd.glyph]) {		// with a class
 			out_deco_str(x, y,		// - dd.h * .2,
 					de)
 		} else if (de.lden) {
