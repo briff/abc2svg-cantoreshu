@@ -1270,6 +1270,7 @@ Abc.prototype.draw_all_deco = function() {
 			if (de.cont)
 				new_de.push(de.start)	// to be continued next line
 		} else if (dd.str != undefined		// string
+			&& !tgls[dd.glyph]
 			&& !glyphs[dd.glyph]) {		// with a class
 			out_deco_str(x, y,		// - dd.h * .2,
 					de)
