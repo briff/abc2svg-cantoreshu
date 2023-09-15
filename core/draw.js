@@ -1168,6 +1168,34 @@ function draw_mrest(s) {
 	y = p_st.y + (p_st.topbar + p_st.botbar) / 2,
 	p = s.nmes.toString()
 
+	// output an old multimeasure rest
+	function omrest() {
+	    var	x = s.x,
+		y = p_st.y + 12,
+		n = s.nmes,
+		k = n >> 2			// number of rests
+
+		if (n & 3) {
+			k++
+			if (n & 3 == 3)
+				k++
+		}
+//dx = 6
+		x -= 3 * (k - 1)
+		while (n >= 4) {
+			xygl(x, y, "r00")
+			n -= 4
+			x += 6
+		}
+		if (n >= 2) {
+			xygl(x, y, "r0")
+			n -= 2
+			x += 6
+		}
+		if (n)
+			xygl(x + 2, y, "r1")
+	} // omrest()
+
 	if (!s.next) {
 		error(1, s, "Lack of bar after multi-measure rest")
 		return
@@ -1185,10 +1213,14 @@ function draw_mrest(s) {
 	x2 = s.next.x - 20
 	s.x = (x1 + x2) / 2
 	anno_start(s)
-	out_XYAB('<path d="mX Y', x1 + .6, y - 2.7)
-	output += 'v2.7h-1.4v-10.8h1.4v2.7h'
-		+ ((x2 - x1 - 2.8) / stv_g.scale).toFixed(1)
-		+ 'v-2.7h1.4v10.8h-1.4v-2.7z"/>\n'
+	if (!cfmt.oldmrest) {
+		out_XYAB('<path d="mX Y', x1 + .6, y - 2.7)
+		output += 'v2.7h-1.4v-10.8h1.4v2.7h'
+			+ ((x2 - x1 - 2.8) / stv_g.scale).toFixed(1)
+			+ 'v-2.7h1.4v10.8h-1.4v-2.7z"/>\n'
+	} else {
+		omrest()		// old multirest
+	}
     if (s.tacet)
 	out_XYAB('<text x ="X" y="Y" style="font-size:12px;font-weight:700"\
  text-anchor="middle">A</text>\n',
