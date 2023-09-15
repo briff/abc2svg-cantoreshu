@@ -1213,7 +1213,7 @@ function draw_mrest(s) {
 	x2 = s.next.x - 20
 	s.x = (x1 + x2) / 2
 	anno_start(s)
-	if (!cfmt.oldmrest) {
+	if (!cfmt.oldmrest || s.nmes > cfmt.oldmrest) {
 		out_XYAB('<path d="mX Y', x1 + .6, y - 2.7)
 		output += 'v2.7h-1.4v-10.8h1.4v2.7h'
 			+ ((x2 - x1 - 2.8) / stv_g.scale).toFixed(1)
