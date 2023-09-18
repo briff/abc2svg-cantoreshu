@@ -256,8 +256,9 @@ function param_set_font(xxxfont, p) {
 		p = p.replace(a[0], "")
 	}
 
-	// accept url(...) as the font name
-	if (p[0] == 'u' && p.slice(0, 4) == "url(") {
+	// accept local(..) and url(...) as the font source
+	if ((p[0] == 'u' && p.slice(0, 4) == "url(")
+	 || (p[0] == 'l' && p.slice(0, 6) == "local(")) {
 		n = p.indexOf(')', 1)
 		if (n < 0) {
 			syntax(1, "No end of url in font family")
