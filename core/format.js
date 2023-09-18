@@ -341,6 +341,7 @@ function param_set_font(xxxfont, p) {
 			switch (k) {
 			case "fid":
 			case "used":
+			case "src":
 				break
 			case "style":
 			case "weight":
