@@ -4831,8 +4831,7 @@ function sym_staff_move(st) {
 /* -- define the start and end of a piece of tune -- */
 /* tsnext becomes the beginning of the next line */
 function set_piece() {
-    var	s, last, p_voice, st, v, nv, tmp,
-	non_empty = [],
+    var	s, last, p_voice, st, v, nv, tmp, non_empty,
 	non_empty_gl = [],
 	sy = cur_sy
 
@@ -4947,6 +4946,7 @@ function set_piece() {
 	nstaff = sy.nstaff
 	for (st = 0; st <= nstaff; st++)
 		reset_staff(st);
+	non_empty = new Uint8Array(nstaff + 1)
 
 	/*
 	 * search the next end of line,
@@ -4958,11 +4958,11 @@ function set_piece() {
 		switch (s.type) {
 		case C.STAVES:
 			set_brace();
-			sy.st_print = new Uint8Array(non_empty);
+			sy.st_print = non_empty
 			sy = s.sy;
 			while (nstaff < sy.nstaff)
 				reset_staff(++nstaff)
-			non_empty = []
+			non_empty = new Uint8Array(nstaff + 1)
 			continue
 
 		// the block symbols will be treated after music line generation
@@ -5022,7 +5022,7 @@ function set_piece() {
 
 	/* set the last empty staves */
 	set_brace()
-	sy.st_print = new Uint8Array(non_empty);
+	sy.st_print = non_empty
 
 	/* define the offsets of the measure bars */
 	set_top_bot()
@@ -5069,7 +5069,7 @@ function set_piece() {
 	init_music_line()
 
 	// keep the array of the staves to be printed
-	gene.st_print = new Uint8Array(non_empty_gl)
+	gene.st_print = non_empty_gl
 }
 
 /* -- position the symbols along the staff -- */
