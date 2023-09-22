@@ -925,10 +925,6 @@ function out_deco_str(x, y, de) {
 
 	x += a_deco.dx;
 	y += a_deco.dy;
-
-	// don't add the style if it is already defined for this class
-	if (style.indexOf('.' + name) < 0)
-		style += "\n." + name + " {" + a_deco.style + "}"
 	out_XYAB('<text x="X" y="Y" class="A"B>', x, y,
 		name, a_deco.anchor || "");
 	set_font("annotation");
