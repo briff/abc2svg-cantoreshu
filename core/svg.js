@@ -922,6 +922,9 @@ function out_deco_str(x, y, de) {
 
 	if (!a_deco)
 		a_deco = deco_str_style.crdc	// default style
+	else if (a_deco.style)
+		style += "\n." + name + "{" + a_deco.style + "}",
+		delete a_deco.style
 
 	x += a_deco.dx;
 	y += a_deco.dy;
