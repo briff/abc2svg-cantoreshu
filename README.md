@@ -328,8 +328,8 @@ They are:
 
 - `tomei.js`  
   This script outputs the music as a [MEI](https://music-encoding.org/) file.  
-  Note, only one tune may be translated from ABC to MEI (multi-tunes ABC
-  generates bad MEI).
+  Note, only one tune may be translated from ABC to MEI (multi-tunes ABC files
+  generate bad MEI files).
 
 - `tonotes.js`  
   This script outputs a list of the MIDI events.
@@ -337,12 +337,14 @@ They are:
 - `toodt.js`  
   This script creates an Open Document (ODT+SVG) which can be read by most
   word processors (abiword, libreoffice...).  
-  It runs only with the shell script `abc2svg` and asks for the npm module
-  `jszip` to be installed.  
+  When runs with the shell script `abc2svg`, it asks for the npm module
+  `jszip` to be installed.
+  When run with `abcqjs` on unix-like systems, it creates a temporary
+  directory tree in `/tmp`.  
   The output ODT document may be specified in the command line argument
   after `-o` (default `abc.odt`).  
   Example:  
-  `        abc2svg toodt.js my_file.abc -o my_file.odt`
+  `        abcqjs toodt.js my_file.abc -o my_file.odt`
 
 - `toparam.js`  
   This script just outputs the abc2svg parameters.
