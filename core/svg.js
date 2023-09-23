@@ -896,6 +896,12 @@ dacs:	{				// long repeats (da capo, fine...)
 		dy: 3,
 		style: 'font:bold 15px text,serif',
 		anchor: ' text-anchor="middle"'
+	},
+pf:	{
+		dx: 0,
+		dy: 5,
+		style: 'font:italic bold 16px text,serif',
+		anchor: ' text-anchor="middle"'
 	}
 }
 deco_str_style.at = deco_str_style.crdc
