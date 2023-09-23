@@ -245,7 +245,9 @@ abc2svg.Abc = function(user) {
     var	require = empty_function,
 	system = empty_function,
 	write = empty_function,
-	XMLHttpRequest = empty_function;
+	XMLHttpRequest = empty_function,
+	std = null,
+	os = null
 
 // -- constants --
 
@@ -423,8 +425,5 @@ function syntax(sev, msg, a1, a2, a3, a4) {
 
 // inject javascript code
 function js_inject(js) {
-	if (!/eval *\(|Function|setTimeout|setInterval/.test(js))
-		eval('"use strict";\n' + js)
-	else
-		syntax(1, "Unsecure code")
+	eval('"use strict";\n' + js)
 }
