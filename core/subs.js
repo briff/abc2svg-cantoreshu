@@ -125,6 +125,7 @@ var strwh
 			el.style.position = 'absolute'
 			el.style.top = '-1000px'
 			el.style.padding = '0'
+			el.style.visibility = "hidden"
 			document.body.appendChild(el)
 		}
 
