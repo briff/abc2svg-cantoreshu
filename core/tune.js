@@ -1167,7 +1167,7 @@ Abc.prototype.do_pscom = function(text) {
 			cfmt.transp = (cfmt.transp || 0) + val
 			return
 		}
-		cfmt.transp = (cfmt.transp || 0) + val
+		cfmt.transp = val
 		key_trans()
 		return
 	case "tune":
