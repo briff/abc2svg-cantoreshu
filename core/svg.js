@@ -1351,22 +1351,18 @@ function svg_flush() {
 		head += ' width="' + img.width.toFixed(0)
 			+ 'px" height="' + posy.toFixed(0) + 'px"'
 	head += ' viewBox="0 0 ' + img.width.toFixed(0) + ' '
-		+ posy.toFixed(0) + '">\n'
-		+ fulldefs
+		+ posy.toFixed(0) + '"'
+	if (cfmt.fgcolor || cfmt.bgcolor)
+		head += ' style="'
+			+ (cfmt.fgcolor ? ('color:' + cfmt.fgcolor + ';')
+					: '')
+			+ (cfmt.bgcolor ? ('background-color:' + cfmt.bgcolor)
+					: '')
+			+ '"'
+	head += '>\n' + fulldefs
 
-	if (style || font_style) {
-		head += '<style>' + font_style
-		if (cfmt.fgcolor || cfmt.bgcolor) {
-			head += '\n.f' + font.fid + (cfmt.fullsvg || '')
-				+ '{'
-				+ (cfmt.fgcolor ? ('color:' + cfmt.fgcolor + ';')
-						: '')
-				+ (cfmt.bgcolor ? ('background-color:' + cfmt.bgcolor)
-						: '')
-				+ '}'
-		}
-		head += style + '\n</style>\n'
-	}
+	if (style || font_style)
+		head += '<style>' + font_style + style + '\n</style>\n'
 
 	if (defs)
 		head += '<defs>' + defs + '\n</defs>\n'
