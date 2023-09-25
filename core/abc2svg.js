@@ -132,7 +132,7 @@ abc2svg.b40sf = new Int8Array(		// base-40 interval to key signature
 //	       A		 B
 	 1,-4, 3,-2, 5,88, 3,-2, 5, 0, 7 ])
 abc2svg.isb40 = new Int8Array(		// interval with sharp to base-40 interval
-	[0, 1, 6,11,12,17,18,23,28,29,34,35])
+	[0, 1, 6,7,12,17,18,23,24,29,30,35])
 
 abc2svg.pab40 = function(p, a) {
 	p += 19				// staff pitch from C-1
