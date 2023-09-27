@@ -1355,7 +1355,7 @@ function generate() {
 
 // transpose the current key of the voice (called on K: or V:)
 function key_trans() {
-    var	i, n, a_acc, b40,
+    var	i, n, a_acc, b40, b40c,
 	s = curvoice.ckey,			// current key
 	ti = s.time || 0
 
@@ -1387,7 +1387,8 @@ function key_trans() {
 	curvoice.tr_sco = n			// b40 interval
 
 	b40 = (s.k_b40 + 200 + n) % 40		// (s.k_40 is the original K:)
-	i = abc2svg.b40k[b40] - b40
+	b40c = s.k_mode ? abc2svg.b40mc : abc2svg.b40Mc	// minor - major
+	i = b40c[b40] - b40
 	if (i) {				// no chord here
 		curvoice.tr_sco += i		// set an enharmonic one
 		b40 += i

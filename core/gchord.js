@@ -177,7 +177,7 @@ var	note_names = "CDEFGAB",
 	acc_name = ["bb", "b", "", "#", "##"]
 
 	function gch_tr1(p, tr) {
-	    var	i, o, n, a, ip, b40,
+	    var	i, j, o, n, a, ip, b40, b40c,
 		csa = p.split('/')
 
 		for (i = 0; i < csa.length; i++) {	// main and optional bass
@@ -197,7 +197,12 @@ var	note_names = "CDEFGAB",
 			}
 			n = note_names.indexOf(p[o]) + 16
 			b40 = (abc2svg.pab40(n, a) + tr + 200) % 40
-			b40 = abc2svg.b40k[b40]
+			if (!i)
+				b40c = (p[ip] == 'm' && p[ip + 1] != 'a')
+					? abc2svg.b40mc : abc2svg.b40Mc	// minor - major
+			j = b40c[b40] - b40
+			if (j)				// bad chord
+				b40 += j
 			csa[i] = p.slice(0, o) +
 					note_names[abc2svg.b40_p[b40]] +
 					acc_name[abc2svg.b40_a[b40] + 2] +

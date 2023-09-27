@@ -114,16 +114,26 @@ abc2svg.b40_m = new Int8Array(			// base-40 to midi
 	2, 3, 4, 5, 6, 3, 4, 5, 6, 7, 0, 5, 6, 7, 8, 9, 0,
 //	      A			    B
 	7, 8, 9, 10, 11, 0, 9, 10, 11, 12, 13 ])
-abc2svg.b40k =  new Int8Array(		// base-40 interval to possible transposition
+abc2svg.b40Mc = new Int8Array(		// base-40 major chords
 //		        C		  D
 		[36, 1, 2, 3, 8, 2, 2, 7, 8,13,14, 2,
-//		    37
+//		    37	   7	       3
 //	       E	      F		        G
 	 8,13,14,19,20,13,14,19,20,25, 2,19,24,25,30,31, 2,
-//					    20
+//				24	    20
 //	       A		 B
-	25,30,31,36,37, 2,31,36,37,42,43])
-//				    2
+	25,30,31,36,37, 2,31,36,37, 2, 3])
+//				 1
+abc2svg.b40mc = new Int8Array(		// base-40 minor chords
+//		        C		  D
+		[36,37, 2, 3, 8, 2, 2, 3, 8, 9,14, 2,
+//					    13
+//	       E	      F		        G
+	 8,13,14,19,20,13,14,19,20,25, 2,19,20,25,26,31, 2,
+//	    9					  30
+//	       A		 B
+	25,30,31,32,37, 2,31,36,37, 2, 3])
+//	   26    36	     32
 abc2svg.b40sf = new Int8Array(		// base-40 interval to key signature
 //		        C		   D
 		[-2,-7, 0, 7, 2, 88, 0,-5, 2,-3, 4, 88,
