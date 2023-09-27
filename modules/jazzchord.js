@@ -68,8 +68,13 @@ abc2svg.jazzchord = {
 		 && a[3].slice(0, 3) != "maj") {
 			if (!r)
 				r += "$7"
-			r += 'm' 
-			a[3] = a[3].slice(1)
+			if (a[3].slice(0, 3) == "min") {
+				r += a[3].slice(0, 3)
+				a[3] = a[3].slice(3)
+			} else {		// assume 'm'
+				r += 'm'
+				a[3] = a[3].slice(1)
+			}
 		}
 		if (a[3])
 			r += (r ? "$0" : '') + "$8" + a[3]
