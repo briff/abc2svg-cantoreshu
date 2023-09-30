@@ -1472,6 +1472,14 @@ function get_staves(cmd, parm) {
 	nv = voice_tb.length,
 	maxtime = 0
 
+	// if sequence with many voices, load the other voices
+	if (curvoice && curvoice.clone) {
+		i = parse.eol
+		parse.eol = parse.bol		// remove the %%staves line
+		do_cloning()
+		parse.eol = i
+	}
+
 	if (parm) {
 		a_vf = parse_staves(parm)	// => array of [vid, flags]
 		if (!a_vf)
