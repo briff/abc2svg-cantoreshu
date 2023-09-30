@@ -3166,7 +3166,11 @@ function draw_vname(indent, stl) {
     var	p_voice, n, st, v, a_p, p, y, h, h2,
 	staff_d = []
 
-	for (st = stl.length; st >= 0; st--) {
+	if (!gene.vnt)
+		return
+
+//	for (st = stl.length; st >= 0; st--) {
+	for (st = stl.length; --st >= 0; ) {
 		if (stl[st])
 			break
 	}

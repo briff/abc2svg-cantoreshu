@@ -109,6 +109,7 @@ H "History: "',
 	subtitlefont: {name: txt_ff, size: 16},
 	subtitlespace: 3,
 	sysstaffsep: 34,
+	systnames: -1,
 	tempofont: {name: txt_ff, weight: "bold", size: 12},
 	textfont: {name: txt_ff, size: 16},
 //	textoption: undefined,
@@ -155,6 +156,7 @@ shiftunison: true,
 slurheight: true,
 squarebreve: true,    
 staffsep: true,
+systnames: 1, //
 stemheight: true,
 stretchlast: true,
 stretchstaff: true,
@@ -537,6 +539,7 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "rbmin":
 	case "measrepnb":
 	case "shiftunison":
+	case "systnames":
 		v = parseInt(param)
 		if (isNaN(v)) {
 			syntax(1, "Bad integer value");

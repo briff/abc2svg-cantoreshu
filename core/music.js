@@ -3896,20 +3896,23 @@ function get_lshift() {
 function set_indent(lsh) {
     var	st, v, w, p_voice, p, i, j, font,
 	vnt = 0,
-	nv = voice_tb.length
+	fmt = tsnext ? tsnext.fmt : cfmt
 
 	// name or subname?
-	for (v = 0; v < nv; v++) {
+	if (fmt.systnames) {		// display the names in the staff system
+	    for (v = voice_tb.length; --v >= 0; ) {
 		p_voice = voice_tb[v]
 		if (!cur_sy.voices[v]
 		 || !gene.st_print[p_voice.st])
 			continue
-		if (p_voice.new_name) {
+		if (p_voice.nm
+		 && (p_voice.new_name || fmt.systnames == 2)) {
 			vnt = 2		// full name
 			break
 		}
 		if (p_voice.snm)
 			vnt = 1		// subname
+	    }
 	}
 	gene.vnt = vnt			// voice name type for draw
 	return vnt == 2 ? lsh[0] : lsh[1]
