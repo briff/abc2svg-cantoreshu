@@ -1333,6 +1333,9 @@ function svg_flush() {
 		return
 
     var	i, font,
+	w = ((tsnext ? tsnext.fmt : cfmt).trimsvg
+		? (cfmt.leftmargin + realwidth + cfmt.rightmargin)
+		: img.width).toFixed(0),
 	head = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"\n\
 	xmlns:xlink="http://www.w3.org/1999/xlink"\n\
 	fill="currentColor" stroke-width=".7"',
@@ -1348,9 +1351,9 @@ function svg_flush() {
 	if (user.imagesize != undefined)
 		head += user.imagesize
 	else
-		head += ' width="' + img.width.toFixed(0)
+		head += ' width="' + w
 			+ 'px" height="' + posy.toFixed(0) + 'px"'
-	head += ' viewBox="0 0 ' + img.width.toFixed(0) + ' '
+	head += ' viewBox="0 0 ' + w + ' '
 		+ posy.toFixed(0) + '"'
 	if (cfmt.fgcolor || cfmt.bgcolor)
 		head += ' style="'

@@ -160,6 +160,7 @@ stretchlast: true,
 stretchstaff: true,
 tieheight: true,
 timewarn: true,
+trimsvg: 1, //true
 vocalspace: true
 } // sfmt
 
@@ -607,6 +608,7 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "timewarn":
 	case "titlecaps":
 	case "titleleft":
+	case "trimsvg":
 		cfmt[cmd] = get_bool(param)
 		break
 	case "dblrepbar":
