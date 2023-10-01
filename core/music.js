@@ -3475,7 +3475,7 @@ function init_music_line() {
 // (fixme: needed for sample5 X:3 Fugue & staffnonote.html)
 		if (!cur_sy.st_print[st])
 			s.invis = true
-		else
+		else if (!s.clef_none)
 			delete s.invis
 		s.fmt = fmt
 	}

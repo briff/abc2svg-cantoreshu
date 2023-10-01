@@ -75,6 +75,7 @@ function new_clef(clef_def) {
 	case 'n':				// none
 		i = 4
 		s.invis = true
+		s.clef_none = 1 //true
 		break
 	case 't':
 		if (clef_def[1] == 'e') {	// tenor
