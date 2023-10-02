@@ -23,7 +23,7 @@
 		'sans-serif': 1,
 		'sans-serifBold': 1,
 		Palatino: 1.1,
-		monospace: 1.35
+		monospace: 1
 	},
 	txt_ff = "text,serif",		// text font-family (serif for compatibility)
 	fmt_lock = {}
@@ -912,6 +912,14 @@ function use_font(font) {
 				set_font_fac(font)
 			if (!font.pad)
 				font.pad = 0
+
+			// set the pointer to the width of the characters
+			font.cw_tb = !font.name ? ssw_tb
+				: font.name.indexOf("ans") > 0
+					? ssw_tb		// sans-serif
+					: font.name.indexOf("ono") > 0
+						? mw_tb		// monospace
+						: sw_tb		// serif
 		}
 		add_fstyle(".f" + font.fid +
 			(cfmt.fullsvg || "") +

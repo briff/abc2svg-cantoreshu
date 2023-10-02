@@ -86,11 +86,27 @@ var add_fstyle = typeof document != "undefined" ?
 	.556,.222,.222,.500,.222,.833,.556,.556,
 	.556,.556,.333,.500,.278,.556,.500,.722,	// 70
 	.500,.500,.500,.334,.260,.334,.584,.512]),
-
-    cw_tb = sw_tb				// current width table
+// monospace
+    mw_tb = new Float32Array([
+	.0,.0,.0,.0,.0,.0,.0,.0,		// 00
+	.0,.0,.0,.0,.0,.0,.0,.0,
+	.0,.0,.0,.0,.0,.0,.0,.0,		// 10
+	.0,.0,.0,.0,.0,.0,.0,.0,
+	.52,.52,.52,.52,.52,.52,.52,.52,	// 20
+	.52,.52,.52,.52,.52,.52,.52,.52,
+	.52,.52,.52,.52,.52,.52,.52,.52,	// 30
+	.52,.52,.52,.52,.52,.52,.52,.52,
+	.52,.52,.52,.52,.52,.52,.52,.52,	// 40
+	.52,.52,.52,.52,.52,.52,.52,.52,
+	.52,.52,.52,.52,.52,.52,.52,.52,	// 50
+	.52,.52,.52,.52,.52,.52,.52,.52,
+	.52,.52,.52,.52,.52,.52,.52,.52,	// 60
+	.52,.52,.52,.52,.52,.52,.52,.52,
+	.52,.52,.52,.52,.52,.52,.52,.52,	// 70
+	.52,.52,.52,.52,.52,.52,.52,.52])
 
 /* -- return the character width -- */
-function cwid(c) {
+function cwid(c, font) {
 	var i = c.charCodeAt(0)		// utf-16
 
 	if (i >= 0x80) {		// if not ASCII
@@ -98,7 +114,7 @@ function cwid(c) {
 			return 0;	// combining diacritical mark
 		i = 0x61		// 'a'
 	}
-	return cw_tb[i]
+	return (font || gene.curfont).cw_tb[i]
 }
 // return the character width with the current font
 function cwidf(c) {
@@ -221,7 +237,7 @@ var strwh
 			}
 			break
 		}
-		w += cwid(c) * swfac
+		w += cwid(c, font) * swfac
 	}
 	return [w, h]
     }
@@ -303,7 +319,6 @@ function str2svg(str) {
 function set_font(xxx) {
 	if (typeof xxx == "string")
 		xxx = get_font(xxx)
-	cw_tb = xxx.name.slice(0, 4) == 'sans' ? ssw_tb : sw_tb
 	gene.curfont = gene.deffont = xxx
 }
 
