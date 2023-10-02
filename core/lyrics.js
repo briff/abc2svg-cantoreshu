@@ -302,13 +302,14 @@ function ly_set(s) {
 		if (!ly)
 			continue
 		gene.curfont = ly.font
-		ly.t = p = str2svg(ly.t)
+		ly.t = str2svg(ly.t)
+		p = ly.t.replace(/<[^>]*>/g, '')	// remove the XML tags
 		if (ly.ln >= 2) {
 			ly.shift = 0
 			continue
 		}
 		spw = cwid(' ') * ly.font.swfac
-		w = p.wh[0] + spw * 1.5
+		w = ly.t.wh[0] + spw * 1.5
 		if (s.type == C.GRACE) {		// %%graceword
 			shift = s.wl
 		} else if ((p[0] >= '0' && p[0] <= '9' && p.length > 2)
