@@ -382,7 +382,7 @@ function get_unit(param) {
 	case "in":
 		return v[1] * IN
 	case "pt":		// paper point in 1/72 inch
-		return v[1] * .75
+		return v[1] / .75
 	case "px":		// screen pixel in 1/96 inch
 	case "":
 		return v[1]
