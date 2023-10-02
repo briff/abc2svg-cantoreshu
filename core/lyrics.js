@@ -309,7 +309,7 @@ function ly_set(s) {
 			continue
 		}
 		spw = cwid(' ') * ly.font.swfac
-		w = ly.t.wh[0] + spw * 1.5
+		w = ly.t.wh[0]
 		if (s.type == C.GRACE) {		// %%graceword
 			shift = s.wl
 		} else if ((p[0] >= '0' && p[0] <= '9' && p.length > 2)
@@ -341,6 +341,7 @@ function ly_set(s) {
 		ly.shift = shift
 		if (shift > wl)
 			wl = shift		// max left space
+		w += spw * 1.5			// space after the syllable
 		w -= shift			// right width
 		if (w > wx)
 			wx = w			// max width
