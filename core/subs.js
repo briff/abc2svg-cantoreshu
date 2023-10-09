@@ -340,6 +340,8 @@ function xy_str(x, y,
 		wh) {		// optional [width, height]
 	if (!wh)
 		wh = str.wh || strwh(str)
+	if (cfmt.trimsvg && img.wx < x + wh[0])
+		img.wx = x + wh[0]
 
 	output += '<text class="' + font_class(gene.deffont)
 	if (action != 'j' && str.length > 5
@@ -397,7 +399,9 @@ function trim_title(title, is_subtitle) {
 function get_lwidth() {
 	if (img.chg)
 		set_page()
-	return img.lw
+	return (img.width - img.lm - img.rm
+					- 2)	// for bar thickness at eol
+			/ cfmt.scale
 }
 
 // header generation functions

@@ -5328,6 +5328,8 @@ Abc.prototype.output_music = function() {
 		 	indent = cfmt.indent
 		self.set_sym_glue(lwidth - indent)
 		if (realwidth) {
+			if (img.wx < realwidth)
+				img.wx = realwidth
 			if (indent)
 				posx += indent;
 			draw_sym_near();		// delayed output
