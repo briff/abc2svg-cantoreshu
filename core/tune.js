@@ -1355,19 +1355,17 @@ function generate() {
 
 // transpose the current key of the voice (called on K: or V:)
 function key_trans() {
-    var	i, n, a_acc, b40, b40c,
+    var	i, n, a_acc, b40, d,
 	s = curvoice.ckey,			// current key
 	ti = s.time || 0
 
 	if (s.k_bagpipe || s.k_drum)
-		return
+		return				// no transposition
 
 	// set the score transposition
 	n = (curvoice.score | 0)		// new transposition
 		+ (curvoice.shift | 0)
 		+ (cfmt.transp | 0)
-	if ((curvoice.tr_sco | 0) == n)
-		return				// same transposition
 
 	// get the current key or create a new one
 	if (is_voice_sig()) {			// if no symbol yet
@@ -1386,22 +1384,26 @@ function key_trans() {
 	// define the new key
 	curvoice.tr_sco = n			// b40 interval
 
-	b40 = (s.k_b40 + 200 + n) % 40		// (s.k_40 is the original K:)
-	b40c = s.k_mode ? abc2svg.b40mc : abc2svg.b40Mc	// minor - major
-	i = b40c[b40] - b40
-	if (i) {				// no chord here
-		curvoice.tr_sco += i		// set an enharmonic one
-		b40 += i
+	n = abc2svg.b40l5[(n + 202) % 40]	// transpose in the line of fifth
+		+ s.orig.k_sf			// + old = new sf
+	if (n < -7) {
+		n += 12
+		curvoice.tr_sco -= 4
+	} else if (n > 7) {
+		n -= 12
+		curvoice.tr_sco += 4
 	}
-
-	s.orig = clone(s)			// keep the original K: definition
+	s.k_sf = n
+	for (b40 = 0; b40 < 40; b40++) {
+		if (abc2svg.b40l5[b40] == n)
+			break
+	}
 	s.k_b40 = b40
-    if (!s.k_none)				// if some key
-	s.k_sf = abc2svg.b40sf[b40]
 
 	// transpose the accidental list
 	if (!s.k_a_acc)
 		return
+	d = b40 - s.orig.k_b40
 	a_acc = []
 	for (i = 0; i < s.k_a_acc.length; i++) {
 		b40 = abc2svg.pab40(s.k_a_acc[i].pit, s.k_a_acc[i].acc) + d
@@ -1940,7 +1942,7 @@ function get_clef(s) {
 
 // treat K: (kp = key signature + parameters)
 function get_key(parm) {
-    var	v, p_voice, transp, sndtran, nt,
+    var	v, p_voice,
 //		[s_key, a] = new_key(parm)	// KO with nodejs
 		a = new_key(parm),
 		s_key = a[0],
@@ -1951,6 +1953,8 @@ function get_key(parm) {
 
 	if (empty)
 		s.invis = 1 //true		// don't display empty K:
+	else
+		s.orig = s			// new transposition base
 
 	if (parse.state == 1) {			// in tune header (first K:)
 		parse.ckey = s			// root key
@@ -1971,11 +1975,11 @@ function get_key(parm) {
 			glovar.ulen = C.BLEN / 8;
 		goto_tune()
 	} else if (!empty) {
+		if (curvoice.tr_sco && s.k_sf != curvoice.ckey.orig.k_sf)
+			curvoice.tr_sco = undefined
 		s.k_old_sf = curvoice.ckey.k_sf	// memorize the previous key
 		curvoice.ckey = s
 		sym_link(s)
-		if (curvoice.tr_sco)
-			curvoice.tr_sco = 0
 	}
 
 	// set the voice parameters

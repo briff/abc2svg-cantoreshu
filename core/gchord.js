@@ -173,40 +173,45 @@ function parse_gchord(type) {
 }
 
 // transpose a chord symbol
-var	note_names = "CDEFGAB",
-	acc_name = ["bb", "b", "", "#", "##"]
-
 	function gch_tr1(p, tr) {
-	    var	i, j, o, n, a, ip, b40, b40c,
+	    var	i, o, n, ip,
 		csa = p.split('/')
 
+		tr = abc2svg.b40l5[(tr + 202) % 40]	// transpose in the line of fifth
 		for (i = 0; i < csa.length; i++) {	// main and optional bass
 			p = csa[i];
 			o = p.search(/[A-G]/)
 			if (o < 0)
 				continue		// strange chord symbol!
 			ip = o + 1
-			a = 0
-			while (p[ip] == '#' || p[ip] == '\u266f') {
-				a++;
+
+//	bbb fb cb gb db ab eb bb  f c g d a e b f# c# g# d# a# e# b# f##
+//	 -9 -8 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5  6  7  8  9 10 11 12  13
+			n = "FCGDAEB".indexOf(p[o]) - 1
+			if (p[ip] == '#' || p[ip] == '\u266f') {
+				n += 7
+				ip++
+			} else if (p[ip] == 'b' || p[ip] == '\u266d') {
+				n -= 7
 				ip++
 			}
-			while (p[ip] == 'b' || p[ip] == '\u266d') {
-				a--;
-				ip++
-			}
-			n = note_names.indexOf(p[o]) + 16
-			b40 = (abc2svg.pab40(n, a) + tr + 200) % 40
-			if (!i)
-				b40c = (p[ip] == 'm' && p[ip + 1] != 'a')
-					? abc2svg.b40mc : abc2svg.b40Mc	// minor - major
-			j = b40c[b40] - b40
-			if (j)				// bad chord
-				b40 += j
-			csa[i] = p.slice(0, o) +
-					note_names[abc2svg.b40_p[b40]] +
-					acc_name[abc2svg.b40_a[b40] + 2] +
-					p.slice(ip)
+			n += tr					// transpose
+
+//			// remove chords with double sharps/flats
+//			if ((!i && n > 7)			// main chord
+//			 || (i && n > 12))			// bass
+//				n -= 12
+//			else if (i < -7)
+//				n += 12
+
+			csa[i] = p.slice(0, o)
+				+ "FCGDAEB"[(n + 22) % 7]
+				+ (n >= 13 ? '##'
+					: n >= 6 ? '#'
+					: n <= -9 ? 'bb'
+					: n <= -2 ? 'b'
+					: '')
+				+ p.slice(ip)
 		}
 		return csa.join('/')
 	} // gch_tr1
