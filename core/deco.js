@@ -1190,7 +1190,7 @@ Abc.prototype.draw_all_deco = function() {
 		if (!staff_tb[st].topbar)
 			continue		// invisible staff
 		x = de.x + (dd.dx || 0)
-		y = de.y + staff_tb[st].y + (dd.y || 0)
+		y = de.y + staff_tb[st].y + (dd.dy || 0)
 
 		// update the coordinates if head decoration
 		if (de.m != undefined) {
