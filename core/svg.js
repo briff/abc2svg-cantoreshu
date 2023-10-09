@@ -33,6 +33,7 @@ var	output = "",		// output buffer
 		width: cfmt.pagewidth,	// width
 		lm: cfmt.leftmargin,	// left and right margins
 		rm: cfmt.rightmargin,
+		wx: 0,			// used width between the left and right margins
 		chg: 1 //true
 	},
 	defined_glyph = {},
@@ -1404,6 +1405,7 @@ function svg_flush() {
 	}
 	defs = '';
 	posy = 0
+	img.wx = 0			// space used between the margins
 }
 
 // mark the end of a <div> block

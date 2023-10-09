@@ -340,8 +340,22 @@ function xy_str(x, y,
 		wh) {		// optional [width, height]
 	if (!wh)
 		wh = str.wh || strwh(str)
-	if (cfmt.trimsvg && img.wx < x + wh[0])
-		img.wx = x + wh[0]
+	if (cfmt.trimsvg) {
+	    var wx = wh[0]
+		switch (action) {
+		case 'c':
+			wx = wh[0] / 2
+			break
+		case 'j':
+			wx = w
+			break
+		case 'r':
+			wx = 0
+			break
+		}
+		if (img.wx < x + wx)
+			img.wx = x + wx
+	}
 
 	output += '<text class="' + font_class(gene.deffont)
 	if (action != 'j' && str.length > 5

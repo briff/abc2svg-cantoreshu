@@ -503,7 +503,6 @@ function set_page() {
 		error(0, undefined, "Bad staff width");
 		img.width = img.lm + img.rm + 150
 	}
-	img.wx = 0			// space used between the margins
 	set_posx()
 } // set_page()
 
