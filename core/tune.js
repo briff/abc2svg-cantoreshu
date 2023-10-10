@@ -2163,7 +2163,7 @@ function get_voice(parm) {
 		vs.shift()
 		curvoice.clone = {
 			vs: vs,
-			a: a,
+			a: a.slice(0),		// copy the parameters
 			bol: parse.iend
 		}
 		if (parse.file[curvoice.clone.bol - 1] != ']')
