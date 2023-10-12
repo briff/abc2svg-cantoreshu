@@ -1366,6 +1366,10 @@ function key_trans() {
 	n = (curvoice.score | 0)		// new transposition
 		+ (curvoice.shift | 0)
 		+ (cfmt.transp | 0)
+	if ((curvoice.tr_sco | 0) == n) {	// if same transposition
+		s.k_sf = curvoice.ckey.k_sf
+		return
+	}
 
 	// get the current key or create a new one
 	if (is_voice_sig()) {			// if no symbol yet
@@ -1975,7 +1979,7 @@ function get_key(parm) {
 			glovar.ulen = C.BLEN / 8;
 		goto_tune()
 	} else if (!empty) {
-		if (curvoice.tr_sco && s.k_sf != curvoice.ckey.orig.k_sf)
+		if (curvoice.tr_sco)
 			curvoice.tr_sco = undefined
 		s.k_old_sf = curvoice.ckey.k_sf	// memorize the previous key
 		curvoice.ckey = s
