@@ -971,6 +971,10 @@ function deco_cnv(s, prev) {
 			s.rbstop = 2	// with end
 			break
 		case 42:		// editorial
+			if (s.type != C.NOTE) {
+				error(1, s, errs.must_note, nm)
+				continue
+			}
 			if (!s.notes[0].acc)
 				continue
 			nm = "sacc" + s.notes[0].acc.toString() // small accidental
@@ -986,12 +990,20 @@ function deco_cnv(s, prev) {
 			curvoice.acc[s.notes[0].pit + 19] = 0	// ignore the accidental
 			break
 		case 43:		// courtesy
+			if (s.type != C.NOTE) {
+				error(1, s, errs.must_note, nm)
+				continue
+			}
 			j = curvoice.acc[s.notes[0].pit + 19]
 			if (s.notes[0].acc || !j)
 				continue
 			court = 1			// defer
 			break
 		case 44:		// cross-voice ties
+			if (s.type != C.NOTE) {
+				error(1, s, errs.must_note, nm)
+				continue
+			}
 			do_ctie(nm, s, s.notes[0])	// (only one note for now)
 			continue
 //		default:
