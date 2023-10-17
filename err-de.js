@@ -81,6 +81,7 @@ user.textrans = {
 	"Decoration without symbol": "Decoration without symbol",
 	"Double voice in %%score": "Double voice in %%score",
     "Empty line in tune header - ignored": "Leerzeile in Kopfbereich - ignoriert",
+	"End of file in tune header": "End of file in tune header",
 	"End of slur without start": "End of slur without start",
 	"Erroneous end of voice overlay":
 			"Fehlerhaftes Ende einer Stimme in Stimm-Überlagerung",

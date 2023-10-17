@@ -746,6 +746,10 @@ function tosvg(in_fname,		// file name
 	}
 	if (include)
 		return
+	if (parse.state == 1) {
+		syntax(1, "End of file in tune header")
+		get_key("C")
+	}
 	if (parse.state >= 2)
 		end_tune();
 	parse.state = 0

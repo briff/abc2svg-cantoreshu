@@ -86,6 +86,7 @@ user.textrans = {
 	"Double voice in %%score": "Voz duplicada em %%score",
 	"Empty line in tune header - ignored":
 				"Linha em branco no cabeçalho da música - ignorada",
+	"End of file in tune header": "End of file in tune header",
 	"End of slur without start": "Fim de ligadura sem início",
 	"Erroneous end of voice overlay": "Terminação incorreta de superposição de vozes",
 	"Error in %%pos": "Erro em %%pos",

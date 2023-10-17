@@ -88,6 +88,8 @@ user.textrans = {
 	"Double voice in %%score": "Voix en double dans %%score",
 	"Empty line in tune header - ignored":
 				"Ligne vide dans en-tête de morceau - ignorée",
+	"End of file in tune header":
+				"Fin de fichier dans entête de morceau",
 	"End of slur without start": "Fin de liaison sans début",
 	"Erroneous end of voice overlay": "Fin de superposition de voix erronée",
 	"Error in %%pos": "Erreur dans %%pos",
