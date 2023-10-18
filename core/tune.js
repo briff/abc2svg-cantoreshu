@@ -2019,6 +2019,7 @@ function new_voice(id) {
 		delete p_voice.default
 		if (!p_voice.time) {		// if no symbol yet
 			p_voice.id = id
+			p_voice.init = 0	// set back the global voice parameters
 			return p_voice		// default voice
 		}
 	}
