@@ -109,14 +109,14 @@ var decos = {
 	coda: "5 coda 22,5 10 10",
 	dacapo: "5 dacs 16 20 20 Da Capo",
 	dacoda: "5 dacs 16 20 20 Da Coda",
-	"D.C.": "5 dcap 16,3 12 12",
-	"D.S.": "5 dsgn 16,3 12 12",
-	"D.C.alcoda": "5 dacs 16 38 38 D.C. al Coda",
-	"D.S.alcoda": "5 dacs 16 38 38 D.S. al Coda",
-	"D.C.alfine": "5 dacs 16 38 38 D.C. al Fine",
-	"D.S.alfine": "5 dacs 16 38 38 D.S. al Fine",
+	"D.C.": "5 dcap 16,3 6 6",
+	"D.S.": "5 dsgn 16,3 6 6",
+	"D.C.alcoda": "5 dacs 16 32 32 D.C. al Coda",
+	"D.S.alcoda": "5 dacs 16 32 32 D.S. al Coda",
+	"D.C.alfine": "5 dacs 16 32 32 D.C. al Fine",
+	"D.S.alfine": "5 dacs 16 32 32 D.S. al Fine",
 	fermata: "5 hld 12 7.5 7.5",
-	fine: "5 dacs 16 14 14 Fine",
+	fine: "5 dacs 16 12 12 Fine",
 	invertedfermata: "7 hld 12 8 8",
 	segno: "5 sgno 22,2 5 5",
 	f: "6 f 12,5 3 4",
@@ -615,8 +615,8 @@ function d_upstaff(de) {
 		}
 	}
 
-	if (dd.wr > 10 && x > realwidth - dd.wr)
-		de.x = x = realwidth - dd.wr - dd.wl
+	if (dd.wr > 5 && x > realwidth - dd.wr)
+		de.x = x = realwidth - dd.wr
 
 //    if (dd.func == 6
 //     && ((de.pos & C.SL_ALI_MSK) == C.SL_ALIGN
