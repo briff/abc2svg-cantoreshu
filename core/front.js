@@ -540,17 +540,14 @@ function tosvg(in_fname,		// file name
 //						v_opts: {}
 					};
 				while (1) {
-					bol = ++eol
-					if (file[bol] != '%')
+					bol = eol
+					if (file[bol + 1] != '%')
 						break
-					eol = file.indexOf('\n', eol);
-					if (file[bol + 1] != line1)
+					eol = file.indexOf('\n', eol + 1)
+					if (file[bol + 2] != line1)
 						continue
-					bol += 2
-					if (eol < 0)
-						text = file.slice(bol)
-					else
-						text = file.slice(bol, eol);
+					text = file.slice(bol + 3,
+							eol < 0 ? undefined : eol)
 					a = text.match(/([^\s]+)\s*(.*)/)
 					switch (a[1]) {
 					case "tune":
@@ -570,7 +567,7 @@ function tosvg(in_fname,		// file name
 					opt.v_opts = parse.tune_v_opts;
 					parse.tune_v_opts = null
 				}
-				parse.eol = bol - 1
+				parse.eol = bol
 				continue
 			case "voice":
 				if (parse.state != 0) {
