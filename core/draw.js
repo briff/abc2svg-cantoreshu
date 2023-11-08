@@ -3693,7 +3693,9 @@ function draw_systems(indent) {
 		case C.STBRK:
 			if (cur_sy.voices[s.v]
 			 && cur_sy.voices[s.v].range == 0) {
-				if (s.xmx > 14) {
+				if (s.xmx > 14
+				 && s.next			// if not at end of line
+				 && s.next.type == C.CLEF) {	// and before a clef
 
 					/* draw the left system if stbrk in all voices */
 					var nv = 0
