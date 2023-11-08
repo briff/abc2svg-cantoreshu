@@ -880,9 +880,12 @@ break
 			staves_dump(s)
 			break
 		case C.STBRK:
-			voice_out();
-			abc2svg.print('%%staffbreak ' + s.xmx.toString() +
-				(s.stbrk_forced ? 'f' : ''))
+			if (vo[v].length && vo[v].slice(-1) != '\n')
+				line += '[I:staffbreak ' + s.xmx.toString() +
+					(s.stbrk_forced ? ' f' : '') + ']'
+			else
+				line += '%%staffbreak ' + s.xmx.toString() +
+					(s.stbrk_forced ? ' f' : '') + '\n'
 			break
 		case C.BLOCK:
 			voice_out();
