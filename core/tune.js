@@ -1908,7 +1908,11 @@ function get_clef(s) {
 		return
 	}
 
+	// if not clef=none,
 	// move the clef before a key and/or a (not right repeat) bar
+    if (s.clef_none)
+	s2 = null
+    else
 	for (s2 = curvoice.last_sym;
 	     s2 && s2.time == curvoice.time;
 	     s2 = s2.prev) {
