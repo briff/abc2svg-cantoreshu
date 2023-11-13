@@ -3574,6 +3574,7 @@ function init_music_line() {
 		;
 	if (s.ts_next		// a bit further in case different keys per voice
 	 && s.ts_next.type != C.CLEF	// (the clef may move in allsymwidth)
+	 && !s.tp			// (start of a tuplet)
 	 && !s.ts_next.a_ly)		// (don't update next .shrink)
 		for (s = s.ts_next; s.ts_next && !s.ts_next.seqst; s = s.ts_next)
 			;
