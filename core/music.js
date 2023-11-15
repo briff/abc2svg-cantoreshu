@@ -5079,16 +5079,23 @@ function set_piece() {
 /* -- position the symbols along the staff -- */
 // (possible hook)
 Abc.prototype.set_sym_glue = function(width) {
-    var	s, g, ll, x,
+    var	g, x,
 	some_grace,
-	spf,			// spacing factor
 	xmin = 0,		// sigma shrink = minimum spacing
 	xx = 0,			// sigma natural spacing
 	xs = 0,			// sigma unexpandable elements with no space
-	xse = 0			// sigma unexpandable elements with space
+	xse = 0,		// sigma unexpandable elements with space
+	ll = !tsnext ||		// last line? yes
+		(tsnext.type == C.BLOCK	// no, but followed by %%command
+		 && !tsnext.play)
+		|| blocks.length,	//	(abcm2ps compatibility)
+	s = tsfirst,
+	spf = (ll && s.fmt.stretchlast)	// spacing factor
+		? s.fmt.stretchlast
+		: (s.fmt.stretchstaff || s.fmt.maxshrink)
 
 	/* calculate the whole space of the symbols */
-	for (s = tsfirst; s; s = s.ts_next) {
+	for ( ; s; s = s.ts_next) {
 		if (s.type == C.GRACE && !some_grace)
 			some_grace = s
 		if (s.seqst) {
@@ -5105,7 +5112,8 @@ Abc.prototype.set_sym_glue = function(width) {
 					xse += s.shrink;
 					xx += s.shrink
 				} else {
-					xx += s.space
+					xx += s.space * (1 - spf)
+						+ s.shrink * spf
 				}
 			} else {
 				xs += s.shrink
@@ -5118,12 +5126,6 @@ Abc.prototype.set_sym_glue = function(width) {
 		realwidth = 0
 		return
 	}
-
-	// last line?
-	ll = !tsnext ||			// yes
-		(tsnext.type == C.BLOCK	// no, but followed by %%command
-		 && !tsnext.play)
-		|| blocks.length	//	(abcm2ps compatibility)
 
 	// strong shrink
 	s = tsfirst
@@ -5141,7 +5143,7 @@ Abc.prototype.set_sym_glue = function(width) {
 		}
 //		realwidth = width
 		spf_last = 0
-	} else if ((ll && xx + xs > width * (1 - s.fmt.stretchlast))
+	} else if ((ll && xx / width > 1 - s.fmt.stretchlast)
 		 || (!ll && (xx + xs > width || s.fmt.stretchstaff))) {
 		if (xx == xse)			// if no space
 			xx += 5
