@@ -5333,8 +5333,10 @@ Abc.prototype.output_music = function() {
 		if (realwidth) {
 			if (img.wx < realwidth)
 				img.wx = realwidth
-			if (indent)
-				posx += indent;
+			if (indent) {
+				img.wx += indent
+				posx += indent
+			}
 			draw_sym_near();		// delayed output
 			line_height = set_staff();
 			draw_systems(indent);
