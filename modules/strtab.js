@@ -230,7 +230,7 @@ abc2svg.strtab = {
 				this.param_set_font("cstabfont",
 						f.name + ' ' + (f.size / 1.6).toFixed(1))
 			}
-			gch.font = fmt.cstabfont
+			gch.font = this.get_font("cstab")
 		}
 	}
 	of(s)
