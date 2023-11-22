@@ -844,6 +844,12 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "voicescale":
 		set_v_param("scale", param)
 		break
+	case "unsizedsvg":
+		if (get_bool(param))
+			user.imagesize = ""
+		else
+			delete user.imagesize
+		break
 	// deprecated
 	case "rbdbstop":
 		v = get_bool(param)
