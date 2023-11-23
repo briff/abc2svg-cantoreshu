@@ -2391,7 +2391,7 @@ function draw_slurs(s, last) {
 /* See http://moinejf.free.fr/abcm2ps-doc/tuplets.html
  * for the value of 'tp.f' */
 function draw_tuplet(s1) {
-    var	s2, s3, g, upstaff, nb_only,
+    var	s2, s3, g, stu, std, nb_only,
 	x1, x2, y1, y2, xm, ym, a, s0, yy, yx, dy, a, dir, r,
 	tp = s1.tp.shift()		// tuplet parameters
 
@@ -2399,8 +2399,7 @@ function draw_tuplet(s1) {
 		delete s1.tp		// last tuplet
 
 	// treat the slurs and the nested tuplets
-	upstaff = s1.st
-	set_dscale(s1.st)
+	stu = std = s1.st
 	for (s2 = s1; s2; s2 = s2.next) {
 		switch (s2.type) {
 		case C.GRACE:
@@ -2419,8 +2418,12 @@ function draw_tuplet(s1) {
 		}
 		if (s2.sls)
 			draw_slurs(s2)
-		if (s2.st < upstaff)
-			upstaff = s2.st
+		if (s2.st < stu) {
+			std = stu
+			stu = s2.st
+		} else if (s2.st > std) {
+			std = s2.st
+		}
 		if (s2.tp)
 			draw_tuplet(s2)
 		if (s2.tpe)
@@ -2445,6 +2448,7 @@ function draw_tuplet(s1) {
 			s3 = s3.next
 		dir = (s3 && s3.stem < 0) ? C.SL_BELOW : C.SL_ABOVE
 	}
+	set_dscale(dir == C.SL_ABOVE ? stu : std)
 
 	if (s1 == s2				// tuplet with 1 note (!)
 	 || tp.f[1] == 2) {			// what == nothing
@@ -2509,9 +2513,9 @@ function draw_tuplet(s1) {
 		set_font("tuplet")
 		xm = (s2.x + s1.x) / 2
 		if (dir == C.SL_ABOVE)		// 8 = width around the middle
-			ym = y_get(upstaff, 1, xm - 4, 8)
+			ym = y_get(stu, 1, xm - 4, 8)
 		else
-			ym = y_get(upstaff, 0, xm - 4, 8) -
+			ym = y_get(std, 0, xm - 4, 8) -
 					gene.curfont.size
 
 		if (s1.stem * s2.stem > 0) {
@@ -2534,11 +2538,11 @@ function draw_tuplet(s1) {
 			ym += gene.curfont.size
 			if (s3.ymx < ym)
 				s3.ymx = ym;
-			y_set(upstaff, true, xm - 3, 6, ym)
+			y_set(stu, 1, xm - 3, 6, ym)
 		} else {
 			if (s3.ymn > ym)
 				s3.ymn = ym;
-			y_set(upstaff, false, xm - 3, 6, ym)
+			y_set(std, 0, xm - 3, 6, ym)
 		}
 		return
 	}
@@ -2569,38 +2573,30 @@ function draw_tuplet(s1) {
 		r = s2.stem >= 0 ? 0 : s2.nhd
 		if (s2.notes[r].shhd > 0)
 			x2 += s2.notes[r].shhd
-		if (s2.st == upstaff
+		if (s2.st == stu
 		 && s2.stem > 0)
 			x2 += 3.5
 	}
 
     // above
     if (dir == C.SL_ABOVE) {
-
-	/* sole or upper voice: the bracket is above the staff */
-	if (s1.st == s2.st) {
-		y1 = y2 = staff_tb[upstaff].topbar + 2
-	} else {
-		y1 = s1.ymx;
-		y2 = s2.ymx
-	}
-
-	if (s1.st == upstaff) {
-		for (s3 = s1; !s3.dur; s3 = s3.next)
-			;
-		ym = y_get(upstaff, 1, s3.x - 4, 8)
-		if (ym > y1)
-			y1 = ym
+	if (s1.st >= s2.st) {
 		if (s1.stem > 0)
 			x1 += 3
+		ym = y_get(s1.st, 1, x1 - 4, 8)
+		y1 = ym > staff_tb[s1.st].topbar + 2
+			? ym
+			: staff_tb[s1.st].topbar + 2
+	} else {
+		y1 = staff_tb[s1.st].topbar + 2
 	}
-
-	if (s2.st == upstaff) {
-		for (s3 = s2; !s3.dur; s3 = s3.prev)
-			;
-		ym = y_get(upstaff, 1, s3.x - 4, 8)
-		if (ym > y2)
-			y2 = ym
+	if (s2.st >= s1.st) {
+		ym = y_get(s2.st, 1, x2 - 4, 8)
+		y2 = ym > staff_tb[s2.st].topbar + 2
+			? ym
+			: staff_tb[s2.st].topbar + 2
+	} else {
+		y2 = staff_tb[s2.st].topbar + 2
 	}
 
 	xm = .5 * (x1 + x2);
@@ -2627,13 +2623,13 @@ function draw_tuplet(s1) {
 	dy = 0
 	for (s3 = s1; ; s3 = s3.next) {
 		if (!s3.dur			/* not a note or a rest */
-		 || s3.st != upstaff) {
+		 || s3.st != stu) {
 			if (s3 == s2)
 				break
 			continue
 		}
 		yy = ym + (s3.x - xm) * a;
-		yx = y_get(upstaff, 1, s3.x - 4, 8) + 2
+		yx = y_get(stu, 1, s3.x - 4, 8) + 2
 		if (yx - yy > dy)
 			dy = yx - yy
 		if (s3 == s2)
@@ -2647,11 +2643,11 @@ function draw_tuplet(s1) {
 	/* shift the slurs / decorations */
 	ym += 6
 	for (s3 = s1; ; s3 = s3.next) {
-		if (s3.st == upstaff) {
+		if (s3.st == stu) {
 			yy = ym + (s3.x - xm) * a
 			if (s3.ymx < yy)
 				s3.ymx = yy
-			y_set(upstaff, true, s3.x - 3, 6, yy)
+			y_set(stu, 1, s3.x - 3, 6, yy)
 		}
 		if (s3 == s2)
 			break
@@ -2659,23 +2655,23 @@ function draw_tuplet(s1) {
 
     // below
     } else {	/* lower voice of the staff: the bracket is below the staff */
-/*fixme: think to all of that again..*/
-	if (s1.stem < 0)
-		x1 -= 2
-
-	if (s1.st == upstaff) {
-		for (s3 = s1; !s3.dur; s3 = s3.next)
-			;
-		y1 = y_get(upstaff, 0, s3.x - 4, 8)
+	if (s1.st <= s2.st) {
+		ym = y_get(s1.st, 0, x1 - 4, 8)
+		y1 = ym < -2
+			? ym
+			: -2
 	} else {
-		y1 = 0
+		y1 = -2
 	}
-	if (s2.st == upstaff) {
-		for (s3 = s2; !s3.dur; s3 = s3.prev)
-			;
-		y2 = y_get(upstaff, 0, s3.x - 4, 8)
+	if (s2.st <= s1.st) {
+		if (s2.stem < 0)
+			x2 -= 3
+		ym = y_get(s2.st, 0, x2 - 4, 8)
+		y2 = ym < -2
+			? ym
+			: -2
 	} else {
-		y2 = 0
+		y2 = -2
 	}
 
 	xm = .5 * (x1 + x2);
@@ -2705,13 +2701,13 @@ function draw_tuplet(s1) {
 	dy = 0
 	for (s3 = s1; ; s3 = s3.next) {
 		if (!s3.dur			/* not a note nor a rest */
-		 || s3.st != upstaff) {
+		 || s3.st != std) {
 			if (s3 == s2)
 				break
 			continue
 		}
 		yy = ym + (s3.x - xm) * a;
-		yx = y_get(upstaff, 0, s3.x - 4, 8)
+		yx = y_get(std, 0, s3.x - 4, 8)
 		if (yx - yy < dy)
 			dy = yx - yy
 		if (s3 == s2)
@@ -2725,11 +2721,11 @@ function draw_tuplet(s1) {
 	/* shift the slurs / decorations */
 	ym -= 2
 	for (s3 = s1; ; s3 = s3.next) {
-		if (s3.st == upstaff) {
+		if (s3.st == std) {
 			yy = ym + (s3.x - xm) * a
 			if (s3.ymn > yy)
 				s3.ymn = yy;
-			y_set(upstaff, false, s3.x - 3, 6, yy)
+			y_set(std, 1, s3.x - 3, 6, yy)
 		}
 		if (s3 == s2)
 			break
@@ -2744,9 +2740,9 @@ function draw_tuplet(s1) {
 		tp.f[2] == 0 ? tp.p.toString() : tp.p + ':' +  tp.q);
 
 	if (dir == C.SL_ABOVE)
-		y_set(upstaff, true, xm - 3, 6, yy + 2)
+		y_set(stu, 1, xm - 3, 6, yy + 2)
 	else
-		y_set(upstaff, false, xm - 3, 6, yy)
+		y_set(std, 0, xm - 3, 6, yy)
 }
 
 // -- draw a ties --
