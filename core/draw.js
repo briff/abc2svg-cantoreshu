@@ -2547,7 +2547,7 @@ function draw_tuplet(s1) {
 		return
 	}
 
-	// here, what is square bracket
+	// here, 'what' is square bracket
 
 /*fixme: two staves not treated*/
 /*fixme: to optimize*/
@@ -2725,7 +2725,7 @@ function draw_tuplet(s1) {
 			yy = ym + (s3.x - xm) * a
 			if (s3.ymn > yy)
 				s3.ymn = yy;
-			y_set(std, 1, s3.x - 3, 6, yy)
+			y_set(std, 0, s3.x - 3, 6, yy)
 		}
 		if (s3 == s2)
 			break
