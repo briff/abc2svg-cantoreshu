@@ -1335,8 +1335,8 @@ function svg_flush() {
 
     var	i, font,
 	fmt = tsnext ? tsnext.fmt : cfmt,
-	w = Math.ceil((fmt.trimsvg || fmt.singleline)
-		? (cfmt.leftmargin + img.wx * cfmt.scale + cfmt.rightmargin)
+	w = Math.ceil((fmt.trimsvg || fmt.singleline == 1)
+		? (cfmt.leftmargin + img.wx * cfmt.scale + cfmt.rightmargin + 2)
 		: img.width),
 	head = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"\n\
 	xmlns:xlink="http://www.w3.org/1999/xlink"\n\
