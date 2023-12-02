@@ -339,8 +339,7 @@ Abc.prototype.calculate_beam = function(bm, s1) {
 	if (max_stem_err > 0)		/* shift beam if stems too short */
 		b += s1.stem * max_stem_err
 
-	/* have room for the gracenotes, bars and clefs */
-/*fixme: test*/
+	// have room for the gracenotes and clefs
     if (!two_staves && !two_dir)
 	for (s = s1.next; ; s = s.next) {
 		switch (s.type) {
@@ -354,7 +353,7 @@ Abc.prototype.calculate_beam = function(bm, s1) {
 //fixme:too much vertical shift if some space above the note
 //fixme:this does not fix rest under beam in second voice (ts_prev)
 			/*fall thru*/
-		case C.BAR:
+//		case C.BAR:
 			if (s.invis)
 				break
 			/*fall thru*/
