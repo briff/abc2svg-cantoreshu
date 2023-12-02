@@ -2525,10 +2525,11 @@ function draw_tuplet(s1) {
 				xm -= 4
 		}
 
+		yy = ym + gene.curfont.size * .22
 		if (tp.f[2] == 0)		// if 'which' == number
-			xy_str(xm, ym, tp.p.toString(), 'c')
+			xy_str(xm, yy, tp.p.toString(), 'c')
 		else
-			xy_str(xm, ym, tp.p+':'+tp.q, 'c')
+			xy_str(xm, yy, tp.p + ':' + tp.q, 'c')
 
 		for (s3 = s1; ; s3 = s3.next) {
 			if (s3.x >= xm)
