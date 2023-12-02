@@ -2520,9 +2520,9 @@ function draw_tuplet(s1) {
 
 		if (s1.stem * s2.stem > 0) {
 			if (s1.stem > 0)
-				xm += 1.5
+				xm += 4
 			else
-				xm -= 1.5
+				xm -= 4
 		}
 
 		if (tp.f[2] == 0)		// if 'which' == number
