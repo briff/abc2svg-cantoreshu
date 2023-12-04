@@ -632,22 +632,17 @@ Abc.prototype.set_bar_num = function() {
 	for ( ; s; s = s.ts_next) {
 		switch (s.type) {
 		case C.METER:
-			if (s.time == bar_tim)
-				break		// already seen
-		    if (wmeasure != 1)		// if not M:none
-			bar_num += (s.time - bar_tim) / wmeasure
-			bar_tim = s.time
 			wmeasure = s.wmeasure
+			while (s.ts_next && s.ts_next.wmeasure)
+				s = s.ts_next
 			break
 		case C.BAR:
-			if (s.time <= tim)
-				break			// already seen
 			tim = s.time
 
 			nu = 1 //true			// no num update
 			txt = ""
 			for (s2 = s; s2; s2 = s2.next) {
-				if (s2.time > tim || s2.dur)
+				if (s2.time > tim)
 					break
 				if (!s2.bar_type)
 					continue
@@ -659,11 +654,11 @@ Abc.prototype.set_bar_num = function() {
 			if (s.bar_num) {
 				bar_num = s.bar_num	// (%%setbarnb)
 				ptim = bar_tim = tim
-				continue
+				break
 			}
 			if (wmeasure == 1) {		// if M:none
 				if (s.bar_dotted)
-					continue
+					break
 				if (txt) {
 					if (!cfmt.contbarnb) {
 						if (txt[0] == '1')
@@ -674,7 +669,7 @@ Abc.prototype.set_bar_num = function() {
 				}
 				if (!nu)
 					s.bar_num = ++bar_num
-				continue
+				break
 			}
 
 			n = bar_num + (tim - bar_tim) / wmeasure
