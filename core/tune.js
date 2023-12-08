@@ -637,6 +637,8 @@ Abc.prototype.set_bar_num = function() {
 				s = s.ts_next
 			break
 		case C.BAR:
+			if (s.time <= tim)
+				break			// already seen
 			tim = s.time
 
 			nu = 1 //true			// no num update
