@@ -5079,8 +5079,8 @@ function set_piece() {
 /* -- position the symbols along the staff -- */
 // (possible hook)
 Abc.prototype.set_sym_glue = function(width) {
-    var	g, x,
-	some_grace,
+    var	g, x, some_grace, stretch,
+	cnt = 4,
 	xmin = 0,		// sigma shrink = minimum spacing
 	xx = 0,			// sigma natural spacing
 	xs = 0,			// sigma unexpandable elements with no space
@@ -5090,9 +5090,8 @@ Abc.prototype.set_sym_glue = function(width) {
 		 && !tsnext.play)
 		|| blocks.length,	//	(abcm2ps compatibility)
 	s = tsfirst,
-	spf = (ll && s.fmt.stretchlast)	// spacing factor
-		? s.fmt.stretchlast
-		: (s.fmt.stretchstaff || s.fmt.maxshrink)
+	spf = 1,		// spacing factor
+	xx0 = 0
 
 	/* calculate the whole space of the symbols */
 	for ( ; s; s = s.ts_next) {
@@ -5112,8 +5111,8 @@ Abc.prototype.set_sym_glue = function(width) {
 					xse += s.shrink;
 					xx += s.shrink
 				} else {
-					xx += s.space * (1 - spf)
-						+ s.shrink * spf
+					xx += s.space * spf + s.shrink * (1 - spf)
+					xx0 += s.shrink
 				}
 			} else {
 				xs += s.shrink
@@ -5127,14 +5126,18 @@ Abc.prototype.set_sym_glue = function(width) {
 		return
 	}
 
-	// strong shrink
+	// stretch or not?
 	s = tsfirst
+
+	if (ll) {
+		if (((xx0 + xx) / 2 + xs) / width < s.fmt.stretchlast)
+			stretch = 1 //true
+	} else if (s.fmt.stretchstaff) {
+		stretch = 1 //true
+	}
+
+	// strong shrink
 	if (xmin >= width) {
-//		if (xmin > width)
-//			error(1, s, "Line too much shrunk $1 $2 $3",
-//				xmin.toFixed(1),
-//				xx.toFixed(1),
-//				width.toFixed(1))
 		x = 0
 		for ( ; s; s = s.ts_next) {
 			if (s.seqst)
@@ -5143,12 +5146,11 @@ Abc.prototype.set_sym_glue = function(width) {
 		}
 //		realwidth = width
 		spf_last = 0
-	} else if ((ll && xx / width > 1 - s.fmt.stretchlast)
-		 || (!ll && (xx + xs > width || s.fmt.stretchstaff))) {
-		if (xx == xse)			// if no space
-			xx += 5
-		for (var cnt = 4; --cnt >= 0; ) {
-			spf = (width - xs - xse) / (xx - xse);
+	} else if ((xx0 + xx) / 2 + xs > width || stretch) {
+		while (--cnt >= 0) {
+			if (xx == xse)			// if no space
+				xx += 5
+			spf = (width - xs - xse) / (xx - xse)
 			xx = 0;
 			xse = 0;
 			x = 0
@@ -5172,17 +5174,23 @@ Abc.prototype.set_sym_glue = function(width) {
 			if (Math.abs(x - width) < 0.1)
 				break
 		}
-		spf_last = spf
+		spf_last = width / (xx + xs)
 	} else {			// shorter line
-		spf = 1 - s.fmt.maxshrink
-		if (spf_last && xx * spf_last + xs < width)
-			spf = spf_last
+		spf = spf_last
+		if (spf < 1 - s.fmt.maxshrink)
+			spf = 1 - s.fmt.maxshrink
+		if (ll && spf < s.fmt.stretchlast)
+			spf = s.fmt.stretchlast
+		if (spf > (width - xs) / xx)
+			spf = (width - xs) / xx		// stay inside the page
 		x = 0
 		for ( ; s; s = s.ts_next) {
 			if (s.seqst)
-				x += s.space <= s.shrink ?
-					s.shrink :
-					s.shrink * (1 - spf) + s.space * spf
+				x += s.space
+					? (s.space * spf <= s.shrink
+						? s.shrink
+						: s.space * spf)
+					: s.shrink
 			s.x = x
 		}
 	}
