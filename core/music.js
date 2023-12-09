@@ -5291,6 +5291,11 @@ Abc.prototype.output_music = function() {
 	}
 	set_allsymwidth(1)		// set the width of all symbols
 
+	// output the blocks and define the page layout
+	gen_init()
+	if (!tsfirst)
+		return
+
 	lsh = get_lshift()
 
 	/* if single line, adjust the page width */
@@ -5309,11 +5314,6 @@ Abc.prototype.output_music = function() {
 		lwidth = get_lwidth();
 		cut_tune(lwidth, lsh)
 	}
-
-	// output the blocks and define the page layout
-	gen_init()
-	if (!tsfirst)
-		return
 
 	// save symbol pointers for play
 	ts1st = tsfirst
