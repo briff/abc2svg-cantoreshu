@@ -1697,6 +1697,7 @@ function get_staves(cmd, parm) {
 		// set the staff of the overlay voices
 		p_voice2 = p_voice.voice_down
 		while (p_voice2) {
+			p_voice2.second = 1 //true
 			i = p_voice2.v
 			p_voice2.st = p_voice2.cst =
 					par_sy.voices[i].st = st
