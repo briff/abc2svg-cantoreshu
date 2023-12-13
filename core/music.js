@@ -784,10 +784,14 @@ Abc.prototype.set_width = function(s) {
 
 		if (s2) {
 			switch (s2.type) {
-			case C.NOTE:	/* extra space when up stem - down stem */
-				if (s2.stem > 0 && s.stem < 0) {
-					if (wlw < 7)
-						wlw = 7
+			case C.NOTE:
+
+				// change the spacing when stems in reverse directions
+				if (s.stem * s2.stem < 0) {
+					if (s.stem < 0)
+						wlw += 5
+					else
+						wlw -= 3
 				}
 
 				/* make sure helper lines don't overlap */
