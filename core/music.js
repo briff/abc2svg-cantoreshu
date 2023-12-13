@@ -1297,8 +1297,10 @@ function set_allsymwidth(first) {
 				xl[st] = 0
 			if (wr[st] == undefined)
 				wr[st] = 0;
-			if (s.prev && s.prev.st != st)
+			if (s.prev && s.prev.st != st) {
 				xl[st] = xl[s.prev.st]
+				wr[st] = wr[s.prev.st]
+			}
 			val = xl[st] + wr[st] + s.wl
 			if (val > maxx)
 				maxx = val
