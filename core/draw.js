@@ -197,14 +197,14 @@ Abc.prototype.calculate_beam = function(bm, s1) {
 			scale = staff_tb[s.st].staffscale
 		if (s.stem >= 0) {
 			x = stem_xoff + s.notes[0].shhd
-			if (s.notes[s.nhd].pit > p_max) {
-				p_max = s.notes[s.nhd].pit;
+			if (s.notes[s.nhd].midi > p_max) {
+				p_max = s.notes[s.nhd].midi
 				s_closest = s
 			}
 		} else {
 			x = -stem_xoff + s.notes[s.nhd].shhd
-			if (s.notes[0].pit < p_min) {
-				p_min = s.notes[0].pit;
+			if (s.notes[0].midi < p_min) {
+				p_min = s.notes[0].midi
 				s_closest = s
 			}
 		}
