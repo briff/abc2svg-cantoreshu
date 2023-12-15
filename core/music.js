@@ -1792,6 +1792,7 @@ function set_nl(s) {			// s = start of line
 			}
 			delete s2.part
 			delete s1.a_dd
+			delete s1.a_gch
 			do {
 				s1 = s1.ts_next
 			} while (!s1.seqst && !s1.bar_type)
