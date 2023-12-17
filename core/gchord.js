@@ -128,13 +128,6 @@ function parse_gchord(type) {
 			if (!c)
 				break
 			switch (c) {
-			case '\\':
-				c = text[++i]
-				if (c == 'n')
-					break
-				gch.text += '\\'
-				if (!c)
-					break
 			default:
 				gch.text += c;
 				i++
@@ -159,6 +152,7 @@ function parse_gchord(type) {
 					continue
 				}
 				break
+			case '\n':		// abcm2ps compatibility
 			case ';':
 				break
 			}
