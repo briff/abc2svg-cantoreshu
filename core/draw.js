@@ -98,7 +98,7 @@ var min_tb = [
 // (possible hook)
 Abc.prototype.calculate_beam = function(bm, s1) {
     var	s, s2, g, notes, nflags, st, v, two_staves, two_dir,
-		x, y, ys, a, b, stem_err, max_stem_err,
+	n, x, y, ys, a, b, stem_err, max_stem_err,
 		p_min, p_max, s_closest,
 		stem_xoff, scale,
 		visible, dy
@@ -224,8 +224,15 @@ Abc.prototype.calculate_beam = function(bm, s1) {
 		a = 0
 
 	y = s1.ys + staff_tb[st].y
-	if (a == undefined)
+	if (a == undefined) {
+		if (two_dir
+		 && s1.stem != s2.stem
+		 && s1.st == s2.st) {		// if inverted stems,
+			y -= 5 * s1.stem	// remove the beam depth
+			s2.ys -= 5 * s2.stem			
+		}
 		a = (s2.ys + staff_tb[s2.st].y - y) / (s2.xs - s1.xs)
+	}
 
 	if (a != 0) {
 		a = s1.fmt.beamslope * a /
@@ -234,23 +241,33 @@ Abc.prototype.calculate_beam = function(bm, s1) {
 			a = 0				// slope too low
 	}
 
-	// pivot around the middle of the beam
+	// center the main beam
 	b = (y + s2.ys + staff_tb[s2.st].y) / 2 - a * (s2.xs + s1.xs) / 2
 
-/*fixme: have a look again*/
 	/* have room for the symbols in the staff */
 	max_stem_err = 0;		/* check stem lengths */
+
+	// when 2 directions, check if all beams are on the same side of the main beam
 	s = s1
-	if (two_dir) {				/* 2 directions */
-/*fixme: more to do*/
-		ys = ((s1.grace ? 3.5 : BEAM_SHIFT) * (nflags - 1) +
-			BEAM_DEPTH) * .5
-		if (s1.nflags == s2.nflags)
-			;
-		else if (s1.stem != s2.stem && s1.nflags < s2.nflags)
-			b += ys * s2.stem
-		else
-			b += ys * s1.stem
+	if (two_dir) {
+		n = 1
+		for ( ; s != s2; s = s.next) {
+			if (s.stem != s1.stem
+			 && (s.nflags == 1
+			  || s.beam_br1  || s.beam_br2)) {
+				n = 0
+				break
+			}
+		}
+		if (n)				// same side
+			n = (s1.nflags + s2.nflags)
+				* (s1.nflags >= s2.nflags ? s1.stem : s2.stem)
+					/ 4
+		else				// different sides
+			n = -(s1.nflags * s1.stem + s2.nflags * s2.stem)
+					/ 2
+		b += ((s1.grace ? 3.5 : BEAM_SHIFT) * n
+				+ BEAM_DEPTH * s1.stem) / 2
 	} else if (!s1.grace) {		/* normal notes */
 		var beam_h = BEAM_DEPTH + BEAM_SHIFT * (nflags - 1)
 //--fixme: added for abc2svg
@@ -459,8 +476,9 @@ Abc.prototype.calculate_beam = function(bm, s1) {
 /* -- draw the beams for one word -- */
 /* (the staves are defined) */
 function draw_beams(bm) {
-	var	s, i, beam_dir, shift, bshift, bstub, bh, da, bd,
+    var	s, i, beam_dir, shift, bshift, bstub, bh, da, bsh,
 		k, k1, k2, x1,
+	osh = 0,				// shift other side
 		s1 = bm.s1,
 		s2 = bm.s2
 
@@ -519,7 +537,7 @@ function draw_beams(bm) {
 /*fixme: quick hack for stubs at end of beam and different stem directions*/
 	beam_dir = s1.stem
 	if (s1.stem != s2.stem
-	 && s1.nflags < s2.nflags)
+	 && s1.nflags > s2.nflags)
 		beam_dir = s2.stem
 	if (beam_dir < 0)
 		bh = -bh;
@@ -594,7 +612,7 @@ function draw_beams(bm) {
 			while (k2.type != C.NOTE)
 				k2 = k2.prev;
 			x1 = k1.xs
-			bd = beam_dir
+			bsh = shift * beam_dir
 			if (k1 == k2) {
 				if (k1 == s1) {
 					x1 += bstub
@@ -624,13 +642,27 @@ function draw_beams(bm) {
 					}
 				}
 				if (k1.stem != beam_dir) {
-					bd = k1.stem
+					osh -= bshift
+					bsh = osh * beam_dir
 					k1.ys = bm.a * k1.xs + bm.b
 						- staff_tb[k1.st].y - bh
 				}
+			} else if (k1.stem == k2.stem && k1.stem != beam_dir) {
+
+				// inverted stems: put the beam on the other side
+				osh -= bshift
+				bsh = osh * beam_dir
+				for (s = k1; ; s = s.next) {
+					if (s.type == C.NOTE)
+						s.ys = bm.a * s.xs + bm.b
+							- staff_tb[s.st].y
+							- bh
+					if (s == k2)
+						break
+				}
 			}
 			draw_beam(x1, k2.xs,
-				  shift * bd,
+				  bsh,
 				  bh, bm, i)
 			if (s == s2)
 				break
