@@ -251,13 +251,16 @@ Abc.prototype.calculate_beam = function(bm, s1) {
 	s = s1
 	if (two_dir) {
 		n = 1
-		for ( ; s != s2; s = s.next) {
+		while (1) {
 			if (s.stem != s1.stem
 			 && (s.nflags == 1
 			  || s.beam_br1  || s.beam_br2)) {
 				n = 0
 				break
 			}
+			if (s == s2)
+				break
+			s = s.next
 		}
 		if (n)				// same side
 			n = (s1.nflags + s2.nflags)
