@@ -3278,18 +3278,15 @@ function set_staff() {
 			break
 	}
 	y = 0
-	if (st > nstaff) {
-		st--;			/* one staff, empty */
-		p_staff = staff_tb[st]
-	}
-// else {
+	if (st > nstaff)
+		return y
+
 		p_staff = staff_tb[st]
 		for (i = 0; i < YSTEP; i++) {
 			val = p_staff.top[i]
 			if (y < val)
 				y = val
 		}
-//	}
 
 	/* set the vertical offset of the 1st staff */
 	y *= p_staff.staffscale;

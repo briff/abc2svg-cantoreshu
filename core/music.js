@@ -5332,12 +5332,12 @@ Abc.prototype.output_music = function() {
 			}
 			draw_sym_near();		// delayed output
 			line_height = set_staff();
+		    if (line_height) {			// if some music
 			draw_systems(indent);
 			draw_all_sym();
 			delayed_update();
-//fixme: KO if at start of tune (the header is generated)
-			if (output)			// if some music
 				vskip(line_height)
+		    }
 			if (indent)
 				posx -= indent;
 		}
