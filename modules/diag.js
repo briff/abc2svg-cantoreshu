@@ -1,6 +1,6 @@
 // diag.js - module to insert guitar chord diagrams
 //
-// Copyright (C) 2018-2023 Jean-Francois Moine
+// Copyright (C) 2018-2024 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -213,9 +213,9 @@ M-10.2 -24.5h20.4"/>'
 	// output the diagram above the chord symbol
 	if (glyphs[nm]) {
 		x = s.x
-		y = abc.y_get(s.st, 1, x - 10, 20)
-		abc.xygl(x, y + 2, nm)
-		abc.y_set(s.st, 1, x - 10, 20, y + 34)
+		y = this.y_get(s.st, 1, x - 10, 20)
+		this.xygl(x, y + 2, nm)
+		this.y_set(s.st, 1, x - 10, 20, y + 34)
 	}
     }, // draw_gchord()
 
