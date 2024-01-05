@@ -1,6 +1,6 @@
 // abc2svg - deco.js - decorations
 //
-// Copyright (C) 2014-2023 Jean-Francois Moine
+// Copyright (C) 2014-2024 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -131,8 +131,8 @@ var decos = {
 	pppp: "6 pppp 12,5 14 17",
 	pralltriller: "3 umrd 6,5 4 6",
 	sfz: "6 sfz 12,5 9 9",
-	ped: "7 ped 14 6 10",
-	"ped-up": "7 pedoff 12 4 4",
+	ped: "6 ped 9 6 10",
+	"ped-up": "6 pedoff 9 4 4",
 	"ped(": "7 lped 14 1 1",
 	"ped)": "7 lped 14 1 1",
 	"crescendo(": "6 cresc 15,2 0 0",
