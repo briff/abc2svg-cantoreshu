@@ -1,6 +1,6 @@
 // combine.js - module to add a combine chord line
 //
-// Copyright (C) 2018-2023 Jean-Francois Moine
+// Copyright (C) 2018-2024 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -69,8 +69,12 @@ abc2svg.combine = {
 	if (s.a_gch && s2.a_gch)
 		return false
 	if (s.type == C.REST) {
-		if (s.type == s2.type && s.invis && !s2.invis)
-			return false
+		if (s.type == s2.type) {
+			if (s.invis && !s2.invis)
+				return //false
+		} else if (s.combine <= 2) {
+			return //false
+		}
 		return true
 	}
 	if (s2.a_ly)
