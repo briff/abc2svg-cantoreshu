@@ -148,6 +148,8 @@ M-10.2 -24.5h20.4"/>'
 				t = t.replace(a[1], a[2])
 		}
 		return t.replace('/', '.')
+			.replace(/\u266f/g,'#')
+			.replace(/\u266d/g,'b')
 	} // ch_cnv()
 
 	// create a glyph of the diagram
