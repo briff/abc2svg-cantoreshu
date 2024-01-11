@@ -146,6 +146,7 @@ function do_combine(s) {
 			if (s.invis
 			 && !s2.invis)
 				delete s.invis
+			s.multi = 0
 		} else {
 			combine_notes(s, s2)
 			if (s2.ti1)

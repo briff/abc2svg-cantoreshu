@@ -1,6 +1,6 @@
 // abc2svg - music.js - music generation
 //
-// Copyright (C) 2014-2023 Jean-Francois Moine
+// Copyright (C) 2014-2024 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -2905,14 +2905,20 @@ var rest_sp = [
 	[18, 18],
 	[12, 18],
 	[12, 12],
-	[6, 12],
-	[6, 8],
+	[10, 12],
+	[10, 10],
 	[10, 10],			/* crotchet */
-	[6, 4],
-	[10, 0],
-	[10, 4],
-	[10, 10]
+	[8, 4],
+	[9, 0],
+	[9, 4],
+	[6, 8]
 ]
+
+// set the offsets of a rest
+function roffs(s) {
+	s.ymx = s.y + rest_sp[5 - s.nflags][0]
+	s.ymn = s.y - rest_sp[5 - s.nflags][1]
+} // roffs()
 
 // (possible hook)
 Abc.prototype.set_pitch = function(last_s) {
@@ -2984,21 +2990,14 @@ Abc.prototype.set_pitch = function(last_s) {
 			s.ymn = -2
 			break
 		case C.REST:
+			s.y = 12
 			if (s.rep_nb > 1		// if measure repeat
 			 || s.bar_mrep) {
-				s.y = 12
 				s.ymx = 38		// (24 + 14)
 				s.ymn = 0
 				break
 			}
-			if (voice_tb.length == 1) {
-				s.y = 12;		/* rest single voice */
-//				s.ymx = 12 + 8;
-//				s.ymn = 12 - 8
-				s.ymx = 24;
-				s.ymn = 0
-				break
-			}
+			roffs(s)
 			// fall thru
 		case C.NOTE:
 			delta = staff_delta[st]
@@ -3009,15 +3008,6 @@ Abc.prototype.set_pitch = function(last_s) {
 					note.opit = note.pit
 					note.pit += delta
 				}
-			}
-//			if (s.type == C.NOTE) {
-//				s.ymx = 3 * (s.notes[s.nhd].pit - 18) + 4;
-//				s.ymn = 3 * (s.notes[0].pit - 18) - 4;
-//			} else {
-			if (s.type == C.REST) {
-				s.y = (((s.notes[0].pit - 18) / 2) | 0) * 6;
-				s.ymx = s.y + rest_sp[5 - s.nflags][0];
-				s.ymn = s.y - rest_sp[5 - s.nflags][1]
 			}
 			if (s.dur < dur)
 				dur = s.dur
@@ -3158,7 +3148,8 @@ if (st > nst) {
 				if (s.ts_next.a_gch)
 					s.a_gch = s.ts_next.a_gch
 				unlksym(s.ts_next)
-				break
+				s.multi = 0
+				continue
 			case C.NOTE:
 			case C.GRACE:
 				break
@@ -3226,148 +3217,154 @@ if (st > nst) {
 /* -- adjust the offset of the rests when many voices -- */
 /* this function is called only once per tune */
 function set_rest_offset() {
-	var	s, s2, v, end_time, not_alone, v_s, y, ymax, ymin,
-		shift, dots, dx,
+   var	s, s2, v, v_s, ymax, ymin, d,
 		v_s_tb = [],
 		sy = cur_sy
 
+	// set a vertical offset on a line 
+	function loffs(d) {
+		return d > 0
+			? Math.ceil(d / 6) * 6
+			: -Math.ceil(-d / 6) * 6
+	} // loffs()
+
+	// shift a rest to the right
+	function rshift() {
+	    var	dx = s2.dots ? 15 : 10
+		s2.notes[0].shhd = dx
+		s2.xmx = dx
+		d = (d + v_s.d) / 2
+		d = loffs(d)
+		s2.y += d
+		s2.ymx += d
+		s2.ymn += d
+		v_s.d = 0
+	} // rshift()
+
+	// -- set_rest_off --
 	for (s = tsfirst; s; s = s.ts_next) {
 		if (s.invis)
 			continue
-		if (s.type == C.STAVES)
+		switch (s.type) {
+		case C.STAVES:
 			sy = s.sy
-		if (!s.dur)
+			// fall thru
+		default:
 			continue
-		v_s = v_s_tb[s.v]
-		if (!v_s) {
-			v_s = {}
-			v_s_tb[s.v] = v_s
-		}
-		v_s.s = s;
-		v_s.st = s.st;
-		v_s.end_time = s.time + s.dur
-		if (s.type != C.REST)
-			continue
+		case C.REST:
+			if (s.invis || !s.multi)
+				continue
+			v_s = v_s_tb[s.v]
+			if (!v_s) {
+				v_s_tb[s.v] = v_s = { d: 0}
+			} else if (v_s.d) {
+				s2 = v_s.s	// set the offsets of the previous rest
+				d = loffs(v_s.d)
+				s2.y += d
+				s2.ymx += d
+				s2.ymn += d
+				v_s.d = 0
+			}
 
-		/* check if clash with previous symbols */
-		ymin = -127;
-		ymax = 127;
-		not_alone = dots = false
-		for (v = 0; v <= v_s_tb.length; v++) {
+			if (s.multi > 0) {
+				d = 0
+				if (s.prev && s.prev.type == C.NOTE)
+					d = (s.next && s.next.type == C.NOTE)
+						? (s.prev.y + s.next.y) / 2
+						: s.prev.y
+				else if (s.next && s.next.type == C.NOTE)
+					d = s.next.y
+				if (d >= 12) {
+					s.y = d
+					roffs(s)
+				}
+			}
+
+			v_s.s = s
+			v_s.st = s.st
+			v_s.end_time = s.time + s.dur
+			if (s.dur == s.p_v.wmeasure)
+				v_s.end_time -= s.p_v.wmeasure * .3
+			if (!s.seqst) {
+				for (s2 = s.ts_prev; ; s2 = s2.ts_prev) {
+					if (s2.st == s.st
+					 && s.ymx > s2.ymn
+					 && !s2.invis) {
+						if (s2.type == C.NOTE) {
+							v_s.d = s2.ymn - s.ymx
+							break
+						}
+						if (s2.type == C.REST
+						 && s2.seqst
+						 && s2.y < 18
+						 && s.y >= 6) {
+							s2.y = 18
+						}
+					}
+					if (s2.seqst)
+						break
+				}
+			}
+			// fall thru
+		case C.NOTE:
+			if (s.invis || !s.multi)
+				continue
+			break
+		}
+
+		// check if any clash with a rest
+		for (v = 0; v < v_s_tb.length; v++) {
 			v_s = v_s_tb[v]
-			if (!v_s || !v_s.s
+			if (!v_s
 			 || v_s.st != s.st
-			 || v == s.v)
+			 || v == s.v
+			 || v_s.end_time <= s.time)
 				continue
-			if (v_s.end_time <= s.time)
-				continue
-			not_alone = true;
-			s2 = v_s.s
-			if (sy.voices[v].range < sy.voices[s.v].range) {
-				if (s2.time == s.time) {
-					if (s2.ymn < ymax) {
-						ymax = s2.ymn
-						if (s2.dots)
-							dots = true
+			s2 = v_s.s				// rest
+			if (sy.voices[v].range > sy.voices[s.v].range) {
+				if (s2.ymx + v_s.d <= s.ymn)
+					continue
+				d = s.ymn - s2.ymx		// rest must go down
+				if (v_s.d) {
+					if (v_s.d > 0) {	// if it was go up
+						rshift()	// shift the rest
+						continue
 					}
-				} else {
-					if (s2.y < ymax)
-						ymax = s2.y
+					if (d >= v_s.d)
+						continue
 				}
 			} else {
-				if (s2.time == s.time) {
-					if (s2.ymx > ymin) {
-						ymin = s2.ymx
-						if (s2.dots)
-							dots = true
+				if (s2.ymn + v_s.d >= s.ymx)
+					continue
+				d = s.ymx - s2.ymn		// rest must go up
+				if (s.type == C.REST		// if rest
+				 && s2 == s.ts_prev) {		// just under a rest
+					d /= 2
+					if (v_s_tb[s2.v].d < d)
+						v_s_tb[s2.v].d = d
+				}
+				if (v_s.d) {
+					if (v_s.d < 0) {	// if it was go down
+						rshift()	// shift the rest
+						continue
 					}
-				} else {
-					if (s2.y > ymin)
-						ymin = s2.y
+					if (d <= v_s.d)
+						continue
 				}
 			}
+			v_s.d = d
 		}
+	}
 
-		/* check if clash with next symbols */
-		end_time = s.time + s.dur
-		for (s2 = s.ts_next; s2; s2 = s2.ts_next) {
-			if (s2.time >= end_time)
-				break
-			if (s2.st != s.st
-//			 || (s2.type != C.NOTE && s2.type != C.REST)
-			 || !s2.dur
-			 || s2.invis)
-				continue
-			not_alone = true
-			if (sy.voices[s2.v].range < sy.voices[s.v].range) {
-				if (s2.time == s.time) {
-					if (s2.ymn < ymax) {
-						ymax = s2.ymn
-						if (s2.dots)
-							dots = true
-					}
-				} else {
-					if (s2.y < ymax)
-						ymax = s2.y
-				}
-			} else {
-				if (s2.time == s.time) {
-					if (s2.ymx > ymin) {
-						ymin = s2.ymx
-						if (s2.dots)
-							dots = true
-					}
-				} else {
-					if (s2.y > ymin)
-						ymin = s2.y
-				}
-			}
-		}
-		if (!not_alone) {
-			s.y = 12;
-			s.ymx = 24;
-			s.ymn = 0
-			continue
-		}
-		if (ymax == 127 && s.y < 12) {
-			shift = 12 - s.y
-			s.y += shift;
-			s.ymx += shift;
-			s.ymn += shift
-		}
-		if (ymin == -127 && s.y > 12) {
-			shift = s.y - 12
-			s.y -= shift;
-			s.ymx -= shift;
-			s.ymn -= shift
-		}
-		shift = ymax - s.ymx
-		if (shift < 0) {
-			shift = Math.ceil(-shift / 6) * 6
-			if (s.ymn - shift >= ymin) {
-				s.y -= shift;
-				s.ymx -= shift;
-				s.ymn -= shift
-				continue
-			}
-			dx = dots ? 15 : 10;
-			s.notes[0].shhd = dx;
-			s.xmx = dx
-			continue
-		}
-		shift = ymin - s.ymn
-		if (shift > 0) {
-			shift = Math.ceil(shift / 6) * 6
-			if (s.ymx + shift <= ymax) {
-				s.y += shift;
-				s.ymx += shift;
-				s.ymn += shift
-				continue
-			}
-			dx = dots ? 15 : 10;
-			s.notes[0].shhd = dx;
-			s.xmx = dx
-			continue
+	// update the offsets of the last rests
+	for (v = 0; v < v_s_tb.length; v++) {
+		v_s = v_s_tb[v]
+		if (v_s && v_s.d) {
+			s2 = v_s.s
+			d = loffs(v_s.d)
+			s2.y += d
+			s2.ymx += d
+			s2.ymn += d
 		}
 	}
 }
