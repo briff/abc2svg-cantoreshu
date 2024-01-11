@@ -3692,7 +3692,7 @@ function set_words(p_voice) {
 			nflags = s.nflags
 
 			if (s.ntrem)
-				nflags += s.ntrem
+				nflags -= s.ntrem
 			if (s.type == C.REST && s.beam_end
 			 && !s.beam_on) {
 //				s.beam_end = false;
