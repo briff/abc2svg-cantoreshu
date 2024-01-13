@@ -1397,7 +1397,8 @@ function key_trans() {
 		n -= 12
 		curvoice.tr_sco += 4
 	}
-	s.k_sf = n
+	if (!s.k_none)
+		s.k_sf = n
 	for (b40 = 0; b40 < 40; b40++) {
 		if (abc2svg.b40l5[b40] == n)
 			break
