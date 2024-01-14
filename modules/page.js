@@ -1,6 +1,6 @@
 // page.js - module to generate pages
 //
-// Copyright (C) 2018-2023 Jean-Francois Moine
+// Copyright (C) 2018-2024 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -29,6 +29,7 @@ abc2svg.page = {
 
     // function called at end of generation
     abc_end: function(of) {
+      if (this.cfmt().pageheight) {
     var page = this.page
 	if (page && page.in_page)
 		abc2svg.page.close_page(page)
@@ -36,6 +37,7 @@ abc2svg.page = {
 		user.img_out = abc2svg.page.user_out
 		abc2svg.page.user_out = null
 	}
+      }
 	of()
     }, // abc_end()
 
@@ -412,8 +414,14 @@ abc2svg.page = {
 		if (!user.img_out || !abc2svg.abc_end)
 			v = 0
 		cfmt.pageheight = v
-		if (!v)
+		if (!v) {
+			if (abc2svg.page.user_out) {
+				user.img_out = abc2svg.page.user_out
+				abc2svg.page.user_out = null
+			}
+			delete this.page
 			return
+		}
 
 		// if first definition, install the hook
 		if (!page || !abc2svg.page.user_out) {
