@@ -4753,6 +4753,7 @@ Abc.prototype.block_gen = function(s) {
 			break
 		}
 		multicol = {
+			state: parse.state,
 			posy: posy,
 			maxy: posy,
 			lm: cfmt.leftmargin,
@@ -4762,7 +4763,7 @@ Abc.prototype.block_gen = function(s) {
 		}
 		break
 	case "mc_new":			// multicol new
-		if (!multicol) {
+		if (!multicol || multicol.state != parse.state) {
 			error(1, s, "%%multicol new without start")
 			break
 		}
@@ -4776,7 +4777,7 @@ Abc.prototype.block_gen = function(s) {
 		img.chg = 1 //true
 		break
 	case "mc_end":			// multicol end
-		if (!multicol) {
+		if (!multicol || multicol.state != parse.state) {
 			error(1, s, "%%multicol end without start")
 			break
 		}
