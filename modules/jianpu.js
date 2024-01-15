@@ -1,6 +1,6 @@
 // jianpu.js - module to output jiănpŭ (简谱) music sheets
 //
-// Copyright (C) 2020-2023 Jean-Francois Moine
+// Copyright (C) 2020-2024 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -345,6 +345,7 @@ abc2svg.jianpu = {
 	C = abc2svg.C,
 	abc = this,
 	dot = "\ue1e7",
+	anno_a = abc.anno_a,
 	staff_tb = abc.get_staff_tb(),
 	out_svg = abc.out_svg,
 	out_sxsy = abc.out_sxsy,

@@ -1,6 +1,6 @@
 // abc2svg - tail.js
 //
-// Copyright (C) 2014-2023 Jean-Francois Moine
+// Copyright (C) 2014-2024 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -23,6 +23,7 @@
 // Abc functions used by the modules
 Abc.prototype.a_de = function() { return a_de }
 Abc.prototype.add_style = function(s) { style += s };
+Abc.prototype.anno_a = anno_a
 Abc.prototype.cfmt = function() { return cfmt };
 Abc.prototype.clone = clone;
 Abc.prototype.deco_put = function(nm, s) {
