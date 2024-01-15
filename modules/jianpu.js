@@ -153,7 +153,24 @@ abc2svg.jianpu = {
 			n = 1
 		else
 			n = 2
-		s.notes[0].dur =
+
+		// duplicate the note/rest for display
+		s2 = abc.clone(s)
+		s2.invis =
+			s2.play = 1 //true
+		s2.next = s
+		if (s2.prev)
+			s2.prev.next = s2
+		s.prev = s2
+		s2.ts_next = s
+		if (s2.ts_prev)
+			s2.ts_prev.ts_next = s2
+		s.ts_prev = s2
+		delete s.seqst
+		s.noplay = 1 // true
+
+		// create the continuation symbols
+//		s.notes[0].dur =
 		s.dur = s.dur_orig = C.BLEN / 4
 		delete s.fmr
 		while (--n >= 0) {
@@ -453,6 +470,7 @@ abc2svg.jianpu = {
 			out_svg('</g>\n')
 			abc.stv_g().g--
 		}
+		anno_a.push(s)
 	} // draw_note()
 
 	// -- draw_symbols --
