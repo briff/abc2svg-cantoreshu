@@ -1,6 +1,6 @@
 // abc2svg - parse.js - ABC parse
 //
-// Copyright (C) 2014-2023 Jean-Francois Moine
+// Copyright (C) 2014-2024 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -2128,11 +2128,6 @@ Abc.prototype.new_note = function(grace, sls) {
 			if (acc_tie && acc_tie[apit])
 				i = acc_tie[apit]	// tied note
 
-			// map
-			if (curvoice.map
-			 && maps[curvoice.map])
-				set_map(note, i)
-
 			// set the MIDI pitch
 			if (!note.midi)		// if not map play
 				note.midi = pit2mid(apit, i)
@@ -2151,6 +2146,11 @@ Abc.prototype.new_note = function(grace, sls) {
 			}
 			if (curvoice.tr_snd)
 				note.midi += curvoice.tr_snd
+
+			// map
+			if (curvoice.map
+			 && maps[curvoice.map])
+				set_map(note, i)
 
 //fixme: does not work if transposition
 			if (i) {
