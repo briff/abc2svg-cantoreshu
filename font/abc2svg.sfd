@@ -3,7 +3,7 @@ FontName: abc2svg
 FullName: abc2svg
 FamilyName: abc2svg
 Weight: Regular
-Copyright: Copyright \\251 2018-2019 Jean-Francois Moine. This font is licensed under the SIL Open Font License \\(http://scripts.sil.org/OFL\\).
+Copyright: Copyright \\251 2018-2024 Jean-Francois Moine. This font is licensed under the SIL Open Font License \\(http://scripts.sil.org/OFL\\).
 Version: 
 ItalicAngle: 0
 UnderlinePosition: 0
@@ -15,11 +15,12 @@ LayerCount: 2
 Layer: 0 1 "Back" 1
 Layer: 1 0 "Fore" 0
 XUID: [1021 296 1430826605 13506888]
+FSType: 0
 OS2Version: 0
 OS2_WeightWidthSlopeOnly: 0
 OS2_UseTypoMetrics: 0
 CreationTime: 1433498007
-ModificationTime: 1681464680
+ModificationTime: 1705513399
 PfmFamily: 17
 TTFWeight: 400
 TTFWidth: 5
@@ -1354,6 +1355,7 @@ SplineSet
  33 -138 0 -64 0 -21 c 4
  0 65 103 138 194 138 c 4
 EndSplineSet
+Validated: 1
 EndChar
 
 StartChar: uniE0A4
