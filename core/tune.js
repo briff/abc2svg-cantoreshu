@@ -1,6 +1,6 @@
 // abc2svg - tune.js - tune generation
 //
-// Copyright (C) 2014-2023 Jean-Francois Moine
+// Copyright (C) 2014-2024 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -406,6 +406,31 @@ function sort_all() {
 function voice_adj(sys_chg) {
     var	p_voice, s, s2, v, sl
 
+	// insert the delayed parts (P:) in the top_voice
+	function ins_parts() {
+	    var	s, s2,
+		p_v = voice_tb[par_sy.top_voice]
+
+		while (1) {
+			s = parse.parts.shift()
+			if (!s)
+				break
+			for (s2 = p_v.sym; ; s2 = s2.next) {
+				if (s2.time >= s.time
+				 && s2.dur) {
+					s.next = s2
+					s.prev = s2.prev
+					s.prev.next =
+						s2.prev = s
+					s.v = s2.v
+					s.p_v = p_v
+					s.st = s2.st
+					break
+				}
+			}
+		}
+	} // ins_parts()
+
 	// set the duration of the notes under a feathered beam
 	function set_feathered_beam(s1) {
 		var	s, s2, t, d, b, i, a,
@@ -459,6 +484,9 @@ function voice_adj(sys_chg) {
 	// fill the voice with the sequence "Z |" (multi-rest and bar)
 	if (par_sy.one_v)			// if one voice
 		fill_mr_ba(voice_tb[par_sy.top_voice])
+
+	if (parse.parts)
+		ins_parts()			// insert delayed P:'s
 
 	for (v = 0; v < voice_tb.length; v++) {
 		p_voice = voice_tb[v]

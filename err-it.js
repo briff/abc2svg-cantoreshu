@@ -114,6 +114,7 @@ user.textrans = {
 				"Microtone transposition not coded",
 	"Misplaced '$1' in %%score": "'$1' in posizione errata in %%score",
 	"Misplaced dot": "Punto in posizione errata",
+	"Misplaced P:": "Misplaced P:",
 	"Mix of old and new transposition syntaxes":
 			"Sintassi di trasposizione vecchia e nuova allo stesso tempo",
 	"multi-measure rest, but no measure!":

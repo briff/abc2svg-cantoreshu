@@ -975,6 +975,64 @@ function new_meter(p) {
 	}
 }
 
+// P: part
+function new_part(text) {
+    var	p_v, s2,
+	s = {
+		type: C.PART,
+		text: text,
+		time: curvoice.time
+	},
+	tim = parse.part && parse.part[text]	// time of previous P: with same text
+
+	if (tim == s.time)
+		return 				// already seen
+	if (tim != null) {
+		syntax(1, "Misplaced P:")	// different dates
+			return
+	}
+
+	if (cfmt.writefields.indexOf('P') < 0)
+		s.invis = 1 //true
+
+	if (curvoice.v == par_sy.top_voice) {
+		sym_link(s)
+	} else if (voice_tb[par_sy.top_voice].time == s.time) {
+		p_v = curvoice
+		curvoice = voice_tb[par_sy.top_voice]
+		sym_link(s)
+		curvoice = p_v
+	} else if (voice_tb[par_sy.top_voice].time > s.time) {
+		p_v = voice_tb[par_sy.top_voice]
+		for (s2 = p_v.sym; ; s2 = s2.next) {
+			if (s2.time >= s.time) {
+				set_ref(s)
+				s.fmt = cfmt
+				s.next = s2
+				s.prev = s2.prev
+				if (s2.prev)
+					s.prev.next = s
+				else
+					p_v.sym = s
+				s2.prev = s
+				s.v = s2.v
+				s.p_v = p_v
+				s.st = p_v.st
+				break
+			}
+		}
+	} else {
+		set_ref(s)
+		s.fmt = cfmt
+		if (!parse.parts)
+			parse.parts = []
+		parse.parts.push(s)
+	}
+	if (!parse.part)
+		parse.part = {}
+	parse.part[text] = s.time
+} //new_part()
+
 /* Q: tempo */
 function new_tempo(text) {
     var	i, c, d, nd,
@@ -1139,17 +1197,7 @@ function do_info(info_type, text) {
 			info.P = text
 			break
 		}
-
-		s = {
-			type: C.PART,
-			text: text,
-			time: tim
-		}
-		if (!new_ctrl(s)) 		// already registered
-			break			// yes
-		sym_link(s)
-		if (cfmt.writefields.indexOf(info_type) < 0)
-			s.invis = true
+		new_part(text)
 		break
 	case 'Q':
 		if (!parse.state)

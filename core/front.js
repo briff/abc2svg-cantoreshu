@@ -285,6 +285,7 @@ function tosvg(in_fname,		// file name
 		parse.scores = null;
 		parse.ufmt = false
 		delete parse.ctrl
+		delete parse.part
 		init_tune()
 		img.chg = true;
 		set_page();

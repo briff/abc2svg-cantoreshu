@@ -112,6 +112,7 @@ user.textrans = {
 				"A transposição de microtons não está codificada",
 	"Misplaced '$1' in %%score": "'$1' deslocado em %%score",
 	"Misplaced dot": "Ponto fora de lugar",
+	"Misplaced P:": "Misplaced P:",
 	"Mix of old and new transposition syntaxes":
 				"Mistura de sintaxes de transposição antiga e nova",
 	"multi-measure rest, but no measure!":

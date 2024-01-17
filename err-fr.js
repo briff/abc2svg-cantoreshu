@@ -115,6 +115,7 @@ user.textrans = {
 				"Transposition de microtonalité pas codée",
 	"Misplaced '$1' in %%score": "'$1' mal placé dans %%score",
 	"Misplaced dot": "Point mal placé",
+	"Misplaced P:": "P: mal placé",
 	"Mix of old and new transposition syntaxes":
 			"Mélange des syntaxes de transposition ancienne et nouvelle",
 	"multi-measure rest, but no measure!":
