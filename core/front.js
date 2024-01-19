@@ -1,6 +1,6 @@
 // abc2svg - front.js - ABC parsing front-end
 //
-// Copyright (C) 2014-2023 Jean-Francois Moine
+// Copyright (C) 2014-2024 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -284,8 +284,7 @@ function tosvg(in_fname,		// file name
 		parse.tune_v_opts = null;
 		parse.scores = null;
 		parse.ufmt = false
-		delete parse.ctrl
-		delete parse.part
+		delete parse.pq
 		init_tune()
 		img.chg = true;
 		set_page();

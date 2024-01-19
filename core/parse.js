@@ -975,25 +975,9 @@ function new_meter(p) {
 	}
 }
 
-// P: part
-function new_part(text) {
-    var	p_v, s2,
-	s = {
-		type: C.PART,
-		text: text,
-		time: curvoice.time
-	},
-	tim = parse.part && parse.part[text]	// time of previous P: with same text
-
-	if (tim == s.time)
-		return 				// already seen
-	if (tim != null) {
-		syntax(1, "Misplaced P:")	// different dates
-			return
-	}
-
-	if (cfmt.writefields.indexOf('P') < 0)
-		s.invis = 1 //true
+// link P: or Q:
+function link_pq(s, text) {
+    var	p_v, s2
 
 	if (curvoice.v == par_sy.top_voice) {
 		sym_link(s)
@@ -1024,14 +1008,14 @@ function new_part(text) {
 	} else {
 		set_ref(s)
 		s.fmt = cfmt
-		if (!parse.parts)
-			parse.parts = []
-		parse.parts.push(s)
+		if (!parse.pq_d)
+			parse.pq_d = []
+		parse.pq_d.push(s)		// delayed insertion
 	}
-	if (!parse.part)
-		parse.part = {}
-	parse.part[text] = s.time
-} //new_part()
+	if (!parse.pq)
+		parse.pq = {}
+	parse.pq[text] = s.time
+} // link_pq()
 
 /* Q: tempo */
 function new_tempo(text) {
@@ -1127,9 +1111,12 @@ function new_tempo(text) {
 
 	if (!glovar.tempo)
 		syntax(0, "No previous tempo")
-
-	if (new_ctrl(s))			// already registered?
-		sym_link(s)			// no, keep it
+	s.time = curvoice.time
+	text = 'Q' + s.time
+	if (parse.pq
+	 && parse.pq[text] == s.time)
+		return				// already seen
+	link_pq(s, text)
 }
 
 // treat the information fields which may embedded
@@ -1197,7 +1184,22 @@ function do_info(info_type, text) {
 			info.P = text
 			break
 		}
-		new_part(text)
+		s = {
+			type: C.PART,
+			text: text,
+			time: curvoice.time
+		}
+		tim = parse.pq && parse.pq[text] // time of previous P: with same text
+		if (tim == s.time)
+			break				// already seen
+		if (tim != null) {
+			syntax(1, "Misplaced P:")	// different dates
+			break
+		}
+
+		if (cfmt.writefields.indexOf('P') < 0)
+			s.invis = 1 //true
+		link_pq(s, text)
 		break
 	case 'Q':
 		if (!parse.state)

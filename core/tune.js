@@ -408,13 +408,13 @@ function sort_all() {
 function voice_adj(sys_chg) {
     var	p_voice, s, s2, v, sl
 
-	// insert the delayed parts (P:) in the top_voice
-	function ins_parts() {
+	// insert the delayed P: and Q: in the top_voice
+	function ins_pq() {
 	    var	s, s2,
 		p_v = voice_tb[par_sy.top_voice]
 
 		while (1) {
-			s = parse.parts.shift()
+			s = parse.pq_d.shift()
 			if (!s)
 				break
 			for (s2 = p_v.sym; ; s2 = s2.next) {
@@ -431,7 +431,7 @@ function voice_adj(sys_chg) {
 				}
 			}
 		}
-	} // ins_parts()
+	} // ins_pq()
 
 	// set the duration of the notes under a feathered beam
 	function set_feathered_beam(s1) {
@@ -487,8 +487,8 @@ function voice_adj(sys_chg) {
 	if (par_sy.one_v)			// if one voice
 		fill_mr_ba(voice_tb[par_sy.top_voice])
 
-	if (parse.parts)
-		ins_parts()			// insert delayed P:'s
+	if (parse.pq_d)
+		ins_pq()			// insert delayed P: and Q:
 
 	for (v = 0; v < voice_tb.length; v++) {
 		p_voice = voice_tb[v]
@@ -872,24 +872,6 @@ function get_map(text) {
 		}
 	}
 }
-
-// check if a common symbol is already registered
-function new_ctrl(s) {
-    var	a,
-	ty = (s.type + curvoice.time).toString()
-
-	if (!parse.ctrl)
-		parse.ctrl = {}
-	a = parse.ctrl[ty]
-	if (a) {				// symbol already declared
-		if (a & 1 << curvoice.v)	// in this voice?
-			return 1 //true		// yes, keep it (case second Q:)
-		parse.ctrl[ty] = a | 1 << curvoice.v
-		return // false			// no, ignore
-	}
-	parse.ctrl[ty] = 1 << curvoice.v
-	return 1 //true
-} // new_ctrl()
 
 // get a abcm2ps/abcMIDI compatible transposition value as a base-40 interval
 // The value may be
