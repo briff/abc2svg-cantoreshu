@@ -5129,12 +5129,20 @@ Abc.prototype.set_sym_glue = function(width) {
 			s.x = x
 		}
 //		realwidth = width
-		spf_last = 0
-	} else if (xx - xx0 + xs > width || stretch) {
-		while (--cnt >= 0) {
+		spf_last = .65
+	} else {
+		if (stretch) {
 			if (xx == xse)			// if no space
 				xx += 10
 			spf = (width - xs - xse) / (xx - xse)
+		} else {
+			spf = spf_last
+			if (ll && spf < s.fmt.stretchlast)
+				spf = s.fmt.stretchlast
+			if (spf > (width - xs) / xx)
+				spf = (width - xs) / xx
+		}
+		while (--cnt >= 0) {
 			xx = 0;
 			xse = 0;
 			x = 0
@@ -5155,28 +5163,15 @@ Abc.prototype.set_sym_glue = function(width) {
 				}
 				s.x = x
 			}
+			if (!stretch && x < width)
+				break
 			if (Math.abs(x - width) < 0.1)
 				break
+			if (xx == xse)			// if no space
+				xx += 10
+			spf = (width - xs - xse) / (xx - xse)
 		}
-		spf_last = width / (xx + xs)
-	} else {			// shorter line
-		spf = spf_last
-		if (spf < 1 - s.fmt.maxshrink)
-			spf = 1 - s.fmt.maxshrink
-		if (ll && spf < s.fmt.stretchlast)
-			spf = s.fmt.stretchlast
-		if (spf > (xx - xx0 + xs) / width)
-			spf = (xx - xx0 + xs) / width	// stay inside the page
-		x = 0
-		for ( ; s; s = s.ts_next) {
-			if (s.seqst)
-				x += s.space
-					? (s.space * spf <= s.shrink
-						? s.shrink
-						: s.space * spf)
-					: s.shrink
-			s.x = x
-		}
+		spf_last = spf
 	}
 	realwidth = x
 
@@ -5313,7 +5308,7 @@ Abc.prototype.output_music = function() {
 	while (--v >= 0)
 		voice_tb[v].osym = voice_tb[v].sym
 
-	spf_last = 0				// last spacing factor
+	spf_last = .65				// last spacing factor
 	while (1) {				/* loop per music line */
 		set_piece();
 		indent = set_indent(lsh)
