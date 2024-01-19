@@ -69,6 +69,8 @@ function sym_link(s) {
 		curvoice.last_sym.next = s
 	else
 		curvoice.sym = s
+    } else if (s.bar_type) {
+		curvoice.last_bar = s
     }
 	curvoice.last_sym = s
 	s.v = curvoice.v;
@@ -1878,7 +1880,7 @@ function get_vover(type) {
 	if (!vover) {				/* first '&' in a measure */
 		time = p_voice2.time
 	    if (curvoice.ignore)
-		s = null
+		s = curvoice.last_bar
 	    else
 		for (s = curvoice.last_sym; /*s*/; s = s.prev) {
 			if (s.type == C.BAR
