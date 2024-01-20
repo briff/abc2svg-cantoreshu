@@ -1,6 +1,6 @@
 // tropt.js - module to optimize the notes after transposition
 //
-// Copyright (C) 2022-2023 Jean-Francois Moine
+// Copyright (C) 2022-2024 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -56,7 +56,7 @@ abc2svg.tropt = {
 
 	for (v = 0; v < nv; v++) {
 		p_v = vo_tb[v]
-		if (!p_v.tropt || !p_v.key.k_none)
+		if (!p_v.tropt || !p_v.key.k_none || !p_v.tr_sco)
 			continue
 		for (s = p_v.sym; s; s = s.next) {
 			if (s.type != C.NOTE)
