@@ -782,7 +782,7 @@ function get_map(text) {
 	a = text.split(/\s+/)
 
 	if (a.length < 3) {
-		syntax(1, not_enough_p)
+		syntax(1, errs.not_enough_p)
 		return
 	}
 	ns = a[1]
@@ -840,7 +840,7 @@ function get_map(text) {
 		switch (a[i]) {
 		case "heads=":
 			if (!a[++i]) {
-				syntax(1, not_enough_p)
+				syntax(1, errs.not_enough_p)
 				break
 			}
 			map[0] = a[i].split(',')
@@ -849,7 +849,7 @@ function get_map(text) {
 		case "play=":
 		case "print_notrp=":
 			if (!a[++i]) {
-				syntax(1, not_enough_p)
+				syntax(1, errs.not_enough_p)
 				break
 			}
 			tmp = new scanBuf;
@@ -864,7 +864,7 @@ function get_map(text) {
 			break
 		case "color=":
 			if (!a[++i]) {
-				syntax(1, not_enough_p)
+				syntax(1, errs.not_enough_p)
 				break
 			}
 			map[2] = a[i]
