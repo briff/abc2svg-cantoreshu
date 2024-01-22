@@ -1759,15 +1759,15 @@ function parse_acc_pit(line) {
 //	[1] print (note)
 //	[2] color
 //	[3] play (note)
-function set_map(note, acc) {
-    var	pit = note.pit,
-	nn = not2abc(pit, acc),
+function set_map(note, acc,
+		 trp) {			// transpose done
+    var	nn = not2abc(note.pit, acc),
 	map = maps[curvoice.map]	// never null
 
 	if (!map[nn]) {
 		nn = 'o' + nn.replace(/[',]+/, '')	// ' octave
 		if (!map[nn]) {
-			nn = 'k' + ntb[(pit + 75 -
+			nn = 'k' + ntb[(note.pit + 75 -
 					curvoice.ckey.k_sf * 11) % 7]
 			if (!map[nn]) {
 				nn = 'all'		// 'all'
@@ -1776,15 +1776,20 @@ function set_map(note, acc) {
 			}
 		}
 	}
-	note.map = map = map[nn]
-	if (map[1]) {				// if print map
-		note.pit = pit = map[1].pit
-		note.acc = map[1].acc
-		if (map[1].notrp) {
-			note.notrp = 1 //true	// no transpose
-			note.noplay = 1 //true	// no play
+	map = map[nn]
+	if (!trp) {				// transpose not done yet
+		if (map[1]) {			// if note shift
+			note.pit = map[1].pit
+			note.acc = map[1].acc
+			if (map[1].notrp) {
+				note.notrp = 1 //true	// no transpose
+				note.noplay = 1 //true	// no play
+			}
 		}
+		return
 	}
+	note.map = map
+
 	if (map[2])				// if color
 		note.color = map[2]
 	nn = map[3]
@@ -2183,8 +2188,11 @@ Abc.prototype.new_note = function(grace, sls) {
 				note.midi = pit2mid(apit, i)
 
 			// transpose
-			if (curvoice.tr_sco
-			 && !note.notrp) {
+			if (curvoice.map
+			 && maps[curvoice.map])
+				set_map(note, i)	// transpose not done
+			if (curvoice.tr_sco) {
+			    if (!note.notrp) {
 				i = nt_trans(note, i)
 				if (i == -3) {		// if triple sharp/flat
 					error(1, s, "triple sharp/flat")
@@ -2193,6 +2201,7 @@ Abc.prototype.new_note = function(grace, sls) {
 					note.acc = i
 				}
 				dpit = note.pit + 19 - apit
+			    }
 			}
 			if (curvoice.tr_snd)
 				note.midi += curvoice.tr_snd
@@ -2200,7 +2209,7 @@ Abc.prototype.new_note = function(grace, sls) {
 			// map
 			if (curvoice.map
 			 && maps[curvoice.map])
-				set_map(note, i)
+				set_map(note, i, 1)		// transpose done
 
 //fixme: does not work if transposition
 			if (i) {
