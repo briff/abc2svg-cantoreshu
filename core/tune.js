@@ -405,7 +405,8 @@ function sort_all() {
 }
 
 // adjust some voice elements
-function voice_adj(sys_chg) {
+// (possible hook)
+Abc.prototype.voice_adj = function (sys_chg) {
     var	p_voice, s, s2, v, sl
 
 	// insert the delayed P: and Q: in the top_voice
@@ -432,6 +433,16 @@ function voice_adj(sys_chg) {
 			}
 		}
 	} // ins_pq()
+
+	// do the note mapping stuff
+	function do_map(s) {
+	    var	m, nt
+
+		for (m = 0; m <= s.nhd; m++) {
+			nt = s.notes[m]
+			set_map(s.p_v, nt, nt.acc, 1)		// transpose done
+		}
+	} // do_map()
 
 	// set the duration of the notes under a feathered beam
 	function set_feathered_beam(s1) {
@@ -558,10 +569,14 @@ function voice_adj(sys_chg) {
 					break
 				}
 				continue
+			case C.NOTE:
+				if (s.feathered_beam)
+					set_feathered_beam(s)
+				if (p_voice.map
+				 && maps[p_voice.map])
+					do_map(s)
+				break
 			}
-
-			if (s.feathered_beam)
-				set_feathered_beam(s)
 		}
 	}
 }
@@ -1326,7 +1341,7 @@ function generate() {
 		get_vover(vover.bar ? '|' : ')')
 	}
 
-	voice_adj();
+	self.voice_adj()
 	sort_all()			/* define the time / vertical sequences */
 
     if (tsfirst) {
@@ -1519,7 +1534,7 @@ function get_staves(cmd, parm) {
 		par_sy.voices = []
 	} else {
 //		if (nv)					// if many voices
-			voice_adj(true)
+		self.voice_adj(1)
 		/*
 		 * create a new staff system and
 		 * link the 'staves' symbol in a voice which is seen from
@@ -1723,9 +1738,6 @@ function get_staves(cmd, parm) {
 		 && !(par_sy.staves[st - 1].flags & STOP_BAR))
 			p_voice.norepbra = true
 	}
-//--fixme: is this useful?
-//	if (!maxtime && nv)		// if first staff system and many voices
-//		voice_adj(true)
 
 	curvoice = parse.state >= 2 ? voice_tb[par_sy.top_voice] : null
 }

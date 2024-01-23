@@ -1759,16 +1759,16 @@ function parse_acc_pit(line) {
 //	[1] print (note)
 //	[2] color
 //	[3] play (note)
-function set_map(note, acc,
+function set_map(p_v, note, acc,
 		 trp) {			// transpose done
     var	nn = not2abc(note.pit, acc),
-	map = maps[curvoice.map]	// never null
+	map = maps[p_v.map]		// never null
 
 	if (!map[nn]) {
 		nn = 'o' + nn.replace(/[',]+/, '')	// ' octave
 		if (!map[nn]) {
 			nn = 'k' + ntb[(note.pit + 75 -
-					curvoice.ckey.k_sf * 11) % 7]
+					p_v.ckey.k_sf * 11) % 7]
 			if (!map[nn]) {
 				nn = 'all'		// 'all'
 				if (!map[nn])
@@ -2190,7 +2190,7 @@ Abc.prototype.new_note = function(grace, sls) {
 			// transpose
 			if (curvoice.map
 			 && maps[curvoice.map])
-				set_map(note, i)	// transpose not done
+				set_map(curvoice, note, i)	// transpose not done
 			if (curvoice.tr_sco) {
 			    if (!note.notrp) {
 				i = nt_trans(note, i)
@@ -2205,11 +2205,6 @@ Abc.prototype.new_note = function(grace, sls) {
 			}
 			if (curvoice.tr_snd)
 				note.midi += curvoice.tr_snd
-
-			// map
-			if (curvoice.map
-			 && maps[curvoice.map])
-				set_map(note, i, 1)		// transpose done
 
 //fixme: does not work if transposition
 			if (i) {

@@ -25,7 +25,7 @@ if (typeof abc2svg == "undefined")
 abc2svg.tropt = {
 
     // function called before start of the generation
-    set_pitch: function(of, last_s) {
+    voice_adj: function(of, last_s) {
 	if (last_s) {			// if not first time
 		of(last_s)
 		return
@@ -56,7 +56,7 @@ abc2svg.tropt = {
 
 	for (v = 0; v < nv; v++) {
 		p_v = vo_tb[v]
-		if (!p_v.tropt || !p_v.key.k_none || !p_v.tr_sco)
+		if (!p_v.tropt || !p_v.ckey.k_none || !p_v.tr_sco)
 			continue
 		for (s = p_v.sym; s; s = s.next) {
 			if (s.type != C.NOTE)
@@ -120,7 +120,7 @@ abc2svg.tropt = {
 		}
 	}
 	of(last_s)
-    }, // set_pitch()
+    }, // voice_adj()
 
     // set the tropt parameter
     do_pscom: function(of, text) {
@@ -146,7 +146,7 @@ abc2svg.tropt = {
 
     set_hooks: function(abc) {
 	abc.do_pscom = abc2svg.tropt.do_pscom.bind(abc, abc.do_pscom)
-	abc.set_pitch = abc2svg.tropt.set_pitch.bind(abc, abc.set_pitch)
+	abc.voice_adj = abc2svg.tropt.voice_adj.bind(abc, abc.voice_adj)
 	abc.set_vp = abc2svg.tropt.set_vp.bind(abc, abc.set_vp)
     }
 } // tropt
