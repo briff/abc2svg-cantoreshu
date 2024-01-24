@@ -84,7 +84,7 @@ user.textrans = {
 			"V:* non consentito nel corpo del brano",
 	"Cannot read file '$1'": "File '$1' inesistente",
 	"Decoration ignored": "Decorazione ignorata",
-	"Decoration without symbol": "Decoration without symbol",
+	"Decoration(s) without symbol: $1": "Decoration(s) without symbol: $1",
 	"Double voice in %%score": "Double voice in %%score",
 	"Empty line in tune header - ignored":
 				"Linea vuota nella testata - ignorata",

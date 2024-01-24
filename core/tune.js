@@ -1324,7 +1324,7 @@ function generate() {
     var s, v, p_voice;
 
 	if (a_dcn.length) {
-		syntax(1, "Decoration without symbol")
+		syntax(1, "Decoration(s) without symbol: $1", a_dcn)
 		a_dcn = []
 	}
 

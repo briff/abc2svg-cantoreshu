@@ -82,7 +82,7 @@ user.textrans = {
 	"Cannot have V:* in tune body": "Não pode haver V:* no corpo da música",
 	"Cannot read file '$1'": "Arquivo '$1' não pôde ser aberto ou não existe",
 	"Decoration ignored": "Decoração ignorada",
-	"Decoration without symbol": "Decoração sem símbolo",
+	"Decoration(s) without symbol: $1": "Decoration(s) without symbol: $1",
 	"Double voice in %%score": "Voz duplicada em %%score",
 	"Empty line in tune header - ignored":
 				"Linha em branco no cabeçalho da música - ignorada",

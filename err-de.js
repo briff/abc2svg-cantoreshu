@@ -78,7 +78,7 @@ user.textrans = {
     "Cannot have V:* in tune body": "V:* im Notenbereich nicht erlaubt",
     "Cannot read file '$1'": "File '$1' kann nicht gelesen werden",
     "Decoration ignored": "Dekoration ignoriert",
-	"Decoration without symbol": "Decoration without symbol",
+	"Decoration(s) without symbol: $1": "Decoration(s) without symbol: $1",
 	"Double voice in %%score": "Double voice in %%score",
     "Empty line in tune header - ignored": "Leerzeile in Kopfbereich - ignoriert",
 	"End of file in tune header": "End of file in tune header",
