@@ -3149,7 +3149,11 @@ if (st > nst) {
 					s.a_gch = s.ts_next.a_gch
 				unlksym(s.ts_next)
 				s.multi = 0
-				continue
+				if (!s.ts_next || s.ts_next.st != s.st
+				 || s.ts_next.time != s.time)
+					continue
+//				break
+				// fall thru
 			case C.NOTE:
 			case C.GRACE:
 				break
