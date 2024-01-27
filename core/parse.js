@@ -908,7 +908,7 @@ function new_meter(p) {
 						break
 					meter.top += p[i++]
 				}
-				m1 = +meter.top
+				m1 = eval(meter.top)
 				break
 			}
 			if (!in_parenth) {
