@@ -664,7 +664,8 @@ Abc.prototype.set_bar_num = function() {
 
 	// at start of tune, check for an anacrusis
 	for (s2 = s.ts_next; s2; s2 = s2.ts_next) {
-		if (s2.type == C.BAR && s2.time) {
+		if (s2.type == C.BAR && s2.time
+		 && !s2.invis && !s2.bar_dotted) {
 			if (s2.time < wmeasure) {	// if anacrusis
 				s = s2
 				bar_tim = s.time
