@@ -748,8 +748,7 @@ Abc.prototype.set_bar_num = function() {
 					if (n == (n | 0))
 						s.bar_num = n
 				}
-			} else {
-				n |= 0
+			} else if (n == (n | 0)) {
 				s.bar_num = n
 			}
 			if (!k)
