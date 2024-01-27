@@ -3148,11 +3148,6 @@ if (st > nst) {
 				if (s.ts_next.a_gch)
 					s.a_gch = s.ts_next.a_gch
 				unlksym(s.ts_next)
-				s.multi = 0
-				if (!s.ts_next || s.ts_next.st != s.st
-				 || s.ts_next.time != s.time)
-					continue
-//				break
 				// fall thru
 			case C.NOTE:
 			case C.GRACE:
@@ -3270,27 +3265,30 @@ function set_rest_offset() {
 				v_s.d = 0
 			}
 
-			if (s.multi > 0) {
-				d = 0
+			d = s.multi > 0 ? 0 : 24
 				if (s.prev && s.prev.type == C.NOTE)
 					d = (s.next && s.next.type == C.NOTE)
 						? (s.prev.y + s.next.y) / 2
 						: s.prev.y
 				else if (s.next && s.next.type == C.NOTE)
 					d = s.next.y
-				if (d >= 12) {
-					s.y = d
-					roffs(s)
-				}
+			else if (s.prev && s.prev.type == C.REST)
+				d = s.prev.y
+			if (s.multi > 0) {
+				if (d >= 12)
+					v_s.d = d - s.y
+			} else {
+				if (d <= 12)
+					v_s.d = d - s.y
 			}
 
 			v_s.s = s
 			v_s.st = s.st
 			v_s.end_time = s.time + s.dur
-			if (s.dur == s.p_v.wmeasure)
+			if (s.fmr)			// if full meeasure rest
 				v_s.end_time -= s.p_v.wmeasure * .3
 			if (!s.seqst) {
-				for (s2 = s.ts_prev; ; s2 = s2.ts_prev) {
+				s2 = s.ts_prev
 					if (s2.st == s.st
 					 && s.ymx > s2.ymn
 					 && !s2.invis) {
@@ -3299,17 +3297,12 @@ function set_rest_offset() {
 							break
 						}
 						if (s2.type == C.REST
-						 && s2.seqst
 						 && s2.y < 18
-						 && s.y >= 6) {
-							s2.y = 18
-						}
+						 && s.y >= 6)
+							v_s.d = -6
 					}
-					if (s2.seqst)
-						break
-				}
 			}
-			// fall thru
+			continue
 		case C.NOTE:
 			if (s.invis || !s.multi)
 				continue
@@ -3329,6 +3322,19 @@ function set_rest_offset() {
 				if (s2.ymx + v_s.d <= s.ymn)
 					continue
 				d = s.ymn - s2.ymx		// rest must go down
+//				if (s2.time < s.time) {
+					if (s.type == C.REST) {
+						if (!v_s_tb[s.v])
+							v_s_tb[s.v] = {d: 0}
+						if (v_s_tb[s.v].d < 6)
+							v_s_tb[s.v].d = 6
+						d = -6
+					} else {
+						d /= 2
+						if (s2.fmr)
+							d -= 6
+					}
+//				}
 				if (v_s.d) {
 					if (v_s.d > 0) {	// if it was go up
 						rshift()	// shift the rest
@@ -3342,10 +3348,15 @@ function set_rest_offset() {
 					continue
 				d = s.ymx - s2.ymn		// rest must go up
 				if (s.type == C.REST		// if rest
-				 && s2 == s.ts_prev) {		// just under a rest
-					d /= 2
-					if (v_s_tb[s2.v].d < d)
-						v_s_tb[s2.v].d = d
+				 && s2 == s.ts_prev		// just under a rest
+				 && s.y == s2.y) {		// at a same offset
+					if (!v_s_tb[s.v])
+						v_s_tb[s.v] = {d: 0}
+					if (v_s_tb[s.v].d > -6)
+						v_s_tb[s.v].d = -6
+					d = 6
+				} else if (s2.time < s.time) {
+					d = s.ymx - s2.y
 				}
 				if (v_s.d) {
 					if (v_s.d < 0) {	// if it was go down
