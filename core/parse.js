@@ -2054,13 +2054,6 @@ Abc.prototype.new_note = function(grace, sls) {
 		}
 		s.dur = curvoice.wmeasure * s.nmes
 
-		// ignore if in second voice
-		if (curvoice.second) {
-			delete curvoice.eoln	// ignore the end of line
-			curvoice.time += s.dur
-			return //null
-		}
-
 		// convert 'Z'/'Z1' to a whole measure rest
 		if (s.nmes == 1) {
 			s.type = C.REST;
