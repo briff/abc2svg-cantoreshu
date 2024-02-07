@@ -1,6 +1,6 @@
 // abc2svg - subs.js - text output
 //
-// Copyright (C) 2014-2023 Jean-Francois Moine
+// Copyright (C) 2014-2024 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -22,19 +22,16 @@
 var add_fstyle = typeof document != "undefined" ?
     function(s) {
     var	e
-	if (cfmt.fullsvg)
-		font_style += "\n" + s
+
+	font_style += "\n" + s
 	if (!sheet) {
-		if (abc2svg.sheet) {	// if styles from a previous generation
-			sheet = abc2svg.sheet
-			e = sheet.cssRules.length
-			while (--e >= 0)
-				sheet.deleteRule(e)
-		} else {
-			e = document.createElement('style')
-			document.head.appendChild(e)
-			abc2svg.sheet = sheet = e.sheet
-		}
+		if (abc2svg.styles)	// if styles from a previous generation
+			abc2svg.styles.remove()
+
+		e = document.createElement('style')
+		document.head.appendChild(e)
+		sheet = e.sheet
+		abc2svg.styles = e
 	}
 	s = s.match(/[^{]+{[^}]+}/g)	// insert each style
 	while (1) {
