@@ -684,7 +684,7 @@ function xygl(x, y, gl) {
 				gla[1].push(sy(y))
 				gla[2] += tgl.c
 			}
-		} else {
+		} else if (gl != 'nil') {
 			error(1, null, 'no definition of $1', gl)
 		}
 	}
