@@ -1,6 +1,6 @@
 // abcweb1-1.js file to include in html pages with abc2svg-1.js
 //
-// Copyright (C) 2019-2022 Jean-Francois Moine
+// Copyright (C) 2019-2024 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -316,6 +316,7 @@ onclick="abc2svg.do_render(\'.*\')">' + tt +
 			user.anno_stop = function(){}
 
 		tune_lst = []
+		abc2svg.abc =			// for external access
 		abc = new abc2svg.Abc(user)
 		new_page = ""
 

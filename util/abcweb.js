@@ -1,6 +1,6 @@
 // abcweb-1.js file to include in html pages
 //
-// Copyright (C) 2014-2023 Jean-Francois Moine
+// Copyright (C) 2014-2024 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -515,6 +515,7 @@ function clean_txt(txt) {
 	save_music()	// save the music sequences and replace them by <div>
 
 	// initialize the generation
+	abc2svg.abc =				// for external access
 	abc = new abc2svg.Abc(user)
 	if (typeof follow == "function")	// if snd-1.js loaded
 		follow(abc, user, playconf)	// initialize the play follow
