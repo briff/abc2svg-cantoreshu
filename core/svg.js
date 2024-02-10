@@ -59,9 +59,9 @@ var tgls = {
   brace: {x:0, y:0, c:"\ue000"},
   lphr: {x:0, y:23, c:"\ue030"},
   mphr: {x:0, y:23, c:"\ue038"},
-  sphr: {x:0, y:26, c:"\ue039"},
+  sphr: {x:0, y:25, c:"\ue039"},
   short: {x:0, y:32, c:"\ue038"},
-  tick: {x:0, y:29, c:"\ue039"},
+  tick: {x:0, y:25, c:"\ue039"},
   rdots: {x:-1, y:0, c:"\ue043"},	// repeat dots
   dsgn: {x:-12, y:0, c:"\ue045"},	// D.S.
   dcap: {x:-12, y:0, c:"\ue046"},	// D.C.

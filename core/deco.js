@@ -562,17 +562,18 @@ function d_upstaff(de) {
 
 	// glyphs inside the staff
 	switch (dd.glyph) {
-	case "brth":
-	case "caes":
 	case "lphr":
 	case "mphr":
 	case "sphr":
 	case "short":
 	case "tick":
-		y = staff_tb[s.st].topbar + 2 + dd.hd
-		if (s.type == C.BAR) {
+		if (s.type == C.BAR)
 			s.invis = 1
-		} else {
+		// fall thru
+	case "brth":
+	case "caes":
+		y = staff_tb[s.st].topbar + 2 + dd.hd
+		if (!s.invis) {
 			if (dd.glyph == "brth" && y < s.ymx)
 				y = s.ymx
 			for (s = s.ts_next; s; s = s.ts_next)
