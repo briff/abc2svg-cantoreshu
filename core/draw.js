@@ -1,6 +1,6 @@
 // abc2svg - draw.js - draw functions
 //
-// Copyright (C) 2014-2023 Jean-Francois Moine
+// Copyright (C) 2014-2024 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -426,16 +426,6 @@ Abc.prototype.calculate_beam = function(bm, s1) {
 			s.ys = a * s.xs + b - staff_tb[s.st].y
 			if (s.stem > 0) {
 				s.ymx = s.ys + 2.5
-//fixme: hack
-				if (s.ts_prev
-				 && s.ts_prev.stem > 0
-				 && s.ts_prev.st == s.st
-				 && s.ts_prev.ymn < s.ymx
-				 && s.ts_prev.x == s.x
-				 && s.notes[0].shhd == 0) {
-					s.ts_prev.x -= 3;	/* fix stem clash */
-					s.ts_prev.xs -= 3
-				}
 			} else {
 				s.ymn = s.ys - 2.5
 			}
