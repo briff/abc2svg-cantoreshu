@@ -26,7 +26,7 @@ rule jsc
 	d=`date -Idate`;$
 	v="abc2svg.version=\"$$v\";abc2svg.vdate=\"$$d\"";$
    else $
-	v=`grep abc2svg.version $out`;$
+	v=`cat version.txt`;$
    fi;$
    cp core/license $out;$
    if [ "x$$NOMIN" = "x" ]; then $
@@ -94,7 +94,6 @@ build abc2svg-$MAJOR.js: jsc core/abc2svg.js core/deco.js core/draw.js $
  font.js core/format.js core/front.js core/music.js core/parse.js core/subs.js $
  core/svg.js core/tune.js core/lyrics.js core/gchord.js core/tail.js $
  core/modules.js
-#| package.json
 
 build ambitus-$MAJOR.js: jscu modules/ambitus.js
 build break-$MAJOR.js: jscu modules/break.js
@@ -167,11 +166,12 @@ rule version
 	else $
 		v=`echo $$v|awk -F. -v OFS=. '{$$2 += 1; $$3=0; print}'`;$
 	fi;$
-	fossil commit --allow-empty -m "New release $$v" -tag $$v;$
+	d=`date -Idate`;$
+	echo "abc2svg.version=\"$$v\";abc2svg.vdate=\"$$d\"" > version.txt;$
+	fossil commit -m "New release $$v" -tag $$v;$
 	n=`tail -1 abc2svg-1.js|wc -c`;$
 	truncate -s -$$n abc2svg-1.js;$
-	d=`date -Idate`;$
-	echo "abc2svg.version=\"$$v\";abc2svg.vdate=\"$$d\"" >> abc2svg-1.js;$
+	cat version.txt >> abc2svg-1.js;$
 	r="abc2svg-$$v";$
 	ln -s . $$r;$
 	sed "s#^#$$r/#" dist_bin | pax -wj -x tar -f abc2svg.tar.bz2;$
