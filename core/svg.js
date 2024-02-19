@@ -1391,8 +1391,13 @@ function svg_flush() {
 			'<div class="nobrk">' :
 			'<div class="nobrk newpage">')
 		blkdiv = -1		// block started
+	} else if (blkdiv < 0 && cfmt.splittune) {
+		i = 1			// header and first music line
+		blkdiv = 0
 	}
 	user.img_out(head + output + g + "</svg>");
+	if (i)
+		user.img_out("</div>")
 	output = ""
 
 	font_style = ''
@@ -1412,7 +1417,7 @@ function svg_flush() {
 // mark the end of a <div> block
 function blk_flush() {
 	svg_flush()
-	if (blkdiv < 0 && (!parse.state || cfmt.splittune)) {
+	if (blkdiv < 0 && !parse.state) {
 		user.img_out('</div>')
 		blkdiv = 0
 	}

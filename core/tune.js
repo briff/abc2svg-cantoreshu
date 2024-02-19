@@ -2245,6 +2245,8 @@ function goto_tune() {
 
 	set_page();
 	write_heading();
+	blk_flush()				// tune heading in a specific SVG
+
 	if (glovar.new_nbar) {
 		gene.nbar = glovar.new_nbar	// measure numbering
 		glovar.new_nbar = 0
