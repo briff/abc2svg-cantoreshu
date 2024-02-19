@@ -276,7 +276,8 @@ Printing may be bad because the file contains pure HTML and %%pageheight\
 
 			c = get_p(s)			// get custom properties
 			div = document.createElement('div')
-			if (s.text.indexOf('\nX:') < 0) {
+			if (!abc2svg.music[0].t
+			 && s.text.indexOf('\nX:') < 0) {
 				abc2svg.music[0].t += c + s.innerHTML // global
 				if (!abc2svg.music[0].d)
 					abc2svg.music[0].d = div
