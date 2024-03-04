@@ -732,7 +732,7 @@ var info_font_init = {
 	X: "title"
 }
 function write_headform(lwidth) {
-    var	c, font, font_name, align, x, y, sz, w,
+    var	c, font, font_name, align, x, y, sz, w, yd,
 		info_val = {},
 		info_font = Object.create(info_font_init),
 		info_sz = {
@@ -879,6 +879,7 @@ function write_headform(lwidth) {
 			set_font(font);
 			x = xa[align];
 			y = ya[align] + sz
+			yd = y - font.size * .22	// descent
 
 			if (c == 'Q') {			/* special case for tempo */
 				self.set_width(glovar.tempo)
@@ -897,7 +898,7 @@ function write_headform(lwidth) {
 				if (c == 'T')
 					str = trim_title(str,
 							 info_font.T[0] == 's')
-				xy_str(x, -y, str, align)
+				xy_str(x, -yd, str, align)
 			}
 
 			if (c == 'T') {
@@ -915,7 +916,7 @@ function write_headform(lwidth) {
 				while (info_val[c].length > 0) {
 					y += sz;
 					str = info_val[c].shift();
-					xy_str(x, -y, str, align)
+					xy_str(x, -yd, str, align)
 				}
 			}
 			info_nb[c]--;
