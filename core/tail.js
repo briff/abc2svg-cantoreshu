@@ -79,6 +79,7 @@ Abc.prototype.set_dscale = set_dscale;
 Abc.prototype.set_font = set_font;
 Abc.prototype.set_a_gch = function(s, a) { a_gch = a; csan_add(s) }
 Abc.prototype.set_hl = set_hl
+Abc.prototype.set_map = set_map
 Abc.prototype.set_page = set_page
 Abc.prototype.set_pagef = function() { blkdiv = 1 }
 Abc.prototype.set_realwidth = function(v) { realwidth = v }

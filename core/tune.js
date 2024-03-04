@@ -434,16 +434,6 @@ Abc.prototype.voice_adj = function (sys_chg) {
 		}
 	} // ins_pq()
 
-	// do the note mapping stuff
-	function do_map(s) {
-	    var	m, nt
-
-		for (m = 0; m <= s.nhd; m++) {
-			nt = s.notes[m]
-			set_map(s.p_v, nt, nt.acc, 1)		// transpose done
-		}
-	} // do_map()
-
 	// set the duration of the notes under a feathered beam
 	function set_feathered_beam(s1) {
 		var	s, s2, t, d, b, i, a,
@@ -572,9 +562,6 @@ Abc.prototype.voice_adj = function (sys_chg) {
 			case C.NOTE:
 				if (s.feathered_beam)
 					set_feathered_beam(s)
-				if (p_voice.map
-				 && maps[p_voice.map])
-					do_map(s)
 				break
 			}
 		}

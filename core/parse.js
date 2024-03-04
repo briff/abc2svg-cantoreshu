@@ -1762,7 +1762,10 @@ function parse_acc_pit(line) {
 function set_map(p_v, note, acc,
 		 trp) {			// transpose done
     var	nn = not2abc(note.pit, acc),
-	map = maps[p_v.map]		// never null
+	map = maps[p_v.map]
+
+	if (!map)
+		return
 
 	if (!map[nn]) {
 		nn = 'o' + nn.replace(/[',]+/, '')	// ' octave
@@ -2181,8 +2184,7 @@ Abc.prototype.new_note = function(grace, sls) {
 				note.midi = pit2mid(apit, i)
 
 			// transpose
-			if (curvoice.map
-			 && maps[curvoice.map])
+			if (curvoice.map)
 				set_map(curvoice, note, i)	// transpose not done
 			if (curvoice.tr_sco) {
 			    if (!note.notrp) {
@@ -2198,6 +2200,8 @@ Abc.prototype.new_note = function(grace, sls) {
 			}
 			if (curvoice.tr_snd)
 				note.midi += curvoice.tr_snd
+			if (curvoice.map)
+				set_map(curvoice, note, note.acc, 1)	// transpose done
 
 //fixme: does not work if transposition
 			if (i) {
