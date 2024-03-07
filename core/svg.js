@@ -913,7 +913,7 @@ function out_deco_str(x, y, de) {
 	if (name == 'fng') {
 		out_XYAB('\
 <text x="X" y="Y" style="font-size:14px">A</text>\n',
-			x - 2, y, m_gl(de.dd.str))
+			x - 2, y + 1, m_gl(de.dd.str))
 		return
 	}
 

@@ -175,7 +175,8 @@ var decos = {
 	cacc3: "3 cacc3 0 0 0",
 	cacc1: "3 cacc1 0 0 0",
 	"tie(": "44 0 0 0 0",
-	"tie)": "44 0 0 0 0"},
+	"tie)": "44 0 0 0 0",
+	fg: "45 0 0 0 0"},
 
 	// types of decoration per function
 	f_near = [
@@ -679,7 +680,7 @@ function deco_def(nm, nmd) {
 		return //undefined
 	}
 	if (c_func > 10
-	 && (c_func < 32 || c_func > 44)) {
+	 && (c_func < 32 || c_func > 45)) {
 		error(1, null, "%%deco: bad C function index '$1'", c_func)
 		return //undefined
 	}
@@ -827,7 +828,41 @@ function get_dd(nm) {
 
 /* -- convert the decorations -- */
 function deco_cnv(s, prev) {
-    var	i, j, dd, nm, note, s1, court
+    var	i, j, dd, nm, note, s1, court, fg
+
+	// mark a finger glissendo
+	// (the end finger is already recorded)
+	function sav_fg() {
+	    var	i,
+		s1 = prev
+
+		if (s.type != C.NOTE)
+			return 1
+		while (s1 && s1.type != C.NOTE)
+			s1 = s1.prev
+		if (!s1)
+			return 1
+		for (i = 0; i < s1.a_dd.length; i++) {
+			if (s1.a_dd[i].name == dd.name) {
+				if (!s.fg)
+					s.fg = []
+				s.fg.push({
+					ty: 1,		// end of glissendo
+					s: s1,
+					nm: dd.name
+				})
+				if (!s1.fg)
+					s1.fg = []
+				s1.fg.push({
+					ty: 0,		// start of glissendo
+					s: s,
+					nm: dd.name
+				})
+				return 0
+			}
+		}
+		return 1
+	} // sav_fg()
 
 	while (1) {
 		nm = a_dcn.shift()
@@ -1007,8 +1042,22 @@ function deco_cnv(s, prev) {
 			}
 			do_ctie(nm, s, s.notes[0])	// (only one note for now)
 			continue
+		case 45:		// finger glissendo
+			fg = 1 //true
+			continue
 //		default:
 //			break
+		}
+
+		// handle the fingering in case finger glissendo
+		if (fg && dd.glyph == 'fng') {
+			fg = 0 //false
+			if (sav_fg()) {
+				error(1, s,
+					"!$1! must be on the last of a couple of notes",
+					nm)
+				continue
+			}
 		}
 
 		// add the decoration in the symbol
@@ -1163,6 +1212,44 @@ Abc.prototype.draw_all_deco = function() {
 		new_de = [],
 		ymid = []
 
+	// display a finger glissendo
+	function out_fg() {
+	    var	j, k, l, de2, fg, fg2, w, x2
+
+loop:		for (j = 0; j < s.fg.length; j++) {
+			fg = s.fg[j]
+			if (fg.ty) {		// end
+				if (fg.ty > 1)
+					continue // already treated in glissendo start
+				out_wln(x - 19, y, 12)
+				continue
+			}
+			x2 = x + 7		// start
+			for (k = 0; k < a_de.length; k++) {
+				de2 = a_de[k]
+				if (de2.s != fg.s)
+					continue
+				for (l = 0; l < de2.s.fg.length; l++) {
+					fg2 = de2.s.fg[l]
+					if (fg2.nm == fg.nm)
+						break
+				}
+				if (fg2.nm == fg.nm) {		// if same finger
+					fg2.ty = 2		// end done
+					w = de2.x - 7 - x2
+					if (de2.y < de.y) {
+						de2.y = de.y
+					} else if (de2.y > de.y) {
+						y += de2.y - de.y
+					}
+					out_wln(x2, y, w)
+					continue loop
+				}
+			}
+			out_wln(x2, y, 12)	// start without end
+		}
+	} // out_fg()
+
 		st = nstaff;
 		y = staff_tb[st].y
 		while (--st >= 0) {
@@ -1285,6 +1372,8 @@ Abc.prototype.draw_all_deco = function() {
 		} else if (dd.str != undefined		// string
 			&& !tgls[dd.glyph]
 			&& !glyphs[dd.glyph]) {		// with a class
+			if (s.fg)			// if finger glissendo
+				out_fg()		// (may change y)
 			out_deco_str(x, y,		// - dd.h * .2,
 					de)
 		} else if (de.lden) {
