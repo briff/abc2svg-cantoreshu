@@ -831,7 +831,6 @@ function deco_cnv(s, prev) {
     var	i, j, dd, nm, note, s1, court, fg
 
 	// mark a finger glissando
-	// (the end finger is already recorded)
 	function sav_fg() {
 	    var	i,
 		s1 = prev
@@ -886,6 +885,15 @@ function deco_cnv(s, prev) {
 			if (!s.notes) {
 				error(1, s, errs.must_note_rest, nm)
 				continue
+			}
+			break
+		case 3:
+			if (fg && dd.glyph == "fng") { // move the fingers out of staves
+				for (i = 0; i <= 5; i++) {
+					decos[i.toString()] = "5 fng 5,5 3 3 " + i
+					if (dd_tb[i.toString()])
+						dd_tb[i.toString()].func = 5
+				}
 			}
 			break
 		case 4:			// below the staff
@@ -1214,40 +1222,45 @@ Abc.prototype.draw_all_deco = function() {
 
 	// display a finger glissando
 	function out_fg() {
-	    var	j, k, l, de2, fg, fg2, w, x2
+	    var	k, l, de2, fg, fg2, x2,
+		j = s.fg.length
 
-loop:		for (j = 0; j < s.fg.length; j++) {
+		while (--j >= 0) {
 			fg = s.fg[j]
-			if (fg.ty) {		// end
-				if (fg.ty > 1)
-					continue // already treated in glissando start
-				out_wln(x - 19, y, 12)
-				continue
-			}
-			x2 = x + 7		// start
-			for (k = 0; k < a_de.length; k++) {
-				de2 = a_de[k]
-				if (de2.s != fg.s)
-					continue
-				for (l = 0; l < de2.s.fg.length; l++) {
-					fg2 = de2.s.fg[l]
-					if (fg2.nm == fg.nm)
-						break
-				}
-				if (fg2.nm == fg.nm) {		// if same finger
-					fg2.ty = 2		// end done
-					w = de2.x - 7 - x2
-					if (de2.y < de.y) {
-						de2.y = de.y
-					} else if (de2.y > de.y) {
-						y += de2.y - de.y
-					}
-					out_wln(x2, y, w)
-					continue loop
-				}
-			}
-			out_wln(x2, y, 12)	// start without end
+			if (fg.nm == dd.name)
+				break
 		}
+		if (j < 0)
+			return
+
+		if (fg.ty) {		// end
+			if (fg.ty == 1)		// no start (not treated yet)
+				out_wln(x - 19, y, 12)
+			return
+		}
+
+		x2 = x + 7		// start
+		for (k = 0; k < a_de.length; k++) {
+			de2 = a_de[k]
+			if (de2.s != fg.s
+			 || de2.dd.name != dd.name)
+				continue
+			for (l = 0; l < de2.s.fg.length; l++) {
+				fg2 = de2.s.fg[l]
+				if (fg2.nm == fg.nm)
+					break
+			}
+			if (fg2.nm == fg.nm) {		// if same finger
+				fg2.ty = 2		// end done
+				xypath(x2, y + 1)
+				output += 'l' + (de2.x - 7 - x2).toFixed(1)
+					+ ' ' + (y - de2.y
+						- staff_tb[s.st].y).toFixed(1)
+					+ '" stroke-width=".7"/>\n'
+				return
+			}
+		}
+		out_wln(x2, y, 12)	// start without end
 	} // out_fg()
 
 		st = nstaff;
