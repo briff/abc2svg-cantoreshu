@@ -592,10 +592,6 @@ function put_words(words) {
 			xy_str(x + 5, y, p.slice(i), 'l')
 	} // put_wline()
 
-	set_font("words")
-	vskip(cfmt.wordsspace)
-	svg_flush()
-
 	// estimate the width of the lines
 	words = words.split('\n')
 	nw = words.length
@@ -610,6 +606,12 @@ function put_words(words) {
 			i1 = i		// keep this line
 		}
 	}
+	if (i1 == undefined)
+		return			// no text in the W: lines!
+
+	set_font("words")
+	vskip(cfmt.wordsspace)
+	svg_flush()
 
 	w = get_lwidth() / 2		// half line width
 	lw = strwh(words[i1])[0]
