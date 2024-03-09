@@ -459,7 +459,7 @@ break
 						if (ly.ln == 1)
 							w[i] += '-'
 					} else {
-						t = t.replace(/ /g, '~')
+						t = t.replace(/ /g, '~')
 						t = t.replace(/-/g, '\\-')
 						if (t.slice(-1) != "-")
 							t += ' '
