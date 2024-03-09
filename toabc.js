@@ -1,6 +1,6 @@
 // abc2svg - toabc.js - convert ABC to ABC
 //
-// Copyright (C) 2016-2023 Jean-Francois Moine
+// Copyright (C) 2016-2024 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -988,10 +988,10 @@ break
 			vti[v] = s.time
 		}
 		sym_dump(s)
-		if (s.dur)
+		if (s.dur) {
 			vti[v] = s.time + s.dur
-		if (s.next) {
-			if (s.beam_end && !s.beam_st && !s.next.beam_end)
+			if (s.dur < C.BLEN / 4 && s.beam_end
+			 && s.next && s.next.dur && s.next.dur < C.BLEN / 4)
 				line += ' '
 		}
 		if (line)
