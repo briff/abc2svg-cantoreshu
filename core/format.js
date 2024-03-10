@@ -644,7 +644,7 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "vocalspace":
 	case "wordsspace":
 		f = get_unit(param)	// normally, unit in points - 72 DPI accepted
-		if (isNaN(f))
+		if (isNaN(f) || f < 0)
 			syntax(1, errs.bad_val, '%%' + cmd)
 		else
 			cfmt[cmd] = f
