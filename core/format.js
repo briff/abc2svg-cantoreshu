@@ -1,6 +1,6 @@
 // abc2svg - format.js - formatting functions
 //
-// Copyright (C) 2014-2023 Jean-Francois Moine
+// Copyright (C) 2014-2024 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -597,7 +597,6 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "hyphencont":
 	case "keywarn":
 	case "linewarn":
-	case "quiet":
 	case "squarebreve":
 	case "splittune":
 	case "straightflags":
@@ -821,10 +820,11 @@ Abc.prototype.set_format = function(cmd, param) {
 		cfmt[cmd] = get_textopt(param)
 		break
 	case "dynalign":
+	case "quiet":
 	case "singleline":
 	case "stretchlast":
 	case "titletrim":
-		v = +param
+		v = param == '' ? 1 : +param
 		if (isNaN(v))
 			v = get_bool(param) ? 0 : 1
 		if (cmd[1] == 't') {		// stretchlast
