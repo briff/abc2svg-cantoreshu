@@ -2319,6 +2319,17 @@ Abc.prototype.new_note = function(grace, sls) {
 	}
 
 	if (s.notes) {				// if note or rest
+		if (!s.fmr) {			// (but not full measure rest)
+			n = s.dur_orig / 12	// check its duration
+			i = 0
+			while (!(n & 1)) {
+				n >>= 1
+				i++
+			}
+			if ((n + 1) & n)
+				error(0, s, "Non standard note duration $1",
+					n + '/' + (1 << (6 - i)))
+		}
 		if (!grace) {
 			switch (curvoice.pos.stm & 0x07) {
 			case C.SL_ABOVE: s.stem = 1; break
