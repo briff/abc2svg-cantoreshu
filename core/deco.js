@@ -2173,7 +2173,8 @@ function draw_partempo() {
 			xy_str(s2.x,
 				ymin + 2 + gene.curfont.pad + gene.curfont.size * .22,
 				s2.text)
-			y_set(st, 1, s2.x, w + 3, ymin + 2 + h)
+			y_set(st, 1, s2.x, w + 3,
+				(ymin + 2 + h) / staff_tb[st].staffscale)
 			if (s2.x < 0)
 				yn = ymin + 2 + h
 			anno_stop(s2)
@@ -2226,7 +2227,8 @@ function draw_partempo() {
 			}
 			writempo(s, s.x - 16, y)
 			anno_stop(s)
-			y_set(st, 1, s.x - 16, w, y + h + 2)
+			y_set(st, 1, s.x - 16, w,
+				(y + h + 2) / staff_tb[st].staffscale)
 			dosh >>= 1
 		}
 	}
