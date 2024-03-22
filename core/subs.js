@@ -337,7 +337,7 @@ function xy_str(x, y,
 		wh) {		// optional [width, height]
 	if (!wh)
 		wh = str.wh || strwh(str)
-	if (cfmt.trimsvg) {
+	if (cfmt.singleline || cfmt.trimsvg) {
 	    var wx = wh[0]
 		switch (action) {
 		case 'c':
