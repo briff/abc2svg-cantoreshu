@@ -501,8 +501,7 @@ Here are the scripts which are used in a web context:
 
     This script also accepts a parameter `with_source`.
     When this parameter is set, the music source is included before the
-    SVG images of the music. An argument `nohead` prevents displaying
-    the source of the first music sequence. The music source is displayed
+    SVG images of the music. The music source is displayed
     in a &lt;pre&gt; element of class `source`. The SVG's are included
     in a &lt;div&gt; of the same class `source`.
     The source may be displayed either above (default) or

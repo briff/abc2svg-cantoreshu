@@ -1330,7 +1330,7 @@ function vskip(h) {
 
 // create the SVG image of the block
 function svg_flush() {
-	if (multicol || !output || !user.img_out || posy == 0)
+	if (multicol || !user.img_out || posy == 0)
 		return
 
     var	i, font,
