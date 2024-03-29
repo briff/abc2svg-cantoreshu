@@ -508,6 +508,8 @@ abc2svg.play_next = function(po) {
 			v: s2.v
 		}
 
+		p_v.vol = p_v.pan = undefined	// reset the controllers
+
 		for (i in p_v.midictl) { // MIDI controls at voice start time
 			s.ctrl = Number(i)
 			s.val = p_v.midictl[i]
