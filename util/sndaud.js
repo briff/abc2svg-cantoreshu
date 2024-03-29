@@ -1,6 +1,6 @@
 // sndaud.js - audio output using HTML5 audio
 //
-// Copyright (C) 2019-2023 Jean-Francois Moine
+// Copyright (C) 2019-2024 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -443,6 +443,10 @@ function Audio5(i_conf) {
 		case 7:				// volume
 			s.p_v.vol = s.val / 127
 			break
+		case 10:			// pan
+			s.p_v.pan = s.val / 63.5 - 1
+					// ((0) -1: left, (127) 1:right, (64) 0)
+			break
 		case 32:			// bank LSB
 			if (po.v_b[s.v] == undefined)
 				po.v_b[s.v] = 0
@@ -517,7 +521,15 @@ function Audio5(i_conf) {
 		g.gain.exponentialRampToValueAtTime(parm.sustain * v,
 					t + parm.decay)
 
-		o.connect(g)
+		if (s.p_v.pan != undefined) {	// (control 10)
+		    var	p = po.ac.createStereoPanner()
+			p.pan.value = s.p_v.pan
+					
+			o.connect(p)
+			p.connect(g)
+		} else {
+			o.connect(g)
+		}
 		g.connect(po.gain)
 
 		// start the note
