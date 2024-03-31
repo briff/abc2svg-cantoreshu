@@ -3144,6 +3144,10 @@ if (st > nst) {
 				if (s.ts_next.a_gch)
 					s.a_gch = s.ts_next.a_gch
 				unlksym(s.ts_next)
+
+				if (!s.ts_prev.dur || s.ts_prev.time != s.time
+				 && s.ts_next.time != s.time)
+					continue	// rest alone in the staff
 				// fall thru
 			case C.NOTE:
 			case C.GRACE:
