@@ -2168,7 +2168,8 @@ Abc.prototype.new_note = function(grace, sls) {
 					i = curvoice.ckey.k_map[apit % 7] || 0
 			}
 
-			if (i) {
+			if (i
+			 && !curvoice.ckey.k_drum) {
 				if (cfmt["propagate-accidentals"][0] == 'p')
 					curvoice.acc[apit % 7] = i
 				else if (cfmt["propagate-accidentals"][0] != 'n')
