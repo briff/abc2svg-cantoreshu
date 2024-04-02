@@ -116,7 +116,7 @@ abc2svg.tropt = {
 					nt.pit = np
 					nt.acc = na
 					if (p_v.map)
-						this.set_map(p_v, nt, na, 1)
+						this.set_map(p_v, nt, na)
 				}
 			}
 		}

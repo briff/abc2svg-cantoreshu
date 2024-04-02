@@ -1754,7 +1754,7 @@ function parse_acc_pit(line) {
 //	[2] color
 //	[3] play (note)
 function set_map(p_v, note, acc,
-		 trp) {			// transpose done
+		trp_p) {			// flag "do transpose?"
     var	nn = not2abc(note.pit, acc),
 	map = maps[p_v.map]
 
@@ -1774,16 +1774,21 @@ function set_map(p_v, note, acc,
 		}
 	}
 	map = map[nn]
-	if (!trp) {				// transpose not done yet
-		if (map[1]) {			// if note shift
+
+	if (trp_p) {
+		if (map[1] && map[1].notrp)
+			note.notrp = 1 //true	// no transpose
+		return
+	}
+
+	if (map[1]				// if note transpose
+	 && !note.map) {			// for the first time
 			note.pit = map[1].pit
 			note.acc = map[1].acc
 			if (map[1].notrp) {
 				note.notrp = 1 //true	// no transpose
 				note.noplay = 1 //true	// no play
 			}
-		}
-		return
 	}
 	note.map = map
 
@@ -2178,10 +2183,9 @@ Abc.prototype.new_note = function(grace, sls) {
 				note.midi = pit2mid(apit, i)
 
 			// transpose
-			if (curvoice.map)
-				set_map(curvoice, note, i)	// transpose not done
 			if (curvoice.tr_sco) {
-			    if (!note.notrp) {
+				set_map(curvoice, note, i, 1)	// possible transpose?
+			    if (!note.notrp) {			// yes
 				i = nt_trans(note, i)
 				if (i == -3) {		// if triple sharp/flat
 					error(1, s, "triple sharp/flat")
@@ -2195,7 +2199,7 @@ Abc.prototype.new_note = function(grace, sls) {
 			if (curvoice.tr_snd)
 				note.midi += curvoice.tr_snd
 			if (curvoice.map)
-				set_map(curvoice, note, note.acc, 1)	// transpose done
+				set_map(curvoice, note, i)
 
 //fixme: does not work if transposition
 			if (i) {
