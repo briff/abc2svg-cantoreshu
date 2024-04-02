@@ -3145,8 +3145,10 @@ if (st > nst) {
 					s.a_gch = s.ts_next.a_gch
 				unlksym(s.ts_next)
 
-				if (!s.ts_prev.dur || s.ts_prev.time != s.time
-				 && s.ts_next.time != s.time)
+				if ((!s.ts_prev.dur || s.ts_prev.time != s.time
+				  || s.ts_prev.st != s.st)
+				 && (s.ts_next.time != s.time
+				  || s.ts_next.st != s.st))
 					continue	// rest alone in the staff
 				// fall thru
 			case C.NOTE:
@@ -3287,22 +3289,27 @@ function set_rest_offset() {
 			v_s.end_time = s.time + s.dur
 			if (s.fmr)			// if full meeasure rest
 				v_s.end_time -= s.p_v.wmeasure * .3
-			if (!s.seqst) {
-				s2 = s.ts_prev
-					if (s2.st == s.st
-					 && s.ymx > s2.ymn
-					 && !s2.invis) {
-						if (s2.type == C.NOTE) {
-							v_s.d = s2.ymn - s.ymx
-							break
-						}
-						if (s2.type == C.REST
-						 && s2.y < 18
-						 && s.y >= 6)
-							v_s.d = -6
-					}
+			if (s.seqst)
+				continue
+			s2 = s.ts_prev
+			if (s2.st != s.st
+			 || s2.invis)
+				continue
+			d = s2.ymn
+			if (v_s_tb[s2.v] && v_s_tb[s2.v].d
+			 && v_s_tb[s2.v] >= s.time)
+				d += v_s_tb[s2.v].d
+			if (s.ymx <= d)
+				continue
+			if (s2.type == C.NOTE) {
+				v_s.d = d - s.ymx
+				break
 			}
-			continue
+			if (s2.type == C.REST
+			 && s2.y < 18
+			 && s.y >= 6)
+				v_s.d = (d - s.ymx) / 2
+			break
 		case C.NOTE:
 			if (s.invis || !s.multi)
 				continue
