@@ -178,6 +178,7 @@ function sort_all() {
 		if (!fl) {
 			while (prev.type == C.GRACE
 			    && vtb[prev.v] && !vtb[prev.v].bar_type) {
+				delete prev.seqst
 				vtb[prev.v] = prev
 				prev = prev.ts_prev
 				fl = 1 //true
