@@ -1818,7 +1818,8 @@ function set_nl(s) {			// s = start of line
 			switch (s2.type) {
 			case C.KEY:
 				if (!s.fmt.keywarn
-				 || s2.invis)
+				 || s2.invis
+				 || (!s2.k_sf && !s2.k_a_acc))	// no accidental
 					continue
 				for (s1 = s.ts_prev; s1 ;s1 = s1.ts_prev) {
 					if (s1.type != C.METER)
