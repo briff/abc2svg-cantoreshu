@@ -2196,7 +2196,7 @@ function draw_slur(path,	// list of symbols under the slur
 		addy += 4 * Math.sqrt(height) - 2
 	else
 		addy -= 4 * Math.sqrt(-height) - 2
-	for (i = 0; i < i2; i++) {
+	for (i = 0; i <= i2; i++) {
 		k = path[i]
 		if (k.st != k1.st || k.type == C.BAR)
 			continue
@@ -2207,7 +2207,7 @@ function draw_slur(path,	// list of symbols under the slur
 			k.ymn = y
 		if (recurr)			// no room when slur on 2 staves
 			continue
-		if (i == i2 - 1) {
+		if (i == i2) {
 			dx = x2
 			if (sl.nte)
 				dx -= 5;
