@@ -2193,9 +2193,9 @@ function draw_slur(path,	// list of symbols under the slur
 //fixme: the following code seems better!
 	addy = y1 - a * x1
 	if (height > 0)
-		addy += 4 * Math.sqrt(height) - 2
+		addy += 3 * Math.sqrt(height) - 2
 	else
-		addy -= 4 * Math.sqrt(-height) - 2
+		addy -= 3 * Math.sqrt(-height) - 2
 	for (i = 0; i <= i2; i++) {
 		k = path[i]
 		if (k.st != k1.st || k.type == C.BAR)
