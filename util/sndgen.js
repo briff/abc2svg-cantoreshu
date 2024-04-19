@@ -220,6 +220,29 @@ function ToAudio() {
 		}
 	} // build_parts()
 
+	// update the time linkage when the start time has changed
+	function relink(s, dt) {
+	    var	tim = s.time + dt,		// new time
+		s2 = s.ts_next
+
+		s.ts_prev.ts_next = s2		// remove from the time linkage
+		s2.ts_prev = s.ts_prev
+
+		while (!s2.seqst && s2.ts_next)
+			s2 = s2.ts_next
+		if (s2.time < s.time + dt)	// don't move after the next time seq.
+			dt = s2.time - s.time
+		s.time += dt			// update time and duration
+		s.dur -= dt
+		s.ts_prev = s2.ts_prev		// update the time linkage
+		s.ts_prev.ts_next = s
+		s.ts_next = s2
+		s2.ts_prev = s
+		s.seqst = 1 //true
+		if (s2.time == s.time)
+			s2.seqst = 0 //false
+	} // relink()
+
 	// generate the grace notes
 	function gen_grace(s) {
 	    var	g, i, n, t, d, s2,
@@ -241,8 +264,7 @@ function ToAudio() {
 				d = next.dur / 3
 			if (s.p_v.key.k_bagpipe)
 				d /= 2
-			next.time += d
-			next.dur -= d
+			relink(next, d)
 		}
 //fixme: assume the grace notes in the sequence have the same duration
 		n = 0
