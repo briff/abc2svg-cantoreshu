@@ -504,12 +504,13 @@ Abc.prototype.set_vp = function(a) {
 			break
 		case "stafflines=":
 			val = get_st_lines(a.shift())
-			if (val == undefined)
+			if (val == undefined) {
 				syntax(1, "Bad %%stafflines value")
-			else if (curvoice.st != undefined)
+				break
+			}
+			if (curvoice.st != undefined)
 				par_sy.staves[curvoice.st].stafflines = val
-			else
-				curvoice.stafflines = val
+			curvoice.stafflines = val
 			break
 		case "staffnonote=":
 			val = +a.shift()

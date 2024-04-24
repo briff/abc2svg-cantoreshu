@@ -3393,23 +3393,41 @@ function draw_systems(indent) {
 
 	/* -- set the bottom and height of the measure bars -- */
 	function bar_set() {
-		var	st, staffscale, top, bot,
-			dy = 0
+	    var	st, sc, i, stlines, b,
+		dy = 0
 
 		for (st = 0; st <= cur_sy.nstaff; st++) {
 			if (xstaff[st] < 0) {
 				bar_bot[st] = bar_height[st] = 0
 				continue
 			}
-			staffscale = staff_tb[st].staffscale;
-			top = staff_tb[st].topbar * staffscale;
-			bot = staff_tb[st].botbar * staffscale
-			if (dy == 0)
-				dy = staff_tb[st].y + top;
-			bar_bot[st] = staff_tb[st].y + bot;
+			sc = staff_tb[st].staffscale;
+			stlines = cur_sy.staves[st].stafflines
+			for (i = 0; i < stlines.length - 1; i++) {
+				if (stlines[i] != '.' && stlines[i] != '-')
+					break
+			}
+			bar_bot[st] = staff_tb[st].y + 6 * i * sc
+			if (!dy)
+				dy = staff_tb[st].y + 6 * (stlines.length - 1) * sc
 			bar_height[st] = dy - bar_bot[st];
 			dy = (cur_sy.staves[st].flags & STOP_BAR) ?
 					0 : bar_bot[st]
+		}
+
+		// if in the middle of the tune, check the previous bar(s)
+		i = ba.length
+		if (!i)
+			return
+		while (1) {
+			b = ba[--i]
+			st = b[0].st
+			if (b[1] > bar_bot[st])
+				b[1] = bar_bot[st]
+			if (b[2] < bar_height[st])
+				b[2] = bar_height[st]
+			if (b[0].seqst)		// end of time sequence
+				break
 		}
 	} // bar_set()
 
@@ -3418,7 +3436,7 @@ function draw_systems(indent) {
 	    var	w, i, dy, ty,
 			y = 0,
 			ln = "",
-			stafflines = staff_tb[st].stafflines,
+		stafflines = cur_sy.staves[st].stafflines,
 			l = stafflines.length,
 			il = 6 * staff_tb[st].staffscale // interline
 
