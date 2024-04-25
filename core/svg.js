@@ -1,6 +1,6 @@
 // abc2svg - svg.js - svg functions
 //
-// Copyright (C) 2014-2023 Jean-Francois Moine
+// Copyright (C) 2014-2024 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -41,6 +41,8 @@ var	output = "",		// output buffer
 	fulldefs = '',		// unreferenced defs as <filter>
 	stv_g = {		/* staff/voice graphic parameters */
 		scale: 1,
+		stsc: 1,	// staff scale
+		vsc: 1,		// voice scale
 		dy: 0,
 		st: -1,
 		v: -1,
@@ -329,8 +331,9 @@ function set_color(color) {
 function set_sscale(st) {
 	var	new_scale, dy
 
+	stv_g.vsc = 1
 	if (st != stv_g.st && stv_g.scale != 1)
-		stv_g.scale = 0;
+		stv_g.scale = 1
 	new_scale = st >= 0 ? staff_tb[st].staffscale : 1
 	if (st >= 0 && new_scale != 1)
 		dy = staff_tb[st].y
@@ -338,7 +341,8 @@ function set_sscale(st) {
 		dy = posy
 	if (new_scale == stv_g.scale && dy == stv_g.dy)
 		return
-	stv_g.scale = new_scale;
+	stv_g.stsc =
+		stv_g.scale = new_scale
 	stv_g.dy = dy;
 	stv_g.st = st;
 	stv_g.v = -1;
@@ -355,13 +359,14 @@ function set_scale(s) {
 		return
 	}
 	new_dy = posy
-	if (staff_tb[s.st].staffscale != 1) {
-		new_scale *= staff_tb[s.st].staffscale;
+	if (stv_g.stsc != 1) {
+		new_scale *= stv_g.stsc
 		new_dy = staff_tb[s.st].y
 	}
 	if (new_scale == stv_g.scale && stv_g.dy == posy)
 		return
 	stv_g.scale = new_scale;
+	stv_g.vsc = s.p_v.scale
 	stv_g.dy = new_dy;
 	stv_g.st = staff_tb[s.st].staffscale == 1 ? -1 : s.st;
 	stv_g.v = s.v;
@@ -531,7 +536,7 @@ function sy(y) {
 	if (stv_g.scale == 1)
 		return posy - y
 	if (stv_g.v >= 0)
-		return (stv_g.dy - y) / voice_tb[stv_g.v].scale
+		return (stv_g.dy - y) / stv_g.vsc
 	return stv_g.dy - y	// staff scale only
 }
 Abc.prototype.sy = sy;

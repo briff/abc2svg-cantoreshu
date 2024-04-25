@@ -503,7 +503,7 @@ function draw_beams(bm) {
 		y1 = bm.a * x1 + bm.b - dy;
 		x2 -= x1;
 		x2 /= stv_g.scale;
-		dy2 = bm.a * x2 * stv_g.scale
+		dy2 = bm.a * x2 * stv_g.stsc
 		xypath(x1, y1, true);
 		output += 'l' + x2.toFixed(1) + ' ' + (-dy2).toFixed(1) +
 			'v' + h.toFixed(1) +
