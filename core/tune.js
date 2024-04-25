@@ -1546,7 +1546,7 @@ function get_staves(cmd, parm) {
 		// if no parameter, duplicate the current staff system
 		// and do a voice re-synchronization
 		if (!parm) {
-			s.sy = clone(par_sy, 1)
+			s.sy = clone(par_sy, 2)		// clone the staves and voices
 			par_sy.next = s.sy
 			par_sy = s.sy
 			staves_found = maxtime
