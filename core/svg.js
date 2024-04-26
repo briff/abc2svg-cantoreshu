@@ -331,7 +331,6 @@ function set_color(color) {
 function set_sscale(st) {
 	var	new_scale, dy
 
-	stv_g.vsc = 1
 	if (st != stv_g.st && stv_g.scale != 1)
 		stv_g.scale = 1
 	new_scale = st >= 0 ? staff_tb[st].staffscale : 1
@@ -339,10 +338,11 @@ function set_sscale(st) {
 		dy = staff_tb[st].y
 	else
 		dy = posy
-	if (new_scale == stv_g.scale && dy == stv_g.dy)
+	if (new_scale == stv_g.scale && dy == stv_g.dy && stv_g.vsc == 1)
 		return
 	stv_g.stsc =
 		stv_g.scale = new_scale
+	stv_g.vsc = 1
 	stv_g.dy = dy;
 	stv_g.st = st;
 	stv_g.v = -1;
