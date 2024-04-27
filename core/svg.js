@@ -64,7 +64,8 @@ var tgls = {
   sphr: {x:0, y:25, c:"\ue039"},
   short: {x:0, y:32, c:"\ue038"},
   tick: {x:0, y:25, c:"\ue039"},
-  rdots: {x:-1, y:0, c:"\ue043"},	// repeat dots
+  rdots: {x:0, y:0, c:"\ue043"},	// repeat dots
+  rdot: {x:0, y:0, c:"\ue044"},		// single repeat dot
   dsgn: {x:-12, y:0, c:"\ue045"},	// D.S.
   dcap: {x:-12, y:0, c:"\ue046"},	// D.C.
   sgno: {x:-5, y:0, c:"\ue047"},	// segno

@@ -3403,13 +3403,17 @@ function draw_systems(indent) {
 			}
 			sc = staff_tb[st].staffscale;
 			stlines = cur_sy.staves[st].stafflines
-			for (i = 0; i < stlines.length - 1; i++) {
+			for (i = 0; i < stlines.length; i++) {
 				if (stlines[i] != '.' && stlines[i] != '-')
 					break
 			}
 			bar_bot[st] = staff_tb[st].y + 6 * i * sc
-			if (!dy)
-				dy = staff_tb[st].y + 6 * (stlines.length - 1) * sc
+			if (!dy) {
+				dy = stlines.length - 1
+				if (dy <= i)
+					bar_bot[st] -= 6 * (1 + i - dy++) * sc
+				dy = staff_tb[st].y + 6 * dy * sc
+			}
 			bar_height[st] = dy - bar_bot[st];
 			dy = (cur_sy.staves[st].flags & STOP_BAR) ?
 					0 : bar_bot[st]
@@ -3575,7 +3579,16 @@ function draw_systems(indent) {
 			case ":":
 				x -= 2;
 				set_sscale(st);
-				xygl(x + 1, yb - 12, "rdots")
+				if (h <= 6 || h / 6 & 1) {
+					if (h == 6) {
+						xygl(x, bot + 3, "rdot")
+					} else {
+						xygl(x, bot + h / 2 + 6, "rdot")
+						xygl(x, bot + h / 2 - 6, "rdot")
+					}
+				} else {
+					xygl(x, yb - 12, "rdots")
+				}
 				set_sscale(-1)
 				break
 			}
