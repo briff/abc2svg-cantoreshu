@@ -3718,6 +3718,9 @@ function draw_systems(indent) {
 					continue
 				if (s.ts_prev.bar_type) {
 					x2 = s.ts_prev.x
+					if (sy.staves[st].stafflines.length >
+					    cur_sy.staves[st].stafflines.length)
+						x2 -= s.ts_prev.wl - 4
 				} else {
 					x2 = (s.ts_prev.x + s.x) / 2
 					xstaff[st] = -1
