@@ -843,10 +843,10 @@ Abc.prototype.draw_hl = function(s) {
 
 	// handle the helper lines out of the staff
     var	dx1, dx2, hl, shhd,hlp,
-	stafflines = p_staff.stafflines,
+	stafflines = cur_sy.staves[st].stafflines,
 	top = stafflines.length - 1,
 	yu =  top,
-	bot = p_staff.botline / 6,
+	bot = (p_staff.hll - 17) / 2,
 	yl = bot,
 	dx = s.grace ? 4 : hw_tb[s.head] * 1.3
 
@@ -3387,13 +3387,14 @@ function draw_systems(indent) {
 		stl = [],		// all staves in the line
 		bar_bot = [],
 		bar_height = [],
+		bar_top = [],
 		ba = [],		// bars [symbol, bottom, height]
 		sb = "",
 		thb = ""
 
 	/* -- set the bottom and height of the measure bars -- */
 	function bar_set() {
-	    var	st, sc, i, stlines, b,
+	    var	st, sc, i, j, l, stlines, b, hlmap,
 		dy = 0
 
 		for (st = 0; st <= cur_sy.nstaff; st++) {
@@ -3403,18 +3404,49 @@ function draw_systems(indent) {
 			}
 			sc = staff_tb[st].staffscale;
 			stlines = cur_sy.staves[st].stafflines
-			for (i = 0; i < stlines.length; i++) {
+			l = stlines.length
+			for (i = 0; i < l; i++) {
 				if (stlines[i] != '.' && stlines[i] != '-')
 					break
 			}
-			bar_bot[st] = staff_tb[st].y + 6 * i * sc
+			if (i >= l - 1)			// 0 or 1 line
+				bar_bot[st] = staff_tb[st].y + 6 * (l - 2) * sc
+			else
+				bar_bot[st] = staff_tb[st].y + 6 * i * sc
 			if (!dy) {
-				dy = stlines.length - 1
-				if (dy <= i)
-					bar_bot[st] -= 6 * (1 + i - dy++) * sc
-				dy = staff_tb[st].y + 6 * dy * sc
+				if (i >= l - 1) {
+					dy = staff_tb[st].y + 6 * l * sc
+					bar_top[st] = 12
+				} else {
+					dy = staff_tb[st].y + 6 * (l - 1) * sc
+					bar_top[st] = 6 * (l - 1 - i)
+				}
+			} else {
+				bar_top[st] = 6 * (l - 1 - i)
 			}
 			bar_height[st] = dy - bar_bot[st];
+
+			// define the helper lines
+			if (stlines[l-1]!= '.') {	// if any staff line
+				staff_tb[st].hll = 17 + i * 2	// pitch of lowest note
+							// without helper line
+							// ('D' when standard staff)
+				if (i == l)
+					staff_tb[st].hll -= 2
+				staff_tb[st].hlmap =
+					hlmap = new Int8Array((l - i + 1) * 2 + 2)
+				for (j = 1; i < l; i++, j += 2) {
+					switch (stlines[i]) {
+					case '|':
+					case '[':
+						hlmap[j - 1] = 1	// no helper line
+						hlmap[j] = 1
+						hlmap[j + 1] = 1
+						break
+					}
+				}
+			}
+
 			dy = (cur_sy.staves[st].flags & STOP_BAR) ?
 					0 : bar_bot[st]
 		}
@@ -3430,6 +3462,8 @@ function draw_systems(indent) {
 				b[1] = bar_bot[st]
 			if (b[2] < bar_height[st])
 				b[2] = bar_height[st]
+			if (b[3] < bar_top[st])
+				b[3] = bar_top[st]
 			if (b[0].seqst)		// end of time sequence
 				break
 		}
@@ -3502,7 +3536,7 @@ function draw_systems(indent) {
 	} // draw_staff()
 
 	// draw a measure bar
-	function draw_bar(s, bot, h) {
+	function draw_bar(s, bot, h, top) {
 	    var	i, s2, yb, w,
 		bar_type = s.bar_type,
 		st = s.st,
@@ -3515,7 +3549,7 @@ function draw_systems(indent) {
 //fixme: 's.ts_prev.st != st - 1' when floating voice in lower staff
 //	 && (s.ts_prev.type != C.BAR || s.ts_prev.st != st - 1))
 		 && s.ts_prev.type != C.BAR)
-			h = p_staff.topbar * p_staff.staffscale;
+			h = p_staff.y + top * p_staff.staffscale
 
 		s.ymx = s.ymn + h;
 
@@ -3525,9 +3559,7 @@ function draw_systems(indent) {
 			set_color(s.color);
 
 		// compute the middle vertical offset of the staff
-		yb = p_staff.y + 12;
-		if (p_staff.stafflines != '|||||')
-			yb += (p_staff.topbar + p_staff.botbar) / 2 - 12 // bottom
+		yb = bot + top / 2
 
 		// if measure repeat, draw the '%' like glyphs
 		if (s.bar_mrep) {
@@ -3579,12 +3611,12 @@ function draw_systems(indent) {
 			case ":":
 				x -= 2;
 				set_sscale(st);
-				if (h <= 6 || h / 6 & 1) {
-					if (h == 6) {
-						xygl(x, bot + 3, "rdot")
+				if (top <= 6 || top / 6 & 1) {
+					if (top == 6) {
+						xygl(x, yb, "rdot")
 					} else {
-						xygl(x, bot + h / 2 + 6, "rdot")
-						xygl(x, bot + h / 2 - 6, "rdot")
+						xygl(x, yb + 6, "rdot")
+						xygl(x, yb - 6, "rdot")
 					}
 				} else {
 					xygl(x, yb - 12, "rdots")
@@ -3608,8 +3640,8 @@ function draw_systems(indent) {
 		if (bx)
 			gene.curfont.box = 0
 		for (i = 0; i < l; i++) {
-			b = ba[i];		// symbol, bottom, height
-			draw_bar(b[0], b[1], b[2])
+			b = ba[i]		// symbol, bottom, height, top
+			draw_bar(b[0], b[1], b[2], b[3])
 		}
 		if (bx)
 			gene.curfont.box = bx
@@ -3629,6 +3661,7 @@ function draw_systems(indent) {
 	// set the helper lines of rests
 	function hl_rest(s) {
 	    var	j,
+		stlines = cur_sy.staves[s.st].stafflines,
 		p_st = staff_tb[s.st],
 		i = 5 - s.nflags,		// rest_tb index (5 = C_XFLAGS)
 		x = s.x,
@@ -3638,13 +3671,13 @@ function draw_systems(indent) {
 			return
 
 		if (i == 7 && y == 12
-		 && p_st.stafflines.length <= 2)
+		 && stlines.length <= 2)
 			y -= 6			// semibreve a bit lower
 
 		j = y / 6
 		switch (i) {
 		default:
-			switch (p_st.stafflines[j + 1]) {
+			switch (stlines[j + 1]) {
 			case '|':
 			case '[':
 				break
@@ -3663,7 +3696,7 @@ function draw_systems(indent) {
 		case 6:				// minim
 			break
 		}
-		switch (p_st.stafflines[j]) {
+		switch (stlines[j]) {
 		case '|':
 		case '[':
 			break
@@ -3740,7 +3773,7 @@ function draw_systems(indent) {
 			  || (s.ts_prev.type == C.BAR
 			   && s.ts_prev.st == s.st)))
 				break
-			ba.push([s, bar_bot[s.st], bar_height[s.st]])
+			ba.push([s, bar_bot[s.st], bar_height[s.st], bar_top[s.st]])
 			break
 		case C.STBRK:
 			if (cur_sy.voices[s.v]
