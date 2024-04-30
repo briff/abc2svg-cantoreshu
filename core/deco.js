@@ -59,7 +59,7 @@ var	dd_tb = {},		// definition of the decorations
 var decos = {
 	dot: "0 stc 6 1.5 1",
 	tenuto: "0 emb 6 4 3",
-	slide: "1 sld 3 7 1",
+	slide: "1 sld 10 7 1",
 	arpeggio: "2 arp 12 10 3",
 	roll: "3 roll 5,4 5 6",
 	lowermordent: "3 lmrd 6,5 4 6",
@@ -404,6 +404,10 @@ function d_slide(de) {
 //	de.x = s.x - xc;
 	de.x -= xc;
 	de.y = 3 * (yc - 18)
+	de.y -= 2
+
+	if (de.y < 0)
+		y_set(s.st, 0, de.x, de.dd.wl, de.y - de.dd.h)
 }
 
 // special case for long decoration
