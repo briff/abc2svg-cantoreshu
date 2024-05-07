@@ -181,8 +181,8 @@ var decos = {
 	// types of decoration per function
 	f_near = [
 		d_near,		// 0 - near the note
-		d_slide,	// 1
-		d_arp		// 2
+		d_slide,	// 1 - slide or tied to the note stem
+		d_arp		// 2 - arpeggio
 	],
 	f_note = [
 		null, null, null,
@@ -378,11 +378,11 @@ function d_near(de) {
 
 /* 1: special case for slide */
 function d_slide(de) {
-	var	m, dx,
-		s = de.s,
-		yc = s.notes[0].pit,
-		xc = 5
+    var	m, dx, xc,
+	s = de.s,
+	yc = s.y
 
+      if (de.dd.glyph == "sld") {		// !slide!
 	for (m = 0; m <= s.nhd; m++) {
 		if (s.notes[m].acc) {
 			dx = 4 + s.notes[m].shac
@@ -398,13 +398,39 @@ function d_slide(de) {
 				break
 			}
 		}
-		if (s.notes[m].pit <= yc + 3 && dx > xc)
-			xc = dx
+		if (s.notes[m].pit <= yc + 3 && dx > 5)
+			xc = -dx
+		else
+			xc = -5
 	}
-//	de.x = s.x - xc;
-	de.x -= xc;
-	de.y = 3 * (yc - 18)
-	de.y -= 2
+      } else {					// decoration tied to the stem
+		if (de.s.stem >= 0) {
+			if (s.nflags >= -1) {
+				xc = 3.5
+				yc = s.ys
+				if (s.nflags > 1)
+					yc -= 4 * (s.nflags - 1)
+			} else {
+				xc = 0
+				yc = s.y + 21
+			}
+			yc = (yc + 3 * (s.notes[s.nhd].pit - 18)) / 2
+		} else {
+			de.rotpi = 1//true	// rotate pi (180°)
+			if (s.nflags >= -1) {
+				xc = -3.5
+				yc = s.ys
+				if (s.nflags > 1)
+					yc += 4 * (s.nflags - 1)
+			} else {
+				xc = 0
+				yc = s.y - 21
+			}
+			yc = (yc + 3 * (s.notes[0].pit - 18)) / 2
+		}
+      }
+	de.x += xc;
+	de.y = yc
 
 	if (de.y < 0)
 		y_set(s.st, 0, de.x, de.dd.wl, de.y - de.dd.h)
@@ -883,7 +909,10 @@ function deco_cnv(s, prev) {
 				continue
 			}
 			// fall thru
-		case 1:			// slide
+		case 1:			// slide & deco on stem
+			if (nm != "slide")
+				s.decstm=dd.h		// deco stem
+			// fall thru
 		case 2:			// arp
 //			if (s.type != C.NOTE && s.type != C.REST) {
 			if (!s.notes) {
@@ -1375,6 +1404,9 @@ Abc.prototype.draw_all_deco = function() {
 		if (de.inv) {
 			y = y + dd.h - dd.hd
 			g_open(x, y, 0, 1, -1);
+			x = y = 0
+		} else if (de.rotpi) {
+			g_open(x, y, 180)
 			x = y = 0
 		}
 		if (de.has_val) {
