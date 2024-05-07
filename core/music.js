@@ -67,6 +67,10 @@ var w_note = new Float32Array([
 
 // get head type, dots, flags of note/rest for a duration
 function identify_note(s, dur_o) {
+    var	r = abc2svg.hdn[dur_o]
+	if (r)				// in cache?
+		return r
+
     var	head, flags,
 	dots = 0,
 	dur = dur_o
@@ -105,7 +109,9 @@ function identify_note(s, dur_o) {
 		head = C.EMPTY
 		break
 	}
-	return [head, dots, flags]
+	abc2svg.hdn[dur_o] =
+		r = [head, dots, flags]
+	return r
 }
 
 function set_head_shift(s) {
@@ -4692,7 +4698,7 @@ Abc.prototype.set_stems = function() {
 		/* set height of stem end */
 		slen = s.fmt.stemheight
 		switch (nflags) {
-		case 2: slen += 0; break
+//		case 2: slen += 0; break
 		case 3:	slen += 4; break
 		case 4:	slen += 8; break
 		case 5:	slen += 12; break

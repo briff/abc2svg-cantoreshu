@@ -172,6 +172,9 @@ abc2svg.ch_alias = {
 abc2svg.font_tb = []	// fonts - index = font.fid
 abc2svg.font_st = {}	// font style => font_tb index for incomplete user fonts
 
+// cache for converting a duration into [head, dots, nflags]
+abc2svg.hdn = {}
+
 // font weight
 // reference:
 //	https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight
