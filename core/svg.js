@@ -339,7 +339,8 @@ function set_sscale(st) {
 		dy = staff_tb[st].y
 	else
 		dy = posy
-	if (new_scale == stv_g.scale && dy == stv_g.dy && stv_g.vsc == 1)
+	if (new_scale == stv_g.scale && dy == stv_g.dy
+	 && stv_g.st == st && stv_g.vsc == 1)
 		return
 	stv_g.stsc =
 		stv_g.scale = new_scale
@@ -353,23 +354,26 @@ function set_sscale(st) {
 /* -- set the voice or staff scale -- */
 function set_scale(s) {
     var	new_dy,
+	st = staff_tb[s.st].staffscale == 1 ? -1 : s.st,
 	new_scale = s.p_v.scale
 
 	if (new_scale == 1) {
-		set_sscale(s.st)
+	    if (stv_g.st != st)
+		set_sscale(st)
 		return
 	}
 	new_dy = posy
-	if (stv_g.stsc != 1) {
-		new_scale *= stv_g.stsc
-		new_dy = staff_tb[s.st].y
+	
+	if (st >= 0) {
+		new_scale *= staff_tb[st].staffscale
+		new_dy = staff_tb[st].y
 	}
-	if (new_scale == stv_g.scale && stv_g.dy == posy)
+	if (new_scale == stv_g.scale && stv_g.dy == new_dy)
 		return
 	stv_g.scale = new_scale;
 	stv_g.vsc = s.p_v.scale
 	stv_g.dy = new_dy;
-	stv_g.st = staff_tb[s.st].staffscale == 1 ? -1 : s.st;
+	stv_g.st = st
 	stv_g.v = s.v;
 	set_g()
 }
