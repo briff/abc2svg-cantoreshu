@@ -3549,7 +3549,7 @@ function draw_systems(indent) {
 //fixme: 's.ts_prev.st != st - 1' when floating voice in lower staff
 //	 && (s.ts_prev.type != C.BAR || s.ts_prev.st != st - 1))
 		 && s.ts_prev.type != C.BAR)
-			h = p_staff.y + top * p_staff.staffscale
+			h = top * p_staff.staffscale
 
 		s.ymx = s.ymn + h;
 
@@ -3585,15 +3585,15 @@ function draw_systems(indent) {
 				if (s.bar_dotted) {
 					w = (5 * p_staff.staffscale).toFixed(1);
 					out_XYAB(
-			'<path class="bW" stroke-dasharray="A,A" d="MX Yv-G"/>\n',
-						x, bot, w, h)
+			'<path class="bW" stroke-dasharray="A,A" d="MX YvG"/>\n',
+						x, bot, w, -h)
 				} else if (s.color) {
-					out_XYAB('<path class="bW" d="MX Yv-F"/>\n',
-						x, bot, h)
+					out_XYAB('<path class="bW" d="MX YvF"/>\n',
+						x, bot, -h)
 				} else {
 					sb += 'M' + sx(x).toFixed(1)
 						+ ' ' + self.sy(bot).toFixed(1)
-						+ 'v-' + h.toFixed(1)
+						+ 'v' + (-h).toFixed(1)
 				}
 				break
 			default:
@@ -3601,12 +3601,12 @@ function draw_systems(indent) {
 //			case "]":
 				x -= 3;
 				if (s.color)
-					out_XYAB('<path class="bthW" d="MX Yv-F"/>\n',
-						x + 1.5, bot, h)
+					out_XYAB('<path class="bthW" d="MX YvF"/>\n',
+						x + 1.5, bot, -h)
 				else
 					thb += 'M' + sx(x + 1.5).toFixed(1)
 						+ ' ' + self.sy(bot).toFixed(1)
-						+ 'v-' + h.toFixed(1)
+						+ 'v' + (-h).toFixed(1)
 				break
 			case ":":
 				x -= 2;
