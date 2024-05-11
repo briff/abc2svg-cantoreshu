@@ -869,6 +869,9 @@ Abc.prototype.set_width = function(s) {
 						break
 					}
 				}
+				if (bar_type[0] == ":"		// if "c3 :|"
+				 && s.prev && s.prev.dots)
+					w += 4
 				break
 			}
 			s.wl = w
