@@ -4354,6 +4354,10 @@ function set_overlap() {
 			continue
 		}
 
+		// set the dot vertical offset of secondary voices
+		if (s.second)
+			s.dot_low = 1 //true
+
 		/* treat the stem on two staves with different directions */
 		if (s.xstem
 		 && s.ts_prev.stem < 0) {
@@ -4381,12 +4385,6 @@ function set_overlap() {
 		if (!s2)
 			continue
 		s1 = s
-
-		/* set the dot vertical offset */
-		if (sy.voices[s1.v].range < sy.voices[s2.v].range)
-			s2.dot_low = true
-		else
-			s1.dot_low = true
 
 		/* no shift if no overlap */
 		if (s1.ymn > s2.ymx
