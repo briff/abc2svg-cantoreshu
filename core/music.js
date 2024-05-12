@@ -5285,7 +5285,7 @@ function gen_init() {
 /* -- generate the music -- */
 // (possible hook)
 Abc.prototype.output_music = function() {
-    var v, lwidth, indent, lsh, line_height, ts1st, tslast, p_v,
+    var v, lwidth, indent, lsh, line_height, ts1st, tslast, p_v, meter1,
 	nv = voice_tb.length
 
 	set_global()
@@ -5333,6 +5333,7 @@ Abc.prototype.output_music = function() {
 	v = nv
 	while (--v >= 0)
 		voice_tb[v].osym = voice_tb[v].sym
+	meter1 = ts1st.p_v.meter
 
 	spf_last = .65				// last spacing factor
 	while (1) {				/* loop per music line */
@@ -5391,4 +5392,5 @@ Abc.prototype.output_music = function() {
 			p_v.sym.prev = p_v.s_prev
 		p_v.sym = p_v.osym
 	}
+	ts1st.p_v.meter = meter1
 }
