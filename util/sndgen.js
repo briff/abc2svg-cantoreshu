@@ -628,6 +628,8 @@ abc2svg.play_next = function(po) {
 					if (s.rep_v)
 						s2 = var_end(s)
 					po.repn = false
+					if (s.bar_type.slice(-1) == ':') // if ::
+						po.repv = 1
 				}
 			}
 			if (s.rep_s) {			// first variant
