@@ -3422,7 +3422,7 @@ function draw_systems(indent) {
 					bar_top[st] = 6 * (l - 1 - i)
 				}
 			} else {
-				bar_top[st] = 6 * (l - 1 - i)
+				bar_top[st] = 6 * (l - 1 - i) || 12
 			}
 			bar_height[st] = dy - bar_bot[st];
 
