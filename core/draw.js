@@ -3387,7 +3387,7 @@ function draw_systems(indent) {
 		stl = [],		// all staves in the line
 		bar_bot = [],
 		bar_height = [],
-		bar_top = [],
+		bar_ng = [],		// number of gaps
 		ba = [],		// bars [symbol, bottom, height]
 		sb = "",
 		thb = ""
@@ -3411,20 +3411,19 @@ function draw_systems(indent) {
 			}
 			if (i >= l - 1)			// 0 or 1 line
 				bar_bot[st] = staff_tb[st].y + 6 * (l - 2) * sc
+			else if (i == l - 2)		// 2 lines
+				bar_bot[st] = staff_tb[st].y + 6 * (l - 3) * sc
 			else
 				bar_bot[st] = staff_tb[st].y + 6 * i * sc
 			if (!dy) {
-				if (i >= l - 1) {
+				if (i >= l - 2) {	// 0, 1 or 2 lines
 					dy = staff_tb[st].y + 6 * l * sc
-					bar_top[st] = 12
 				} else {
 					dy = staff_tb[st].y + 6 * (l - 1) * sc
-					bar_top[st] = 6 * (l - 1 - i)
 				}
-			} else {
-				bar_top[st] = 6 * (l - 1 - i) || 12
 			}
 			bar_height[st] = dy - bar_bot[st];
+			bar_ng[st] = l - i && l - 1 - i	// number of gaps
 
 			// define the helper lines
 			if (stlines[l-1]!= '.') {	// if any staff line
@@ -3462,8 +3461,8 @@ function draw_systems(indent) {
 				b[1] = bar_bot[st]
 			if (b[2] < bar_height[st])
 				b[2] = bar_height[st]
-			if (b[3] < bar_top[st])
-				b[3] = bar_top[st]
+			if (b[3] < bar_ng[st])
+				b[3] = bar_ng[st]
 			if (b[0].seqst)		// end of time sequence
 				break
 		}
@@ -3536,11 +3535,12 @@ function draw_systems(indent) {
 	} // draw_staff()
 
 	// draw a measure bar
-	function draw_bar(s, bot, h, top) {
+	function draw_bar(s, bot, h, ng) {
 	    var	i, s2, yb, w,
 		bar_type = s.bar_type,
 		st = s.st,
 		p_staff = staff_tb[st],
+		top = ng <= 3 ? 12 : 6 * ng,
 		x = s.x
 
 		// don't put a line between the staves if there is no bar above
@@ -3611,13 +3611,9 @@ function draw_systems(indent) {
 			case ":":
 				x -= 2;
 				set_sscale(st);
-				if (top <= 6 || top / 6 & 1) {
-					if (top == 6) {
-						xygl(x, yb, "rdot")
-					} else {
-						xygl(x, yb + 6, "rdot")
-						xygl(x, yb - 6, "rdot")
-					}
+				if (ng & 1) {
+					xygl(x, yb + 9, "rdot")
+					xygl(x, yb - 3, "rdot")
 				} else {
 					xygl(x, yb - 12, "rdots")
 				}
@@ -3773,7 +3769,7 @@ function draw_systems(indent) {
 			  || (s.ts_prev.type == C.BAR
 			   && s.ts_prev.st == s.st)))
 				break
-			ba.push([s, bar_bot[s.st], bar_height[s.st], bar_top[s.st]])
+			ba.push([s, bar_bot[s.st], bar_height[s.st], bar_ng[s.st]])
 			break
 		case C.STBRK:
 			if (cur_sy.voices[s.v]
