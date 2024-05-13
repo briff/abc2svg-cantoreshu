@@ -365,6 +365,7 @@ function ToAudio() {
 				s.rep_p = rst		// :| to |:
 				if (rst == rsk[0])
 					s.rep_v = rsk	// to know the number of variants
+				rst = s			// possible restart (..:|..:|)
 			}
 
 			// 1st time repeat
