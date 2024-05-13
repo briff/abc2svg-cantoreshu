@@ -3540,7 +3540,7 @@ function draw_systems(indent) {
 		bar_type = s.bar_type,
 		st = s.st,
 		p_staff = staff_tb[st],
-		top = ng <= 3 ? 12 : 6 * ng,
+		top = ng < 3 ? 12 : 6 * ng,
 		x = s.x
 
 		// don't put a line between the staves if there is no bar above
@@ -3612,8 +3612,8 @@ function draw_systems(indent) {
 				x -= 2;
 				set_sscale(st);
 				if (ng & 1) {
-					xygl(x, yb + 9, "rdot")
-					xygl(x, yb - 3, "rdot")
+					xygl(x, yb + 6, "rdot")
+					xygl(x, yb - 6, "rdot")
 				} else {
 					xygl(x, yb - 12, "rdots")
 				}
