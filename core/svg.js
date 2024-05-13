@@ -1355,6 +1355,8 @@ function svg_flush() {
 
 	glout()
 
+	if (cfmt.fgcolor)
+		head += ' color="' + cfmt.fgcolor + '"'
 	font = get_font("music")
 	head += ' class="' + font_class(font) +
 		' tune' + tunes.length + '"\n'	// tune index for play
@@ -1366,15 +1368,11 @@ function svg_flush() {
 		head += ' width="' + w
 			+ 'px" height="' + posy.toFixed(0) + 'px"'
 	head += ' viewBox="0 0 ' + w + ' '
-		+ posy.toFixed(0) + '"'
-	if (cfmt.fgcolor || cfmt.bgcolor)
-		head += ' style="'
-			+ (cfmt.fgcolor ? ('color:' + cfmt.fgcolor + ';')
-					: '')
-			+ (cfmt.bgcolor ? ('background-color:' + cfmt.bgcolor)
-					: '')
-			+ '"'
-	head += '>\n' + fulldefs
+		+ posy.toFixed(0) + '">\n'
+	head += fulldefs
+	if (cfmt.bgcolor)
+		head += '<rect width="100%" height="100%" fill="'
+			+ cfmt.bgcolor + '"/>\n'
 
 	if (style || font_style)
 		head += '<style>' + font_style + style + '\n</style>\n'
