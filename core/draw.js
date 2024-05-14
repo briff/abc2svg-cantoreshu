@@ -3583,10 +3583,13 @@ function draw_systems(indent) {
 			switch (bar_type[i]) {
 			case "|":
 				if (s.bar_dotted) {
-					w = (5 * p_staff.staffscale).toFixed(1);
+					w = top / 6 <= 9
+					    ? [0, 0, 4, 3.6, 4.8, 4.3, 4, 4.7, 4.4, 4.9]
+							[top / 6]
+						: 5
 					out_XYAB(
 			'<path class="bW" stroke-dasharray="A,A" d="MX YvG"/>\n',
-						x, bot, w, -h)
+						x, bot, w * p_staff.staffscale, -h)
 				} else if (s.color) {
 					out_XYAB('<path class="bW" d="MX YvF"/>\n',
 						x, bot, -h)
