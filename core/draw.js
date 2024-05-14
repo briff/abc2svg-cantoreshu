@@ -3540,7 +3540,7 @@ function draw_systems(indent) {
 		bar_type = s.bar_type,
 		st = s.st,
 		p_staff = staff_tb[st],
-		top = ng < 3 ? 12 : 6 * ng,
+		top = ng >= 3 ? 6 * ng : ng == 1 ? 18 : 12,
 		x = s.x
 
 		// don't put a line between the staves if there is no bar above
