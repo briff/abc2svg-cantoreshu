@@ -24,6 +24,8 @@ var	output = "",		// output buffer
 \n.bthW{stroke:currentColor;fill:none;stroke-width:3}\
 \n.slW{stroke:currentColor;fill:none;stroke-width:.7}\
 \n.slthW{stroke:currentColor;fill:none;stroke-width:1.5}\
+\n.sltnW{stroke:currentColor;fill:none;stroke-width:.25}\
+\n.sldW{stroke:currentColor;fill:none;stroke-width:.7;stroke-dasharray:5,10}\
 \n.sW{stroke:currentColor;fill:none;stroke-width:.7}\
 \n.box{outline:1px solid black;outline-offset:1px}',
 	font_style = '',

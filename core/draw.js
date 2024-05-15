@@ -3438,6 +3438,8 @@ function draw_systems(indent) {
 					switch (stlines[i]) {
 					case '|':
 					case '[':
+					case "'":
+//					case ':':
 						hlmap[j - 1] = 1	// no helper line
 						hlmap[j] = 1
 						hlmap[j + 1] = 1
@@ -3473,11 +3475,17 @@ function draw_systems(indent) {
 	    var	w, i, dy, ty,
 			y = 0,
 			ln = "",
+		tycl = {
+		"|": "slW",		// normal
+		"[": "slthW",		// thick
+		"'": "sltnW",		// thin
+		":": "sldW"		// dash
+		},
 		stafflines = cur_sy.staves[st].stafflines,
 			l = stafflines.length,
 			il = 6 * staff_tb[st].staffscale // interline
 
-		if (!/[\[|]/.test(stafflines))
+		if (!/[\[|':]/.test(stafflines))	// '
 			return				// no line
 		w = x2 - x1;
 		set_sscale(-1)
@@ -3508,8 +3516,7 @@ function draw_systems(indent) {
 				if (ty != undefined)
 					ln += '"/>\n';
 				ty = stafflines[i]
-				ln += '<path class="' +
-					(ty == '[' ? 'slthW' : 'slW') +
+				ln += '<path class="' + tycl[ty] +
 					'" d="m0 ' + y + 'h' + w.toFixed(1);
 				dy = 0
 			}
@@ -3679,6 +3686,8 @@ function draw_systems(indent) {
 			switch (stlines[j + 1]) {
 			case '|':
 			case '[':
+			case "'":
+			case ':':
 				break
 			default:
 				set_hl(p_st, j + 1, x, -7, 7)
@@ -3698,6 +3707,8 @@ function draw_systems(indent) {
 		switch (stlines[j]) {
 		case '|':
 		case '[':
+		case "'":
+		case ':':
 			break
 		default:
 			set_hl(p_st, j, x, -7, 7)
