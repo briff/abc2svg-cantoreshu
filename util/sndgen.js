@@ -315,7 +315,8 @@ function ToAudio() {
 		abc2svg.chord(first, voice_tb, cfmt)
 
 	// if %%playbeats, create the sounds
-	if (cfmt.playbeats)
+	if (cfmt.playbeats
+	  && first.p_v.meter.wmeasure != 1)	// if not M:none
 		def_beats()
 
 	if (s.parts)
