@@ -912,8 +912,10 @@ function use_font(font) {
 				set_font_fac(font)
 			if (!font.pad)
 				font.pad = 0
+		}
 
 			// set the pointer to the width of the characters
+		if (!font.cw_tb) {
 			font.cw_tb = !font.name ? ssw_tb
 				: font.name.indexOf("ans") > 0
 					? ssw_tb		// sans-serif
