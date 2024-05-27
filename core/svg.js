@@ -1204,8 +1204,8 @@ function out_deco_long(x, y, de) {
 	deco_l_tb[name](x, y, de)
 }
 
-// return a tempo note
-function tempo_note(s, dur) {
+// add a tempo note in 'str' and return its number of characters
+function tempo_note(str, s, dur, dy) {
     var	p,
 	elts = identify_note(s, dur)
 
@@ -1231,8 +1231,14 @@ function tempo_note(s, dur) {
 		break
 	}
 	if (elts[1])			// dot
-		p += '<tspan dx=".1em">\uecb7</tspan>'
-	return p
+		p += '</tspan><tspan dx=".15em">\uecb7'
+	str.push('<tspan\nclass="' +
+			font_class(cfmt.musicfont) +
+		'" style="font-size:' +
+		(gene.curfont.size * 1.3).toFixed(1) + 'px"' +
+		dy + '>' +
+		p + '</tspan>')
+	return elts[1] ? 2 : 1
 } // tempo_note()
 
 // build the tempo string
@@ -1256,14 +1262,7 @@ function tempo_build(s) {
 	if (s.tempo_notes) {
 		dy = ' dy="-1"'			// notes a bit higher
 		for (i = 0; i < s.tempo_notes.length; i++) {
-			p = tempo_note(s, s.tempo_notes[i])
-			str.push('<tspan\nclass="' +
-					font_class(cfmt.musicfont) +
-				'" style="font-size:' +
-				(gene.curfont.size * 1.3).toFixed(1) + 'px"' +
-				dy + '>' +
-				p + '</tspan>')
-			j = p.length > 1 ? 2 : 1	// (note and optional dot)
+			j = tempo_note(str, s, s.tempo_notes[i], dy)
 			w += j * gene.curfont.swfac
 			dy = ''
 		}
@@ -1278,14 +1277,7 @@ function tempo_build(s) {
 			str.push(s.tempo)
 			w += strwh(s.tempo.toString())[0]
 		} else {			// with a beat as a note
-			p = tempo_note(s, s.new_beat)
-			str.push('<tspan\nclass="' +
-					font_class(cfmt.musicfont) +
-				'" style="font-size:' +
-				(gene.curfont.size * 1.3).toFixed(1) +
-				'px" dy="-1">' +
-				p + '</tspan>')
-			j = p.length > 1 ? 2 : 1
+			j = tempo_note(str, s, s.new_beat, ' dy="-1"')
 			w += j * gene.curfont.swfac
 			dy = 'y'
 		}
