@@ -1230,14 +1230,13 @@ function tempo_note(str, s, dur, dy) {
 		}
 		break
 	}
-	if (elts[1])			// dot
-		p += '</tspan><tspan dx=".15em">\uecb7'
 	str.push('<tspan\nclass="' +
 			font_class(cfmt.musicfont) +
 		'" style="font-size:' +
 		(gene.curfont.size * 1.3).toFixed(1) + 'px"' +
 		dy + '>' +
-		p + '</tspan>')
+		p + '</tspan>'
+		+ (elts[1] ? '\u2009.' : ''))		// dot
 	return elts[1] ? 2 : 1
 } // tempo_note()
 
