@@ -903,7 +903,7 @@ function new_meter(p) {
 						break
 					meter.top += p[i++]
 				}
-				m1 = eval(meter.top)
+				m1 = eval(meter.top.replace(/ /g, '+'))
 				break
 			}
 			if (!in_parenth) {
