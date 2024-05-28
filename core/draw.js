@@ -739,10 +739,9 @@ function draw_lstaff(x) {
 function draw_meter(s) {
 	if (!s.a_meter)
 		return
-    var	dx, i, j, meter, x,
-		st = s.st,
-		p_staff = staff_tb[st],
-		y = p_staff.y;
+    var	i, m, meter, x, x0, yt,
+	p_staff = staff_tb[s.st],
+	y = p_staff.y
 
 	// adjust the vertical offset according to the staff definition
 	if (p_staff.stafflines != '|||||')
@@ -751,18 +750,38 @@ function draw_meter(s) {
 	for (i = 0; i < s.a_meter.length; i++) {
 		meter = s.a_meter[i];
 		x = s.x + s.x_meter[i]
-
-		if (meter.bot) {
-			out_XYAB('\
-<g transform="translate(X,Y)" text-anchor="middle">\n\
-	<text y="-12">A</text>\n\
-	<text>B</text>\n\
-</g>\n', x, y + 6, m_gl(meter.top), m_gl(meter.bot))
-		} else {
-			out_XYAB('\
-<text x="X" y="Y" text-anchor="middle">A</text>\n',
-				x, y + 12, m_gl(meter.top))
+		yt = y + (meter.bot ? 18 : 12)
+		xygl(x, yt, "mtr" + meter.top[0])
+		if (meter.top.length > 1) {
+			m = 0
+			x0 = x
+			while (1) {
+				switch (meter.top[m]) {
+				case '(':
+				case ')':
+					x += 4
+					break
+				case '1':
+					x += 8
+					break
+				case ' ':
+					x += 4
+					break
+				case '+':
+					x += 2
+					// fall thru
+				default:
+					x += 10
+					break
+				}
+				if (++m >= meter.top.length)
+					break
+				xygl(x, yt, "mtr" + meter.top[m])
+			}
+			x = (x0 + x) / 2 - 5
 		}
+		if (meter.bot)
+			xygl(x, y + 6, "mtr" + meter.bot[0])
 	}
 }
 

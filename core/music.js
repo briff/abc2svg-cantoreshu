@@ -990,12 +990,12 @@ Abc.prototype.set_width = function(s) {
 			case 'C':
 			case 'c':
 			case 'o':
-				s.x_meter[i] = wlw + 6;
+				s.x_meter[i] = wlw
 				wlw += 12
 				break
 			case '.':
 			case '|':
-				s.x_meter[i] = s.x_meter[i - 1]
+				s.x_meter[i] = s.x_meter[i - 1] + 4.5
 				break
 			default:
 				w = 0
@@ -1007,18 +1007,25 @@ Abc.prototype.set_width = function(s) {
 				for (m = 0; m < meter.length; m++) {
 					switch (meter[m]) {
 					case '(':
-						wlw += 4
-						// fall thru
+						wlw += 2
+						w += 6
+						break
 					case ')':
+						wlw -= 2
+						w += 6
+						break
 					case '1':
-						w += 4
+						w += 6
+						break
+					case ' ':
+						w += 2
 						break
 					default:
 						w += 12
 						break
 					}
 				}
-				s.x_meter[i] = wlw + w / 2
+				s.x_meter[i] = wlw
 				wlw += w
 			}
 		}
