@@ -355,17 +355,10 @@ function set_sscale(st) {
 
 /* -- set the voice or staff scale -- */
 function set_scale(s) {
-    var	new_dy,
+    var	new_dy = posy,
 	st = staff_tb[s.st].staffscale == 1 ? -1 : s.st,
 	new_scale = s.p_v.scale
 
-	if (new_scale == 1) {
-	    if (stv_g.st != st)
-		set_sscale(st)
-		return
-	}
-	new_dy = posy
-	
 	if (st >= 0) {
 		new_scale *= staff_tb[st].staffscale
 		new_dy = staff_tb[st].y
