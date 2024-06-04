@@ -3248,7 +3248,7 @@ function draw_vname(indent, stl) {
 		y = staff_tb[st].y
 			+ staff_tb[st].topbar * .5
 				* staff_tb[st].staffscale
-			+ h2 * (a_p.length - 2)
+			+ h2 * (a_p.length - 2) + h *.22
 
 		// if instrument with 2 staves, center the voice name
 		if ((cur_sy.staves[st].flags & OPEN_BRACE)
