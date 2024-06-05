@@ -3160,7 +3160,11 @@ if (st > nst) {
 					s.a_dd = s.ts_next.a_dd
 				if (s.ts_next.a_gch)
 					s.a_gch = s.ts_next.a_gch
-				unlksym(s.ts_next)
+				if (s.p_v.scale != 1
+				 && s.ts_next.p_v.scale > s.p_v.scale)
+				 	unlksym(s)
+				else
+					unlksym(s.ts_next)
 
 				if ((!s.ts_prev.dur || s.ts_prev.time != s.time
 				  || s.ts_prev.st != s.st)
