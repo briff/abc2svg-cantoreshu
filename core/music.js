@@ -2196,12 +2196,12 @@ function cut_tune(lwidth, lsh) {
 		pagewidth: cfmt.pagewidth,
 		scale: cfmt.scale
 	},
-	indent = lsh[0] - lsh[1],	// extra width of the first line
+	indent = lsh[1] - lsh[2],	// extra width of the first line
 	ckw = get_ck_width(),		// width of the starting symbols
 	s = tsfirst
 
-	lwidth -= lsh[1]		// width of the lines
-	if (cfmt.indent && cfmt.indent > lsh[0])
+	lwidth -= lsh[2]		// width of the lines
+	if (cfmt.indent && cfmt.indent > lsh[1])
 		indent += cfmt.indent
 
 	// adjust the line width according to the starting symbols
@@ -3874,12 +3874,11 @@ function set_global() {
 }
 
 // get the left offsets of the first and other staff systems
-// return [lsh1, lsho]
+// return left shift [no name, first music line, other lines
 function get_lshift() {
     var	st, v, p_v, p1, po, fnt, w,
 	sy = cur_sy,
-	lsh1 = 0,
-	lsho = 0, 
+	lsh = [0, 0, 0],
 	nv = voice_tb.length
 
 	// get the max width of a voice name/subname
@@ -3911,14 +3910,14 @@ function get_lshift() {
 			fnt = gene.deffont
 		}
 		if (p1) {
-			w = get_wx(p1, lsh1)
-			if (w > lsh1)
-				lsh1 = w
+			w = get_wx(p1, lsh[1])
+			if (w > lsh[1])
+				lsh[1] = w
 		}
 		if (po) {
-			w = get_wx(po, lsho)
-			if (w > lsho)
-				lsho = w
+			w = get_wx(po, lsh[2])
+			if (w > lsh[2])
+				lsh[2] = w
 		}
 	}
 	// add the width of the braces/brackets
@@ -3937,9 +3936,10 @@ function get_lshift() {
 			break
 		sy = sy.next
 	}
-	lsh1 += w
-	lsho += w
-	return [lsh1, lsho]
+	lsh[0] = w
+	lsh[1] += w
+	lsh[2] += w
+	return lsh
 } // get_lshift()
 
 /* -- return the left indentation of the staves -- */
@@ -3949,23 +3949,24 @@ function set_indent(lsh) {
 	fmt = tsnext ? tsnext.fmt : cfmt
 
 	// name or subname?
-	if (fmt.systnames) {		// display the names in the staff system
+	if (fmt.systvoices) {		// put the voice names in the staff system
 	    for (v = voice_tb.length; --v >= 0; ) {
 		p_voice = voice_tb[v]
 		if (!cur_sy.voices[v]
 		 || !gene.st_print[p_voice.st])
 			continue
 		if (p_voice.nm
-		 && (p_voice.new_name || fmt.systnames == 2)) {
-			vnt = 2		// full name
+		 && (fmt.systvoices == 1
+		  || (p_voice.new_name && fmt.systvoices == 3))) {
+			vnt = 1		// full name
 			break
 		}
 		if (p_voice.snm)
-			vnt = 1		// subname
+			vnt = 2		// subname
 	    }
 	}
 	gene.vnt = vnt			// voice name type for draw
-	return vnt == 2 ? lsh[0] : lsh[1]
+	return lsh[vnt]
 }
 
 /* -- decide on beams and on stem directions -- */

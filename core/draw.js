@@ -3224,9 +3224,7 @@ function draw_vname(indent, stl) {
 		st = cur_sy.voices[v].st
 		if (!stl[st])
 			continue
-		if (!gene.vnt)
-			continue
-		p = gene.vnt == 2 ? p_voice.nm : p_voice.snm
+		p = gene.vnt == 1 ? p_voice.nm : p_voice.snm
 		if (!p)
 			continue
 		delete p_voice.new_name

@@ -109,7 +109,8 @@ H "History: "',
 	subtitlefont: {name: txt_ff, size: 16},
 	subtitlespace: 3,
 	sysstaffsep: 34,
-	systnames: -1,
+	systnames: -1,			// (for compatibility)
+	systvoices: 3,
 	tempofont: {name: txt_ff, weight: "bold", size: 12},
 	textfont: {name: txt_ff, size: 16},
 //	textoption: undefined,
@@ -156,7 +157,7 @@ shiftunison: true,
 slurheight: true,
 squarebreve: true,    
 staffsep: true,
-systnames: 1, //
+systvoices: 1, //true
 stemheight: true,
 stretchlast: true,
 stretchstaff: true,
@@ -534,10 +535,19 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "measrepnb":
 	case "shiftunison":
 	case "systnames":
+	case "systvoices":
 		v = parseInt(param)
 		if (isNaN(v)) {
 			syntax(1, "Bad integer value");
 			break
+		}
+		if (cmd == "systnames") {	// compatibility
+			switch (v) {
+			case -1: v = 3; break
+			case 1: v = 2; break
+			case 2: v = 1; break
+			}
+			cmd = "systvoices"
 		}
 		cfmt[cmd] = v
 		break
