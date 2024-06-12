@@ -349,6 +349,12 @@ They are:
 - `toparam.js`  
   This script just outputs the abc2svg parameters.
 
+- `tosvg.js`  
+  This script creates a SVG file that includes all the SVGs of the generation.
+
+  The included SVG images are updated for being correctly rendered by tools
+  that use librsvg, the SVG library for GNOME (feh, viewnior, swayimg...).
+
 #### 2.3 PDF generation
 
 `abctopdf` is a shell script which converts ABC to PDF using one of the
