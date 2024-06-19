@@ -26,6 +26,7 @@ Abc.prototype.add_style = function(s) { style += s };
 Abc.prototype.anno_a = anno_a
 Abc.prototype.cfmt = function() { return cfmt };
 Abc.prototype.clone = clone;
+Abc.prototype.clr_sty = clr_sty
 Abc.prototype.deco_put = function(nm, s) {
 	a_dcn.push(nm)
 	deco_cnv(s)

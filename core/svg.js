@@ -1324,6 +1324,20 @@ function vskip(h) {
 	posy += h
 }
 
+// clear the styles
+function clr_sty() {
+	font_style = ''
+	if (cfmt.fullsvg) {
+		defined_glyph = {}
+		for (i = 0; i < abc2svg.font_tb.length; i++)
+			abc2svg.font_tb[i].used = 0 //false
+		ff.used = 0 //false		// clear the font-face
+	} else {
+		style =
+			fulldefs = ''
+	}
+} // clr_sty()
+
 // create the SVG image of the block
 function svg_flush() {
 	if (multicol || !user.img_out || posy == 0)
@@ -1394,15 +1408,7 @@ function svg_flush() {
 		user.img_out("</div>")
 	output = ""
 
-	font_style = ''
-	if (cfmt.fullsvg) {
-		defined_glyph = {}
-		for (i = 0; i < abc2svg.font_tb.length; i++)
-			abc2svg.font_tb[i].used = false
-	} else {
-		style = '';
-		fulldefs = ''
-	}
+	clr_sty()
 	defs = '';
 	posy = 0
 	img.wx = 0			// space used between the margins

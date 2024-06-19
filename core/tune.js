@@ -1273,7 +1273,17 @@ Abc.prototype.do_begin_end = function(type,
 				syntax(1, "No </style> in %%beginsvg sequence")
 				break
 			}
-			style += text.slice(i + 1, j).replace(/\s+$/, '')
+			s = text.slice(i + 1, j).replace(/\s+$/gm, '')
+			if (cfmt.fullsvg) {
+				i = s.match(/@font-face[^}]*}/)
+				if (i && i[0].indexOf("text") > 0) {
+					ff.text = "\n"
+						+ i[0]	// assume only one @font-face
+					s = s.replace(i[0], '')
+				}
+			}
+			if (s && s != "\n")
+				style += s
 		}
 		j = 0
 		while (1) {

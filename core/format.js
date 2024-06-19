@@ -26,6 +26,7 @@
 		monospace: 1
 	},
 	txt_ff = "text,serif",		// text font-family (serif for compatibility)
+	ff = {},			// font-face's from %%beginsvg
 	fmt_lock = {}
 
 var cfmt = {
@@ -944,6 +945,10 @@ function use_font(font) {
 			add_fstyle(".f" + font.fid
 				+ (cfmt.fullsvg || "")
 				+ ' text,tspan{white-space:pre}')
+		if (ff.text && !ff.used && font.name.indexOf("text") >= 0) {
+			font_style += ff.text	// add font-face's from %%beginsvg
+			ff.used = 1 //true
+		}
 	}
 }
 
