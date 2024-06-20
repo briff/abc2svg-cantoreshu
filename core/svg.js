@@ -1329,7 +1329,7 @@ function clr_sty() {
 	font_style = ''
 	if (cfmt.fullsvg) {
 		defined_glyph = {}
-		for (i = 0; i < abc2svg.font_tb.length; i++)
+		for (var i = 0; i < abc2svg.font_tb.length; i++)
 			abc2svg.font_tb[i].used = 0 //false
 		ff.used = 0 //false		// clear the font-face
 	} else {
