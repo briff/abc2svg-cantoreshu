@@ -552,13 +552,16 @@ abc2svg.play_next = function(po) {
 			po.v_c[s2.v] = i = s2.v < 9 ? s2.v : s2.v + 1
 		if (po.c_i[i] == undefined)
 			po.c_i[i] = 0	// piano
-
+		while (p_v.voice_down) {
+			p_v = p_v.voice_down
+			po.v_c[p_v.v] = i
+		}
 		po.p_v[s2.v] = true	// synchronization done
 	} // set_ctrl()
 
     // start and continue to play
     function play_cont(po) {
-    var	d, i, st, m, note, g, s2, t, maxt, now,
+    var	d, i, st, m, note, g, s2, t, maxt, now, p_v,
 	C = abc2svg.C,
 	s = po.s_cur
 
@@ -691,10 +694,19 @@ abc2svg.play_next = function(po) {
 		case C.BAR:
 			break
 		case C.BLOCK:
-			if (s.subtype == "midictl")
+			if (s.subtype == "midictl") {
 				po.midi_ctrl(po, s, t)
-			else if (s.subtype == 'midiprog')
+			} else if (s.subtype == 'midiprog') {
+				po.v_c[s.v] = s.chn
+				if (s.instr)
+					po.c_i[po.v_c[s.v]] = po.v_c[s.v]
 				po.midi_prog(po, s)
+				p_v = s.p_v
+				while (p_v.voice_down) {
+					p_v = p_v.voice_down
+					po.v_c[p_v.v] = s.chn
+				}
+			}
 			break
 		case C.GRACE:
 			for (g = s.extra; g; g = g.next) {
