@@ -199,9 +199,9 @@ abc2svg.MIDI = {
 			s = abc.new_block("midiprog");
 			s.play = s.invis = 1 //true
 			s.instr = v[0]
-			if (v[1] > 0)
-				curvoice.chn = 
-					s.chn = v[1] - 1
+			s.chn = v[1] > 0
+				? (v[1] - 1)
+				: curvoice.v < 9 ? curvoice.v : curvoice.v + 1
 		} else {
 			abc.set_v_param("instr", a.slice(1).join(' '))
 		}
@@ -320,7 +320,7 @@ abc2svg.MIDI = {
 			s.instr = a[++i].split(' ')
 			if (s.instr[1])
 				s.chn = s.instr.shift() - 1
-			else if (curvoice.chn == undefined)
+			else
 				s.chn = curvoice.v < 9 ?
 						curvoice.v :
 						curvoice.v + 1
