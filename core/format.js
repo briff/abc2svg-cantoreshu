@@ -837,7 +837,7 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "titletrim":
 		v = param == '' ? 1 : +param
 		if (isNaN(v))
-			v = get_bool(param) ? 0 : 1
+			v = +get_bool(param)
 		if (cmd[1] == 't') {		// stretchlast
 			if (v < 0 || v > 1) {
 				syntax(1, errs.bad_val, '%%' + cmd)
