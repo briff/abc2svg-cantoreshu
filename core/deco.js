@@ -812,7 +812,7 @@ function do_ctie(nm, s, nt1) {
 	}
 	cross[nm2] = null
 	if (nt1.midi != nt2.midi
-	 || nt1.s.time + nt1.s.dur != nt2.s.time) {
+	 || nt1.s.time + nt1.dur != nt2.s.time) {
 		error(1, s, "Bad tie")
 	} else {
 		nt1.tie_ty = C.SL_AUTO

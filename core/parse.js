@@ -2006,8 +2006,9 @@ function do_ties(s, tie_s) {
 
 // (possible hook)
 Abc.prototype.new_note = function(grace, sls) {
-    var	note, s, in_chord, c, dcn, type, tie_s, acc_tie,
-	i, n, s2, nd, res, num, dur, apit, div, ty,
+    var	note, s, in_chord, c, tie_s, acc_tie,
+	i, n, s2, nd, res, num, apit, div, ty,
+	chdur = 1,
 	dpit = 0,
 	sl1 = [],
 	line = parse.line,
@@ -2108,6 +2109,14 @@ Abc.prototype.new_note = function(grace, sls) {
 	case '[':			// chord
 		in_chord = true;
 		c = line.next_char()
+		i = line.buffer.indexOf(']', line.index)
+		if (i < 0) {
+			syntax(1, "No end of chord")
+			return
+		}
+		reg_dur.lastIndex = i + 1
+		nd = reg_dur.exec(line.buffer)
+		chdur = (nd[1] || 1) / (nd[3] || 1)	// length factor of the chord
 		// fall thru
 	default:			// accidental, chord, note
 		if (curvoice.acc_tie) {
@@ -2129,15 +2138,15 @@ Abc.prototype.new_note = function(grace, sls) {
 						syntax(1, errs.not_ascii)
 						return //null
 					}
-					type = char_tb[i]
-					switch (type[0]) {
+					ty = char_tb[i]
+					switch (ty[0]) {
 					case '(':
 						sl1.push(parse_vpos());
 						c = line.char()
 						continue
 					case '!':
-						if (type.length > 1)
-							a_dcn.push(type.slice(1, -1))
+						if (ty.length > 1)
+							a_dcn.push(ty.slice(1, -1))
 						else
 							get_deco()	// line -> a_dcn
 						c = line.next_char()
@@ -2154,6 +2163,7 @@ Abc.prototype.new_note = function(grace, sls) {
 			if (!note)
 				return //null
 
+			note.dur *= chdur		// chord factor
 			if (curvoice.octave)
 				note.pit += curvoice.octave * 7
 
@@ -2285,14 +2295,8 @@ Abc.prototype.new_note = function(grace, sls) {
 			}
 			if (c == ']') {
 				line.index++;
-
-				// adjust the chord duration
-				nd = parse_dur(line);
+				nd = parse_dur(line)		// (not used)
 				s.nhd = s.notes.length - 1
-				for (i = 0; i <= s.nhd ; i++) {
-					note = s.notes[i];
-					note.dur = note.dur * nd[0] / nd[1]
-				}
 				break
 			}
 		}
