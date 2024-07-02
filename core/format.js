@@ -972,12 +972,11 @@ function get_font(fn) {
 				font2.weight = null
 			if (font2.style)
 				font2.style = null
-		} else {
+		}
 			if (font.weight)
 				font2.weight = font.weight
 			if (font.style)
 				font2.style = font.style
-		}
 		if (font.src)
 			font2.src = font.src
 		if (font.size)
