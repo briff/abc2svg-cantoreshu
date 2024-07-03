@@ -2114,9 +2114,12 @@ Abc.prototype.new_note = function(grace, sls) {
 			syntax(1, "No end of chord")
 			return
 		}
-		reg_dur.lastIndex = i + 1
-		nd = reg_dur.exec(line.buffer)
-		chdur = (nd[1] || 1) / (nd[3] || 1)	// length factor of the chord
+		n = line.index			// save the parser index
+		line.index = i + 1		// set the parser to the end of chord
+		nd = parse_dur(line)
+		chdur = nd[0] / nd[1]		// length factor of the chord
+		in_chord = reg_dur.lastIndex	// hack: index after the chord length
+		line.index = n			// restore the parser index
 		// fall thru
 	default:			// accidental, chord, note
 		if (curvoice.acc_tie) {
@@ -2294,8 +2297,7 @@ Abc.prototype.new_note = function(grace, sls) {
 				break
 			}
 			if (c == ']') {
-				line.index++;
-				nd = parse_dur(line)		// (not used)
+				line.index = in_chord
 				s.nhd = s.notes.length - 1
 				break
 			}
