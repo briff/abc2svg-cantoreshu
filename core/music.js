@@ -4538,12 +4538,9 @@ function set_overlap() {
 
 		sd = 0;
 		if (s1.dots) {
-			if (s2.dots) {
-				if (!t)			/* if no dot clash */
-					sd = 1		/* align the dots */
-			} else {
-				v_invert()		// shift the first voice
-			}
+			if (!s2.dots
+			 || !t)			// if no dot clash
+				sd = 1		// align the dots
 		} else if (s2.dots) {
 			if (d2 + dr < d + dr2)
 				sd = 1		/* align the dots */
