@@ -189,7 +189,7 @@ abc2svg.MIDI = {
 			v[0] = +a[1]
 			v[1] = 0
 		}
-		if (isNaN(v[0]) || v[0] <= 0 || v[0] > 128
+		if (isNaN(v[0]) || v[0] < 0 || v[0] > 127
 		 || (v[1]
 		  && (isNaN(v[1]) || v[1] <= 0 || v[1] > 16))) {
 			abc.syntax(1, abc.errs.bad_val, "%%MIDI program")
