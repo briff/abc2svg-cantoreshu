@@ -698,8 +698,8 @@ abc2svg.play_next = function(po) {
 				po.midi_ctrl(po, s, t)
 			} else if (s.subtype == 'midiprog') {
 				po.v_c[s.v] = s.chn
-				if (s.instr)
-					po.c_i[po.v_c[s.v]] = po.v_c[s.v]
+				if (s.instr != undefined)
+					po.c_i[po.v_c[s.v]] = s.instr
 				po.midi_prog(po, s)
 				p_v = s.p_v
 				while (p_v.voice_down) {
