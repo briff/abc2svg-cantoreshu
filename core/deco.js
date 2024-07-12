@@ -800,6 +800,9 @@ function do_ctie(nm, s, nt1) {
 		error(1, s, "Conflict on !$1!", nm)
 		return
 	}
+	if (nt1.tie_ty)			// if normal '-'
+		curvoice.tie_s = null
+
 	nt1.s = s
 	nt2 = cross[nm2]
 	if (!nt2) {
@@ -815,7 +818,8 @@ function do_ctie(nm, s, nt1) {
 	 || nt1.s.time + nt1.dur != nt2.s.time) {
 		error(1, s, "Bad tie")
 	} else {
-		nt1.tie_ty = C.SL_AUTO
+		if (!nt1.tie_ty)		// if not normal '-'
+			nt1.tie_ty = C.SL_AUTO
 		nt1.tie_e = nt2
 		nt2.tie_s = nt1
 		nt1.s.ti1 = nt2.s.ti2 = true
