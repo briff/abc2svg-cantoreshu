@@ -2871,9 +2871,8 @@ function draw_tie(not1, not2,
 	  || (dir < 0 && s1.dot_low)))
 		x1 += 5
 
-	y = staff_tb[st].y + 3 * (p - 18) + /* 1.0 * */ dir
-
-	h = (.03 * (x2 - x1) + 16) * dir * s1.fmt.tieheight
+	y = staff_tb[st].y + 3 * (p - 18) + .8 * dir
+	h = (.15 * (x2 - x1) + 14) * dir * s1.fmt.tieheight
 //	anno_start(k1, 'slur')
 	slur_out(x1, y, x2, y, dir, h, not1.tie_ty & C.SL_DOTTED)
 //	anno_stop(k1, 'slur')
