@@ -2292,8 +2292,10 @@ Abc.prototype.new_note = function(grace, sls) {
 				}
 				break
 			}
-			if (a_dcn.length)
+			if (a_dcn.length) {
+				s.time = curvoice.time	// (needed for !tie)!
 				dh_cnv(s, note)
+			}
 
 			if (c == ']') {
 				line.index = in_chord
