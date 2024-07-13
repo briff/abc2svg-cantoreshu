@@ -815,7 +815,7 @@ function do_ctie(nm, s, nt1) {
 	}
 	cross[nm2] = null
 	if (nt1.midi != nt2.midi
-	 || nt1.s.time + nt1.dur != nt2.s.time) {
+	 || curvoice.time + nt1.dur != nt2.s.time) {
 		error(1, s, "Bad tie")
 	} else {
 		if (!nt1.tie_ty)		// if not normal '-'
