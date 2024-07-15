@@ -58,13 +58,15 @@ function bug(p) {
 tm.abc_init =
 tm.mus_init = function(args) {
 	user.img_out = function(p) {
+	    var	i, h
+
 		switch (p.slice(0, 4)) {
 		case "<svg":
 			h = p.match(/width="(\d+)px" height="(\d+)px"/)
 			if (w < h[1])
 				w = h[1]	// max width
 			p = bug(p)
-		    var	i = p.indexOf('>')
+			i = p.indexOf('>')
 			out.push(p.slice(0, i)
 				+ '\n y="' + yo + '"'
 				+ p.slice(i))

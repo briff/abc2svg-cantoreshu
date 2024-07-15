@@ -271,7 +271,8 @@ abc2svg.grid3 = {
 
 // handle %%begingrid
     do_begin_end: function(of, type, opt, txt) {
-    var	vt = this.get_voice_tb()
+    var	s,
+	vt = this.get_voice_tb()
 
 	if (type != "grid") {
 		of(type, opt, txt)
@@ -306,7 +307,7 @@ abc2svg.grid3 = {
     }, // do_begin_end()
 
     output_music: function(of) {
-    var	ln, i, dt, ss, ntim, p_vc, s3,
+    var	ln, i, dt, ss, ntim, p_vc, s3, cl,
 	C = abc2svg.C,
 	abc = this,
 	s = abc.get_tsfirst(),

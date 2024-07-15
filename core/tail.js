@@ -76,6 +76,7 @@ Abc.prototype.parse = parse;
 Abc.prototype.psdeco = empty_function;
 Abc.prototype.psxygl = empty_function;
 Abc.prototype.set_cur_sy = function(sy) { cur_sy = sy };
+Abc.prototype.set_curvoice = function(p_v) { curvoice = p_v }
 Abc.prototype.set_dscale = set_dscale;
 Abc.prototype.set_font = set_font;
 Abc.prototype.set_a_gch = function(s, a) { a_gch = a; csan_add(s) }
