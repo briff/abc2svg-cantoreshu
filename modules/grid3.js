@@ -123,7 +123,7 @@ abc2svg.grid3 = {
 		if (wc < hr * 1.4)
 			wc = hr * 1.4			// cell width
 		w = wc * nc				// grid width
-		if (s.fmt.trimsvg)			// adjust the SVG width
+		if ((s.fmt || cfmt).trimsvg)		// adjust the SVG width
 			img.wx = (img.width / 2 - img.rm) / cfmt.scale + w / 2
 
 		// generate the cells
