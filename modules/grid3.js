@@ -280,7 +280,7 @@ abc2svg.grid3 = {
 
 // handle %%begingrid
     do_begin_end: function(of, type, opt, txt) {
-    var	i,
+    var	i, s, v,
 	lm = -1,		// left margin - default: center the grid
 	width			// grid width - default: computed
 
@@ -300,16 +300,36 @@ abc2svg.grid3 = {
 			return "\u266d"
 		})
 
-	if (opt.indexOf("chord-define") >= 0)
-		this.cfmt().csdef = txt
-	if (opt.indexOf("noprint") < 0) {
+	opt = opt.trim().split(/\s+/)
+	while (1) {
+		i = opt.shift()
+		if (!i)
+			break
+		switch (i[0]) {
+		case 'c':			// chord-define
+			this.cfmt().csdef = txt
+			break
+		case 'n':			// noprint
+			type = ""
+			break
+		case 'l':			// lm=..
+		case 'w':			// width=..
+			v = i.match(/-?[\d.]+.?.?/)
+			if (v) {
+				v = this.get_unit(v[0])
+				if (!isNaN(v)) {
+					if (i[0] == 'l')
+						lm = v
+					else
+						width = v
+				}
+			}
+			break
+		}
+	}
+
+	if (type) {
 		type += "3"
-		i = opt.indexOf("lm=") + 3
-		if (i >= 3)
-			lm = parseInt(opt.slice(i, i + 3))
-		i = opt.indexOf("width=") + 6
-		if (i >= 6)
-			width = parseInt(opt.slice(i, i + 3))
 		if (this.parse.state >= 2) {
 			s = this.new_block(type)
 			s.text = txt
