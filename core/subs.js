@@ -118,6 +118,18 @@ function cwidf(c) {
 	return cwid(c) * gene.curfont.swfac
 }
 
+// make XML clean
+function clean_txt(p) {
+	return p.replace(/<|>|&[^&\s]*?;|&/g, function(c) {
+		switch (c) {
+		case '<': return "&lt;"
+		case '>': return "&gt;"
+		case '&': return "&amp;"
+		}
+		return c		// &xxx;
+	})
+} // clean_txt()
+
 // estimate the width and height of a string ..
 var strwh
 
@@ -158,15 +170,7 @@ var strwh
 			str.wh = [ el.clientWidth, el.clientHeight ]
 			return str.wh
 		}
-
-		str = str.replace(/<|>|&[^&\s]*?;|&/g, function(c){
-			switch (c) {
-			case '<': return "&lt;"
-			case '>': return "&gt;"
-			case '&': return "&amp;"
-			}
-			return c		// &xxx;
-		})
+		str = clean_txt(str)
 
 		while (1) {
 			i = str.indexOf('$', i)

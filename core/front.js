@@ -272,6 +272,41 @@ function tosvg(in_fname,		// file name
 		return src
 	} // uncomment()
 
+	// set the sequence showing the source of the current tune in sav.src
+	function set_src() {
+	    var	r, t,
+		etag = "",
+		stag = cfmt.show_source,
+		eot = file.indexOf('\n\n', bol)		// end of tune
+
+		if (eot < 0)
+			eot = file.length
+		if (typeof stag != "object") {		// set the tag after source
+			if (stag[0] != 'b' && stag[0] != 'a' && stag[0] != '+')
+				stag = 'b' + stag	// default: source before
+			if (stag[1] != '<')		// (if bool)
+				stag = "b<pre>"
+			r = stag.match(/<\/?[^>]*>/g)
+			while (1) {
+				t = r.pop()
+				if (!t)
+					break
+				if (t[1] == '/')
+					r.pop()		// skip this stop/start tag
+				else
+					etag += '</' + t.slice(1)
+			}
+			cfmt.show_source = stag = [stag, etag]
+		}
+		t = stag[0].slice(1)
+			+ clean_txt(file.slice(bol - 2, eot))
+			+ stag[1]
+		if (stag[0][0] == '+' && sav.src)
+			sav.src += t
+		else
+			sav.src = t
+	} // set_src()
+
 	function end_tune() {
 		generate()
 		cfmt = sav.cfmt;
@@ -288,6 +323,11 @@ function tosvg(in_fname,		// file name
 		init_tune()
 		img.chg = true;
 		set_page();
+		if (cfmt.show_source) {
+			user.img_out("</div>")
+			if (cfmt.show_source[0][0] == 'a')
+				user.img_out(sav.src)
+		}
 	} // end_tune()
 
 	// get %%voice
@@ -643,6 +683,12 @@ function tosvg(in_fname,		// file name
 			sav.maps = clone(maps, 1);
 			sav.mac = clone(mac);
 			sav.maci = clone(maci);
+			if (cfmt.show_source) {
+				set_src()
+				if (cfmt.show_source[0][0] == 'b')
+					user.img_out(sav.src)
+				user.img_out('<div class="source">')
+			}
 			info.X = text;
 			parse.state = 1			// tune header
 			if (user.page_format
@@ -749,6 +795,10 @@ function tosvg(in_fname,		// file name
 	}
 	if (parse.state >= 2)
 		end_tune();
+	if (sav.src && cfmt.show_source[0] == '+') {
+		user.img_out(sav.src)		// source of all tunes
+		sav.src = null
+	}
 	parse.state = 0
 }
 Abc.prototype.tosvg = tosvg
