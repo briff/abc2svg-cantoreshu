@@ -1,6 +1,6 @@
 // chord.js - generation of accompaniment
 //
-// Copyright (C) 2020-2022 Jean-Francois Moine and Seymour Shlien
+// Copyright (C) 2020-2024 Jean-Francois Moine and Seymour Shlien
 //
 // This file is part of abc2svg.
 //
@@ -18,53 +18,43 @@
 // along with abc2svg.  If not, see <http://www.gnu.org/licenses/>.
 
 // -- chord table --
+// from https://en.wikipedia.org/wiki/Chord_(music)
 // index = chord symbol type
-// value: array of strings
+// value: array of MIDI pitch / root
 //	index = inversion
-//	string = list of 2 characters
-//		1st character = note (see abc2svg.letmid)
-//		2nd character = octave ('+', ' ', '-')
-abc2svg.ch_names = {
-	'':	["C-E G C+", "E-C G C+", "G-C E G "],
-	m:	["C-e G C+", "e-C G C+", "G-C e G "],
-	'7':	["C-b-E G ", "E-C G b ", "G-E b C+", "b-E G C+"],
-	m7:	["C-b-e G ", "e-C G b ", "G-e b C+", "b-e G C+"],
-	m7b5:	["C-b-e g ", "e-C g b ", "g-e b C+", "b-e g C+"],
-	M7:	["C-B-E G ", "E-C G B ", "G-E B C+", "B-E G C+"],
-	'6':	["C-A-E G ", "E-C A B ", "A-E B C+", "B-E A C+"],
-	m6:	["C-A-e G ", "e-C A B ", "A-e B C+", "B-e A C+"],
-	aug:	["C-E a C+", "E-C a C+", "a-C E a "],
-//	plus:	["C-E a C+", "E-C a C+", "a-C E a "],
-	aug7:	["C-b-E a ", "E-C a b ", "a-E b C+", "b-E a C+"],
-	dim:	["C-e g C+", "e-C g C+", "g-C e g "],
-	dim7:	["C-e g A ", "e-C g A ", "g-e A C+", "A-C e G "],
-	'9':	["C-b-E G D+", "E-C G b D+", "G-E b C+D+", "b-E G C+D+", "D-G-C E b "],
-	m9:	["C-b-e G D+", "e-C G b D+", "G-e b C+D+", "b-e G C+D+", "D-G-C e b "],
-	maj9:	["C-B-E G D+", "E-C G B D+", "G-E B C+D+", "B-E G C+D+", "D-G-C E B "],
-	M9:	["C-B-E G D+", "E-C G B D+", "G-C E B D+", "B-E G C+D+", "D-G-C E B "],
-	'11':	["C-b-E G D+F+", "E-C G b D+F+", "G-E b C+D+F+", "b-E G C+D+F+",
-						"D-G-C E b F+", "F-D-G-C E b D+"],
-	dim9:	["C-A-e g d+", "e-C g A d+", "g-C e A d+", "A-C e g d+", "D-g-C e A "],
-	sus4:	["C-F G C+", "F-C G C+", "G-C F G "],
-	sus9:	["C-D G C+", "D-C G C+", "G-C D G "],
-	'7sus4': ["C-b-F G ", "F-C G b ", "G-F b C+", "b-C F G "],
-	'7sus9': ["C-b-D G ", "D-C G b ", "G-D b C+", "b-C D G "],
-	'5':	["C-G C+", "G-G C+"]
-} // ch_names
+abc2svg.chnm = {
+	'': [0, 4, 7],
+	'6': [0, 4, 7, 9],
+	'7': [0, 4, 7, 10],
+	M7: [0, 4, 7, 11],
+	aug: [0, 4, 8],
+	aug7: [0, 4, 8, 10],
+	m: [0, 3, 7],
+	m6: [0, 3, 7, 9],
+	m7: [0, 3, 7, 10],
+	mM7: [0, 3, 7, 11],
+	dim: [0, 3, 6],
+	dim7: [0, 3, 6, 9],
+	m7b5: [0, 3, 6, 10],
+	'9': [0, 4, 7, 10, 14],
+//	m9:
+//	maj9:
+//	M9:
+	'11': [0, 4, 7, 10, 14, 17],
+	sus4: [0, 5, 7]
+//	sus9:
+//	'7sus4':
+//	'7sus9':
+//	'5':
+}
 
-abc2svg.midlet = "CdDeEFgGaAbB"		// MIDI pitch -> letter
 abc2svg.letmid = {			// letter -> MIDI pitch
 	C: 0,
-	d: 1,
 	D: 2,
-	e: 3,
 	E: 4,
 	F: 5,
-	g: 6,
 	G: 7,
-	a: 8,
 	A: 9,
-	b: 10,
 	B: 11
 } // letmid
 
@@ -77,24 +67,21 @@ abc2svg.chord = function(first,		// first symbol in time
 
 	// create a chord according to the bass note
 	function chcr(b, ch) {
-	    var	i, v,
-		r = []
+	    var	t,
+		r = ch.slice(),
+		i = r.length
 
-		b = abc2svg.midlet[b]
-		i = ch.length
-		while (--i > 0) {
-			if (ch[i][0] == b)	// search the bass in the chord
-				break
-		}
-		ch = ch[i]
-		for (i = 0; i < ch.length; i += 2) {
-			v = abc2svg.letmid[ch[i]]
-			switch (ch[i + 1]) {
-			case '+': v += 12; break
-			case '-': v -= 12; break
+		if (b) {
+			while (--i > 0) {
+				if (r[i] == b)		// search the bass in the chord
+					break
 			}
-			r.push(v)
+			if (i > 0)
+				r[0] = b, r[i] = 0
+			else
+				r.unshift(b)
 		}
+		r[0] -= 12			// bass one octave lower
 		return r
 	} // chcr()
 
@@ -127,19 +114,15 @@ abc2svg.chord = function(first,		// first symbol in time
 
 		if (!a)
 			return
-		a = a.match(/([A-GN])([#♯b♭]?)([^/]*)\/?(.*)/)
+		a = a.match(/([A-G])([#♯b♭]?)([^/]*)\/?(.*)/)
 			// a[1] = note, a[2] = acc, a[3] = type, a[4] = bass
 		if (!a)
 			return
 
 		r = abc2svg.letmid[a[1]]		// root
-		if (r == undefined) {
-			if (a[1] != "N")
-				return
-			s.type = C.REST			// ("N") = no chord
-			ch = [0]
-			r = 0
-		} else {
+		if (r == undefined)			// "N" or no chord
+			return
+
 			switch (a[2]) {
 			case "#":
 			case "♯": r++; break
@@ -168,7 +151,6 @@ abc2svg.chord = function(first,		// first symbol in time
 					}
 				}
 			}
-		}
 		if (b == undefined)
 			b = 0
 		ch = chcr(b, ch)
@@ -200,21 +182,10 @@ abc2svg.chord = function(first,		// first symbol in time
 	// -- chord() --
 
 	// set the chordnames defined by %%MIDI chordname
+	chnm = abc2svg.chnm
 	if (cfmt.chord.names) {
-		chnm = Object.create(abc2svg.ch_names)
-		for (k in cfmt.chord.names) {
-			vch = ""
-			for (i = 0; i < cfmt.chord.names[k].length; i++) {
-				s = cfmt.chord.names[k][i]
-				vch += abc2svg.midlet[s % 12]
-				vch += i == 0 ? "-" :
-					(s >= 12 ? "+" : " ")
-			}
-//fixme: no inversion
-			chnm[k] = [ vch ]
-		}
-	} else {
-		chnm = abc2svg.ch_names
+		for (k in cfmt.chord.names)
+			chnm[k] = cfmt.chord.names[k]
 	}
 
 	// define the MIDI channel
@@ -223,7 +194,7 @@ abc2svg.chord = function(first,		// first symbol in time
 		if (k < voice_tb[i].chn)
 			k = voice_tb[i].chn
 	}
-	if (k == 8)
+	if (k == 9)
 		k++			// skip the channel 10
 
 	// create the chord voice
@@ -272,6 +243,7 @@ abc2svg.chord = function(first,		// first symbol in time
 			gch = s.a_gch[i]
 			if (gch.type != 'g')
 				continue
+		    if (!vch.last_sym.dur)
 			vch.last_sym.dur = s.time - vch.last_sym.time
 			gench(s)
 			break
