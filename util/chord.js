@@ -149,10 +149,11 @@ abc2svg.chord = function(first,		// first symbol in time
 					case "b":
 					case "♭": b--;  if (b < 0) b = 11; break
 					}
+					b = b - r
+					if (b < 0)
+						b += 12
 				}
 			}
-		if (b == undefined)
-			b = 0
 		ch = chcr(b, ch)
 
 		// generate the notes of the chord
