@@ -540,10 +540,14 @@ abc2svg.play_next = function(po) {
 			po.midi_ctrl(po, s, t)
 		}
 		for (s = p_v.sym; s != s2; s = s.next) {
-			if (s.subtype == "midictl")
+			if (s.subtype == "midictl") {
 				po.midi_ctrl(po, s, t)
-			else if (s.subtype == 'midiprog')
+			} else if (s.subtype == 'midiprog') {
+				po.v_c[s.v] = s.chn
+				if (s.instr != undefined)
+					po.c_i[po.v_c[s.v]] = s.instr
 				po.midi_prog(po, s)
+			}
 		}
 
 		// if no %%MIDI, set 'grand acoustic piano' as the instrument
