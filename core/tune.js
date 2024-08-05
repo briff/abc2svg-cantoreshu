@@ -793,7 +793,8 @@ function get_map(text) {
 		ns = 'all'
 	} else {
 		if (ns.indexOf("octave,") == 0	// remove the octave part
-		 || ns.indexOf("key,") == 0) {
+		 || ns.indexOf("key,") == 0
+		 || !ns.indexOf("modal,")) {
 			ty = ns[0]
 			ns = ns.split(',')[1]
 			ns = ns.replace(/[,']+/, '').toUpperCase() //'
