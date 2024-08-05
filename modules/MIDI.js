@@ -19,7 +19,7 @@
 //
 // This module is loaded when "%%MIDI" appears in a ABC source.
 //
-// Parameters (see abcMIDI for details)
+// Parameters (see abcMIDI - https://abcmidi.sourceforge.io/ - for details)
 //	%%MIDI channel n
 //	%%MIDI program [channel] n
 //	%%MIDI control k v
@@ -28,6 +28,7 @@
 //	%%MIDI chordname <chord_type> <list of MIDI pitches>
 //	%%MIDI chordprog <#MIDI program> [octave=<n>]
 //	%%MIDI chordvol <volume>
+//	%%MIDI gchord <string>
 //	%%MIDI gchordon
 //	%%MIDI gchordoff
 
@@ -121,17 +122,20 @@ abc2svg.MIDI = {
 //		break
 //	case "droneoff":	// %%MIDI droneoff
 //		break
-//	case "gchord":		// %%MIDI gchord <list of letters and repeat numbers>
+	case "gchord":		// %%MIDI gchord <list of letters and repeat numbers>
 //				//	z rest
 //				//	c chord
 //				//	f fundamental
 //				//	b fundamental + chord
+//				//	G/H/I/J/K	individual notes starting
+//				//		from the lowest note of the chord
+//				//	g/h/i/j/k	an octave above these
 //				// defaults:
 //				//	M:2/4 or 4/4	fzczfzcz
 //				//	M:3/4	fzczcz
 //				//	M:6/8	fzcfzc
 //				//	M:9/8	fzcfzcfzc
-//		break
+		// fall thru
 	case "gchordon":	// %%MIDI gchordon
 	case "gchordoff":	// %%MIDI gchordoff
 		if (!cfmt.chord)
@@ -140,9 +144,14 @@ abc2svg.MIDI = {
 		 && curvoice) {
 			s = abc.new_block("midigch")
 			s.play = s.invis = 1 //true
-			s.on = a[1][7] == 'n'
-		} else {
+			if (a[1][6] == 'o')
+				s.on = a[1][7] == 'n'
+			else
+				s.rhy = a[2]		// chord rhythm
+		} else if (a[1][6] == 'o') {
 			cfmt.chord.gchon = a[1][7] == 'n'
+		} else {
+			cfmt.chord.rhy = a[2]
 		}
 		break
 	case "channel":
