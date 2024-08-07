@@ -198,7 +198,8 @@ abc2svg.chord = function(first,		// first symbol in time
 	// stop the previous chord by setting its duration
 	function set_dur(s2, tim) {			// previous chord
 		if (s2.dur
-		 || tim == s2.time)
+		 || tim == s2.time
+		 || s2.nhd == undefined)	// no chord yet
 			return
 		s2.dur = tim - s2.time
 		for (var m = 0; m <= s2.nhd; m++)
@@ -207,6 +208,8 @@ abc2svg.chord = function(first,		// first symbol in time
 
 	// insert a chord in the chord voice
 	function insch(tim) {
+		if (s_ch.nhd == undefined)
+			return			// no defined chord yet
 	    var	s, m,
 		s2 = vch.last_sym,
 		i = rhy[ti++]
@@ -336,7 +339,7 @@ abc2svg.chord = function(first,		// first symbol in time
 	gchon = cfmt.chord.gchon
 	ti = 0					// time index in rhy
 	while (1) {
-		if (gchon && s_ch.nhd >= 0 && rhy != '+') {
+		if (gchon && rhy != '+') {
 			while (s.time > nextim) {
 				insch(nextim)	// generate the rhythm
 				nextim += dt
@@ -344,8 +347,7 @@ abc2svg.chord = function(first,		// first symbol in time
 		}
 		if (s.a_gch) {
 			for (i = 0; i < s.a_gch.length; i++) {
-				gch = s.a_gch[i]
-				if (gch.type != 'g')
+				if (s.a_gch[i].type != 'g')
 					continue
 				gench(s, i)
 				if (rhy == '+')
