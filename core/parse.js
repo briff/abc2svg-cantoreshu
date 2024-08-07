@@ -1769,8 +1769,8 @@ function set_map(p_v, note, acc,
 			nn = 'k' + ntb[(note.pit + 75 -
 					p_v.ckey.k_sf * 11) % 7]
 		    if (!map[nn]) {
-			nn = 't' + (note.acc		// 'tonic'
-					? ['__','_','','^','^^'][note.acc + 2]
+			nn = 't' + (acc			// 'tonic'
+					? ['__','_','','^','^^'][acc + 2]
 					: '')
 				+ ntb[(note.pit + 75
 				    - (p_v.ckey.k_sf
