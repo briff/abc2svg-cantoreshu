@@ -1748,7 +1748,7 @@ function parse_acc_pit(line) {
 // - normal = ABC note
 // - octave = 'o' + ABC note in C..B interval
 // - key    = 'k' + scale index
-// - modal  = 'm' + ABC note
+// - tonic  = 't' + ABC note
 // - all    = 'all'
 // The 'map' is stored in the note. It is an array of
 //	[0] array of heads (glyph names)
@@ -1769,7 +1769,7 @@ function set_map(p_v, note, acc,
 			nn = 'k' + ntb[(note.pit + 75 -
 					p_v.ckey.k_sf * 11) % 7]
 		    if (!map[nn]) {
-			nn = 'm' + (note.acc		// 'modal'
+			nn = 't' + (note.acc		// 'tonic'
 					? ['__','_','','^','^^'][note.acc + 2]
 					: '')
 				+ ntb[(note.pit + 75
