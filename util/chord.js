@@ -277,8 +277,11 @@ abc2svg.chord = function(first,		// first symbol in time
 	// set the chordnames defined by %%MIDI chordname
 	chnm = abc2svg.chnm
 	if (cfmt.chord.names) {
-		for (k in cfmt.chord.names)
-			chnm[k] = cfmt.chord.names[k]
+		for (k in cfmt.chord.names) {
+			chnm[k] = []
+			for (i = 0; i < cfmt.chord.names[k].length; i++)
+				chnm[k].push(+cfmt.chord.names[k][i])
+		}
 	}
 
 	// define the MIDI channel
