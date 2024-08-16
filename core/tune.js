@@ -752,9 +752,9 @@ function not2abc(pit, acc) {
     var	i,
 	nn = ''
 
-	if (acc && acc != 3) {
+	if (acc) {
 		if (typeof acc != "object") {
-			nn = ['__', '_', '', '^', '^^'][acc + 2]
+			nn = ['__', '_', '', '^', '^^', '='][acc + 2]
 		} else {
 			i = acc[0]
 			if (i > 0) {
@@ -789,17 +789,12 @@ function get_map(text) {
 		return
 	}
 	ns = a[1]
-	if (ns[0] == '*' || ns.indexOf("all") == 0) {
-		ns = 'all'
-	} else {
-		if (ns.indexOf("octave,") == 0	// remove the octave part
+	if (ns != '*') {
+ 		if (ns.indexOf("octave,") == 0	// remove the octave part
 		 || ns.indexOf("key,") == 0
 		 || !ns.indexOf("tonic,")) {
 			ty = ns[0]
-			ns = ns.split(',')[1]
-			ns = ns.replace(/[,']+/, '').toUpperCase() //'
-			if (ns.indexOf("key,") == 0)
-				ns = ns.replace(/[=^_]+/, '')
+			ns = ns.split(',')[1].toUpperCase()
 		}
 		tmp = new scanBuf
 		tmp.buffer = ns

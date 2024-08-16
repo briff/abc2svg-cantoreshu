@@ -1748,8 +1748,8 @@ function parse_acc_pit(line) {
 // - normal = ABC note
 // - octave = 'o' + ABC note in C..B interval
 // - key    = 'k' + scale index
-// - tonic  = 't' + ABC note
-// - all    = 'all'
+// - tonic  = 't' + mode index
+// - any    = '*'
 // The 'map' is stored in the note. It is an array of
 //	[0] array of heads (glyph names)
 //	[1] print (note)
@@ -1763,27 +1763,36 @@ function set_map(p_v, note, acc,
 	if (!map)
 		return
 
-	if (!map[nn]) {
-		nn = 'o' + nn.replace(/[',]+/, '')	// ' octave
-		if (!map[nn]) {
-			nn = 'k' + ntb[(note.pit + 75 -
-					p_v.ckey.k_sf * 11) % 7]
-		    if (!map[nn]) {
-			nn = 't' + (acc			// 'tonic'
-					? ['__','_','','^','^^'][acc + 2]
-					: '')
-				+ ntb[(note.pit + 75
-				    - (p_v.ckey.k_sf
+	// test if 'nn' is in the map
+	function map_p() {
+		if (map[nn])
+			return 1 //true
+		nn = 'o' + nn.replace(/[',]+/, '')	// '
+		if (map[nn])
+			return 1 //true
+		nn = 'k' + ['__','_','=','^','^^','='][acc + 2]	// key chromatic
+			+ ntb[(note.pit + 75 - p_v.ckey.k_sf * 11) % 7]
+		if (map[nn])
+			return 1 //true
+		nn = nn.replace(/[_=^]/g,'')		// key diatonic
+		if (map[nn])
+			return 1 //true
+		nn = 't' + ['__','_','=','^','^^','='][acc + 2]	// tonic chromatic
+			+ ntb[(note.pit + 75
+				- (p_v.ckey.k_sf
 					- [0, -2, -4, 1, -1, -3, -5][p_v.ckey.k_mode])
 						* 11) % 7]
-			if (!map[nn]) {
-				nn = 'all'		// 'all'
-				if (!map[nn])
-					return
-			}
-		    }
-		}
-	}
+		if (map[nn])
+			return 1 //true
+		nn = nn.replace(/[_=^]/g,'')		// tonic diatonic
+		if (map[nn])
+			return 1 //true
+		nn = '*'				// any note
+		return map[nn]
+	} // map_p()
+
+	if (!map_p())					// note in the map?
+		return					// no
 	map = map[nn]
 
 	if (trp_p) {
