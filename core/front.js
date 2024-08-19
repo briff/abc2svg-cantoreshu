@@ -272,20 +272,20 @@ function tosvg(in_fname,		// file name
 		return src
 	} // uncomment()
 
-	// set the sequence showing the source of the current tune in sav.src
-	function set_src() {
+	// set the sequence showing the source and save it in sav.src
+	function set_src(stag, se) {
 	    var	r, t,
-		etag = "",
-		stag = cfmt.show_source,
-		eot = file.indexOf('\n\n', bol)		// end of tune
+		etag = ""
 
-		if (eot < 0)
-			eot = file.length
+		if (!se)
+			se = file.indexOf('\n\n', bol)	// end of tune
+		if (se < 0)
+			se = eof
 		if (typeof stag != "object") {		// set the tag after source
 			if (stag[0] != 'b' && stag[0] != 'a' && stag[0] != '+')
 				stag = 'b' + stag	// default: source before
 			if (stag[1] != '<')		// (if bool)
-				stag = "b<pre>"
+				stag = stag[0] + "<pre>"
 			r = stag.match(/<\/?[^>]*>/g)
 			while (1) {
 				t = r.pop()
@@ -299,7 +299,7 @@ function tosvg(in_fname,		// file name
 			cfmt.show_source = stag = [stag, etag]
 		}
 		t = stag[0].slice(1)
-			+ clean_txt(file.slice(bol - 2, eot))
+			+ clean_txt(file.slice(bol, se))
 			+ stag[1]
 		if (stag[0][0] == '+' && sav.src)
 			sav.src += t
@@ -540,12 +540,30 @@ function tosvg(in_fname,		// file name
 				continue
 			}
 			switch (a[1]) {
+			case "show_source":
+				b = uncomment(a[2])
+				switch (b[0]) {
+				case '*':
+					i = file.indexOf('\n' + line0 + line1
+							+ "show_source", eol)
+					bol = parse.eol
+					set_src(b, i)
+					user.img_out(sav.src)
+					// fall thru
+				case '0':
+					b = ""
+					// fall thru
+				default:
+					cfmt[a[1]] = b
+					// fall thru
+				}
+				continue
 			case "select":
 				if (parse.state != 0) {
 					syntax(1, errs.not_in_tune, "%%select")
 					continue
 				}
-				select = uncomment(text.slice(7))
+				select = uncomment(a[2])
 				if (select[0] == '"')
 					select = select.slice(1, -1);
 				if (!select) {
@@ -684,7 +702,8 @@ function tosvg(in_fname,		// file name
 			sav.mac = clone(mac);
 			sav.maci = clone(maci);
 			if (cfmt.show_source) {
-				set_src()
+				bol -= 2
+				set_src(cfmt.show_source)
 				if (cfmt.show_source[0][0] == 'b')
 					user.img_out(sav.src)
 				user.img_out('<div class="source">')
