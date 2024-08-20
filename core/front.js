@@ -710,9 +710,6 @@ function tosvg(in_fname,		// file name
 			}
 			info.X = text;
 			parse.state = 1			// tune header
-			if (user.page_format
-			 && blkdiv < 1)		// (if no newpage)
-				blkdiv = 1	// the tune starts by the next SVG
 			if (parse.tune_opts)
 				tune_filter()
 			continue

@@ -1394,6 +1394,8 @@ function svg_flush() {
 		psvg.ps_flush(true);	// + setg(0)
 
 	// start a block if needed
+	if (parse.state == 1 && user.page_format && !blkdiv)
+		blkdiv = 1		// new tune
 	if (blkdiv > 0) {
 		user.img_out(blkdiv == 1 ?
 			'<div class="nobrk">' :
