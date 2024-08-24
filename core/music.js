@@ -1833,9 +1833,8 @@ function set_nl(s) {			// s = start of line
 		for (s2 = s; s2 && s2.time == s.time; s2 = s2.ts_next) {
 			switch (s2.type) {
 			case C.KEY:
-				if (!s.fmt.keywarn
-				 || s2.invis
-				 || (!s2.k_sf && !s2.k_a_acc))	// no accidental
+				if (!s2.fmt.keywarn
+				 || s2.invis)
 					continue
 				for (s1 = s.ts_prev; s1 ;s1 = s1.ts_prev) {
 					if (s1.type != C.METER)
@@ -1853,7 +1852,7 @@ function set_nl(s) {			// s = start of line
 				if (!s2.prev)		// start of voice
 					continue
 				if (s2.type == C.CLEF) {
-					if (s2.invis)	// if 'K: clef=none' after bar
+					if (s2.clef_none) // if 'K: clef=none' after bar
 						break
 					for (s1 = s.ts_prev; s1; s1 = s1.ts_prev) {
 						switch (s1.type) {
