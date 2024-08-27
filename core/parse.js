@@ -1767,9 +1767,12 @@ function set_map(p_v, note, acc,
 	function map_p() {
 		if (map[nn])
 			return 1 //true
+	    var	sf, d
+
 		nn = 'o' + nn.replace(/[',]+/, '')	// '
 		if (map[nn])
 			return 1 //true
+//fixme: useless
 		nn = 'k' + ['__','_','=','^','^^','='][acc + 2]	// key chromatic
 			+ ntb[(note.pit + 75 - p_v.ckey.k_sf * 11) % 7]
 		if (map[nn])
@@ -1777,11 +1780,17 @@ function set_map(p_v, note, acc,
 		nn = nn.replace(/[_=^]/g,'')		// key diatonic
 		if (map[nn])
 			return 1 //true
-		nn = 't' + ['__','_','=','^','^^','='][acc + 2]	// tonic chromatic
-			+ ntb[(note.pit + 75
-				- (p_v.ckey.k_sf
-					- [0, -2, -4, 1, -1, -3, -5][p_v.ckey.k_mode])
-						* 11) % 7]
+		sf = p_v.ckey.k_sf + [0, 2, 4, -1, 1, 3, -2][p_v.ckey.k_mode]
+		if (sf < -7)
+			sf += 7
+		else if (sf > 7)
+			sf -= 7
+		d = abc2svg.keys[sf + 7]
+				[(note.pit + 75) % 7]
+		nn = 't' + ['__','_','=','^','^^','=']	// tonic chromatic
+				[acc - d + 2]
+			+ ntb[(note.pit + 75 - p_v.ckey.k_mode
+				 - p_v.ckey.k_sf * 11) % 7]
 		if (map[nn])
 			return 1 //true
 		nn = nn.replace(/[_=^]/g,'')		// tonic diatonic
