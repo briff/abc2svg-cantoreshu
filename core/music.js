@@ -909,7 +909,7 @@ Abc.prototype.set_width = function(s) {
 			set_font("repeat");
 			s.wr += strwh(s.text)[0] + 2
 		}
-			if (cfmt.measurenb > 0 & s.bar_num
+		if (cfmt.measurenb > 0 && s.bar_num
 			 && !(s.bar_num % cfmt.measurenb))
 				s.wr += 4
 		return
