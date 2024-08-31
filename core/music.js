@@ -1320,8 +1320,7 @@ function set_allsymwidth(first) {
 			val = xl[st] + wr[st] + s.wl
 			if (val > maxx)
 				maxx = val
-			if (s.dur && s.dur != s.notes[0].dur	// if in tuplet
-			 && first)			// (first time only)
+			if (s.dur && s.dur != s.notes[0].dur)	// if in tuplet
 				itup = 1
 			s = s.ts_next
 		} while (s && !s.seqst);
@@ -1336,6 +1335,8 @@ function set_allsymwidth(first) {
 			s2.space = s2.ts_prev.space /= 2
 
 		if (itup) {
+			if (!first)
+				break
 			if (!stup)
 				stup = s2
 		} else if (stup && stup.v == s2.v) {
@@ -1349,7 +1350,8 @@ function set_allsymwidth(first) {
 			delete s2.seqst;		/* no space */
 			s2.time = tim
 		    } else {
-			s2.shrink = 10			// cannot be null
+			s2.shrink = s2.wr		// cannot be null
+			maxx += s2.wr
 		    }
 		}
 		tim = s2.time
