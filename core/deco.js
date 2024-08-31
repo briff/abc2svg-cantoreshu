@@ -65,8 +65,8 @@ var decos = {
 	lowermordent: "3 lmrd 6,5 4 6",
 	uppermordent: "3 umrd 6,5 4 6",
 	trill: "3 trl 14 5 8",
-	upbow: "3 upb 10,2 3 7",
-	downbow: "3 dnb 9 4 6",
+	upbow: "3 upb 12,2 3 7",
+	downbow: "3 dnb 8,2 4 6",
 	gmark: "3 grm 7 4 6",
 	wedge: "0 wedge 8 1.5 1",		// (staccatissimo or spiccato)
 	longphrase: "5 lphr 0 1 16",
