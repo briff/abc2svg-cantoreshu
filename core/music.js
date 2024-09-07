@@ -1350,8 +1350,8 @@ function set_allsymwidth(first) {
 			delete s2.seqst;		/* no space */
 			s2.time = tim
 		    } else {
-			s2.shrink = s2.wr		// cannot be null
-			maxx += s2.wr
+			s2.shrink = s2.wl		// cannot be null
+			maxx += s2.wl
 		    }
 		}
 		tim = s2.time
@@ -5175,6 +5175,8 @@ Abc.prototype.set_sym_glue = function(width) {
 			spf = spf_last
 			if (ll && spf < s.fmt.stretchlast)
 				spf = s.fmt.stretchlast
+			else if (cfmt.maxshrink)
+				spf = 1 - cfmt.maxshrink * .75
 			if (spf > (width - xs) / xx)
 				spf = (width - xs) / xx
 		}
