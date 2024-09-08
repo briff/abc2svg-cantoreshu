@@ -1380,7 +1380,7 @@ function set_allsymwidth(first) {
 
 	// let the chord symbols at the same offset
 	// and adjust the spacing due to the lyrics
-	if (first && s_chs)
+	if (s_chs)
 		set_w_chs(s_chs)
 }
 
