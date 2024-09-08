@@ -2889,6 +2889,7 @@ function draw_all_ties(p_voice) {
 	set_color(s1.color)
 	for ( ; s1; s1 = s1.next) {
 		if (s1.ti2			// if end of tie
+		 && !s1.invis
 		 && s1.time != tim2) {		// and new end
 			for (m = 0; m <= s1.nhd; m++) {
 				not2 = s1.notes[m]
@@ -2899,7 +2900,8 @@ function draw_all_ties(p_voice) {
 				draw_tie(not1, not2, 1)
 			}
 		}
-		if (!s1.ti1)			// if not start of tie
+		if (!s1.ti1			// if not start of tie
+		 || s1.invis)
 			continue
 
 		// get the end of the tie(s)
