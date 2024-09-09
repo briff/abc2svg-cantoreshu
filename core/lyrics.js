@@ -121,8 +121,8 @@ function get_sym(p, cont) {
 }
 
 /* -- parse a lyric (vocal) line (w:) -- */
-function get_lyrics(text, cont) {
-    var s, word, p, i, j, ly, dfnt, ln, c, cf
+function get_lyrics(p, cont) {
+    var s, word, i, j, ly, dfnt, ln, c, cf
 
 	if (curvoice.ignore)
 		return
@@ -135,6 +135,12 @@ function get_lyrics(text, cont) {
 		if (!s) {
 			syntax(1, "+: lyric without music")
 			return
+		}
+		if (p[0] == '~') {			// +:~next~words
+			while (!s.a_ly)
+				s = s.prev
+			ly = s.a_ly[curvoice.lyric_line]
+			p = ly.t.replace(/ /g,'~') + p
 		}
 		dfnt = get_font("vocal")
 		if (gene.deffont != dfnt) {	// if vocalfont change
@@ -161,7 +167,6 @@ function get_lyrics(text, cont) {
 	}
 
 	/* scan the lyric line */
-	p = text;
 	i = 0
 	cf = gene.curfont
 	while (1) {
