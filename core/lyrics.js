@@ -364,7 +364,7 @@ function ly_set(s) {
 
 	// if not room enough, shift the following notes to the right
 	dx -= 6
-	if (dx < wx) {
+	if (dx < wx && s2) {
 		dx = (wx - dx) / n
 		s1 = s.ts_next
 		while (1) {
