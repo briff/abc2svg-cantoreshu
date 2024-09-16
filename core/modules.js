@@ -53,6 +53,7 @@ abc2svg.modules = {
 	sth: {},
 	strtab: {},
 	temperament: { fn: 'temper' },
+	temponame: { fn: 'tempo' },
 	tropt: {},
 
 	nreq: 0,

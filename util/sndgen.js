@@ -32,6 +32,21 @@
 if (!abc2svg)
     var	abc2svg = {}
 
+// tempo table
+	abc2svg.tmp_tb = {
+		grave:		30,
+		lento:		40,
+		largo:		50,
+		adagio:		66,
+		andante:	86,
+		moderato:	96,
+		allegretto:	112,
+		allegro:	130,
+		vivace:		150,
+		presto:		180,
+		prestissimo:	210
+	}
+
 function ToAudio() {
  return {
 
@@ -44,7 +59,7 @@ function ToAudio() {
 	p_time = 0,		// last playing time
 	abc_time = 0,		// last ABC time
 	play_fac = C.BLEN / 4 * 120 / 60, // play time factor - default: Q:1/4=120
-	i, n, dt, d, v,
+	i, n, dt, d, v, s_m,
 	s = first,
 	rst = s,		// left repeat (repeat restart)
 	rst_fac,		// play factor on repeat restart
@@ -281,6 +296,25 @@ function ToAudio() {
 
 	// change the tempo
 	function set_tempo(s) {
+		if (!s.tempo) {
+		    var	p = (s.tempo_str1 || s.tempo_str2)
+			if (!p)
+				return play_fac		// no change
+		    var	upm = abc2svg.tmp_tb[p.toLowerCase()]
+
+			if (!upm)
+				return play_fac		// no change
+			upm *= C.BLEN / 240 // (/4/60)
+			if (!s_m.a_meter)
+				return upm
+			if (!s_m.a_meter[0].bot)
+				return (s_m.a_meter[1] && s_m.a_meter[1].top == '|')
+						? upm * 2 : upm
+			if (s_m.a_meter[0].bot == "8"
+			 && !(s_m.a_meter[0].top % 3))
+			 	return upm / 2 * 3
+			return upm * s_m.a_meter[0].bot / 4
+		}
 	    var	i,
 		d = 0,
 		n = s.tempo_notes.length
@@ -315,6 +349,7 @@ function ToAudio() {
 		abc2svg.chord(first, voice_tb, cfmt)
 
 	// if %%playbeats, create the sounds
+	s_m = first.p_v.meter			// current meter
 	if (cfmt.playbeats
 	  && first.p_v.meter.wmeasure != 1)	// if not M:none
 		def_beats()
@@ -428,9 +463,11 @@ function ToAudio() {
 			s.pdur = d
 			v = s.v
 			break
+		case C.METER:
+			s_m = s				// current meter
+			break
 		case C.TEMPO:
-			if (s.tempo)
-				play_fac = set_tempo(s)
+			play_fac = set_tempo(s)
 			break
 		}
 		s = s.ts_next
