@@ -338,6 +338,7 @@ abc2svg.chord = function(first,		// first symbol in time
 	// loop on the symbols and add the accompaniment chords
 	gchon = cfmt.chord.gchon
 	ti = 0					// time index in rhy
+	s = first
 	while (1) {
 		if (gchon && rhy != '+') {
 			while (s.time > nextim) {
