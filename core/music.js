@@ -1277,13 +1277,14 @@ function add_end_bar(s) {
 	b.ts_prev = s
 	b.next = s.next
 	b.ts_next = s.ts_next
-	b.shrink = s.type == C.STBRK ? 0 : (s.wr + 3)
 
 	if (s.next)			// (must not be the end of the voice)
 		s.next.prev = b
 //	if (s.ts_next)
 		s.ts_next.ts_prev = b
 	s.next = s.ts_next = b
+	b.shrink = sn.shrink
+	sn.shrink = sn.wl + 10
 	b.space = sn.space * .9 - 3
 	return b
 }
@@ -2044,6 +2045,61 @@ function set_lines(	s,		/* first symbol */
 	last = next ? next.ts_prev : null,
 	ws = get_width(s, next)		// 2 widths: nice and shrunk
 
+	// split a big lyric word on two music lines
+	function ly_split(s, wmax) {
+	    var	i, wh,
+		s2 = clone(s),
+		p = s.a_ly[0].t,		// lyric word
+		w = 0,
+		j = 0
+
+		gene.deffont = s.a_ly[0].font
+		while (1) {
+			i = p.indexOf(' ', j) + 1
+//			if (i <= 0)
+//				break
+			wh = strwh(p.slice(j, i))
+			w += wh[0]
+			if (w > wmax)
+				break
+			j = i
+		}
+		s.a_ly[0].t = new String(p.slice(0, j - 1))
+		s2.a_ly = clone(s.a_ly)
+		s2.a_ly[0] = clone(s.a_ly[0])
+		s2.a_ly[0].t = new String(p.slice(j))
+		if (typeof document != "undefined") {
+			strwh(s.a_ly[0].t)
+			strwh(s2.a_ly[0].t)
+		} else {
+			s.a_ly[0].t.wh = strwh(s.a_ly[0].t)
+			s2.a_ly[0].t.wh = strwh(s2.a_ly[0].t)
+		}
+		w = s.a_ly[0].t.wh[0]		// new length of the words
+		s.wr = wmax
+		s2.wr -= w
+
+		lkvsym(s2, s2.next)		// voice linkage
+
+		s2.time += .1
+//		s2.dur -= .1
+		s2.nl = 0 //false
+		s2.x += w
+		s2.shrink = w - s2.wl
+		s = s2.ts_next
+		while (s) {
+			if (s.seqst) {
+				s.wl -= w
+				s.shrink -= w
+				break
+			}
+			s = s.ts_next
+		}
+		lktsym(s2, s2.ts_next)		// time linkage
+	} // ly_split()
+
+	// -- set_lines --
+
 	// take care of big key signatures at end of line
 	if (s.fmt.keywarn && next
 	 && next.type == C.KEY && !last.dur) {
@@ -2088,6 +2144,15 @@ function set_lines(	s,		/* first symbol */
 				s = set_nl(s)
 			return s
 		}
+
+		// if the width of the symbol is greater than
+		//			 the remaining width in the staff
+		// and if there are lyrics, split these lyrics on 2 staves
+	    if (s.x > xmax
+	     && s.prev.a_ly) {
+		s = s.prev
+		ly_split(s, lwidth - indent - s.x + first.x - first.shrink - s.shrink)
+	    } else {
 
 		/* try to cut on a measure bar */
 		s3 = null
@@ -2161,6 +2226,7 @@ function set_lines(	s,		/* first symbol */
 			}
 		}
 		s = s3
+	    } // ly_split call
 		while (s.ts_next) {
 			s = s.ts_next
 			if (s.seqst)
@@ -5123,7 +5189,7 @@ Abc.prototype.set_sym_glue = function(width) {
 					xmin.toFixed(1),
 					xx.toFixed(1),
 					width.toFixed(1))
-				break
+//				break
 			}
 			if (s.space) {
 				if (s.space < s.shrink) {
