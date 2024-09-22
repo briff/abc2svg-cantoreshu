@@ -4252,6 +4252,8 @@ function same_head(s1, s2) {
 		for (i1 = 0; i1 <= s1.nhd; i1++)
 			s1.notes[i1].shhd += sh2
 	}
+	if (s1.dots == s2.dots)			// let the dots in one voice
+		s2.dots = 0
 	return true
 }
 
