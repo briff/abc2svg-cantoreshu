@@ -30,7 +30,7 @@ var	STEM_MIN	= 16,	/* min stem height under beams */
 	BEAM_OFFSET	= .25,	/* pos of flat beam relative to staff line */
 	BEAM_SHIFT	= 5,	/* shift of second and third beams */
 	BEAM_STUB	= 7,	/* length of stub for flag under beam */ 
-	SLUR_SLOPE	= .5,	/* max slope of a slur */
+	SLUR_SLOPE	= .7,	// max slope of a slur
 	GSTEM		= 15,	/* grace note stem length */
 	GSTEM_XOFF	= 2.3	/* x offset for grace note stem */
 
@@ -2000,7 +2000,7 @@ function draw_slur(path,	// list of symbols under the slur
 						y1 = k1.ys - 3
 					}
 				} else {
-					y1 = k1.y - 8
+					y1 = k1.y - 5
 				}
 			}
 		}
@@ -2035,7 +2035,7 @@ function draw_slur(path,	// list of symbols under the slur
 					else
 						y2 = k2.ys - 3
 				} else {
-					y2 = k2.y - 8
+					y2 = k2.y - 5
 				}
 			}
 		}
@@ -2118,7 +2118,7 @@ function draw_slur(path,	// list of symbols under the slur
 	if (k1.grace)
 		x1 = k1.x - GSTEM_XOFF * .5
 	if (k2.grace)
-		x2 = k2.x + GSTEM_XOFF * 1.5;
+		x2 = k2.x + GSTEM_XOFF * .5
 
 	h = 0;
 	a = (y2 - y1) / (x2 - x1)
@@ -2149,15 +2149,15 @@ function draw_slur(path,	// list of symbols under the slur
 		case C.GRACE:
 			for (g = k.extra; g; g = g.next) {
 				if (dir > 0) {
-					y = 3 * (g.notes[g.nhd].pit - 18) + 6
-					if (y < g.ymx)
+//					y = 3 * (g.notes[g.nhd].pit - 18) + 6
+//					if (y < g.ymx)
 						y = g.ymx;
 					y -= a * g.x + addy
 					if (y > h)
 						h = y
 				} else {
-					y = 3 * (g.notes[0].pit - 18) - 6
-					if (y > g.ymn)
+//					y = 3 * (g.notes[0].pit - 18) - 6
+//					if (y > g.ymn)
 						y = g.ymn;
 					y -= a * g.x + addy
 					if (y < h)
