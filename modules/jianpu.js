@@ -544,12 +544,14 @@ d="m' + (l / 2 - 3).toFixed(1)+' '+y.toFixed(1))
 				continue
 			y = staff_tb[s.st].y
 			s2 = s
-			while (s.next && s.next.nflags > 0) {
+			while (s.next) {
 				s = s.next
 				if (s.nflags > nl)
 					nl = s.nflags
 				if (s.beam_end)
 					break
+				if (s.type == C.GRACE)
+					draw_dgr(s)
 			}
 			if (s.dy)
 				y += s.dy
