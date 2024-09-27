@@ -29,6 +29,7 @@ rule jsc
 	v=`cat version.txt`;$
    fi;$
    cp core/license $out;$
+   head -qn1 $in >> $out;$
    if [ "x$$NOMIN" = "x" ]; then $
       if command -v jsmin >/dev/null 2>&1; then $
 	cat $in | jsmin >> $out;$
@@ -47,6 +48,7 @@ rule jsc
 
 rule jscu
   command = cp core/license $out;$
+   head -qn1 $in >> $out;$
    if [ "x$$NOMIN" = "x" ]; then $
       if command -v jsmin >/dev/null 2>&1; then $
 	cat $in | jsmin >> $out;$
