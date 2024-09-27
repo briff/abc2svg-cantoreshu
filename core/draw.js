@@ -3086,6 +3086,10 @@ function draw_sym_near() {
 		default:
 			y_set(s.st, true, s.x - s.wl, s.wl + s.wr, s.ymx + 2);
 			y_set(s.st, false, s.x - s.wl, s.wl + s.wr, s.ymn - 2)
+			// fall thru
+		case C.PART:
+		case C.TEMPO:
+		case C.STAVES:
 			continue
 		case C.NOTE:
 			break
