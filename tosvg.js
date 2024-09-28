@@ -72,6 +72,10 @@ tm.mus_init = function(args) {
 				+ p.slice(i))
 			yo += +h[2]		// offset next SVG
 			break
+		default:
+			if (p.slice(-6) == "</svg>")
+				out.push("</svg>")
+			break
 		}
 	}
 
