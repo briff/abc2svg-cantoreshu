@@ -1,6 +1,6 @@
 // edit.js - file used in the abc2svg editor
 //
-// Copyright (C) 2014-2023 Jean-Francois Moine
+// Copyright (C) 2014-2024 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -161,10 +161,8 @@ function popshow(area, visible) {
 // load the (ABC source or include) file in the textarea
 function loadtune() {
 	var files = document.getElementById("abcfile").files
-//	if (!files.length) {
-//		alert('Please select a file!')
-//		return
-//	}
+	if (!files.length)
+		return
 	abc_fname[srcidx] = files[0].name
 
 	var reader = new FileReader();
