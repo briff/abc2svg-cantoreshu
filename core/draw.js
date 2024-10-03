@@ -3478,8 +3478,8 @@ function draw_systems(indent) {
 		i = ba.length
 		if (!i)
 			return
-		while (1) {
-			b = ba[--i]
+		while (--i >= 0) {
+			b = ba[i]
 			st = b[0].st
 			if (b[1] > bar_bot[st])
 				b[1] = bar_bot[st]
