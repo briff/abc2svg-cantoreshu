@@ -1495,7 +1495,7 @@ function fill_mr_ba(p_v) {
 
 /* -- get staves definition (%%staves / %%score) -- */
 function get_staves(cmd, parm) {
-    var	s, p_voice, p_voice2, i, flags, v, vid, a_vf,
+    var	s, p_voice, p_voice2, i, flags, v, vid, a_vf, eoln,
 	st, range,
 	nv = voice_tb.length,
 	maxtime = 0
@@ -1520,6 +1520,10 @@ function get_staves(cmd, parm) {
 	/* create a new staff system */
 	for (v = 0; v < nv; v++) {
 		p_voice = voice_tb[v]
+		if (p_voice.eoln) {
+			eoln = 1
+			delete p_voice.eoln
+		}
 		if (p_voice.time > maxtime)
 			maxtime = p_voice.time
 	}
@@ -1541,6 +1545,7 @@ function get_staves(cmd, parm) {
 			}
 		}
 		curvoice.time = maxtime;
+		curvoice.eoln = eoln
 		s = {
 			type: C.STAVES,
 			dur: 0
