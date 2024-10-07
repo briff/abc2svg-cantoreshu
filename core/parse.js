@@ -771,8 +771,8 @@ function new_key(param) {
 		? abc2svg.keys[9]		// implicit F# and C#
 		: abc2svg.keys[sf + 7]
 	if (s.k_a_acc) {
-		s.k_map = new Int8Array(s.k_map)
-		i = s.k_a_acc.length
+		s.k_map = Array.prototype.slice.call(s.k_map)	// simple Array
+		i = s.k_a_acc.length			// (for micro-accidentals)
 		while (--i >= 0) {
 			note = s.k_a_acc[i]
 			s.k_map[(note.pit + 19) % 7] = note.acc
