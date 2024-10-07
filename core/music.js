@@ -2150,8 +2150,10 @@ function set_lines(	s,		/* first symbol */
 		// and if there are lyrics, split these lyrics on 2 staves
 	    if (s.x > xmax
 	     && s.prev.a_ly) {
-		s = s.prev
-		ly_split(s, lwidth - indent - s.x + first.x - first.shrink - s.shrink)
+		s3 = s = s.prev
+		while (!s3.seqst)
+			s3 = s3.ts_prev
+		ly_split(s, lwidth - indent - s3.x + first.x - first.shrink - s3.shrink)
 	    } else {
 
 		/* try to cut on a measure bar */
