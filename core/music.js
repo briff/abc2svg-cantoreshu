@@ -2056,8 +2056,8 @@ function set_lines(	s,		/* first symbol */
 		gene.deffont = s.a_ly[0].font
 		while (1) {
 			i = p.indexOf(' ', j) + 1
-//			if (i <= 0)
-//				break
+			if (i <= 0)
+				break
 			wh = strwh(p.slice(j, i))
 			w += wh[0]
 			if (w > wmax)
@@ -2084,7 +2084,9 @@ function set_lines(	s,		/* first symbol */
 		s2.time += .1
 //		s2.dur -= .1
 		s2.nl = 0 //false
-		s2.x += w
+		while (!s.seqst)
+			s = s.ts_prev
+		s2.x = s.x + w
 		s2.shrink = w - s2.wl
 		s = s2.ts_next
 		while (s) {
@@ -2153,7 +2155,7 @@ function set_lines(	s,		/* first symbol */
 		s3 = s = s.prev
 		while (!s3.seqst)
 			s3 = s3.ts_prev
-		ly_split(s, lwidth - indent - s3.x + first.x - first.shrink - s3.shrink)
+		ly_split(s, xmax - s3.x)
 	    } else {
 
 		/* try to cut on a measure bar */
