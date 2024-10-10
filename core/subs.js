@@ -17,31 +17,15 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with abc2svg-core.  If not, see <http://www.gnu.org/licenses/>.
 
+// in browser context, get the canvas context for string width computation
+if (typeof document != "undefined"
+ && !abc2svg.ctx)
+	abc2svg.ctx = document.createElement("canvas").getContext("2d")
+
 // add font styles
-    var	sheet
-var add_fstyle = typeof document != "undefined" ?
-    function(s) {
-    var	e
-
-	font_style += "\n" + s
-	if (!sheet) {
-		if (abc2svg.styles)	// if styles from a previous generation
-			abc2svg.styles.remove()
-
-		e = document.createElement('style')
-		document.head.appendChild(e)
-		sheet = e.sheet
-		abc2svg.styles = e
-	}
-	s = s.match(/[^{]+{[^}]+}/g)	// insert each style
-	while (1) {
-		e = s.shift()
-		if (!e)
-			break
-		sheet.insertRule(e, sheet.cssRules.length)
-	}
-    } // add_fstyle()
-    : function(s) { font_style += "\n" + s }
+function add_fstyle(p) {
+	font_style += "\n" + p
+} // add_fstyle()
 
 // width of characters according to the font type
 // these tables were created from the font 'Liberation'
@@ -138,21 +122,10 @@ var strwh
 
     // .. by the browser
 
-	// create a text element if not done yet
-      var	el
-
 	// change the function
 	strwh = function(str) {
 		if (str.wh)
 			return str.wh
-		if (!el) {
-			el = document.createElement('text')
-			el.style.position = 'absolute'
-			el.style.top = '-1000px'
-			el.style.padding = '0'
-			el.style.visibility = "hidden"
-			document.body.appendChild(el)
-		}
 
 	    var	c,
 		font = gene.curfont,
@@ -162,12 +135,11 @@ var strwh
 		i0 = 0,
 		i = 0
 
-		el.className = font_class(font)
-		el.style.lineHeight = 1
+	    var	ctx = abc2svg.ctx
+		ctx.font = st_font(font)
 
 		if (typeof str == "object") {	// if string already converted
-			el.innerHTML = str
-			str.wh = [ el.clientWidth, el.clientHeight ]
+			str.wh = [ ctx.measureText(str).width, h ]
 			return str.wh
 		}
 		str = clean_txt(str)
@@ -184,16 +156,13 @@ var strwh
 					i++
 					continue
 				}
+				ctx.font = st_font(font)
 			}
-
-			el.innerHTML = str.slice(i0, i >= 0 ? i : undefined)
-			w += el.clientWidth
-//fixme: bad width if space(s) at end of string
-			if (el.clientHeight > h)
-				h = el.clientHeight
+			w += ctx.measureText(str.slice(i0, i >= 0 ? i : undefined)).width
+			if (h < font.size)
+				h = font.size
 			if (i < 0)
 				break
-			el.style.font = style_font(font).slice(5);
 			i += 2;
 			i0 = i
 		}
