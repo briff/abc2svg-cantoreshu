@@ -868,6 +868,16 @@ function edit_init() {
 		e.oncontextmenu = show_menu
 	}
 	set_pref()	// set the preferences from local storage
+
+	// create a hidden span for string width computation
+	e = document.createElement("span")
+	e.style.position = "absolute"
+	e.style.top =
+		e.style.padding = 0
+	e.style.visibility = "hidden"
+	e.style.lineHeight = 1
+	document.body.appendChild(e)
+	abc2svg.el = e
 }
 
 // drag and drop

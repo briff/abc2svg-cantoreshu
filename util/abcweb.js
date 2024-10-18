@@ -91,7 +91,7 @@ if (typeof abc2svg == "undefined")
 
 // function called when abcweb-1.js is fully loaded
 function dom_loaded() {
-    var	abc, src, outb, err,
+    var	abc, src, outb, err, e,
 	a_inc = {},
 	tune_lst = [],	// array of [tsfirst, voice_tb, info, cfmt] per tune
 			// created on playback start
@@ -143,7 +143,7 @@ function dom_loaded() {
 		if (c) {
 			c = '.' + c				// selector
 			for (i = 0; i < sh.length; i++) {
-				r = sh[i].rules
+				r = sh[i].cssRules
 				for (j = 0; j < r.length; j++) {
 					if (r[j].selectorText == c)
 						break
@@ -509,6 +509,16 @@ function clean_txt(txt) {
 		abc2svg.loadjs("abc2svg-1.js", dom_loaded)
 		return
 	}
+
+	// create a hidden span for string width computation
+	e = document.createElement("span")
+	e.style.position = "absolute"
+	e.style.top =
+		e.style.padding = 0
+	e.style.visibility = "hidden"
+	e.style.lineHeight = 1
+	document.body.appendChild(e)
+	abc2svg.el = e
 
 	if (src.indexOf('type="text/vnd.abc"') < 0)
 		move_music(src)

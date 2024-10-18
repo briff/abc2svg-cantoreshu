@@ -60,7 +60,7 @@ if (typeof abc2svg == "undefined")
 
 // function called when abc2svg is fully loaded
 function dom_loaded() {
-    var	abc,
+    var	abc, e,
 	new_page,
 	playing,
 	abcplay,
@@ -515,6 +515,16 @@ onclick="abc2svg.do_render(\'.*\')">' + tt +
 		playing = true
 		abcplay.play(s, null)
 	} // click()
+
+	// create a hidden span for string width computation
+	e = document.createElement("span")
+	e.style.position = "absolute"
+	e.style.top =
+		e.style.padding = 0
+	e.style.visibility = "hidden"
+	e.style.lineHeight = 1
+	document.body.appendChild(e)
+	abc2svg.el = e
 
 	// accept page formatting
 	abc2svg.abc_end = function() {}
