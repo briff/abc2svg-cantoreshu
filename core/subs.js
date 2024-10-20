@@ -517,7 +517,8 @@ function write_text(text, action) {
 					vskip(wh * cfmt.lineskipfac)
 					xy_str(0, ww[1] * .2,
 						words.slice(k, j).join(' '),
-						action, strlw)
+						action, strlw,
+						[w - ww[0], ww[1]])
 					k = j;
 					w = ww[0]
 					wh = 0
