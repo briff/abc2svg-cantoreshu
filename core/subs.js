@@ -24,14 +24,12 @@ var add_fstyle = typeof document != "undefined" ?
     var	e
 
 	font_style += "\n" + s
-	if (!sheet) {
-		if (abc2svg.styles)	// if styles from a previous generation
-			abc2svg.styles.remove()
+	if (!abc2svg.styles) {
 		e = document.createElement('style')
 		document.head.appendChild(e)
-		sheet = e.sheet
 		abc2svg.styles = e
 	}
+	sheet = abc2svg.styles.sheet
 	s = s.match(/[^{]+{[^}]+}/g)	// insert each style
 	while (1) {
 		e = s.shift()
