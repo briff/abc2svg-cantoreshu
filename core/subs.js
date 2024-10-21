@@ -150,6 +150,8 @@ var strwh
 		i0 = 0,
 		i = 0
 
+		if (!el.parentElement)		// insert back the <span> in the document
+			document.body.appendChild(el)
 		el.className = font_class(font)
 
 		if (typeof str == "object") {	// if string already converted
