@@ -535,9 +535,8 @@ function endplay(repv) {
 function play_tune(what) {
 	if (!abc)
 		return			// no generation yet
-    var	i, si, ei, elt,
-	C = abc2svg.C,
-	tunes = abc.tunes
+    var	i, si, ei, elt, tunes,
+	C = abc2svg.C
 
 	if (play.playing) {
 		if (!play.stop) {
@@ -659,13 +658,12 @@ function play_tune(what) {
 	ctxMenu.style.display = "none";	// remove the play menu
 
 	play.playing = true;
-	if (tunes.length) {		// if new display
+	if (tunes != abc.tunes) {		// if new display
+		tunes = abc.tunes
 
 		// generate the play data of all tunes
-		while (1) {
-			elt = tunes.shift()
-			if (!elt)
-				break
+		for (i = 0; i < tunes.length; i++) {
+			elt = tunes[i]
 			play.abcplay.add(elt[0], elt[1], elt[3])
 		}
 
@@ -697,13 +695,21 @@ function play_tune(what) {
 		ei = get_ee(selx[1])
 	} else {				// no selection => tune
 		elt = play.click.svg		// (dummy)
-		si = elt.getElementsByClassName('abcr') // symbols in the SVG
-		if (!si.length) {
-			play.playing = false
-			return			// not in a tune!
+		si = elt.getAttribute('class')
+		si = /tune(\d*)/.exec(si)
+		if (!si) {
+			play.playing = 0 //false
+			return			// no tune here
 		}
-		i = Number(si[0].getAttribute('class').slice(6, -1))
-		si = gsot(i)
+		si = tunes[si[1]][0]		// first symbol of the tune
+		while (si && !si.dur)
+			si = si.ts_next
+		if (!si) {
+			play.playing = 0 //false
+			return			// nothing to play
+		}
+		while (!si.seqst)
+			si = si.ts_prev
 		ei = null
 	}
 
