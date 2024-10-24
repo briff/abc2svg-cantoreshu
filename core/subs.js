@@ -19,8 +19,8 @@
 
 // add font styles
     var	sheet
-var add_fstyle = typeof document != "undefined" ?
-    function(s) {
+var add_fstyle = abc2svg.el
+    ? function(s) {
     var	e
 
 	font_style += "\n" + s
@@ -296,7 +296,7 @@ function str2svg(str) {
 
 	// convert to String and memorize the string width and height
 	o = new String(o)
-	if (typeof document != "undefined")
+	if (abc2svg.el)
 		strwh(o)		// browser
 	else
 		o.wh = strwh(str)	// CLI

@@ -2068,7 +2068,7 @@ function set_lines(	s,		/* first symbol */
 		s2.a_ly = clone(s.a_ly)
 		s2.a_ly[0] = clone(s.a_ly[0])
 		s2.a_ly[0].t = new String(p.slice(j))
-		if (typeof document != "undefined") {
+		if (abc2svg.el) {
 			strwh(s.a_ly[0].t)
 			strwh(s2.a_ly[0].t)
 		} else {
