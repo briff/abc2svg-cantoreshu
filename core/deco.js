@@ -266,6 +266,9 @@ function up3(s, pos) {
 	case C.SL_BELOW:
 		return 0	// false
 	}
+	if (!s.multi		// if voice alone in the staff
+	 && !s.invis)		// but not invisible symbol of a secondary voice
+		return 1 //true
 //	if (s.multi)
 //		return s.multi > 0
 //	return 1		// true
