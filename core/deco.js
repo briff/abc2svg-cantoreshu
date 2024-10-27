@@ -57,7 +57,7 @@ var	dd_tb = {},		// definition of the decorations
 
 // decorations - populate with standard decorations
 var decos = {
-	dot: "0 stc 6 1.5 1",
+	dot: "0 stc 6 .7 1",
 	tenuto: "0 emb 6 4 3",
 	slide: "1 sld 10 7 1",
 	arpeggio: "2 arp 12 10 3",
@@ -359,23 +359,14 @@ function d_near(de) {
 	if (s.type == C.NOTE)
 		de.x += s.notes[s.stem >= 0 ? 0 : s.nhd].shhd
 	if (dd.name[0] == 'd') {		// if dot (staccato)
-	    if (!(s.beam_st && s.beam_end)) {	// if in a beam sequence
-		if (up) {
-			if (s.stem > 0)
-				de.x += 3.5	// stem_xoff
-		} else {
-			if (s.stem < 0)
-				de.x -= 3.5
-		}
-	    } else {
-		if (up && s.stem > 0) {
+		if (up && s.stem > 0 && s.nflags >= 0
+		 && s.beam_st && s.beam_end) {
 			y = s.y + (y - s.y) * .6
 			if (y >= 27) {
 				de.y = y	// put the dot a bit lower
 				s.ymx = de.y + dd.h
 			}
 		}
-	    }
 	}
 }
 
