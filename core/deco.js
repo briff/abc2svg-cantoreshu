@@ -344,8 +344,16 @@ function d_near(de) {
 		y = (((y + 9) / 6) | 0) * 6 - 6	// between lines
 	}
 	if (up) {
-		y += dd.hd
-		s.ymx = y + dd.h
+		if (s.ys > 27
+		 && dd.name[0] == 'd'		// if dot (staccato)
+		 && s.a_dd[0].name == "dot"	// as the first decoration
+		 && s.stem > 0 && s.nflags >= 0
+		 && s.beam_st && s.beam_end)
+			y -= 6			// put the dot a bit lower
+		else
+			y += dd.hd
+		if (s.ymx < y + dd.h)
+			s.ymx = y + dd.h
 	} else if (dd.name[0] == 'w') {		// wedge (no descent)
 		de.inv = true
 		y -= dd.h
@@ -358,16 +366,6 @@ function d_near(de) {
 	de.y = y
 	if (s.type == C.NOTE)
 		de.x += s.notes[s.stem >= 0 ? 0 : s.nhd].shhd
-	if (dd.name[0] == 'd') {		// if dot (staccato)
-		if (up && s.stem > 0 && s.nflags >= 0
-		 && s.beam_st && s.beam_end) {
-			y = s.y + (y - s.y) * .6
-			if (y >= 27) {
-				de.y = y	// put the dot a bit lower
-				s.ymx = de.y + dd.h
-			}
-		}
-	}
 }
 
 /* 1: special case for slide */
