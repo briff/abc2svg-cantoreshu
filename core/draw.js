@@ -780,8 +780,21 @@ function draw_meter(s) {
 			}
 			x = (x0 + x) / 2 - 5
 		}
-		if (meter.bot)
-			xygl(x, y + 6, "mtr" + meter.bot[0])
+		if (meter.bot) {
+			if (meter.bot[1]) {
+				if (meter.bot[0] == 1) {
+					x0 = x - 4
+					x += 4
+				} else {
+					x0 = x - 5
+					x += 5
+				}
+				xygl(x0, y + 6, "mtr" + meter.bot[0])
+				xygl(x, y + 6, "mtr" + meter.bot[1])
+			} else {
+				xygl(x, y + 6, "mtr" + meter.bot[0])
+			}
+		}
 	}
 }
 
