@@ -185,14 +185,7 @@ if(0){
 			navigator.requestMIDIAccess({sysex: true}).then(
 				send_outputs,
 				function(msg) {
-
-					// open MIDI without SysEx
-					navigator.requestMIDIAccess().then(
-						send_outputs,
-						function(msg) {
-							rf()
-						}
-					)
+					rf()
 				}
 			)
 		}, // get_outputs()
