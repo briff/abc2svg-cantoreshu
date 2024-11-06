@@ -282,7 +282,8 @@ function tosvg(in_fname,		// file name
 		if (se < 0)
 			se = eof
 		if (typeof stag != "object") {		// set the tag after source
-			if (stag[0] != 'b' && stag[0] != 'a' && stag[0] != '+')
+			if (stag[0] != 'b' && stag[0] != 'a' && stag[0] != '+'
+			 && stag[0] != '*')
 				stag = 'b' + stag	// default: source before
 			if (stag[1] != '<')		// (if bool)
 				stag = stag[0] + "<pre>"
@@ -291,7 +292,7 @@ function tosvg(in_fname,		// file name
 				t = r.pop()
 				if (!t)
 					break
-				if (t[1] == '/')
+				if (t[1] == '/' || t.slice(-2) == '/>')
 					r.pop()		// skip this stop/start tag
 				else
 					etag += '</' + t.slice(1)
