@@ -69,6 +69,7 @@ abc2svg.clip = {
     // cut the tune
     do_clip: function() {
     var	C = abc2svg.C,
+	abc = this,
 	voice_tb = this.get_voice_tb(),
 	cfmt = this.cfmt()
 
@@ -83,7 +84,7 @@ abc2svg.clip = {
 					 && s2.time != 0)
 						break
 				}
-				if (s2.time < voice_tb[this.get_cur_sy().top_voice].
+				if (s2.time < voice_tb[abc.get_cur_sy().top_voice].
 								meter.wmeasure)
 					s = s2
 			}
@@ -145,6 +146,7 @@ abc2svg.clip = {
 					break
 				case C.KEY:
 					s2.p_v.key = this.clone(s2.as.u.key)
+					s2.p_v.ckey = this.clone(s2.as.u.ckey)
 					break
 				case C.METER:
 					s2.p_v.meter = this.clone(s2.as.u.meter)
@@ -165,8 +167,19 @@ abc2svg.clip = {
 				}
 				p_voice.sym = s2
 			}
-			this.set_tsfirst(s)
-			delete s.ts_prev
+			s2 = this.get_tsfirst()
+			if (s != s2) {
+				if (s2.type == C.STAVES) {
+					s2.ts_next = s
+					s.ts_prev = s2
+					s2.next = s2.p_v.sym
+					s2.p_v.sym = s2
+					s2.next.prev = s2
+				} else {
+					this.set_tsfirst(s)
+					delete s.ts_prev
+				}
+			}
 		}
 
 		/* remove the end of the tune */
