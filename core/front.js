@@ -217,6 +217,7 @@ function do_include(fn) {
 	parse_sav = clone(parse);
 	tosvg(fn, file);
 	parse_sav.state = parse.state;
+	parse_sav.ckey = parse.ckey
 	parse = parse_sav;
 	include--
 }
