@@ -5247,8 +5247,8 @@ Abc.prototype.set_sym_glue = function(width) {
 			spf = spf_last
 			if (ll && spf < s.fmt.stretchlast)
 				spf = s.fmt.stretchlast
-			else if (cfmt.maxshrink)
-				spf = 1 - cfmt.maxshrink * .75
+			else if (spf < 1 - cfmt.maxshrink)
+				spf = 1 - cfmt.maxshrink
 			if (spf > (width - xs) / xx)
 				spf = (width - xs) / xx
 		}
