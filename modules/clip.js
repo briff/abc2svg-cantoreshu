@@ -73,6 +73,33 @@ abc2svg.clip = {
 	voice_tb = this.get_voice_tb(),
 	cfmt = this.cfmt()
 
+	// check the pointers (ties and slurs)
+	function chkptr(last) {
+	    var	i, sl, s2, m, nt,
+		tim = last.time,
+		s = abc.get_tsfirst()
+
+		do {
+			if (s.sls) {
+				for (i = 0; i < s.sls.length; i++) {
+					sl = s.sls[i]
+					s2 = sl.se		// slur end
+					if (s2.time >= tim)
+						sl.loc = 'o'	// no end
+				}
+			}
+			if (s.ti1			// if tie
+			 && s.time + s.dur >= tim) {	// ending out of the clip seq.
+				for (m = 0; m <= s.nhd; m++) {
+					nt = s.notes[m]
+					if (nt.tie_e && nt.tie_e.s.time >= tim)
+						delete nt.tie_e	// no end
+				}
+			}
+			s = s.ts_next
+		} while (s)
+	} // chkptr()
+
 	// go to a global (measure + time)
 	function go_global_time(s, sel) {
 	    var	s2, bar_time, seq
@@ -207,6 +234,8 @@ abc2svg.clip = {
 				p_voice.sym = null
 		}
 		delete s.ts_prev.ts_next
+
+		chkptr(s.ts_prev)	// check the pointers (ties and slurs)
 	}, // do_clip()
 
     do_pscom: function (of, text) {
