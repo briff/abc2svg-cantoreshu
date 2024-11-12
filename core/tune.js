@@ -1533,6 +1533,15 @@ function get_staves(cmd, parm) {
 	} else {
 //		if (nv)					// if many voices
 		self.voice_adj(1)
+
+		// synchronize the voices
+		for (v = 0; v < nv; v++) {
+			p_voice = voice_tb[v]
+			p_voice.time = maxtime
+			p_voice.lyric_restart = p_voice.last_sym
+			p_voice.sym_restart = p_voice.last_sym
+		}
+
 		/*
 		 * create a new staff system and
 		 * link the 'staves' symbol in a voice which is seen from
@@ -1544,7 +1553,7 @@ function get_staves(cmd, parm) {
 				break
 			}
 		}
-		curvoice.time = maxtime;
+
 		curvoice.eoln = eoln
 		s = {
 			type: C.STAVES,
@@ -1555,14 +1564,11 @@ function get_staves(cmd, parm) {
 		par_sy.nstaff = nstaff;
 
 		// if no parameter, duplicate the current staff system
-		// and do a voice re-synchronization
 		if (!parm) {
 			s.sy = clone(par_sy, 2)		// clone the staves and voices
 			par_sy.next = s.sy
 			par_sy = s.sy
 			staves_found = maxtime
-			for (v = 0; v < nv; v++)
-				voice_tb[v].time = maxtime
 			curvoice = voice_tb[par_sy.top_voice]
 			return
 		}
@@ -1592,7 +1598,6 @@ function get_staves(cmd, parm) {
 	for (i = 0; i < a_vf.length; i++) {
 		vid = a_vf[i][0];
 		p_voice = new_voice(vid);
-		p_voice.time = maxtime;
 		v = p_voice.v
 
 		a_vf[i][0] = p_voice;
