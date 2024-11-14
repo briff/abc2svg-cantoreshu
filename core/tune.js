@@ -2067,7 +2067,7 @@ function new_voice(id) {
 	p_voice = {
 		v: v,
 		id: id,
-		time: 0,
+		time: staves_found >= 0 ? staves_found : 0,
 		new: true,
 		pos: {
 //			dyn: 0,
