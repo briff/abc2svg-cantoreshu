@@ -1547,6 +1547,7 @@ function get_staves(cmd, parm) {
 		 * link the 'staves' symbol in a voice which is seen from
 		 * the previous system - see sort_all
 		 */
+	   if (!par_sy.voices[curvoice.v])
 		for (v = 0; v < par_sy.voices.length; v++) {
 			if (par_sy.voices[v]) {
 				curvoice = voice_tb[v]
