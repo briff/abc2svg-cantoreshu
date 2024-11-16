@@ -2654,8 +2654,8 @@ function mrest_expand() {
 // return the starting clef type
 function set_auto_clef(st, s_start, clef_type_start) {
     var	s, time, s2, s3,
-	max = 12,					/* "F," */
-	min = 20					/* "G" */
+	max = 14,				// "A,"
+	min = 18				// "E"
 
 	/* get the max and min pitches in the sequence */
 	for (s = s_start; s; s = s.ts_next) {
