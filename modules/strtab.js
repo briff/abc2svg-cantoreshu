@@ -1,6 +1,6 @@
 // abc2svg - strtab.js - tablature for string instruments
 //
-// Copyright (C) 2020-2023 Jean-Francois Moine
+// Copyright (C) 2020-2024 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -619,7 +619,7 @@ abc2svg.strtab = {
 			}
 		} else if (!p_v.tab) {
 			tab = p_v.diafret ?
-				[10, 14, 17] :		// dulcimer
+				[17, 14, 10] :		// dulcimer
 				[40, 45, 50, 55, 59, 64] // guitar strings
 		} else {
 			tab = p_v.tab
