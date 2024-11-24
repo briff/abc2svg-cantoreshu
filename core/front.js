@@ -310,6 +310,7 @@ function tosvg(in_fname,		// file name
 	} // set_src()
 
 	function end_tune() {
+		parse.bol = bol				// (for multi V:)
 		generate()
 		cfmt = sav.cfmt;
 		info = sav.info;

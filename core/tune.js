@@ -1502,10 +1502,10 @@ function get_staves(cmd, parm) {
 
 	// if sequence with many voices, load the other voices
 	if (curvoice && curvoice.clone) {
-		i = parse.eol
-		parse.eol = parse.bol		// remove the %%staves line
+//		i = parse.eol
+//		parse.eol = parse.bol		// remove the %%staves line
 		do_cloning()
-		parse.eol = i
+//		parse.eol = i
 	}
 
 	if (parm) {
@@ -2139,7 +2139,7 @@ function do_cloning() {
 	vs = clone.vs,
 	a = clone.a,
 	bol = clone.bol,
-	eol = parse.eol,
+	eol = parse.bol,
 	parse_sav = parse,
 	file = parse.file
 
