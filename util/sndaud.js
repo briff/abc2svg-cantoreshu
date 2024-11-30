@@ -225,9 +225,7 @@ function Audio5(i_conf) {
 			if (gen.sampleModes && gen.sampleModes.amount & 1)
 				parm.sm = 1
 
-			if (!gen.sampleID)	// (empty generator!)
-				continue
-
+		    if (gen.sampleID) {
 			sid = gen.sampleID.amount
 			sample_hdr = sf2par.sampleHeader[sid]
 			sample = sf2par.sample[sid]
@@ -253,6 +251,7 @@ function Audio5(i_conf) {
 				(gen.overridingRootKey ?
 					gen.overridingRootKey.amount :
 					sample_hdr.originalPitch)
+		    }
 
 			for (j = gen.keyRange.lo; j <= gen.keyRange.hi; j++) {
 				rates[instr][j] = Math.pow(Math.pow(2, 1 / 12),
@@ -488,7 +487,7 @@ function Audio5(i_conf) {
 		 || !parm)		// if the instrument could not be loaded
 			return		// or if it has not this key
 		o.buffer = parm.buffer
-		if (parm.loopStart) {
+		if (parm.sm) {
 			o.loop = true
 			o.loopStart = parm.loopStart
 			o.loopEnd = parm.loopEnd
