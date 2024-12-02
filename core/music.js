@@ -4733,8 +4733,8 @@ Abc.prototype.set_stems = function() {
 					g.ys = ymn - slen;
 					ymn = Math.round(g.ys)
 				}
-				ymx += 4
-				ymn -= 4
+				ymx += 2
+				ymn -= 2
 				if (ymn < ymin)
 					ymin = ymn
 				else if (ymx > ymax)

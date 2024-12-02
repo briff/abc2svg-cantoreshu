@@ -399,13 +399,11 @@ Abc.prototype.calculate_beam = function(bm, s1) {
 				if (s1.stem > 0) {
 					y = g.ymx - y
 						+ BEAM_DEPTH + BEAM_SHIFT * (nflags - 1)
-						+ 2
 					if (y > 0)
 						b += y
 				} else {
 					y = g.ymn - y
 						- BEAM_DEPTH - BEAM_SHIFT * (nflags - 1)
-						- 2
 					if (y < 0)
 						b += y
 				}
