@@ -296,7 +296,7 @@ function ToAudio() {
 
 	// change the tempo
 	function set_tempo(s) {
-		if (!s.tempo) {
+		if (!s.tempo && !s.new_beat) {
 		    var	p = (s.tempo_str1 || s.tempo_str2)
 			if (!p)
 				return play_fac		// no change
@@ -321,6 +321,8 @@ function ToAudio() {
 
 		for (i = 0; i < n; i++)
 			d += s.tempo_notes[i]
+		if (s.new_beat)
+			return play_fac * s.new_beat / d
 		return d * s.tempo / 60
 	} // set_tempo()
 
