@@ -343,8 +343,10 @@ abc2svg.strtab = {
 					nt.sls[i].ty |= C.SL_ABOVE
 				}
 			}
-			if (nt.nb != undefined)
+			if (nt.nb) {
+				delete nt.a_dd
 				continue
+			}
 			if (nt.a_dd) {
 				i = nt.a_dd.length
 				while (--i >= 0) {
