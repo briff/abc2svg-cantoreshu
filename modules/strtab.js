@@ -292,6 +292,7 @@ abc2svg.strtab = {
 		nt.invis = true
 		if (!s.grace)
 			strss[i] = s.time + s.dur
+	    if (p_v.pos.stm != C.SL_HIDDEN) {
 		if (!lstr[st])
 			lstr[st] = [ 10, null, C.BLEN ]
 		if (lstr[st][0] > i) {
@@ -300,6 +301,7 @@ abc2svg.strtab = {
 		}
 		if (s.dur < lstr[st][2])
 			lstr[st][2] = s.dur
+	    }
 		s.stemless = 1 //true
 		if (s.dots) {			// have nicer dots
 			s.xmx = 0
@@ -384,7 +386,7 @@ abc2svg.strtab = {
 		s.y = 3 * (nt.pit - 18)
 
  		// if no stem, don't get space below the tablature
-		s.ymn =	s.stemless ? -15 : 0
+		s.ymn =	s.stemless ? -12 : 0
 	} // set_notes()
 
 	// get the string number from the decoration
@@ -438,8 +440,6 @@ abc2svg.strtab = {
 			if (p_v.pos.gst == C.SL_HIDDEN)
 				s.sappo = 0
 			for (g = s.extra; g; g = g.next) {
-				if (p_v.pos.gst == C.SL_HIDDEN)
-					g.stemless = true
 				set_notes(p_v, g)
 			}
 			break
