@@ -45,6 +45,7 @@ var	abc_images,			// image buffer
 	selx = [0, 0],			// selected source indexes
 	selx_sav = [],			// (saved while playing/printing)
 	play = {},			// play data
+	tunes,				// tune list, updated on rendering refresh
 	pop,				// current popup message
 	texts = {},			// language specific texts
 	chg = 0,			// > 0 when the textarea is modified
@@ -535,7 +536,7 @@ function endplay(repv) {
 function play_tune(what) {
 	if (!abc)
 		return			// no generation yet
-    var	i, si, ei, elt, tunes,
+    var	i, si, ei, elt,
 	C = abc2svg.C
 
 	if (play.playing) {
