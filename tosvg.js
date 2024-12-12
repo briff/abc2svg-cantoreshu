@@ -40,7 +40,7 @@ function bug(p) {
 		r = t.match(/x="([^"]+)"\s+y="([^"]+)"[^>]*>(.+)/)
 			// r[1] = x list, r[2] = y list, r[3] = characters
 
-		if (r[1].indexOf(',') < 0)
+		if (!r || r[1].indexOf(',') < 0)
 			continue
 		x = r[1].split(',')
 		y = r[2].split(',')
