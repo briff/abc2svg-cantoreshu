@@ -702,14 +702,13 @@ function play_tune(what) {
 			return			// no tune here
 		}
 		si = tunes[si[1]][0]		// first symbol of the tune
-		while (si && !si.dur)
-			si = si.ts_next
-		if (!si) {
+		ei = si
+		while (ei && !ei.dur)
+			ei = ei.ts_next
+		if (!ei) {
 			play.playing = 0 //false
 			return			// nothing to play
 		}
-		while (!si.seqst)
-			si = si.ts_prev
 		ei = null
 	}
 
