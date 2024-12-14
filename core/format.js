@@ -392,10 +392,10 @@ function get_unit(param) {
 	return NaN
 }
 
-// set the infoname
-function set_infoname(param) {
+// set the name of an info or a part
+function set_infoname(cmd, param) {
 //fixme: check syntax: '<letter> ["string"]'
-	var	tmp = cfmt.infoname.split("\n"),
+    var	tmp = cfmt[cmd] ? cfmt[cmd].split("\n") : "",
 		letter = param[0]
 
 	for (var i = 0; i < tmp.length; i++) {
@@ -406,10 +406,13 @@ function set_infoname(param) {
 			tmp.splice(i, 1)
 		else
 			tmp[i] = param
-		cfmt.infoname = tmp.join('\n')
+		cfmt[cmd] = tmp.join('\n')
 		return
 	}
-	cfmt.infoname += "\n" + param
+	if (cfmt[cmd])
+		cfmt[cmd] += "\n" + param
+	else
+		cfmt[cmd] = param
 }
 
 // get the text option
@@ -735,7 +738,8 @@ Abc.prototype.set_format = function(cmd, param) {
 			cfmt[cmd] = v
 		break
 	case "infoname":
-		set_infoname(param)
+	case "partname":
+		set_infoname(cmd, param)
 		break
 	case "notespacingfactor":
 		v = param.match(/([.\d]+)[,\s]*(\d+)?/)

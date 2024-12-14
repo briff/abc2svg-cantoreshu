@@ -2150,7 +2150,7 @@ function draw_measnb() {
 /* -- draw the parts and the tempo information -- */
 // (unscaled delayed output)
 function draw_partempo() {
-    var	s, s2, some_part, some_tempo, h, w, y, st,
+    var	s, s2, some_part, some_tempo, h, w, y, st, p,
 	sy = cur_sy
 
 	// search the top staff
@@ -2182,7 +2182,10 @@ function draw_partempo() {
 		}
 		if (s2.x == undefined)
 			s2.x = s.x - 10
-		w = strwh(s2.text)[0]
+		p = s2.text
+		if (cfmt.partname)
+			s2.ntxt = p = partname(p)[2]
+		w = strwh(p)[0]
 		y = y_get(st, true, s2.x, w + 3)
 		if (ymin < y)
 			ymin = y
@@ -2194,7 +2197,8 @@ function draw_partempo() {
 			s2 = s.part
 			if (!s2 || s2.invis)
 				continue
-			w = strwh(s2.text)[0]
+			p = s2.ntxt || s2.text
+			w = strwh(p)[0]
 			if (user.anno_start || user.anno_stop) {
 				s2.wl = 0
 				s2.wr = w
@@ -2204,7 +2208,7 @@ function draw_partempo() {
 			}
 			xy_str(s2.x,
 				ymin + 2 + gene.curfont.pad + gene.curfont.size * .22,
-				s2.text)
+				p)
 			y_set(st, 1, s2.x, w + 3,
 				(ymin + 2 + h) / staff_tb[st].staffscale)
 			if (s2.x < 0)

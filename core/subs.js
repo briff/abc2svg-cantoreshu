@@ -930,10 +930,41 @@ function write_headform(lwidth) {
 	vskip(ya.l)
 }
 
+// get the meaningful names of a part (P:)
+function partname(c) {
+    var	i,
+	tmp = cfmt.partname.split('\n')
+
+	for (i = 0; i < tmp.length; i++) {
+		if (tmp[i][0] == c) {
+			c = tmp[i].match(/.\s+(\w+)\s*(.+)?/)
+			if (!c[2])
+				c[2] = c[1]
+			if (c[2][0] == '"')
+				c[2] = c[2].slice(1, -1)
+			return c
+		}
+	}
+	return [0, c, c]
+} // partname()
+
 /* -- output the tune heading -- */
 function write_heading() {
-	var	i, j, area, composer, origin, rhythm, down1, down2,
+    var	i, j, area, composer, origin, rhythm, down1, down2, p,
 		lwidth = get_lwidth()
+
+	// build a new sequence of the parts with clearer names
+	function new_part() {
+	    var	i,
+		o = ""
+
+		for (i = 0; i < info.P.length; i++) {
+			if (i)
+				o += ' '
+			o += partname(info.P[i])[1]
+		}
+		return o
+	} // new_part()
 
 	vskip(cfmt.topspace)
 
@@ -1031,7 +1062,10 @@ function write_heading() {
 			down2 = down1 + i
 		else
 			down2 += i
-		xy_str(0, -down2 + gene.curfont.size *.22, info.P)
+		p = info.P
+		if (cfmt.partname)
+			p = new_part()
+		xy_str(0, -down2 + gene.curfont.size *.22, p)
 		down2 += gene.curfont.pad
 	} else if (down1 > down2) {
 		down2 = down1
