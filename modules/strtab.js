@@ -441,6 +441,11 @@ abc2svg.strtab = {
 				s.sappo = 0
 			for (g = s.extra; g; g = g.next) {
 				set_notes(p_v, g)
+				for (i = 0; i < lstr.length; i++) {
+					if (lstr[i] && lstr[i][2] < C.BLEN)
+						lstr[i][1].tabst = 1
+					lstr[i] = null
+				}
 			}
 			break
 		case C.NOTE:
