@@ -176,8 +176,9 @@ function set_head_shift(s) {
 }
 
 // set the accidental shifts for a set of chords
-function acc_shift(notes, dx_head) {
-    var	i, i1, i2, dx, dx1, dx2, ps, p1, acc,
+// @grh = head width when grace notes
+function acc_shift(notes, grh) {
+    var	i, i1, i2, dx, dx1, dx2, ps, p1, acc, dxh,
 	n = notes.length
 
 	// set the shifts from the head shifts
@@ -185,7 +186,8 @@ function acc_shift(notes, dx_head) {
 		dx = notes[i].shhd
 		if (!dx || dx > 0)
 			continue
-		dx = dx_head - dx;
+		dx = (grh || (notes[i].s ? dx_tb[notes[i].s.head] : 0))
+			- dx
 		ps = notes[i].pit
 		for (i1 = n; --i1 >= 0; ) {
 			if (!notes[i1].acc)
@@ -207,10 +209,11 @@ function acc_shift(notes, dx_head) {
 			dx1 = notes[i1].shac
 			if (!dx1) {
 				dx1 = notes[i1].shhd
+				dxh = grh || dx_tb[notes[i1].s.head]
 				if (dx1 < 0)
-					dx1 = dx_head - dx1
+					dx1 = dxh - dx1
 				else
-					dx1 = dx_head
+					dx1 = dxh
 			}
 			break
 		}
@@ -223,10 +226,11 @@ function acc_shift(notes, dx_head) {
 			dx2 = notes[i2].shac
 			if (!dx2) {
 				dx2 = notes[i2].shhd
+				dxh = grp || dx_tb[notes[i2].s.head]
 				if (dx2 < 0)
-					dx2 = dx_head - dx2
+					dx2 = dxh - dx2
 				else
-					dx2 = dx_head
+					dx2 = dxh
 			}
 			break
 		}
@@ -280,7 +284,7 @@ function acc_shift(notes, dx_head) {
 /* set the horizontal shift of accidentals */
 /* this routine is called only once per tune */
 function set_acc_shft() {
-    var	s, s2, st, i, acc, st, t, dx_head, notes
+    var	s, s2, st, i, acc, st, t, notes
 
 	// search the notes with accidentals at the same time
 	s = tsfirst
@@ -302,6 +306,7 @@ function set_acc_shft() {
 				continue
 			for (i = 0; i <= s2.nhd; i++) {
 				if (s2.notes[i].acc) {
+					s2.notes[i].s = s2
 					acc = true
 					break
 				}
@@ -312,7 +317,10 @@ function set_acc_shft() {
 			continue
 		}
 
-		dx_head = dx_tb[s.head]
+		for (i = 0; i <= s.nhd; i++) {
+			if (s.notes[i].acc)
+				s.notes[i].s = s
+		}
 
 		// build a pseudo chord and shift the accidentals
 		notes = []
@@ -321,7 +329,7 @@ function set_acc_shft() {
 				Array.prototype.push.apply(notes, s.notes)
 		}
 		notes.sort(abc2svg.pitcmp)
-		acc_shift(notes, dx_head)
+		acc_shift(notes)
 	}
 }
 
