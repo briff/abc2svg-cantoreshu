@@ -40,11 +40,11 @@ var	gene,
 
 // accidental x offset - index = note head type
 var dx_tb = new Float32Array([
-	10,		// FULL
-	10,		// EMPTY
-	11,		// OVAL
-	13,		// OVALBARS
-	15		// SQUARE
+	9.5,		// FULL
+	9.5,		// EMPTY
+	13,		// OVAL
+	16,		// OVALBARS
+	16		// SQUARE
 ])
 
 // head width  - index = note head type
@@ -58,11 +58,11 @@ var hw_tb = new Float32Array([
 
 /* head width for voice overlap - index = note head type */
 var w_note = new Float32Array([
-	3.5,		// FULL
-	3.7,		// EMPTY
-	5,		// OVAL
+	2.5,		// FULL
+	3,		// EMPTY
+	4.5,		// OVAL
 	6,		// OVALBARS
-	7		// SQUARE
+	6.5		// SQUARE
 ])
 
 // get head type, dots, flags of note/rest for a duration
