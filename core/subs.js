@@ -932,20 +932,22 @@ function write_headform(lwidth) {
 
 // get the meaningful names of a part (P:)
 function partname(c) {
-    var	i,
+    var	i, r,
 	tmp = cfmt.partname.split('\n')
 
 	for (i = 0; i < tmp.length; i++) {
 		if (tmp[i][0] == c) {
-			c = tmp[i].match(/.\s+(\w+)\s*(.+)?/)
-			if (!c[2])
-				c[2] = c[1]
-			if (c[2][0] == '"')
-				c[2] = c[2].slice(1, -1)
-			return c
+			r = tmp[i].match(/.\s+(\S+)\s*(.+)?/)
+			break
 		}
 	}
-	return [0, c, c]
+	if (!r)
+		return [0, c, c]
+	if (!r[2])
+		r[2] = r[1]
+	if (r[2][0] == '"')
+		r[2] = r[2].slice(1, -1)
+	return r
 } // partname()
 
 /* -- output the tune heading -- */
