@@ -1596,7 +1596,7 @@ function draw_basic_note(s, m, y_tb) {
 	/* draw the dots */
 /*fixme: to see for grace notes*/
 	if (dots) {
-		dotx = x + (7.7 + s.xmx) * stv_g.scale
+		dotx = x + (6.6 + s.xmx) * stv_g.scale
 		if (y_tb[m] == undefined) {
 			y_tb[m] = 3 * (s.notes[m].pit - 18)
 			if ((s.notes[m].pit & 1) == 0)
