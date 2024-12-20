@@ -186,7 +186,8 @@ function acc_shift(notes, grh) {
 		dx = notes[i].shhd
 		if (!dx || dx > 0)
 			continue
-		dx = (grh || (notes[i].s ? dx_tb[notes[i].s.head] : 0))
+//fixme: '9' is the width of a quarter note
+		dx = (grh || (notes[i].s ? dx_tb[notes[i].s.head] : 9))
 			- dx
 		ps = notes[i].pit
 		for (i1 = n; --i1 >= 0; ) {
@@ -226,7 +227,7 @@ function acc_shift(notes, grh) {
 			dx2 = notes[i2].shac
 			if (!dx2) {
 				dx2 = notes[i2].shhd
-				dxh = grp || dx_tb[notes[i2].s.head]
+				dxh = grh || dx_tb[notes[i2].s.head]
 				if (dx2 < 0)
 					dx2 = dxh - dx2
 				else
@@ -246,7 +247,8 @@ function acc_shift(notes, grh) {
 		notes[i1].shac = notes[i2].shac = dx2
 	} else {
 		notes[i1].shac = dx1
-		if (notes[i1].pit != notes[i2].pit)
+		if (notes[i1].pit != notes[i2].pit
+		 || notes[i1].acc != notes[i2].acc)
 			dx1 += 7
 		notes[i2].shac = dx2 = dx1
 	}
@@ -302,24 +304,16 @@ function set_acc_shft() {
 			 || s2.type != C.NOTE
 			 || s2.st != st)
 				break
-			if (acc)
-				continue
 			for (i = 0; i <= s2.nhd; i++) {
 				if (s2.notes[i].acc) {
 					s2.notes[i].s = s2
 					acc = true
-					break
 				}
 			}
 		}
 		if (!acc) {
 			s = s2
 			continue
-		}
-
-		for (i = 0; i <= s.nhd; i++) {
-			if (s.notes[i].acc)
-				s.notes[i].s = s
 		}
 
 		// build a pseudo chord and shift the accidentals
@@ -4297,6 +4291,9 @@ function unison_acc(s1, s2, i1, i2) {
 			s2.notes[m].shac -= d
 		}
 		s2.xmx += d
+		if (s1.notes[i1].acc)
+			s1.notes[i1].shac -= 7
+//fixme: why not dx_tb[s2.head] ?
 	}
 }
 
