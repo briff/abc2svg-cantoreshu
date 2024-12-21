@@ -717,6 +717,19 @@ function put_history() {
 	}
 }
 
+// build a new sequence of the parts with clearer names
+function part_seq() {
+    var	i,
+	o = ""
+
+	for (i = 0; i < info.P.length; i++) {
+		if (i)
+			o += ' '
+		o += partname(info.P[i])[1]
+	}
+	return o
+} // part_seq()
+
 /* -- write heading with format -- */
 var info_font_init = {
 	A: "info",
@@ -794,6 +807,8 @@ function write_headform(lwidth) {
 			if (!info[c])
 				continue
 			info_val[c] = info[c].split('\n');
+			if (c == 'P')
+				info_val[c][0] = part_seq(info_val[c][0])
 			info_nb[c] = 1
 		} else {
 			info_nb[c]++
@@ -955,19 +970,6 @@ function write_heading() {
     var	i, j, area, composer, origin, rhythm, down1, down2, p,
 		lwidth = get_lwidth()
 
-	// build a new sequence of the parts with clearer names
-	function new_part() {
-	    var	i,
-		o = ""
-
-		for (i = 0; i < info.P.length; i++) {
-			if (i)
-				o += ' '
-			o += partname(info.P[i])[1]
-		}
-		return o
-	} // new_part()
-
 	vskip(cfmt.topspace)
 
 	if (cfmt.titleformat) {
@@ -1066,7 +1068,7 @@ function write_heading() {
 			down2 += i
 		p = info.P
 		if (cfmt.partname)
-			p = new_part()
+			p = part_seq()
 		xy_str(0, -down2 + gene.curfont.size *.22, p)
 		down2 += gene.curfont.pad
 	} else if (down1 > down2) {
