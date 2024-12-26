@@ -1953,16 +1953,16 @@ function pit2mid(pit, acc) {
 			p += o + s		// standard temperament
 			return p
 		}
-	} else {				// equal temperament
-		if (typeof acc != "object") {	// if not a fraction
-			b40 = abc2svg.p_b40[pit % 7] + acc
-			return cfmt.temper[b40] + o
-		}
-
-		if (acc[1] == cfmt.nedo) { // fraction of the edo divider
-			b40 = abc2svg.p_b40[pit % 7]
-			return cfmt.temper[b40] + o + s
-		}
+//	} else {				// equal temperament
+//		if (typeof acc != "object") {	// if not a fraction
+//			b40 = abc2svg.p_b40[pit % 7] + acc
+//			return cfmt.temper[b40] + o
+//		}
+//
+//		if (acc[1] == cfmt.nedo) { // fraction of the edo divider
+//			b40 = abc2svg.p_b40[pit % 7]
+//			return cfmt.temper[b40] + o + s
+//		}
 	}
 
 	p0 = cfmt.temper[abc2svg.p_b40[pit % 7]]	// main note
