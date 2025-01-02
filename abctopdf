@@ -136,8 +136,8 @@ command $abcscr --pageheight 29.7cm --fullsvg 1 --musicfont abc2svg "$@" | while
 done
 	echo '</body>' >> /tmp/abc.html
 
-echo weasyprint -f pdf /tmp/abc.html $out
-	weasyprint -f pdf /tmp/abc.html $out
+echo weasyprint /tmp/abc.html $out
+	weasyprint /tmp/abc.html $out
 	rm -f /tmp/abc*.svg /tmp/abc.html
 	exit 0
 fi
