@@ -1,6 +1,6 @@
 // MIDI.js - module to handle the %%MIDI parameters
 //
-// Copyright (C) 2019-2024 Jean-Francois Moine
+// Copyright (C) 2019-2025 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -251,19 +251,37 @@ abc2svg.MIDI = {
 
 // #2
 			s.acc24_53 = '<text id="acc24_53" x="-1">&#xe282;\
-	<tspan x="0" y="-10" style="font-size:8px">2</tspan></text>'
+	<tspan x="0" y="-10" style="font-size:9px">2</tspan></text>'
 
 // #3
 			s.acc36_53 = '<text id="acc36_53" x="-1">&#xe262;\
-	<tspan x="0" y="-10" style="font-size:8px">3</tspan></text>'
+	<tspan x="0" y="-10" style="font-size:9px">3</tspan></text>'
 
 // #4
 			s.acc48_53 = '<text id="acc48_53" x="-1">&#xe262;</text>'
 
 // #5
 			s.acc60_53 = '<g id="acc60_53">\n\
-	<text style="font-size:1.2em" x="-1">&#xe282;</text>\n\
-	<path class="stroke" stroke-width="1.6" d="M-2 1.5l7 -3"/>\n\
+	<text style="font-size:1.1em" x="-1">&#xe282;</text>\n\
+	<path class="stroke" stroke-width="1.6" d="M-2 1l7 -2.2"/>\n\
+</g>'
+
+// #8
+			s.acc96_53 = '<g id="acc96_53">\n\
+	<text style="font-size:1.1em" x="-2">&#xe262;</text>\n\
+	<path class="stroke" stroke-width="1.6" d="M-2.8 1.4l8.5 -2.8"/>\n\
+</g>'
+
+// #9
+			s.acc108_53 = '<text id="acc108_53" x="-3">&#xe263;</text>'
+
+// b9
+			s["acc-108_53"] = '<text id="acc-108_53" x="-3">&#xe264;</text>'
+
+// b8
+			s["acc-96_53"] = '<g id="acc-96_53">\n\
+	<text x="-1">&#xe260;</text>\n\
+	<path class="stroke" stroke-width="1.3" d="M-3 -7l5 -2m0 3l-5 2"/>\n\
 </g>'
 
 // b5
@@ -272,19 +290,19 @@ abc2svg.MIDI = {
 // b4
 			s["acc-48_53"] = '<g id="acc-48_53">\n\
 	<text x="-1">&#xe260;</text>\n\
-	<path class="stroke" stroke-width="1" d="M-3 -5.5l5 -2"/>\n\
+	<path class="stroke" stroke-width="1.3" d="M-3 -5.5l5 -2"/>\n\
 </g>'
 
 // b3
 			s["acc-36_53"] = '<g id="acc-36_53">\n\
 	<text x="-1">&#xe260;\
-		<tspan x="0" y="-10" style="font-size:8px">3</tspan></text>\n\
-	<path class="stroke" stroke-width="1" d="M-3 -5.5l5 -2"/>\n\
+		<tspan x="0" y="-10" style="font-size:9px">3</tspan></text>\n\
+	<path class="stroke" stroke-width="1.3" d="M-3 -5.5l5 -2"/>\n\
 </g>'
 
 // b2
 			s["acc-24_53"] = '<text id="acc-24_53" x="-2">&#xe280;\
-	<tspan x="0" y="-10" style="font-size:8px">2</tspan></text>'
+	<tspan x="0" y="-10" style="font-size:9px">2</tspan></text>'
 
 // b1
 			s["acc-12_53"] = '<text id="acc-12_53" x="-2">&#xe280;</text>'
