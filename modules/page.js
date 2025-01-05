@@ -1,6 +1,6 @@
 // page.js - module to generate pages
 //
-// Copyright (C) 2018-2024 Jean-Francois Moine
+// Copyright (C) 2018-2025 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -45,7 +45,7 @@ abc2svg.page = {
     svg_tag: function(w, h, ty) {
 	w = Math.ceil(w)
 	h = Math.ceil(h)
-	abc2svg.page.user_out(
+	return
 		'<svg xmlns="http://www.w3.org/2000/svg" version="1.1"\n\
  xmlns:xlink="http://www.w3.org/1999/xlink"\n\
  class="'
@@ -55,7 +55,6 @@ abc2svg.page = {
 			: ('width="' + w + 'px" height="' + h + 'px"')
 		)
 		+ ' viewBox="0 0 ' + w + ' ' + h + '">'
-	)
     }, // svg_tag()
 
     // generate a header or a footer in page.hf and return its height
@@ -289,16 +288,17 @@ abc2svg.page = {
 		} else {
 			sty = ''
 		}
-		abc2svg.page.svg_tag(cfmt.pagewidth, ht + h, "header")
-		abc2svg.page.user_out(sty +
+		abc2svg.page.user_out(abc2svg.page.svg_tag(
+			cfmt.pagewidth, ht + h, "header")
+			+ sty +
 			'<g transform="translate(0,' +
 				page.topmargin.toFixed(1) + ')">\n' +
 				page.hf + '</g>\n</svg>')
 		page.hmax -= h;
 		page.hf = ''
 	} else {
-		abc2svg.page.svg_tag(cfmt.pagewidth, ht, "header")
-		abc2svg.page.user_out('\n</svg>')
+		abc2svg.page.user_out(abc2svg.page.svg_tag(cfmt.pagewidth, ht, "header")
+				+ '\n</svg>')
 	}
 	if (page.footer) {
 		abc.clr_sty()
@@ -325,8 +325,9 @@ abc2svg.page = {
 	page.in_page = false
 	if (page.footer) {
 		h = page.hmax + page.fh - page.h
-		abc2svg.page.svg_tag(cfmt.pagewidth, h, "footer")
-		abc2svg.page.user_out(page.ffsty +
+		abc2svg.page.user_out(
+			abc2svg.page.svg_tag(cfmt.pagewidth, h, "footer") +
+			page.ffsty +
 			'<g transform="translate(0,' +
 				(h - page.fh).toFixed(1) + ')">\n' +
 			page.hf + '</g>\n</svg>')
