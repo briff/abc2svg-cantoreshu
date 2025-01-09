@@ -531,10 +531,6 @@ Abc.prototype.set_vp = function(a) {
 			curvoice.tacet = val || undefined
 			break
 		case "transpose=":		// (abcMIDI compatibility)
-			if (cfmt.nedo) {
-				syntax(1, errs.notransp)
-				break
-			}
 			val = get_transp(a.shift())
 			if (val == undefined) {
 				syntax(1, errs.bad_transp)
