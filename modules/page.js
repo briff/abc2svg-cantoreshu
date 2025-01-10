@@ -45,8 +45,7 @@ abc2svg.page = {
     svg_tag: function(w, h, ty) {
 	w = Math.ceil(w)
 	h = Math.ceil(h)
-	return
-		'<svg xmlns="http://www.w3.org/2000/svg" version="1.1"\n\
+	return '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"\n\
  xmlns:xlink="http://www.w3.org/1999/xlink"\n\
  class="'
 		+ ty + '" '
