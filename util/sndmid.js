@@ -110,7 +110,7 @@ function Midi5(i_conf) {
 
 		mutone(k, a, t)		// handle microtone accidentals
 
-		po.op.send(new Uint8Array([0x90 + c, k, 127]), t)	// note on
+		po.op.send(new Uint8Array([0x90 + c, k, 80]), t)	// note on
 		po.op.send(new Uint8Array([0x80 + c, k, 0]), t + d - 20) // note off
 	} // note_run()
 
