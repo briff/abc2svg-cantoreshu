@@ -1,6 +1,6 @@
 // sndgen.js - sound generation
 //
-// Copyright (C) 2019-2024 Jean-Francois Moine
+// Copyright (C) 2019-2025 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -59,7 +59,7 @@ function ToAudio() {
 	p_time = 0,		// last playing time
 	abc_time = 0,		// last ABC time
 	play_fac = C.BLEN / 4 * 120 / 60, // play time factor - default: Q:1/4=120
-	i, n, dt, d, v, s_m,
+	dt, s_m, d,
 	s = first,
 	rst = s,		// left repeat (repeat restart)
 	rst_fac,		// play factor on repeat restart
@@ -237,38 +237,75 @@ function ToAudio() {
 
 	// update the time linkage when the start time has changed
 	function relink(s, dt) {
-	    var	tim = s.time + dt,		// new time
-		s2 = s.ts_next
+	    var	s2 = s.ts_next
 
-		s.ts_prev.ts_next = s2		// remove from the time linkage
-		s2.ts_prev = s.ts_prev
-
-		while (!s2.seqst && s2.ts_next)
-			s2 = s2.ts_next
-		if (s2.time < s.time + dt)	// don't move after the next time seq.
-			dt = s2.time - s.time
 		s.time += dt			// update time and duration
 		s.dur -= dt
-		s.ts_prev = s2.ts_prev		// update the time linkage
-		s.ts_prev.ts_next = s
-		s.ts_next = s2
-		s2.ts_prev = s
+		s2 = s
+		if (s.type == C.GRACE) {
+			do {
+				s2 = s2.ts_prev
+			} while (!s2.dur)
+			s2.dur += dt
+			s2.pdur += dt / play_fac
+			s2 = s
+			while (s2.ts_prev && s2.ts_prev.time > s.time)
+				s2 = s2.ts_prev
+		} else {
+			if (!s2.ts_next) {
+				s2 = s.ts_next
+			} else {
+				while (!s2.seqst && s2.ts_next)
+					s2 = s2.ts_next
+			}
+		}
+
+		// update the time linkage
 		s.seqst = 1 //true
-		if (s2.time == s.time)
-			s2.seqst = 0 //false
+		if (s2 != s) {
+			s.ts_prev.ts_next = s.ts_next	// remove from the time linkage
+			if (s.ts_next) {
+				s2.ts_prev = s.ts_prev
+				if (s.seqst && !s.next.seqst)
+					s.next.seqst = 1 //true
+			}
+			s.ts_prev = s2.ts_prev		// new linkage
+			s.ts_next = s2
+			if (s2.ts_prev)
+				s2.ts_prev.ts_next = s
+			s.ts_prev.ts_next = s
+			if (s2.time == s.time)
+				s2.seqst = 0 //false
+		} else if (s.ts_next) {
+			s.ts_next.seqst = 1
+		}
 	} // relink()
 
 	// generate the grace notes
 	function gen_grace(s) {
-	    var	g, i, n, t, d, s2,
+	    var	g, i, n, t, d,
 		next = s.next
 
+//fixme: assume the grace notes in the sequence have the same duration
+		n = 0
+		for (g = s.extra; g; g = g.next)
+			n++				// number of notes
+
 		// before beat
-		if (s.sappo) {
-			d = C.BLEN / 16
-		} else if ((!next || next.type != C.NOTE)
-			&& s.prev && s.prev.type == C.NOTE) {
-			d = s.prev.dur / 2
+		if (s.sappo
+		 || ((!next || next.type != C.NOTE)
+		  && s.prev && s.prev.dur)) {
+			if (s.sappo) {
+				d = C.BLEN / 16
+				if (s.prev && s.prev.dur
+				 && d > s.prev.dur / 3)
+					d = s.prev.dur / 3
+			} else {
+				d = s.prev.dur / 2
+			}
+			relink(s, -d)
+			s.ptim -= d / play_fac
+			s.pdur += d / play_fac
 
 		// on beat
 		} else {
@@ -279,14 +316,13 @@ function ToAudio() {
 				d = next.dur / 3
 			if (s.p_v.key.k_bagpipe)
 				d /= 2
+			if (d / n < 24)
+				d = 24 * n
 			relink(next, d)
 		}
-//fixme: assume the grace notes in the sequence have the same duration
-		n = 0
-		for (g = s.extra; g; g = g.next)
-			n++
+
 		d /= n * play_fac
-		t = p_time
+		t = s.ptim
 		for (g = s.extra; g; g = g.next) {
 			g.ptim = t
 			g.pdur = d
@@ -438,32 +474,15 @@ function ToAudio() {
 			}
 			break
 		case C.GRACE:
-			if (s.time == 0		// if before beat at start time
-			 && abc_time == 0) {
-				dt = 0
-				if (s.sappo)
-					dt = C.BLEN / 16
-				else if (!s.next || s.next.type != C.NOTE)
-					dt = d / 2
-				abc_time -= dt
-			}
+			d = s.ts_next			// the grace note may move
 			gen_grace(s)
+			s = d.ts_prev
 			break
 		case C.REST:
 		case C.NOTE:
 			d = s.dur
-			if (s.next && s.next.type == C.GRACE) {
-				dt = 0
-				if (s.next.sappo)
-					dt = C.BLEN / 16
-				else if (!s.next.next || s.next.next.type != C.NOTE)
-					dt = d / 2
-				s.next.time -= dt
-				d -= dt
-			}
 			d /= play_fac
 			s.pdur = d
-			v = s.v
 			break
 		case C.METER:
 			s_m = s				// current meter
