@@ -240,40 +240,44 @@ function ToAudio() {
 	    var	s2 = s.ts_next
 
 		s.time += dt			// update time and duration
-		s.dur -= dt
+		if (s.dur)
+			s.dur -= dt
+		s.seqst = 1 //true		// new time sequence
+		if (s.ts_next)
+			s.ts_next.seqst = 1 //true
+
 		s2 = s
-		if (s.type == C.GRACE) {
+		if (dt < 0) {			// if move backwards the grace notes
 			do {
-				s2 = s2.ts_prev
-			} while (!s2.dur)
-			s2.dur += dt
-			s2.pdur += dt / play_fac
-			s2 = s
-			while (s2.ts_prev && s2.ts_prev.time > s.time)
-				s2 = s2.ts_prev
+				s2 = s2.prev
+			} while (s2 && !s2.dur)
+			if (s2) {
+				s2.dur += dt
+				s2.pdur = s2.dur / play_fac
+				s2 = s2.ts_next
+				if (s2 == s)
+					s2 = null	// no linkage change
+			}
 		} else {
-			if (!s2.ts_next) {
-				s2 = s.ts_next
+			if (!s.ts_next) {
+				s2 = null
 			} else {
-				while (!s2.seqst && s2.ts_next)
+				s2 = s2.ts_next
+				while (s2 && !s2.seqst)
 					s2 = s2.ts_next
 			}
 		}
 
 		// update the time linkage
-		s.seqst = 1 //true
-		if (s2 != s) {
+		if (s2) {
 			s.ts_prev.ts_next = s.ts_next	// remove from the time linkage
-			if (s.ts_next) {
-				s2.ts_prev = s.ts_prev
-				if (s.seqst && !s.next.seqst)
-					s.next.seqst = 1 //true
-			}
+			if (s.ts_next)
+				s.ts_next.ts_prev = s.ts_prev
 			s.ts_prev = s2.ts_prev		// new linkage
 			s.ts_next = s2
 			if (s2.ts_prev)
 				s2.ts_prev.ts_next = s
-			s.ts_prev.ts_next = s
+			s.ts_next.ts_prev = s
 			if (s2.time == s.time)
 				s2.seqst = 0 //false
 		} else if (s.ts_next) {
@@ -283,7 +287,10 @@ function ToAudio() {
 
 	// generate the grace notes
 	function gen_grace(s) {
-	    var	g, i, n, t, d,
+		if (s.midgen)
+			return				// generation already done
+		s.midgen = 1 //true
+	    var	g, i, n, t, d, prev,
 		next = s.next
 
 //fixme: assume the grace notes in the sequence have the same duration
@@ -291,21 +298,23 @@ function ToAudio() {
 		for (g = s.extra; g; g = g.next)
 			n++				// number of notes
 
+		prev = s.prev
+		while (prev && !prev.dur)		// search the previous note/rest
+			prev = prev.prev
+
 		// before beat
-		if (s.sappo
-		 || ((!next || next.type != C.NOTE)
-		  && s.prev && s.prev.dur)) {
+		if (prev
+		 && (s.sappo
+		  || !next || next.type != C.NOTE)) {
 			if (s.sappo) {
 				d = C.BLEN / 16
-				if (s.prev && s.prev.dur
-				 && d > s.prev.dur / 3)
-					d = s.prev.dur / 3
+				if (d > prev.dur / 3)
+					d = prev.dur / 3
 			} else {
-				d = s.prev.dur / 2
+				d = prev.dur / 2
 			}
 			relink(s, -d)
 			s.ptim -= d / play_fac
-			s.pdur += d / play_fac
 
 		// on beat
 		} else {
@@ -318,13 +327,16 @@ function ToAudio() {
 				d /= 2
 			if (d / n < 24)
 				d = 24 * n
+			if (s.sappo		// (appogiatura at start of tune!)
+			 && d > C.BLEN / 16)
+				d = C.BLEN / 16
 			relink(next, d)
 		}
 
 		d /= n * play_fac
-		t = s.ptim
+		t = 0
 		for (g = s.extra; g; g = g.next) {
-			g.ptim = t
+			g.dtim = t
 			g.pdur = d
 			t += d
 		}
@@ -476,7 +488,8 @@ function ToAudio() {
 		case C.GRACE:
 			d = s.ts_next			// the grace note may move
 			gen_grace(s)
-			s = d.ts_prev
+			if (d)
+				s = d.ts_prev
 			break
 		case C.REST:
 		case C.NOTE:
@@ -778,7 +791,7 @@ abc2svg.play_next = function(po) {
 					if (!note.noplay)
 					    po.note_run(po, g,
 						note.midi,
-						t + g.ptim - s.ptim,
+						t + g.dtim,
 //fixme: there may be a tie...
 						d)
 				}
