@@ -122,8 +122,8 @@ t = ct
 				kn,		// new key
 				k,		// lower semitone
 				(dt >> 7) & 0x7f, // fraction of semitone
-				dt & 0x7f
-//			0xf7			// SysEx end
+				dt & 0x7f,
+			0xf7			// SysEx end
 			], t)
 		return kn
 	} // mutone()
