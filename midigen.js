@@ -209,18 +209,7 @@ t = ct
 		tail.push(0)
 
 		// tempo
-		s = e[0]			// first symbol in time
-		while (s && !s.type != C.TEMPO)
-			s = s.ts_next
-		if (s) {
-			d = 0
-			n = s.tempo_notes.length
-			for (i = 0; i < n; i++)
-				d += s.tempo_notes[i]
-			n = 60000000 / s.tempo * d
-		} else {
-			n = 60000000 / 120	// default Q:1/4=120
-		}
+		n = 500000 // = 60000000 / 120	// default Q:1/4=120
 		hd[40] = n >> 16
 		hd[41] = (n >> 8) & 0xff
 		hd[42] = n & 0xff
