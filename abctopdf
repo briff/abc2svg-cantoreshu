@@ -1,7 +1,8 @@
 # abctopdf
 # convert ABC to PDF using abc2svg and one of
-#	- a chrome/chromium compatible web browser
-#	  (if not found, you can set its name in the environment variable 'BROWSER')
+#	- a browser understanding --headless --print-to-pdf
+#		the name of which being in the environment variable 'BROWSER'
+#	- chrome-headless-shell or chrome
 #	- rsvg-convert (https://wiki.gnome.org/Projects/LibRsvg)
 #	- weasyprint (https://weasyprint.org/)
 #
@@ -17,7 +18,7 @@ PH=29.7cm
 
 # set a browser
 if [ "x$BROWSER" = "x" ]; then
-	BROWSER=chromium
+	BROWSER=chrome
 fi
 
 if [ $# -eq 0 ]; then
@@ -90,12 +91,13 @@ for a do
 done
 
 # check if some chromium-based browser is available
-for c in "$BROWSER" chromium-browser vivaldi opera brave-browser epic google-chrome; do
+# (--headless does not work anymore with vivaldi - 2025-01-30)
+for c in "$BROWSER" chrome-headless-shell; do
 	if command -v $c >/dev/null 2>&1; then
 		echo "and $c"
 		command $abcscr "$@" > /tmp/o.html
-# --headless does not work anymore (since vivaldi 6.9 2024-09-10)
-		$c --headless=old --print-to-pdf=$out --no-pdf-header-footer\
+		$c --headless --print-to-pdf=$out --no-pdf-header-footer \
+			--no-sandbox --no-margins --disable-gpu \
 			/tmp/o.html
 		rm /tmp/o.html
 		exit 0
