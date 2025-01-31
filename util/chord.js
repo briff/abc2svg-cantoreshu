@@ -1,6 +1,6 @@
 // chord.js - generation of accompaniment
 //
-// Copyright (C) 2020-2024 Jean-Francois Moine and Seymour Shlien
+// Copyright (C) 2020-2025 Jean-Francois Moine and Seymour Shlien
 //
 // This file is part of abc2svg.
 //
@@ -325,7 +325,8 @@ abc2svg.chord = function(first,		// first symbol in time
 		s = s.ts_next
 	vch.sym.ts_prev = s
 	vch.sym.ts_next = s.ts_next
-	s.ts_next.ts_prev = vch.sym
+	if (s.ts_next)
+		s.ts_next.ts_prev = vch.sym
 	s.ts_next = vch.sym
 
 	s_ch = {				// chord template
