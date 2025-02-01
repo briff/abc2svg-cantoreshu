@@ -269,10 +269,15 @@ abc2svg.chord = function(first,		// first symbol in time
 		while (s2.time < tim
 		    && s2.ts_next)
 			s2 = s2.ts_next
+	    if (s2.time >= tim && s2.ts_next) {
 		s.ts_prev = s2.ts_prev
 		s.ts_prev.ts_next = s
 		s.ts_next = s2
 		s2.ts_prev = s
+	    } else {
+		s.ts_prev = s2
+		s2.ts_next = s
+	    }
 	} // insch()
 
 	// -- chord() --
@@ -375,6 +380,9 @@ abc2svg.chord = function(first,		// first symbol in time
 			break
 		s = s.ts_next
 	}
-	if (gchon)
-		set_dur(vch.last_sym, s.time)
+	if (gchon) {
+		while (!s.dur)
+			s = s.ts_prev
+		set_dur(vch.last_sym, s.time + s.dur)
+	}
 } // chord()
