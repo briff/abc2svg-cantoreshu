@@ -1,6 +1,6 @@
 // abc2svg - parse.js - ABC parse
 //
-// Copyright (C) 2014-2024 Jean-Francois Moine
+// Copyright (C) 2014-2025 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -584,6 +584,7 @@ Abc.prototype.set_vp = function(a) {
 							// semi-tone interval
 		else if (curvoice.tr_snd)
 			curvoice.tr_snd = 0
+		curvoice.tr_snd40 = tr_p		// (for play chords)
 	}
 } // set_vp()
 
