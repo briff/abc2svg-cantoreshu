@@ -18,7 +18,7 @@ PH=29.7cm
 
 # set a browser
 if [ "x$BROWSER" = "x" ]; then
-	BROWSER=chrome
+	BROWSER=google-chrome
 fi
 
 if [ $# -eq 0 ]; then
