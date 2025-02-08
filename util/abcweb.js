@@ -317,7 +317,7 @@ Printing may be bad because the file contains pure HTML and %%pageheight\
 			// mu.d can be null when parameters in query string
 			// and no ABC script with global parameters
 		    if (mu.d) {
-
+			abc2svg.abc_end(ix)	// end of page (for %%pageheight, abcweb)
 			if (err)
 				outb += '<pre class="nop" style="background:#ff8080">'
 					+ err + "</pre>\n"
@@ -335,8 +335,6 @@ Printing may be bad because the file contains pure HTML and %%pageheight\
 			}
 			
 			mu.d.innerHTML = outb	// update the browser
-
-			abc2svg.abc_end(ix)	// end of page (for %%pageheight, abcweb)
 		    } // if (mu.d)
 
 			// if some generation waiting, start it
