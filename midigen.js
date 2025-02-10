@@ -252,7 +252,7 @@ t = ct
 		}
 
 		// set the data length
-		l = hd.length - 22 + txt.length + mid_a.length
+		l = hd.length - 22 + txt.length + mid_a.length + tail.length
 		hd[18] = (l >> 24) & 0xff
 		hd[19] = (l >> 16) & 0xff
 		hd[20] = (l >> 8) & 0xff
