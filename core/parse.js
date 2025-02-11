@@ -2123,6 +2123,10 @@ Abc.prototype.new_note = function(grace, sls) {
 		s.dur_orig = ((curvoice.ulen < 0) ?
 					C.BLEN :
 					curvoice.ulen) * nd[0] / nd[1];
+		if (s.dur_orig < 12) {
+			error(0, s, "Bad note duration $1", s.dur_orig)
+			s.dur_orig = 12
+		}
 		s.dur = s.dur_orig * curvoice.dur_fact;
 		if (s.dur == curvoice.wmeasure)
 			s.fmr = 1		// full measure rest
@@ -2192,6 +2196,11 @@ Abc.prototype.new_note = function(grace, sls) {
 				return //null
 
 			note.dur *= chdur		// chord factor
+			if (note.dur < 12) {
+				error(0, s, "Bad note duration $1", note.dur)
+				note.dur = 12
+			}
+
 			if (curvoice.octave)
 				note.pit += curvoice.octave * 7
 
