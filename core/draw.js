@@ -1,6 +1,6 @@
 // abc2svg - draw.js - draw functions
 //
-// Copyright (C) 2014-2024 Jean-Francois Moine
+// Copyright (C) 2014-2025 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -749,6 +749,13 @@ function draw_meter(s) {
 		meter = s.a_meter[i];
 		x = s.x + s.x_meter[i]
 		yt = y + (meter.bot ? 18 : 12)
+		if (s.a_meter[i + 1]
+		 && (s.a_meter[i + 1].top == '|'
+		  || s.a_meter[i + 1].top == '.')) {
+			xygl(x, yt, "mtr" + meter.top[0] + s.a_meter[i + 1].top)
+			i++
+			continue
+		}
 		xygl(x, yt, "mtr" + meter.top[0])
 		if (meter.top.length > 1) {
 			m = 0

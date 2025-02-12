@@ -1,6 +1,6 @@
 // abc2svg - music.js - music generation
 //
-// Copyright (C) 2014-2024 Jean-Francois Moine
+// Copyright (C) 2014-2025 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -993,11 +993,7 @@ Abc.prototype.set_width = function(s) {
 			case 'c':
 			case 'o':
 				s.x_meter[i] = wlw
-				wlw += 12
-				break
-			case '.':
-			case '|':
-				s.x_meter[i] = s.x_meter[i - 1] + 4.5
+				wlw += 3
 				break
 			default:
 				w = 0

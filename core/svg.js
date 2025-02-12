@@ -1,6 +1,6 @@
 // abc2svg - svg.js - svg functions
 //
-// Copyright (C) 2014-2024 Jean-Francois Moine
+// Copyright (C) 2014-2025 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -93,7 +93,7 @@ var tgls = {
   mtr8: {x:0, y:0, c:"\ue088"},
   mtr9: {x:0, y:0, c:"\ue089"},
   mtrC: {x:0, y:0, c:"\ue08a"},		// common time (4/4)
-//  "mtrC|": {x:0, y:0, c:"\ue08b"},	// cut time (2/2) (unused)
+  "mtrC|": {x:0, y:0, c:"\ue08b"},	// cut time (2/2)
   "mtr+":  {x:0, y:0, c:"\ue08c"},
   "mtr(":  {x:0, y:0, c:"\ue094"},
   "mtr)":  {x:0, y:0, c:"\ue095"},
@@ -185,14 +185,12 @@ var tgls = {
   snap: {x:-2, y:-2, c:"\ue630"},
   ped: {x:-10, y:0, c:"\ue650"},
   pedoff: {x:-5, y:0, c:"\ue655"},
-// "mtro.": {x:0, y:0, c:"\ue910"},	// (unused)
+ "mtro.": {x:0, y:0, c:"\ue910"},	// tempus perfectum prolatione perfecta
   mtro:   {x:0, y:0, c:"\ue911"},		// tempus perfectum
-// "mtro|": {x:0, y:0, c:"\ue912"},	// (unused)
-// "mtrc.": {x:0, y:0, c:"\ue914"},	// (unused)
+ "mtro|": {x:0, y:0, c:"\ue912"},	// tempus perfectum (twice as fast)
+ "mtrc.": {x:0, y:0, c:"\ue914"},	// tempus imperfectum prolatione perfecta
   mtrc:   {x:0, y:0, c:"\ue915"},	// tempus imperfectum
-// "mtrc|": {x:0, y:0, c:"\ue918"},	// (unused)
- "mtr.":  {x:0, y:0, c:"\ue920"},	// prolatione perfecta
- "mtr|":  {x:0, y:0, c:"\ue925"},	// (twice as fast)
+ "mtrc|": {x:0, y:0, c:"\ue918"},	// tempus imperfectum (twice as fast)
   longa: {x:-4.7, y:0, c:"\ue95d"},
   custos: {x:-4, y:3, c:"\uea02"},
   ltr: {x:2, y:6, c:"\ueaa4"}		// long trill element
@@ -204,7 +202,7 @@ var glyphs = {
 
 // convert a meter string to a SmuFL encoded string
 function m_gl(s) {
-	return s.replace(/[Cco]\||[co]\.|./g,
+	return s.replace(/./g,
 		function(e) {
 		    var	m = tgls["mtr" + e]
 //fixme: !! no m.x nor m.y yet !!
