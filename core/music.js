@@ -993,7 +993,7 @@ Abc.prototype.set_width = function(s) {
 			case 'c':
 			case 'o':
 				s.x_meter[i] = wlw
-				wlw += 3
+				wlw += 13
 				break
 			default:
 				w = 0
@@ -1017,6 +1017,9 @@ Abc.prototype.set_width = function(s) {
 						break
 					case ' ':
 						w += 2
+						// fall thru
+					case '.':
+					case '|':
 						break
 					default:
 						w += 12
@@ -1025,10 +1028,11 @@ Abc.prototype.set_width = function(s) {
 				}
 				s.x_meter[i] = wlw
 				wlw += w
+				break
 			}
 		}
 		s.wl = 1
-		s.wr = wlw + 7
+		s.wr = wlw
 		return
 	case C.MREST:
 		s.wl = 6;
