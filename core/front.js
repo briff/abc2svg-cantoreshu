@@ -1,6 +1,6 @@
 // abc2svg - front.js - ABC parsing front-end
 //
-// Copyright (C) 2014-2024 Jean-Francois Moine
+// Copyright (C) 2014-2025 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -549,7 +549,7 @@ function tosvg(in_fname,		// file name
 				case '*':
 					i = file.indexOf('\n' + line0 + line1
 							+ "show_source", eol)
-					bol = parse.eol
+					bol -= 2	// keep %%show_.. in the source
 					set_src(b, i)
 					user.img_out(sav.src)
 					// fall thru
