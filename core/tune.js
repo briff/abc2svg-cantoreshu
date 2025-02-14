@@ -957,6 +957,8 @@ Abc.prototype.do_pscom = function(text) {
 		}
 		break
 	case "multicol":
+		if (curvoice && curvoice.clone)
+			do_cloning()
 		switch (param) {
 		case "start":
 		case "new":
@@ -1086,6 +1088,8 @@ Abc.prototype.do_pscom = function(text) {
 	case "staff":
 		if (parse.state != 3)
 			return
+		if (curvoice.clone)
+			do_cloning()
 		val = parseInt(param)
 		if (isNaN(val)) {
 			syntax(1, "Bad %%staff value '$1'", param)
@@ -1107,6 +1111,8 @@ Abc.prototype.do_pscom = function(text) {
 	case "staffbreak":
 		if (parse.state != 3)
 			return
+		if (curvoice.clone)
+			do_cloning()
 		s = {
 			type: C.STBRK,
 			dur:0
