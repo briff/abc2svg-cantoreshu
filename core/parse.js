@@ -333,8 +333,6 @@ function new_block(subtype) {
 			dur: 0
 		}
 
-	if (curvoice.clone)		// terminate voice cloning
-		do_cloning()
 	sym_link(s)
 	return s
 }

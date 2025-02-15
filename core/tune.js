@@ -957,8 +957,6 @@ Abc.prototype.do_pscom = function(text) {
 		}
 		break
 	case "multicol":
-		if (curvoice && curvoice.clone)
-			do_cloning()
 		switch (param) {
 		case "start":
 		case "new":
@@ -974,6 +972,8 @@ Abc.prototype.do_pscom = function(text) {
 			dur: 0
 		}
 		if (parse.state >= 2) {
+			if (curvoice.clone)
+				do_cloning()
 			curvoice = voice_tb[0]
 			curvoice.eoln = 1 //true
 			sym_link(s)
@@ -1063,6 +1063,8 @@ Abc.prototype.do_pscom = function(text) {
 		if (len < 1)
 			len = 90
 		if (parse.state >= 2) {
+			if (curvoice.clone)
+				do_cloning()
 			s = new_block(cmd);
 			s.x = (lwidth - len) / 2 / cfmt.scale;
 			s.l = len / cfmt.scale;
@@ -1159,6 +1161,8 @@ Abc.prototype.do_pscom = function(text) {
 		k = cmd[0] == 'c' ? 'c' : cfmt.textoption
 		set_font("text")
 		if (parse.state >= 2) {
+			if (curvoice.clone)
+				do_cloning()
 			s = new_block("text")
 			s.text = param
 			s.opt = k
@@ -1208,6 +1212,8 @@ Abc.prototype.do_pscom = function(text) {
 			return
 		}
 		if (parse.state >= 2) {
+			if (curvoice.clone)
+				do_cloning()
 			s = new_block(cmd);
 			s.sk = val
 			return
@@ -1223,6 +1229,8 @@ Abc.prototype.do_pscom = function(text) {
 	case "scale":
 	case "staffwidth":
 		if (parse.state >= 2) {
+			if (curvoice.clone)
+				do_cloning()
 			s = new_block(cmd);
 			s.param = param
 			return
