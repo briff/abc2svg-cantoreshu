@@ -615,7 +615,7 @@ function set_w_chs(s) {
 
 	set_font("vocal")
 	for ( ; s; s = s.ts_next) {
-		if (s.shrink) {
+		if (s.seqst) {
 			x += s.shrink;
 			n++
 		}
