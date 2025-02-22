@@ -1,6 +1,6 @@
 // abc2svg - lyrics.js - lyrics
 //
-// Copyright (C) 2014-2024 Jean-Francois Moine
+// Copyright (C) 2014-2025 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -279,7 +279,7 @@ function ly_set(s) {
 
 	// get the available horizontal space before the next lyric words
 	for (s2 = s.ts_next; s2; s2 = s2.ts_next) {
-		if (s2.shrink) {
+		if (s2.seqst) {
 			dx += s2.shrink
 			n++			// number of symbols without word
 		}
@@ -368,7 +368,7 @@ function ly_set(s) {
 		dx = (wx - dx) / n
 		s1 = s.ts_next
 		while (1) {
-			if (s1.shrink) {
+			if (s1.seqst) {
 				s1.shrink += dx
 				s3.wr += dx	// (needed for end of line)
 				s3 = s1
