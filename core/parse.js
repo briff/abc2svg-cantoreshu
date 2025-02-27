@@ -173,14 +173,12 @@ function nt_trans(nt,
 	if (!d) {				// if not a microtonal accidental
 		if (an == -3)			// if triple sharp/flat
 			return an
+		if (a && !an)
+			an = 3			// needed for %%map
 		a = an
-		if (nt.acc) {			// if old accidental
-			if (!a)
-				a = 3		// required natural
-		} else {
-			if (!curvoice.ckey.k_none) // if normal key
-				a = 0		// no accidental
-		}
+		if (!nt.acc			// if no old accidental
+		 && !curvoice.ckey.k_none)	// and normal key
+			a = 0			// no accidental
 		nt.acc = a
 		return an
 	}
