@@ -682,11 +682,9 @@ abc2svg.play_next = function(po) {
 
 	// if speed change, shift the start time
 	if (po.conf.new_speed) {
-		po.stim = now - (now - po.stim) *
-					po.conf.speed / po.conf.new_speed
+		po.stim = t - s.ptim / po.conf.new_speed
 		po.conf.speed = po.conf.new_speed
 		po.conf.new_speed = 0
-		t = po.stim + s.ptim / po.conf.speed
 	}
 
 	maxt = t + po.tgen		// max time = now + 'tgen' seconds
@@ -876,7 +874,7 @@ abc2svg.play_next = function(po) {
 	get_part(po)
 
 	po.stim = po.get_time(po) + .3	// start time + 0.3s
-			- po.s_cur.ptim * po.conf.speed
+			- po.s_cur.ptim / po.conf.speed
 	po.p_v = []			// voice table for the MIDI controls
 	if (!po.repv)
 		po.repv = 1
