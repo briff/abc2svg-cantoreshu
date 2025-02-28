@@ -1271,6 +1271,12 @@ function _bar(s) {
 
 // create an invisible bar for end of music lines
 function add_end_bar(s) {
+	if (s.type == C.KEY && !s.k_sf		// if an invisible key
+	 && s.prev && s.prev.bar_type) {	// before a bar
+		unlksym(s)			// remove it
+		return
+	}
+
     var b = _bar(s),
 	sn = s.ts_next		// start of next line
 
@@ -1288,7 +1294,6 @@ function add_end_bar(s) {
 	b.shrink = sn.shrink
 	sn.shrink = sn.wl + 10
 	b.space = sn.space * .9 - 3
-	return b
 }
 
 /* -- set the width and space of all symbols -- */
