@@ -1768,7 +1768,9 @@ function set_map(p_v, note, acc,
 		if (map[nn])
 			return 1 //true
 //fixme: useless
-		nn = 'k' + ['__','_','=','^','^^','='][acc + 2]	// key chromatic
+		d = abc2svg.keys[p_v.ckey.k_sf + 7][(note.pit + 75) % 7]
+		d = (!d && acc == 3) ? 0 : acc
+		nn = 'k' + ['__','_','','^','^^','='][d + 2]	// key chromatic
 			+ ntb[(note.pit + 75 - p_v.ckey.k_sf * 11) % 7]
 		if (map[nn])
 			return 1 //true
@@ -1782,8 +1784,14 @@ function set_map(p_v, note, acc,
 			sf -= 7
 		d = abc2svg.keys[sf + 7]
 				[(note.pit + 75) % 7]
-		nn = 't' + ['__','_','=','^','^^','=']	// tonic chromatic
-				[acc - d + 2]
+		if (d && acc == 3)
+			d = -d
+		else if (!d && !acc)
+			d = 3
+		else
+			d = acc - d
+		nn = 't' + ['__','_','=','^','^^','']	// tonic chromatic
+				[d + 2]
 			+ ntb[(note.pit + 75 - p_v.ckey.k_mode
 				 - p_v.ckey.k_sf * 11) % 7]
 		if (map[nn])
