@@ -243,9 +243,9 @@ abc2svg.MIDI = {
 		}
 
 		// define the Turkish accidentals (53-TET)
-		if (n == 53) {
-			s = abc.get_glyphs()
-
+		s = abc.get_glyphs()
+		if (n == 53
+		 && !s.acc12_53) {		// do not redefine the glyphs
 // #1
 			s.acc12_53 = '<text id="acc12_53" x="-1">&#xe282;</text>'
 
