@@ -1,6 +1,6 @@
 // edit.js - file used in the abc2svg editor
 //
-// Copyright (C) 2014-2024 Jean-Francois Moine
+// Copyright (C) 2014-2025 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -337,7 +337,7 @@ function selsvg(evt) {
 	v = cl && cl.substr(0, 4) == 'abcr' ? Number(cl.slice(6, -1)) : 0
 	s.setSelectionRange(v, v)	// just a cursor
 	s.focus()
-	if (v)
+	if (v && syms[v].iend > v)
 		s.setSelectionRange(v, syms[v].iend)
 }
 
@@ -412,7 +412,8 @@ function seltxt(evt) {
 			if (!s) {
 				if (is >= start)
 					s = is
-			} else if (sym.iend <= end) {
+			} else if (sym.iend > s		// (case element in s: line)
+				&& sym.iend <= end) {
 				e = is
 			}
 		})

@@ -109,6 +109,7 @@ function get_sym(p, cont) {
 			deco_cnv(s, s.prev)
 			break
 		case '"':
+			parse.line.index = j + 2	// (+ 's:')
 			parse_gchord(d)
 			if (a_gch)			// if no error
 				csan_add(s)
