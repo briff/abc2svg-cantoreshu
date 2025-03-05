@@ -927,6 +927,7 @@ function write_headform(lwidth) {
 				}
 				while (info_val[c].length > 0) {
 					y += sz;
+					yd += sz;
 					str = info_val[c].shift();
 					xy_str(x, -yd, str, align)
 				}
