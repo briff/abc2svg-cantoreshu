@@ -1,6 +1,6 @@
 // abcweb-1.js file to include in html pages
 //
-// Copyright (C) 2014-2024 Jean-Francois Moine
+// Copyright (C) 2014-2025 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -143,6 +143,7 @@ function dom_loaded() {
 		if (c) {
 			c = '.' + c				// selector
 			for (i = 0; i < sh.length; i++) {
+			    try {			// (the css may be protected)
 				r = sh[i].cssRules
 				for (j = 0; j < r.length; j++) {
 					if (r[j].selectorText == c)
@@ -150,6 +151,8 @@ function dom_loaded() {
 				}
 				if (j < r.length)
 					break
+			    } catch(e) {
+			    }
 			}
 			if (i < sh.length) {
 				r = r[j]			// rule
