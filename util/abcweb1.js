@@ -1,6 +1,6 @@
-// abcweb1-1.js file to include in html pages with abc2svg-1.js
+// abcweb1-1.js file to include in html pages for rendering the ABC music
 //
-// Copyright (C) 2019-2024 Jean-Francois Moine
+// Copyright (C) 2019-2025 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -54,7 +54,8 @@ window.onafterprint = function() {
 		e.style.display = "block"
 }
 
-    var user
+    var user,
+	abcplay				// (usable for volume or tempo changes)
 if (typeof abc2svg == "undefined")
     var abc2svg = {}
 
@@ -63,8 +64,6 @@ function dom_loaded() {
     var	abc, e,
 	new_page,
 	playing,
-	abcplay,
-
 	tune_dur,			// scroll tune duration
 	scroll_to,			// scroll timeout
 	dt,				// scroll delta per timeout
@@ -535,4 +534,4 @@ onclick="abc2svg.do_render(\'.*\')">' + tt +
 } // dom_loaded()
 
 // wait for the scripts to be loaded
-window.addEventListener("load", dom_loaded)
+window.addEventListener("load", dom_loaded, {once:true})
