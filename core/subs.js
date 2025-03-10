@@ -948,7 +948,9 @@ function write_headform(lwidth) {
 
 // get the meaningful names of a part (P:)
 function partname(c) {
-    var	i, r,
+    var	i, r, tmp
+
+    if (cfmt.partname) {
 	tmp = cfmt.partname.split('\n')
 
 	for (i = 0; i < tmp.length; i++) {
@@ -957,6 +959,7 @@ function partname(c) {
 			break
 		}
 	}
+    }
 	if (!r)
 		return [0, c, c]
 	if (!r[2])
