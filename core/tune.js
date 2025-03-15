@@ -1253,6 +1253,8 @@ Abc.prototype.do_begin_end = function(type,
 			text) {
 	var i, j, action, s
 
+	if (curvoice && curvoice.clone)
+		do_cloning()
 	switch (type) {
 	case "js":
 		js_inject(text)
