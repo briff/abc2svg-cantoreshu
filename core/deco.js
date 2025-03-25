@@ -1,6 +1,6 @@
 // abc2svg - deco.js - decorations
 //
-// Copyright (C) 2014-2024 Jean-Francois Moine
+// Copyright (C) 2014-2025 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -2207,12 +2207,12 @@ function draw_partempo() {
 				anno_start(s2)
 			}
 			xy_str(s2.x,
-				ymin + 2 + gene.curfont.pad + gene.curfont.size * .22,
+				ymin + gene.curfont.pad + gene.curfont.size * .22,
 				p)
 			y_set(st, 1, s2.x, w + 3,
-				(ymin + 2 + h) / staff_tb[st].staffscale)
+				(ymin + h) / staff_tb[st].staffscale)
 			if (s2.x < 0)
-				yn = ymin + 2 + h
+				yn = ymin + h
 			anno_stop(s2)
 		}
 	}
