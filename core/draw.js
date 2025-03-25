@@ -3974,13 +3974,13 @@ Abc.prototype.draw_symbols = function(p_voice) {
 			if (s.clef_octave) {
 /*fixme:break the compatibility and avoid strange numbers*/
 				if (s.clef_octave > 0) {
-					y += s.ymx - 10
+					y += s.ymx + 1
 					if (s.clef_small)
-						y -= 1
+						y -= 2
 				} else {
-					y += s.ymn + 6
-					if (s.clef_small)
-						y += 1
+					y += s.ymn - 2 //+2
+//					if (s.clef_small)
+//						y += 1
 				}
 				xygl(x - 2, y, (s.clef_octave == 7
 						|| s.clef_octave == -7)

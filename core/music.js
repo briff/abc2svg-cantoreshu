@@ -2384,26 +2384,28 @@ function set_yval(s) {
 		s.y = (s.clef_line - 1) * 6
 		switch (s.clef_type) {
 		default:			/* treble / perc */
-			s.ymx = s.y + 28
+			s.ymx = s.y + 25
 			s.ymn = s.y - 14
 			break
 		case "c":
-			s.ymx = s.y + 13
+			s.ymx = s.y + 12
 			s.ymn = s.y - 11
 			break
 		case "b":
-			s.ymx = s.y + 7
-			s.ymn = s.y - 12
+			s.ymx = s.y + 4
+			s.ymn = s.y - 11//12
 			break
 		}
 		if (s.clef_small) {
-			s.ymx -= 2;
+			s.ymx -= 3
 			s.ymn += 2
 		}
-		if (s.ymx < 26)
-			s.ymx = 26
-		if (s.ymn > -1)
-			s.ymn = -1
+		if (s.ymx < 24)
+			s.ymx = 24
+//		if (s.ymn > -1)
+//			s.ymn = -1
+		if (s.ymn > 0)
+			s.ymn = 0
 //		s.y += s.clef_line * 6
 //		if (s.y > 0)
 //			s.ymx += s.y
@@ -2411,9 +2413,9 @@ function set_yval(s) {
 //			s.ymn += s.y
 		if (s.clef_octave) {
 			if (s.clef_octave > 0)
-				s.ymx += 12
+				s.ymx += 4
 			else
-				s.ymn -= 12
+				s.ymn -= 4
 		}
 		break
 	case C.KEY:
