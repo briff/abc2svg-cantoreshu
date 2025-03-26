@@ -333,6 +333,7 @@ onclick="abc2svg.do_render(\'.*\')">' + tt +
 			alert("abc2svg javascript error: " + e.message +
 				"\nStack:\n" + e.stack)
 		}
+		abc2svg.abc_end()	// close the page if %%pageheight
 		if (errtxt) {
 			new_page += '<pre class="nop" style="background:#ff8080">' +
 					errtxt + "</pre>\n"
@@ -361,7 +362,6 @@ onclick="abc2svg.do_render(\'.*\')">' + tt +
 				"\nStack:\n" + e.stack)
 			return
 		}
-		abc2svg.abc_end()	// close the page if %%pageheight
 
 		// add the event handlers
 	   var	elts = document.getElementsByTagName('svg')
