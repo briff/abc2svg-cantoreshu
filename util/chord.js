@@ -205,7 +205,7 @@ abc2svg.chord = function(first,		// first symbol in time
 	} // set_dur()
 
 	// insert a chord in the chord voice
-	function insch(tim) {
+	function insch(s_next, tim) {
 		if (s_ch.nhd == undefined)
 			return			// no defined chord yet
 	    var	s, m,
@@ -264,18 +264,19 @@ abc2svg.chord = function(first,		// first symbol in time
 		set_dur(s2, tim)		// stop the last chord
 		
 		vch.last_sym = s
-		while (s2.time < tim
-		    && s2.ts_next)
-			s2 = s2.ts_next
-	    if (s2.time >= tim && s2.ts_next) {
-		s.ts_prev = s2.ts_prev
-		s.ts_prev.ts_next = s
-		s.ts_next = s2
-		s2.ts_prev = s
-	    } else {
-		s.ts_prev = s2
-		s2.ts_next = s
-	    }
+
+		if (s_next) {				// if not last symbol of the tune
+			s.ts_next = s_next		// insert before a bar
+			s.ts_prev = s_next.ts_prev
+			s_next.ts_prev = s
+//			if (s.ts_prev)
+				s.ts_prev.ts_next = s
+		} else {				// no bar at end of tune
+			while (s2.ts_next)
+				s2 = s2.ts_next
+			s2.ts_next = s
+			s.ts_prev = s2
+		}
 	} // insch()
 
 	// -- chord() --
@@ -324,7 +325,8 @@ abc2svg.chord = function(first,		// first symbol in time
 		|| meterhy(s.p_v.meter))
 
 	// insert the MIDI program of the chord voice after the tempo
-	while (s.type != C.TEMPO && !s.dur)
+	while (s.type != C.TEMPO
+	 && s.ts_next && !s.ts_next.dur)	// but before the first note
 		s = s.ts_next
 	vch.sym.ts_prev = s
 	vch.sym.ts_next = s.ts_next
@@ -342,11 +344,11 @@ abc2svg.chord = function(first,		// first symbol in time
 	// loop on the symbols and add the accompaniment chords
 	gchon = cfmt.chord.gchon
 	ti = 0					// time index in rhy
-	s = first
+//	s = first
 	while (1) {
 		if (gchon && rhy != '+') {
 			while (s.time > nextim) {
-				insch(nextim)	// generate the rhythm
+				insch(s, nextim)	// generate the rhythm
 				nextim += dt
 			}
 		}
@@ -356,7 +358,7 @@ abc2svg.chord = function(first,		// first symbol in time
 					continue
 				gench(s, i)
 				if (rhy == '+')
-					insch(s.time)	// no rhythm, start now
+					insch(s, s.time) // no rhythm, start now
 				break
 			}
 		}
@@ -378,9 +380,13 @@ abc2svg.chord = function(first,		// first symbol in time
 			break
 		s = s.ts_next
 	}
-	if (gchon) {
-		while (!s.dur)
-			s = s.ts_prev
-		set_dur(vch.last_sym, s.time + s.dur)
+	if (gchon)  {
+		if (rhy != '+') {			// rhythm of the last notes
+			while (s.time + (s.dur | 0) > nextim) {
+				insch(s.dur ? null : s, nextim)
+				nextim += dt
+			}
+		}
+		set_dur(vch.last_sym, s.time + (s.dur | 0))
 	}
 } // chord()
