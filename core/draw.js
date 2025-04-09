@@ -2280,7 +2280,7 @@ function draw_slurs(s, last) {
 			s = prev_scut(s)
 			break
 		case 'o':			// no end
-			for (s3 = s; s3.ts_next; s3 = s3.ts_next)
+			for (s3 = gr1 || s; s3.ts_next; s3 = s3.ts_next)
 				;
 			s2 = s3
 			for (; s3; s3 = s3.ts_prev) {
