@@ -245,9 +245,8 @@ abc2svg.chord = function(first,		// first symbol in time
 			s.nhd--
 			break
 		default:
-			i = "GHIJKghijk".indexOf(rhy[ti])
-			if (i < 0			// bad character
-			 || i >= s.nhd)			// out of chord
+			i = "GHIJKghijk".indexOf(i)
+			if (i < 0)			// bad character
 				return
 			s.notes[0] = s.notes[i % 5]
 			if (i >= 5)
