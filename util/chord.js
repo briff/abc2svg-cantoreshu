@@ -310,27 +310,38 @@ abc2svg.chord = function(first,		// first symbol in time
 			chn: k + 1,
 			instr: cfmt.chord.prog || 0,
 			time: 0,
-			dur: 0
-		},
-		vol: cfmt.chord.vol || .6	// (external default 76.2)
+			dur: 0,
+			next: {
+				type: C.BLOCK,
+				subtype: "midictl",
+				time:0,
+				dur: 0,
+				ctrl: 7,		// volume
+				val: cfmt.chord.vol || 75
+			}
+		}
 	}
 	vch.sym.p_v = vch
 	vch.sym.v = vch.v
-	vch.last_sym = vch.sym
+	vch.sym.next.p_v = vch
+	vch.sym.next.v = vch.v
+	vch.sym.next.prev = vch.sym
+	vch.last_sym = vch.sym.next
 	voice_tb.push(vch)
 
 	s = first
 	bld_rhy(cfmt.chord.rhy			// chord rhythm
 		|| meterhy(s.p_v.meter))
 
-	// insert the MIDI program of the chord voice after the tempo
+	// insert the MIDI program and the volume of the chord voice after the tempo
 	while (s.type != C.TEMPO
 	 && s.ts_next && !s.ts_next.dur)	// but before the first note
 		s = s.ts_next
 	vch.sym.ts_prev = s
-	vch.sym.ts_next = s.ts_next
+	vch.sym.ts_next = vch.sym.next
+	vch.sym.next.ts_next = s.ts_next
 	if (s.ts_next)
-		s.ts_next.ts_prev = vch.sym
+		s.ts_next.ts_prev = vch.sym.next
 	s.ts_next = vch.sym
 
 	s_ch = {				// chord template

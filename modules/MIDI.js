@@ -113,7 +113,7 @@ abc2svg.MIDI = {
 		}
 		if (!cfmt.chord)
 			cfmt.chord = {}
-		cfmt.chord.vol = v / 127
+		cfmt.chord.vol = v
 		break
 //	case "drone":		// %%MIDI drone <#prog> <pit_1> <pit_2> <vol_1> <vol_2>
 //				//	default: 70 45 33 80 80
