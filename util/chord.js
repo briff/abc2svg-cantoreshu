@@ -69,7 +69,7 @@ abc2svg.chord = function(first,		// first symbol in time
 
 	// create a chord according to the bass note
 	function chcr(b, ch) {
-	    var	t,
+	    var	j,
 		r = ch.slice(),
 		i = r.length
 
@@ -79,7 +79,8 @@ abc2svg.chord = function(first,		// first symbol in time
 					break
 			}
 			if (i > 0)
-				r[0] = b, r[i] = 0
+				for (j = 0; j < r.length; j++)
+					r[j] = ch[(j + i) % r.length]
 			else
 				r.unshift(b)
 		}
@@ -231,31 +232,32 @@ abc2svg.chord = function(first,		// first symbol in time
 			type: C.NOTE,
 			notes: []
 		}
-		s.nhd = s_ch.nhd
-//		s.dur = s_ch.dur
-		for (m = 0; m <= s.nhd; m++)
-			s.notes[m] = {
-//				dur: s_ch.notes[m].dur,
-				midi: s_ch.notes[m].midi
-			}
 		s.time = tim
 		switch (i) {
 		case 'c':
-			s.notes.shift()		// remove the root note
-			s.nhd--
+			s.nhd = s_ch.nhd - 1		// remove the root note
+			for (m = 0; m <= s.nhd; m++)
+				s.notes[m] = s_ch.notes[m + 1]
 			break
 		default:
 			i = "GHIJKghijk".indexOf(i)
-			if (i < 0)			// bad character
+			if (i < 0			// bad character
+			 || !s_ch.notes[i % 5])
 				return
-			s.notes[0] = s.notes[i % 5]
+			s.notes[0] = {
+				midi: s_ch.notes[i % 5].midi
+			}
 			if (i >= 5)
 				s.notes[0].midi += 12	// upper octave
-			// fall thru
+			s.nhd = 0			// just one note
+			break
 		case 'f':
+			s.notes[0] = s_ch.notes[0]
 			s.nhd = 0		// keep the chord root
-//			break
+			break
 		case 'b':
+			s.notes = s_ch.notes
+			s.nhd = s_ch.nhd
 			break
 		}
 		s.prev = s2			// previous chord
@@ -392,11 +394,11 @@ abc2svg.chord = function(first,		// first symbol in time
 	}
 	if (gchon)  {
 		if (rhy != '+') {			// rhythm of the last notes
-			while (s.time + (s.dur | 0) > nextim) {
+			while (s.time + (s.dur || 0) > nextim) {
 				insch(s.dur ? null : s, nextim)
 				nextim += dt
 			}
 		}
-		set_dur(vch.last_sym, s.time + (s.dur | 0))
+		set_dur(vch.last_sym, s.time + (s.dur || 0))
 	}
 } // chord()
