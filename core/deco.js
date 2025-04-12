@@ -185,12 +185,13 @@ var decos = {
 		d_arp		// 2 - arpeggio
 	],
 	f_note = [
-		null, null, null,
-		d_upstaff,	// 3 - tied to note
+		null, null, null, null,
 		d_upstaff	// 4 (below the staff)
 	],
 	f_staff = [
-		null, null, null, null, null,
+		null, null, null,
+		d_upstaff,	// 3 - tied to note
+		null,
 		d_upstaff,	// 5 (above the staff)
 		d_upstaff,	// 6 - tied to staff (dynamic marks)
 		d_upstaff	// 7 (below the staff)
@@ -1547,7 +1548,6 @@ function draw_deco_near() {
 					up = up3(s, pos)
 					break
 				case 6:
-				case 7:
 					up = up6(s, pos)
 					break
 				}
