@@ -370,6 +370,12 @@ abc2svg.chord = function(first,		// first symbol in time
 				insch(s, nextim)	// generate the rhythm
 				nextim += dt
 			}
+			if (nextim != s.time) {
+//fixme: measure error
+				nextim = s.time		// resynchronize
+				insch(s, nextim)
+				ti = 0
+			}
 		}
 		if (s.a_gch) {
 			for (i = 0; i < s.a_gch.length; i++) {
