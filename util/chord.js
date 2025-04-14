@@ -237,7 +237,9 @@ abc2svg.chord = function(first,		// first symbol in time
 		case 'c':
 			s.nhd = s_ch.nhd - 1		// remove the root note
 			for (m = 0; m <= s.nhd; m++)
-				s.notes[m] = s_ch.notes[m + 1]
+				s.notes[m] = {
+					midi: s_ch.notes[m + 1].midi
+				}
 			break
 		default:
 			i = "GHIJKghijk".indexOf(i)
@@ -252,12 +254,17 @@ abc2svg.chord = function(first,		// first symbol in time
 			s.nhd = 0			// just one note
 			break
 		case 'f':
-			s.notes[0] = s_ch.notes[0]
+			s.notes[0] = {
+				midi: s_ch.notes[0].midi
+			}
 			s.nhd = 0		// keep the chord root
 			break
 		case 'b':
-			s.notes = s_ch.notes
 			s.nhd = s_ch.nhd
+			for (m = 0; m <= s.nhd; m++)
+				s.notes[m] = {
+					midi: s_ch.notes[m].midi
+				}
 			break
 		}
 		s.prev = s2			// previous chord
