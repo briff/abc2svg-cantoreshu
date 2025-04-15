@@ -244,7 +244,7 @@ abc2svg.chord = function(first,		// first symbol in time
 		default:
 			i = "GHIJKghijk".indexOf(i)
 			if (i < 0			// bad character
-			 || !s_ch.notes[i % 5])
+			 || (i % 5) > s_ch.nhd)
 				return
 			s.notes[0] = {
 				midi: s_ch.notes[i % 5].midi
