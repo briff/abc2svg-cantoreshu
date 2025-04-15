@@ -1,6 +1,6 @@
 // abc2svg - tune.js - tune generation
 //
-// Copyright (C) 2014-2024 Jean-Francois Moine
+// Copyright (C) 2014-2025 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -173,10 +173,8 @@ function sort_all() {
 			}
 		}
 
-		// if the previous symbol is a grace note at the same offset as the bar
-		// remove the grace notes from the previous time sequence
-		if (!fl) {
-			while (prev.type == C.GRACE
+		if (!prev.next || prev.next.time == time) {
+			while ((prev.type == C.GRACE || prev.type == C.SPACE)
 			    && vtb[prev.v] && !vtb[prev.v].bar_type) {
 				delete prev.seqst
 				vtb[prev.v] = prev
