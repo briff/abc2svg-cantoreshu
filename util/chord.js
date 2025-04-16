@@ -370,10 +370,10 @@ abc2svg.chord = function(first,		// first symbol in time
 				insch(s, nextim)	// generate the rhythm
 				nextim += dt
 			}
-			if (nextim != s.time) {
+			if (s.bar_type == "|"		// if a normal measure bar
+			 && nextim != s.time) {		// and wrong times
 //fixme: measure error
 				nextim = s.time		// resynchronize
-				insch(s, nextim)
 				ti = 0
 			}
 		}
