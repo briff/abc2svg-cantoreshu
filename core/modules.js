@@ -1,6 +1,6 @@
 // abc2svg - modules.js - module handling
 //
-// Copyright (C) 2018-2022 Jean-Francois Moine
+// Copyright (C) 2018-2025 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -37,6 +37,7 @@ abc2svg.modules = {
 	voicecombine: { fn: 'combine' },
 	diagram: { fn: 'diag' },
 	equalbars: {},
+	fit2box: {},
 	gamelan: {},
 	grid: {},
 	grid2: {},
