@@ -2134,7 +2134,7 @@ function set_lines(	s,		/* first symbol */
 		}
 
 		s2 = first = s;
-		xmin = s.x - s.shrink - indent;
+		xmin = s.x
 		xmax = xmin + lwidth;
 		xmid = xmin + wwidth / nlines;
 		xmin += wwidth / nlines * s.fmt.breaklimit;
