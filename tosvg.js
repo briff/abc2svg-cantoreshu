@@ -1,6 +1,6 @@
 // txtmus - tosvg.js - SVG generation
 //
-// Copyright (C) 2024 Jean-Francois Moine
+// Copyright (C) 2024-2025 Jean-Francois Moine
 //
 // This file is part of txtmus.
 //
@@ -62,7 +62,7 @@ tm.mus_init = function(args) {
 
 		switch (p.slice(0, 4)) {
 		case "<svg":
-			h = p.match(/width="(\d+)px" height="(\d+)px"/)
+			h = p.match(/viewBox="0 0 (\d+) (\d+)"/)
 			if (w < h[1])
 				w = h[1]	// max width
 			p = bug(p)
@@ -92,7 +92,8 @@ tm.abc_end =
 tm.mus_end = function() {
 	tm.print('<svg xmlns="http://www.w3.org/2000/svg" version="1.1"\n\
  xmlns:xlink="http://www.w3.org/1999/xlink"\n\
- width="' + w + 'px" height="' + yo + 'px">\n'
+ viewBox="0 0 ' + w + ' ' + yo + '">\n'
+// width="' + w + 'px" height="' + yo + 'px">\n'
 		+ out.join('\n')
 		+ '\n</svg>')
 	if (user.errtxt)
