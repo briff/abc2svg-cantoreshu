@@ -3548,7 +3548,7 @@ function draw_systems(indent) {
 					continue
 				case ty:
 					ln += 'm-' + w.toFixed(1) +
-						' ' + dy +
+						' ' + dy.toFixed(2) +
 						'h' + w.toFixed(1);
 					dy = 0
 					continue
