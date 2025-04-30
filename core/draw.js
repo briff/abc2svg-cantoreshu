@@ -3678,19 +3678,13 @@ function draw_systems(indent) {
 
 	// output all the bars
 	function out_bars() {
-	    var	i, b, bx,
+	    var	i, b,
 		l = ba.length
 
-		set_font("annotation");
-		bx = gene.curfont.box
-		if (bx)
-			gene.curfont.box = 0
 		for (i = 0; i < l; i++) {
 			b = ba[i]		// symbol, bottom, height, top
 			draw_bar(b[0], b[1], b[2], b[3])
 		}
-		if (bx)
-			gene.curfont.box = bx
 
 		set_sscale(-1)
 		if (sb)			// single bars
