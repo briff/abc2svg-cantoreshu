@@ -33,7 +33,7 @@ abc2svg.fit2box = {
 
     // generation function with %%fit2box
     do_fit: function(mus) {
-    var	r, sv, v, w, h, hh, sc,
+    var	r, sv, v, w, h, hh, sc, marg, tit, cl,
 	parse = mus.parse,
 	f = parse.file,
 	fn = parse.fname,
@@ -48,81 +48,101 @@ abc2svg.fit2box = {
 		}
 
 	// set some parameters
-	if (f.indexOf("%%stretchlast") < 0)
+	if (f.indexOf("\n%%stretchlast") < 0)
 		f = "%%stretchlast 0\n" + f
 	else
-		f = f.replace(/%%stretchlast.*/, "%%stretchlast 0")
-	if (f.indexOf("%%stretchstaff") < 0)
+		f = f.replace(/(\n%%stretchlast).*/, "$1 0")
+	if (f.indexOf("\n%%stretchstaff") < 0)
 		f = "%%stretchstaff 0\n" + f
 	else
-		f = f.replace(/%%stretchstaff.*/, "%%stretchstaff 0")
-	if (f.indexOf("%%rightmargin") < 0)
-		f = "%%rightmargin 0\n" + f
+		f = f.replace(/(\n%%stretchstaff).*/, "$1 0")
+
+	// double the box width to avoid line break insertion
+	if (f.indexOf("\n%%pagewidth") < 0)
+		f = "%%pagewidth " + (wb * 2).toFixed(2) + "\n" + f
 	else
-		f = f.replace(/%%rightmargin.*/, "%%rightmargin 0")
-	if (f.indexOf("%%leftmargin") < 0)
-		f = "%%leftmargin 0\n" + f
+		f = f.replace(/(\n%%pagewidth).*/, "$1 " + (wb * 2).toFixed(2))
+
+	// set a half scale
+	if (f.indexOf("\n%%pagescale ") >= 0)
+		f = f.replace(/(\n%%pagescale).*/, "$1 .5")
 	else
-		f = f.replace(/%%leftmargin.*/, "%%leftmargin 0")
-	if (f.indexOf("%%pagewidth") < 0)
-		f = "%%pagewidth " + wb + "\n" + f
-	else
-		f = f.replace(/%%pagewidth.*/, "%%pagewidth " + wb)
+		f = f.replace(/(\nK:.*)/, "$1\n%%pagescale .5")
 	cfmt.trimsvg = 1
 	cfmt.fullsvg = "a"
 
 	// do a first generation
-	mus.tosvg(fn, f)
+	if (abc2svg.fit2box.otosvg)
+		abc2svg.fit2box.otosvg(fn, f)
+	else
+		mus.tosvg(fn, f)
+//console.log("---\n"+f.slice(0, 500)+"---")
 
 	// analyse the result of the generation
-	w = h = 0
+	cfmt = mus.cfmt()
+	marg = cfmt.leftmargin + cfmt.rightmargin
+	w = h = hh = 0
 	r = ob.match(/<svg[^>]*/g)
-	if (!r)
+	if (!r) {
+		user.img_out = io		// restore the normal output
 		return				// no SVG
+	}
 	while (1) {
 		sv = r.shift()			// next music line
 		if (!sv)
 			break
 		v = sv.match(/viewBox="0 0 (\d+) (\d+)"/)
-		if (!hh) {			// the first SVG is the tune header
-			hh = +v[2]
+		cl = sv.match(/class="([^"]+)"/) // "
+//console.log("- sv  ====\n"+sv+"\n      ====\n  cl:"+cl)
+		if (!tit			// the first SVG is the tune header
+		 || cl[1] == "header"
+		 || cl[1] == "footer") {
+			hh += +v[2]
+			if (cl[1] != "header"
+			 && cl[1] != "footer")
+				tit = 1
 			continue
 		}
 		if (+v[1] > w)
 			w = +v[1]		// max width (thanks to trimsvg)
 		h += +v[2]			// whole height
 	}
-	h *= 1.01				// (generation constraints)
-	w *= 1.01
-//console.log("-- box:"+wb+"x"+hb
-//+" w:"+w.toFixed(2)+" h:"+h.toFixed(2)+" hh:"+hh.toFixed(2))
+	w -= marg
+//console.log("-- box:"+wb+"x"+hb+" w:"+w.toFixed(2)+" marg:"+marg.toFixed(2)
+//+" h:"+h.toFixed(2)+" hh:"+hh.toFixed(2))
 
-	sc = (hb - hh) / h			// height scale
-	v = wb / w				// width scale
+	sc = (hb - hh) / h * .5			// height scale
+	v = (wb - marg) / w * .5		// width scale
 //console.log("     scw:"+v.toFixed(2)+" sch:"+sc.toFixed(2))
-	if (v < sc)
-		sc = v
-	if (f.indexOf("%%pagescale ") >= 0)
-		f = f.replace(/%%pagescale.*/, "%%pagescale " + sc.toFixed(2))
-	else
-		f = f.replace(/(K:.*)/, "$1\n%%pagescale " + sc.toFixed(2))
 
-	v = parseInt((wb - w * sc) / 2)		// margins
-	if (v < 0)
-		v = 0
+	if (v < sc) {
+		sc = v					// width constraint
+	} else {					// height constraint
+		v = Math.round(wb * (v - sc) / 2)	// margins
+		if (v < 0)
+			v = 0
+		if (v > cfmt.leftmargin)
+			f = f.replace(/(%%leftmargin).*/, "$1 " + v)
+				.replace(/(%%rightmargin).*/, "$1 " + v)
 //console.log("   marg:"+v)
-	f = f.replace(/%%leftmargin.*/, "%%leftmargin " + v)
-		.replace(/%%rightmargin.*/, "%%rightmargin " + v)
-		.replace(/%%stretchstaff.*/, "%%stretchstaff 1")
-		.replace(/%%stretchlast.*/, "%%stretchlast 1")
-	cfmt = mus.cfmt()
+	}
+
+	f = f.replace(/(%%pagewidth).*/, "$1 " + wb)
+		.replace(/(%%pagescale).*/, "$1 " + sc.toFixed(2))
+		.replace(/(%%stretchstaff).*/, "$1 1")
+		.replace(/(%%stretchlast).*/, "$1 1")
+
 	cfmt.fullsvg = ""
 	cfmt.trimsvg = 0
 
 	// do the last generation
-//console.log("---\n"+f+"---")
+//console.log("---\n"+f.slice(0, 500)+"---")
 	mus.tunes.shift()			// remove the tune class
 	user.img_out = io			// restore the normal output
+	if (abc2svg.fit2box.otosvg) {		// restore the tosvg function
+		mus.tosvg = abc2svg.fit2box.otosvg
+		abc2svg.fit2box.otosvg = null
+	}
 	mus.tosvg(fn, f)
 	abc2svg.fit2box.on = 0
     }, // do_fit()
@@ -131,13 +151,8 @@ abc2svg.fit2box = {
     var	parse = this.parse
 
 	parse.fname = fn
-	if (bol == undefined)
-		bol = 0
-	parse.file = bol != 0 ? file : file.slice(bol)
+	parse.file = bol ? file.slice(bol) : file
 	parse.eol = 0
-
-	this.tosvg = abc2svg.fit2box.otosvg	// restore the tosvg function
-	abc2svg.fit2box.otosvg = null
 
 	abc2svg.fit2box.on = 1
 	abc2svg.fit2box.do_fit(this)
@@ -150,7 +165,6 @@ abc2svg.fit2box = {
 	if (abc2svg.fit2box.on)
 		return
 	abc2svg.fit2box.on = 1
-	parm = parm.match(/(\d+|\*)\s+(\d+|\*)/)
 	if (!parm) {					// stop fit2box
 		if (abc2svg.fit2box.otosvg) {		// restore the tosvg function
 			this.tosvg = abc2svg.fit2box.otosvg
@@ -158,17 +172,26 @@ abc2svg.fit2box = {
 		}
 		return
 	}
+	parm = parm.split(/\s+/)
 
     var	cfmt = this.cfmt(),
 	parse = this.parse,
 	f = parse.file,
-	wb = parm[1],				// box width
-	hb = parm[2]				// box height
+	wb = parm[0],				// box width
+	hb = parm[1]				// box height
 
-	if (wb == "*")
-		wb = cfmt.pagewidth
-	if (hb == "*")
-		hb = cfmt.pageheight || 1123		// (or 29.7cm)
+	if (wb == "*") {
+		wb = parse.file.match(/\n%%pagewidth\s+([^\s]+)/)
+		if (wb)
+			wb = wb[1]
+	}
+	wb = wb ? this.get_unit(wb) : cfmt.pagewidth
+	if (hb == "*") {
+		hb = parse.file.match(/\n%%pageheight\s+([^\s]+)/)
+		if (hb)
+			hb = hb[1]
+	}
+	hb = hb ? this.get_unit(hb) : 1123	// (1123 = 29.7cm)
 	cfmt.fit2box = [wb, hb]
 
 	// if no tune yet, change the generation function
