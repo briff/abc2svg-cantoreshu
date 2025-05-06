@@ -56,6 +56,7 @@ abc2svg.modules = {
 	temperament: { fn: 'temper' },
 	temponame: { fn: 'tempo' },
 	tropt: {},
+	titleformat: { fn: 'tunhd' },
 
 	nreq: 0,
 

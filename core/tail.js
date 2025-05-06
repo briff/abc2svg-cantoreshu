@@ -1,6 +1,6 @@
 // abc2svg - tail.js
 //
-// Copyright (C) 2014-2024 Jean-Francois Moine
+// Copyright (C) 2014-2025 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -50,6 +50,7 @@ Abc.prototype.get_font = get_font;
 Abc.prototype.get_font_style = function() { return font_style };
 Abc.prototype.get_glyphs = function() { return glyphs };
 Abc.prototype.get_img = function() { return img };
+Abc.prototype.get_lwidth = get_lwidth
 Abc.prototype.get_maps = function() { return maps };
 Abc.prototype.get_multi = function() { return multicol };
 Abc.prototype.get_newpage = function() {
@@ -65,6 +66,7 @@ Abc.prototype.get_tsfirst = function() { return tsfirst };
 Abc.prototype.get_unit = get_unit;
 Abc.prototype.get_voice_tb = function() { return voice_tb };
 Abc.prototype.glout = glout
+Abc.prototype.glovar = function() { return glovar }
 Abc.prototype.info = function() { return info };
 Abc.prototype.new_block = new_block;
 Abc.prototype.out_arp = out_arp;
@@ -73,6 +75,7 @@ Abc.prototype.out_deco_val = out_deco_val;
 Abc.prototype.out_ltr = out_ltr;
 Abc.prototype.param_set_font = param_set_font;
 Abc.prototype.parse = parse;
+Abc.prototype.part_seq = part_seq
 Abc.prototype.psdeco = empty_function;
 Abc.prototype.psxygl = empty_function;
 Abc.prototype.set_cur_sy = function(sy) { cur_sy = sy };
@@ -93,6 +96,7 @@ Abc.prototype.strwh = strwh;
 Abc.prototype.stv_g = function() { return stv_g };
 Abc.prototype.svg_flush = svg_flush;
 Abc.prototype.syntax = syntax;
+Abc.prototype.trim_title = trim_title
 Abc.prototype.tunes = tunes
 Abc.prototype.unlksym = unlksym;
 Abc.prototype.use_font = use_font;

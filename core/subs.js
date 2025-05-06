@@ -1,6 +1,6 @@
 // abc2svg - subs.js - text output
 //
-// Copyright (C) 2014-2024 Jean-Francois Moine
+// Copyright (C) 2014-2025 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -730,222 +730,6 @@ function part_seq() {
 	return o
 } // part_seq()
 
-/* -- write heading with format -- */
-var info_font_init = {
-	A: "info",
-	C: "composer",
-	O: "composer",
-	P: "parts",
-	Q: "tempo",
-	R: "info",
-	T: "title",
-	X: "title"
-}
-function write_headform(lwidth) {
-    var	c, font, font_name, align, x, y, sz, w, yd,
-		info_val = {},
-		info_font = Object.create(info_font_init),
-		info_sz = {
-			A: cfmt.infospace,
-			C: cfmt.composerspace,
-			O: cfmt.composerspace,
-			R: cfmt.infospace
-		},
-		info_nb = {}
-
-	// compress the format
-	var	fmt = "",
-		p = cfmt.titleformat,
-		j = 0,
-		i = 0
-
-	while (1) {
-		while (p[i] == ' ')
-			i++
-		c = p[i++]
-		if (!c)
-			break
-		if (c < 'A' || c > 'Z') {
-			switch (c) {
-			case '+':
-				align = '+'
-				c = p[i++]
-				break
-			case ',':
-				fmt += '\n'
-				// fall thru
-			default:
-				continue
-			case '<':
-				align = 'l'
-				c = p[i++]
-				break
-			case '>':
-				align = 'r'
-				c = p[i++]
-				break
-			}
-		} else {
-			switch (p[i]) {		// old syntax
-			case '-':
-				align = 'l'
-				i++
-				break
-			case '1':
-				align = 'r'
-				i++
-				break
-			case '0':
-				i++
-				// fall thru
-			default:
-				align = 'c'
-				break
-			}
-		}
-		if (!info_val[c]) {
-			if (!info[c])
-				continue
-			info_val[c] = info[c].split('\n');
-			if (c == 'P')
-				info_val[c][0] = part_seq(info_val[c][0])
-			info_nb[c] = 1
-		} else {
-			info_nb[c]++
-		}
-		fmt += align + c
-	}
-	fmt += '\n'
-
-	// loop on the blocks
-	var	ya = {
-			l: cfmt.titlespace,
-			c: cfmt.titlespace,
-			r: cfmt.titlespace
-		},
-		xa = {
-			l: 0,
-			c: lwidth * .5,
-			r: lwidth
-		},
-		yb = {},
-		str;
-	p = fmt;
-	i = 0
-	while (1) {
-
-		// get the y offset of the top text
-		yb.l = yb.c = yb.r = y = 0;
-		j = i
-		while (1) {
-			align = p[j++]
-			if (align == '\n')
-				break
-			c = p[j++]
-			if (align == '+' || yb[align])
-				continue
-
-			str = info_val[c]
-			if (!str)
-				continue
-			font_name = info_font[c]
-			if (!font_name)
-				font_name = "history";
-			font = get_font(font_name);
-			sz = font.size * 1.1
-			if (info_sz[c])
-				sz += info_sz[c]
-			if (y < sz)
-				y = sz;
-			yb[align] = sz
-		}
-		ya.l += y - yb.l;
-		ya.c += y - yb.c;
-		ya.r += y - yb.r
-		while (1) {
-			align = p[i++]
-			if (align == '\n')
-				break
-			c = p[i++]
-			if (!info_val[c].length)
-				continue
-			str = info_val[c].shift()
-			if (p[i] == '+') {
-				info_nb[c]--;
-				i++
-				c = p[i++];
-				if (info_val[c].length) {
-					if (str)
-						str += ' ' + info_val[c].shift()
-					else
-						str = ' ' + info_val[c].shift()
-				}
-			}
-			font_name = info_font[c]
-			if (!font_name)
-				font_name = "history";
-			font = get_font(font_name);
-			sz = font.size * 1.1
-			if (info_sz[c])
-				sz += info_sz[c];
-			set_font(font);
-			x = xa[align];
-			y = ya[align] + sz
-			yd = y - font.size * .22	// descent
-
-			if (c == 'Q') {			/* special case for tempo */
-				self.set_width(glovar.tempo)
-				if (!glovar.tempo.invis) {
-					if (align != 'l') {
-						tempo_build(glovar.tempo)
-						w = glovar.tempo.tempo_wh[0]
-
-						if (align == 'c')
-							w *= .5;
-						x -= w
-					}
-					writempo(glovar.tempo, x, -y)
-				}
-			} else if (str) {
-				if (c == 'T')
-					str = trim_title(str,
-							 info_font.T[0] == 's')
-				xy_str(x, -yd, str, align)
-			}
-
-			if (c == 'T') {
-				font_name = info_font.T = "subtitle";
-				info_sz.T = cfmt.subtitlespace
-			}
-			if (info_nb[c] <= 1) {
-				if (c == 'T') {
-					font = get_font(font_name);
-					sz = font.size * 1.1
-					if (info_sz[c])
-						sz += info_sz[c];
-					set_font(font)
-				}
-				while (info_val[c].length > 0) {
-					y += sz;
-					yd += sz;
-					str = info_val[c].shift();
-					xy_str(x, -yd, str, align)
-				}
-			}
-			info_nb[c]--;
-			ya[align] = y
-		}
-		if (ya.c > ya.l)
-			ya.l = ya.c
-		if (ya.r > ya.l)
-			ya.l = ya.r
-		if (i >= p.length)
-			break
-		ya.c = ya.r = ya.l
-	}
-	vskip(ya.l)
-}
-
 // get the meaningful names of a part (P:)
 function partname(c) {
     var	i, r, tmp
@@ -970,17 +754,12 @@ function partname(c) {
 } // partname()
 
 /* -- output the tune heading -- */
-function write_heading() {
+// (possible hook)
+Abc.prototype.tunhd = function() {
     var	i, j, area, composer, origin, rhythm, down1, down2, p,
 		lwidth = get_lwidth()
 
 	vskip(cfmt.topspace)
-
-	if (cfmt.titleformat) {
-		write_headform(lwidth);
-		vskip(cfmt.musicspace)
-		return
-	}
 
 	/* titles */
 	if (info.T
@@ -1079,4 +858,10 @@ function write_heading() {
 		down2 = down1
 	}
 	vskip(down2 + cfmt.musicspace)
-}
+} // tunhd()
+
+// output the tune header
+function write_heading() {
+	vskip(cfmt.topspace)
+	self.tunhd()
+} // write_heading()

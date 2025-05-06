@@ -127,6 +127,7 @@ build strtab-$MAJOR.js: jscu modules/strtab.js
 build temper-$MAJOR.js: jscu modules/temper.js
 build tempo-$MAJOR.js: jscu modules/tempo.js
 build tropt-$MAJOR.js: jscu modules/tropt.js
+build tunhd-$MAJOR.js: jscu modules/tunhd.js
 
 build edit-$MAJOR.css: cp editor/edit.css
 
@@ -152,7 +153,8 @@ build all: phony abc2svg-$MAJOR.js abcdoc-$MAJOR.js $
  jazzchord-$MAJOR.js  mdnn-$MAJOR.js MIDI-$MAJOR.js $
  nns-$MAJOR.js page-$MAJOR.js pedline-$MAJOR.js perc-$MAJOR.js psvg-$MAJOR.js $
  roman-$MAJOR.js soloffs-$MAJOR.js sth-$MAJOR.js strtab-$MAJOR.js $
- temper-$MAJOR.js tempo-$MAJOR.js tropt-$MAJOR.js edit-$MAJOR.css edit-$MAJOR.js $
+ temper-$MAJOR.js tempo-$MAJOR.js tropt-$MAJOR.js tunhd-$MAJOR.js $
+ edit-$MAJOR.css edit-$MAJOR.js $
  edit-$MAJOR.xhtml abckbd-$MAJOR.js abckbd2-$MAJOR.js
 
 default all

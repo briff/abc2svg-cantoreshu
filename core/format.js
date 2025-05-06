@@ -559,7 +559,6 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "bgcolor":
 	case "fgcolor":
 	case "propagate-accidentals":
-	case "titleformat":
 	case "writeout-accidentals":
 		cfmt[cmd] = param
 		break
