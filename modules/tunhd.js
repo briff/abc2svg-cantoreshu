@@ -50,7 +50,7 @@ abc2svg.tunhd = {
 	},
 	info_nb = {},
 	c, align, q, j,
-	clhist = abc.font_class(abc.get_font("history")),
+	hfnt = abc.get_font("history"),
 	line = [],				// array of [align, str, w, h]
 	p = cfmt.titleformat,
 	i = 0,
@@ -103,7 +103,7 @@ abc2svg.tunhd = {
 			y = ya[align] + h
 			yd = y - item[2] * .22	// descent
 			abc.out_svg('<text class="'
-				+ clhist
+				+ abc.font_class(hfnt)
 				+ '" x="')
 			abc.out_sxsy(x, '" y="', -yd)
 			if (align == 'c')
@@ -123,7 +123,7 @@ abc2svg.tunhd = {
 	// convert a string containing info fields ($x)
 	// and return [ align, string, height ]
 	function cnv(p) {
-	    var	c, j, t, fntnam, fnt, wh,
+	    var	c, j, t, fntnam, fnt, wh, nfnt,
 		h = 0,
 		i = 0,
 		l = 0,
@@ -134,17 +134,26 @@ abc2svg.tunhd = {
 			if (!c)
 				break
 			if (c != '$') {
+				if (!o)
+					h = hfnt.size * 1.1
 				o += c
+				continue
+			}
+			if (p[i] < 'A' || p[i] > 'Z') {
+				if (isNaN(+p[i]))
+					o += c
+				else
+					nfnt = +p[i++]
 				continue
 			}
 			c = p[i++]			// info letter
 			if (!info[c])
-				return
+				continue		// return?
 			j = info_nb[c] || 0
 			info_nb[c] = j + 1
 			t = info[c].split('\n')[j]	// info value
 			if (!t)
-				return
+				continue		// return?
 			fntnam = abc2svg.tunhd.info_fnt[c] || "history"
 			fnt = abc.get_font(fntnam)
 			switch (c) {
@@ -159,13 +168,16 @@ abc2svg.tunhd = {
 			case 'T':
 				if (j)
 					fnt = abc.get_font("subtitle")
-				t = abc.trim_title(t, j > 1)
+				t = abc.trim_title(t, j)
 				break
 			default:
 				t = info[c].split('\n')[j]
 				break
 			}
-			if (fntnam != "history") {
+			if (fnt != hfnt
+			 || nfnt) {
+				if (nfnt)
+					fnt = abc.get_font("u" + nfnt)
 				abc.set_font(fnt)
 				wh = abc.strwh(t)
 				t = '<tspan class="' + abc.font_class(fnt)
@@ -180,6 +192,7 @@ abc2svg.tunhd = {
 		return [ align, o, h]
 	} // cnv()
 
+	abc.set_font(hfnt)
 	while (1) {
 		while (p[i] == ' ')
 			i++
