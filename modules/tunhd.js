@@ -87,7 +87,7 @@ abc2svg.tunhd = {
 			h = item[2] * 1.1
 			if (y < h)
 				y = h
-			yb[align] = item[2]
+			yb[align] += item[2]
 		}
 		ya.l += y - yb.l
 		ya.c += y - yb.c
@@ -189,6 +189,8 @@ abc2svg.tunhd = {
 				h = wh[1]
 			o += t
 		}
+		if (!o)
+			return
 		return [ align, o, h]
 	} // cnv()
 
