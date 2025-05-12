@@ -92,11 +92,11 @@ Abc.prototype.set_scale = set_scale;
 Abc.prototype.set_sscale = set_sscale
 Abc.prototype.set_tsfirst = function(s) { tsfirst = s };
 Abc.prototype.set_v_param = set_v_param;
+Abc.prototype.str2svg = str2svg
 Abc.prototype.strwh = strwh;
 Abc.prototype.stv_g = function() { return stv_g };
 Abc.prototype.svg_flush = svg_flush;
 Abc.prototype.syntax = syntax;
-Abc.prototype.trim_title = trim_title
 Abc.prototype.tunes = tunes
 Abc.prototype.unlksym = unlksym;
 Abc.prototype.use_font = use_font;

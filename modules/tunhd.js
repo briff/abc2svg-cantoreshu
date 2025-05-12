@@ -168,7 +168,6 @@ abc2svg.tunhd = {
 			case 'T':
 				if (j)
 					fnt = abc.get_font("subtitle")
-				t = abc.trim_title(t, j)
 				break
 			default:
 				t = info[c].split('\n')[j]
@@ -179,11 +178,13 @@ abc2svg.tunhd = {
 				if (nfnt)
 					fnt = abc.get_font("u" + nfnt)
 				abc.set_font(fnt)
-				wh = abc.strwh(t)
+				t = abc.str2svg(t)
+				wh = t.wh
 				t = '<tspan class="' + abc.font_class(fnt)
 					+ '">' + t + '</tspan>'
 			} else {
-				wh = abc.strwh(t)
+				t = abc.str2svg(t)
+				wh = t.wh
 			}
 			if (wh[1] > h)
 				h = wh[1]
