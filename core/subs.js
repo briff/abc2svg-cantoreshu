@@ -416,7 +416,6 @@ function write_title(title, is_subtitle) {
 	if (!title)
 		return
 	set_page();
-	title = trim_title(title, is_subtitle)
 	if (is_subtitle) {
 		set_font("subtitle");
 		h = cfmt.subtitlespace

@@ -722,6 +722,7 @@ function tosvg(in_fname,		// file name
 				continue
 			case 1:
 			case 2:
+				text = trim_title(text, info.T)
 				if (info.T == undefined)	// (keep empty T:)
 					info.T = text
 				else
