@@ -369,9 +369,10 @@ abc2svg.chord = function(first,		// first symbol in time
 		if (gchon) {
 			while (s.time > nextim) {
 				insch(s, nextim)	// generate the rhythm
-				nextim += dt
+				nextim += rhy == '+' ? 100000 : dt
 			}
 			if (s.bar_type == "|"		// if a normal measure bar
+			 && rhy != '+'
 			 && nextim != s.time) {		// and wrong times
 //fixme: measure error
 				nextim = s.time		// resynchronize
@@ -383,6 +384,8 @@ abc2svg.chord = function(first,		// first symbol in time
 				if (s.a_gch[i].type != 'g')
 					continue
 				gench(s, i)
+				if (rhy == '+')
+					nextim = s.time
 				break
 			}
 		}
@@ -407,6 +410,8 @@ abc2svg.chord = function(first,		// first symbol in time
 	if (gchon)  {
 			while (s.time + (s.dur || 0) > nextim) {
 				insch(s.dur ? null : s, nextim)
+				if (rhy == '+')
+					break
 				nextim += dt
 			}
 		set_dur(vch.last_sym, s.time + (s.dur || 0))
