@@ -366,7 +366,7 @@ abc2svg.chord = function(first,		// first symbol in time
 	ti = 0					// time index in rhy
 //	s = first
 	while (1) {
-		if (gchon && rhy != '+') {
+		if (gchon) {
 			while (s.time > nextim) {
 				insch(s, nextim)	// generate the rhythm
 				nextim += dt
@@ -383,8 +383,6 @@ abc2svg.chord = function(first,		// first symbol in time
 				if (s.a_gch[i].type != 'g')
 					continue
 				gench(s, i)
-				if (rhy == '+')
-					insch(s, s.time) // no rhythm, start now
 				break
 			}
 		}
@@ -398,7 +396,7 @@ abc2svg.chord = function(first,		// first symbol in time
 			} else if (s.subtype == "midigch") {
 				if (s.on != undefined)
 					gchon = s.on
-				else
+				if (gchon && s.rhy)
 					bld_rhy(s.rhy)	// new rhythm
 			}
 		}
@@ -407,12 +405,10 @@ abc2svg.chord = function(first,		// first symbol in time
 		s = s.ts_next
 	}
 	if (gchon)  {
-		if (rhy != '+') {			// rhythm of the last notes
 			while (s.time + (s.dur || 0) > nextim) {
 				insch(s.dur ? null : s, nextim)
 				nextim += dt
 			}
-		}
 		set_dur(vch.last_sym, s.time + (s.dur || 0))
 	}
 } // chord()
