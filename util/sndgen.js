@@ -690,8 +690,6 @@ abc2svg.play_next = function(po) {
 	maxt = t + po.tgen		// max time = now + 'tgen' seconds
 	po.timouts = []
 	while (1) {
-		if (!po.p_v[s.v])		// if new voice
-			set_ctrl(po, s, t)	// set the MIDI controls
 		switch (s.type) {
 		case C.BAR:
 			s2 = null
@@ -782,6 +780,8 @@ abc2svg.play_next = function(po) {
 			}
 			break
 		case C.GRACE:
+			if (!po.p_v[s.v])
+				set_ctrl(po, s, t)
 			for (g = s.extra; g; g = g.next) {
 				d = g.pdur / po.conf.speed
 				for (m = 0; m <= g.nhd; m++) {
@@ -797,6 +797,8 @@ abc2svg.play_next = function(po) {
 			break
 		case C.NOTE:
 		case C.REST:
+			if (!po.p_v[s.v])		// if new voice
+				set_ctrl(po, s, t)	// set the MIDI controls
 			d = s.pdur / po.conf.speed
 		    if (s.type == C.NOTE) {
 			for (m = 0; m <= s.nhd; m++) {
