@@ -377,7 +377,7 @@ abc2svg.chord = function(first,		// first symbol in time
 				ti = 0
 			}
 		}
-		if (s.a_gch) {
+		if (gchon && s.a_gch) {
 			for (i = 0; i < s.a_gch.length; i++) {
 				if (s.a_gch[i].type != 'g')
 					continue
