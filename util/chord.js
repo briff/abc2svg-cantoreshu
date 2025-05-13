@@ -348,6 +348,7 @@ abc2svg.chord = function(first,		// first symbol in time
 		s = s.ts_next
 	vch.sym.ts_prev = s
 	vch.sym.ts_next = vch.sym.next
+	vch.sym.next.ts_prev = vch.sym
 	vch.sym.next.ts_next = s.ts_next
 	if (s.ts_next)
 		s.ts_next.ts_prev = vch.sym.next
