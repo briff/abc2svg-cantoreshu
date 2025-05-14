@@ -1284,7 +1284,7 @@ function tempo_build(s) {
 	// build the string
 	s.tempo_str = str.join(' ')
 	w += cwidf(' ') * (str.length - 1)
-	s.tempo_wh = [w, 13.0]		// (the height is not used)
+	s.tempo_wh = [w, gene.deffont.size]
 } // tempo_build()
 
 // output a tempo

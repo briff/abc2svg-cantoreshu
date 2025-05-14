@@ -87,7 +87,7 @@ abc2svg.tunhd = {
 			h = item[2] * 1.1
 			if (y < h)
 				y = h
-			yb[align] += item[2]
+			yb[align] = item[2]
 		}
 		ya.l += y - yb.l
 		ya.c += y - yb.c
@@ -173,19 +173,20 @@ abc2svg.tunhd = {
 				t = info[c].split('\n')[j]
 				break
 			}
-			if (fnt != hfnt
-			 || nfnt) {
+			if (fnt != hfnt || nfnt) {
 				if (nfnt)
 					fnt = abc.get_font("u" + nfnt)
 				abc.set_font(fnt)
-				t = abc.str2svg(t)
-				wh = t.wh
-				t = '<tspan class="' + abc.font_class(fnt)
-					+ '">' + t + '</tspan>'
+			}
+			if (c == 'Q') {			// string already formatted
+				wh = glovar.tempo.tempo_wh
 			} else {
 				t = abc.str2svg(t)
 				wh = t.wh
 			}
+			if (fnt != hfnt)
+				t = '<tspan class="' + abc.font_class(fnt)
+					+ '">' + t + '</tspan>'
 			if (wh[1] > h)
 				h = wh[1]
 			o += t
