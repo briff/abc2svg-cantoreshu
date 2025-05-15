@@ -720,6 +720,12 @@ Abc.prototype.set_width = function(s) {
 			case C.STBRK:
 				wlnote += 8
 				break
+			case C.NOTE:
+
+				// change the spacing when stems in reverse directions
+				if (s.stem * s2.stem < 0)
+					wlnote = s.stem < 0 ? 3 : -3
+				break
 			}
 		}
 		for (m = 0; m <= s.nhd; m++) {
@@ -789,14 +795,6 @@ Abc.prototype.set_width = function(s) {
 		if (s2) {
 			switch (s2.type) {
 			case C.NOTE:
-
-				// change the spacing when stems in reverse directions
-				if (s.stem * s2.stem < 0) {
-					if (s.stem < 0)
-						wlw += 5
-					else
-						wlw -= 3
-				}
 
 				/* make sure helper lines don't overlap */
 				if ((s.y > 27 && s2.y > 27)
@@ -1163,12 +1161,16 @@ function set_space(s, ptime) {
 			if (!s)
 				return space
 			continue
+		case C.NOTE:
+			break
+		default:
+			return space
 		}
 		break
 	}
 
 	/* reduce spacing within a beam */
-	if (s.dur && len <= C.BLEN / 4) {
+	if (len <= C.BLEN / 4) {
 		s2 = s
 		while (s2) {
 			if (!s2.beam_st) {
@@ -1183,7 +1185,7 @@ function set_space(s, ptime) {
 
 	/* decrease spacing when stem down followed by stem up */
 /*fixme:to be done later, after x computed in sym_glue*/
-	if (s.type == C.NOTE && s.nflags >= -1
+	if (s.nflags >= -1
 	 && s.stem > 0) {
 		stemdir = true
 
@@ -5480,6 +5482,8 @@ Abc.prototype.output_music = function() {
 	}
 
 	// restore for play
+//--fixme: no, good links, but playback crashes!!!
+//	tsfirst = ts1st.ts_next				// skip staves
 	tsfirst = ts1st
 	v = nv
 	while (--v >= 0) {
