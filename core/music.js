@@ -724,7 +724,7 @@ Abc.prototype.set_width = function(s) {
 
 				// change the spacing when stems in reverse directions
 				if (s.stem * s2.stem < 0)
-					wlnote = s.stem < 0 ? 3 : -3
+					wlnote += s.stem < 0 ? 3 : -3
 				break
 			}
 		}
@@ -736,9 +736,16 @@ Abc.prototype.set_width = function(s) {
 					wlnote = -xx + 5
 			}
 			acc = nt.acc
-			if (acc) {
+			if (acc
+			 && (!s2
+			  || s2.type != C.NOTE
+			  || (s2.stem >= 0 && s2.notes[0].pit < nt.pit + 4)
+			  || (s2.stem < 0 && s2.notes[s2.nhd].pit > nt.pit - 4))) {
 				tmp = nt.shac +
 					(typeof acc == "object" ? 5.5 : 3.5)
+				if (s2 && s2.stem < 0
+				 && s2.notes[s2.nhd].pit > nt.pit + 4)
+					tmp -= 5
 				if (wlnote < tmp)
 					wlnote = tmp
 			}
