@@ -5212,6 +5212,9 @@ Abc.prototype.set_sym_glue = function(width) {
 		if (s.seqst) {
 			xmin += s.shrink
 			if (xmin > width) {
+			    if (cfmt.singleline)
+				width = xmin
+			    else
 				error(1, s, "Line too much shrunk $1 $2 $3",
 					xmin.toFixed(1),
 					xx.toFixed(1),
