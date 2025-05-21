@@ -47,27 +47,61 @@ abc2svg.fit2box = {
 			ob += p
 		}
 
+	// get a parameter
+	function getparm(parm) {
+	    var	j, v,
+		i = f.indexOf("%%" + parm)
+
+		if (i >= 0 && (!i || f[i - 1] == '\n')) {
+			j = f.indexOf('\n', i)
+			v = f.slice(i, j).split(/\s+/)
+			v = mus.get_unit(v[1])
+		} else {
+			v = cfmt[parm]
+		}
+		return v
+	} // getparm()
+
+	// set an old or new parameter
+	function setparm(parm, v) {
+	    var	i, j,
+		p = "%%" + parm
+
+		i = f.indexOf(p)
+		if (i >= 0 && (!i || f[i - 1] == '\n')) {
+			j = f.indexOf('\n', i)
+			f = f.replace(f.slice(i, j), p + ' ' + v)
+		} else {
+			f = p + ' ' + v + '\n' + f
+		}
+	} // setparm()
+
+	// get/set the box dimensions
+	if (wb == "*")
+		wb = getparm("pagewidth")
+	if (hb == "*")
+		hb = getparm("pageheight")
+	if (!hb)
+		hb = 1123			// (1123 = 29.7cm)
+
 	// set some parameters
-	if (f.indexOf("\n%%stretchlast") < 0)
-		f = "%%stretchlast 0\n" + f
-	else
-		f = f.replace(/(\n%%stretchlast).*/, "$1 0")
-	if (f.indexOf("\n%%stretchstaff") < 0)
-		f = "%%stretchstaff 0\n" + f
-	else
-		f = f.replace(/(\n%%stretchstaff).*/, "$1 0")
+	setparm("stretchlast", "0")
+	setparm("stretchstaff", "0")
 
-	// double the box width to avoid line break insertion
-	if (f.indexOf("\n%%pagewidth") < 0)
-		f = "%%pagewidth " + (wb * 2).toFixed(2) + "\n" + f
-	else
-		f = f.replace(/(\n%%pagewidth).*/, "$1 " + (wb * 2).toFixed(2))
+	// get the original margins and remove them for the first generation
+	// (assume left margin == right margin)
+	marg = getparm("leftmargin")
+	setparm("leftmargin", "0")
+	setparm("rightmargin", "0")
 
-	// set a half scale
+	// set the box width twice as before to avoid line breaks
+	setparm("pagewidth", (wb * 2).toFixed(2))
+
+	// force the scale
 	if (f.indexOf("\n%%pagescale ") >= 0)
-		f = f.replace(/(\n%%pagescale).*/, "$1 .5")
+		f = f.replace(/(\n%%pagescale).*/, "$1 1")
 	else
-		f = f.replace(/(\nK:.*)/, "$1\n%%pagescale .5")
+		f = f.replace(/(\nK:.*)/, "$1\n%%pagescale 1")
 	cfmt.trimsvg = 1
 	cfmt.fullsvg = "a"
 
@@ -76,11 +110,9 @@ abc2svg.fit2box = {
 		abc2svg.fit2box.otosvg(fn, f)
 	else
 		mus.tosvg(fn, f)
-//console.log("---\n"+f.slice(0, 500)+"---")
 
 	// analyse the result of the generation
 	cfmt = mus.cfmt()
-	marg = cfmt.leftmargin + cfmt.rightmargin
 	w = h = hh = 0
 	r = ob.match(/<svg[^>]*/g)
 	if (!r) {
@@ -107,36 +139,33 @@ abc2svg.fit2box = {
 			w = +v[1]		// max width (thanks to trimsvg)
 		h += +v[2]			// whole height
 	}
-	w -= marg
 //console.log("-- box:"+wb+"x"+hb+" w:"+w.toFixed(2)+" marg:"+marg.toFixed(2)
 //+" h:"+h.toFixed(2)+" hh:"+hh.toFixed(2))
 
-	sc = (hb - hh) / h * .5			// height scale
-	v = (wb - marg) / w * .5		// width scale
-//console.log("     scw:"+v.toFixed(2)+" sch:"+sc.toFixed(2))
+	sc = (hb - hh) / h			// height scale
+	v = (wb - marg * 2) / w			// width scale
+//console.log("     scw:"+v.toFixed(3)+" sch:"+sc.toFixed(3))
 
-	if (v < sc) {
+	if (v <= sc) {
 		sc = v					// width constraint
 	} else {					// height constraint
-		v = Math.round(wb * (v - sc) / 2)	// margins
-		if (v < 0)
-			v = 0
-		if (v > cfmt.leftmargin)
-			f = f.replace(/(%%leftmargin).*/, "$1 " + v)
-				.replace(/(%%rightmargin).*/, "$1 " + v)
-//console.log("   marg:"+v)
+		v = Math.round((wb - w * v) / 2)	// margins
+		if (v < marg)
+			marg = v
 	}
 
-	f = f.replace(/(%%pagewidth).*/, "$1 " + wb)
-		.replace(/(%%pagescale).*/, "$1 " + sc.toFixed(2))
-		.replace(/(%%stretchstaff).*/, "$1 1")
-		.replace(/(%%stretchlast).*/, "$1 1")
-
+	setparm("pagewidth", wb)
+	setparm("leftmargin", marg.toFixed(0))	// restore the margins
+	setparm("rightmargin", marg.toFixed(0))
+	setparm("pagescale", sc.toFixed(2))
+	setparm("stretchstaff", 1)
+	setparm("stretchlast", 1)
 	cfmt.fullsvg = ""
 	cfmt.trimsvg = 0
 
 	// do the last generation
-//console.log("---\n"+f.slice(0, 500)+"---")
+//console.log("---\n"+f.slice(0, 500)+"\n---")
+//console.log("-> "+wb+" "+hb+" sc:"+sc.toFixed(3)+" marg:"+marg)
 	mus.tunes.shift()			// remove the tune class
 	user.img_out = io			// restore the normal output
 	if (abc2svg.fit2box.otosvg) {		// restore the tosvg function
@@ -172,27 +201,12 @@ abc2svg.fit2box = {
 		}
 		return
 	}
-	parm = parm.split(/\s+/)
 
     var	cfmt = this.cfmt(),
 	parse = this.parse,
-	f = parse.file,
-	wb = parm[0],				// box width
-	hb = parm[1]				// box height
+	f = parse.file
 
-	if (wb == "*") {
-		wb = parse.file.match(/\n%%pagewidth\s+([^\s]+)/)
-		if (wb)
-			wb = wb[1]
-	}
-	wb = wb ? this.get_unit(wb) : cfmt.pagewidth
-	if (hb == "*") {
-		hb = parse.file.match(/\n%%pageheight\s+([^\s]+)/)
-		if (hb)
-			hb = hb[1]
-	}
-	hb = hb ? this.get_unit(hb) : 1123	// (1123 = 29.7cm)
-	cfmt.fit2box = [wb, hb]
+	cfmt.fit2box = parm.split(/\s+/)
 
 	// if no tune yet, change the generation function
 	if (f.indexOf("X:") < 0) {
