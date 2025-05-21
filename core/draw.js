@@ -3449,18 +3449,15 @@ function draw_systems(indent) {
 				if (stlines[i] != '.' && stlines[i] != '-')
 					break
 			}
-			if (i >= l - 1)			// 0 or 1 line
-				bar_bot[st] = staff_tb[st].y + 6 * (l - 2) * sc
-			else if (i == l - 2)		// 2 lines
-				bar_bot[st] = staff_tb[st].y + 6 * (l - 3) * sc
-			else
-				bar_bot[st] = staff_tb[st].y + 6 * i * sc
+			bar_bot[st] = staff_tb[st].y + 6 * (
+						i == l - 1 ? (l - 2) :
+						i >= l - 2 ? (l - 3) :
+						i) * sc
 			if (!dy) {
-				if (i >= l - 2) {	// 0, 1 or 2 lines
-					dy = staff_tb[st].y + 6 * l * sc
-				} else {
-					dy = staff_tb[st].y + 6 * (l - 1) * sc
-				}
+				dy = staff_tb[st].y + 6 * (
+						i == l ? (l + 1) :
+						i >= l - 2 ? l :
+						(l - 1)) * sc
 			}
 			bar_height[st] = dy - bar_bot[st];
 			bar_ng[st] = l - i && l - 1 - i	// number of gaps
@@ -3587,7 +3584,7 @@ function draw_systems(indent) {
 		bar_type = s.bar_type,
 		st = s.st,
 		p_staff = staff_tb[st],
-		top = ng >= 3 ? 6 * ng : ng == 1 ? 18 : 12,
+		top = ng >= 3 ? 6 * ng : (4 - ng) * 6,
 		x = s.x
 
 		// don't put a line between the staves if there is no bar above
