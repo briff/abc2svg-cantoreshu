@@ -482,9 +482,8 @@ abc2svg.grid3 = {
 						notes: [{
 							pit: 18
 						}],
-						next: s,
 						ts_next: s,
-						prev: s.prev,
+						prev: p_vc.last_sym,
 						ts_prev: s.ts_prev
 					}
 					if (!s)
@@ -496,8 +495,8 @@ abc2svg.grid3 = {
 					}
 					ss.prev.next =
 						ss.ts_prev.ts_next =
-						s.prev =
 							s.ts_prev = ss
+					p_vc.last_sym = ss
 					cs = []
 				} else {
 					cs.push(cl)
