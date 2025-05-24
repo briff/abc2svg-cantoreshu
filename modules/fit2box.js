@@ -157,7 +157,7 @@ abc2svg.fit2box = {
 	setparm("pagewidth", wb)
 	setparm("leftmargin", marg.toFixed(0))	// restore the margins
 	setparm("rightmargin", marg.toFixed(0))
-	setparm("pagescale", sc.toFixed(2))
+	setparm("pagescale", sc)
 	setparm("stretchstaff", 1)
 	setparm("stretchlast", 1)
 	cfmt.fullsvg = ""
