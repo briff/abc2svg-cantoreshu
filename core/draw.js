@@ -3460,7 +3460,8 @@ function draw_systems(indent) {
 						(l - 1)) * sc
 			}
 			bar_height[st] = dy - bar_bot[st];
-			bar_ng[st] = l - i && l - 1 - i	// number of gaps
+			bar_ng[st] = l - i		// number of gaps
+				 && (l - 1 - i || 2)
 
 			// define the helper lines
 			if (stlines[l-1]!= '.') {	// if any staff line
