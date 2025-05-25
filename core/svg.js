@@ -1364,9 +1364,9 @@ function svg_flush() {
 		head += user.imagesize
 	else
 		head += ' width="' + w
-			+ 'px" height="' + posy.toFixed(0) + 'px"'
+			+ 'px" height="' + posy.toFixed(2) + 'px"'
 	head += ' viewBox="0 0 ' + w + ' '
-		+ posy.toFixed(0) + '">\n'
+		+ posy.toFixed(2) + '">\n'
 	head += fulldefs
 	if (cfmt.bgcolor)
 		head += '<rect width="100%" height="100%" fill="'

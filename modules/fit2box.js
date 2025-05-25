@@ -123,7 +123,7 @@ abc2svg.fit2box = {
 		sv = r.shift()			// next music line
 		if (!sv)
 			break
-		v = sv.match(/viewBox="0 0 (\d+) (\d+)"/)
+		v = sv.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/)
 		cl = sv.match(/class="([^"]+)"/) // "
 //console.log("- sv  ====\n"+sv+"\n      ====\n  cl:"+cl)
 		if (!tit			// the first SVG is the tune header
