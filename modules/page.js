@@ -82,6 +82,7 @@ abc2svg.page = {
 	// create the text of a header or a footer
 	function header_footer(o_font, str) {
 	    var	c, d, i, k, t, n_font, s,
+		noc = '\u00ff',			// remove the whole cell
 		c_font = o_font,
 		nl = 1,
 		j = 0,
@@ -123,15 +124,17 @@ abc2svg.page = {
 				break
 			case 'P':			// current page number
 			case 'Q':			// absolute page number
+				if (str.indexOf('$P', i) > 0)	// if two $P's
+					noc = ''		// don't remove the cell
 				t = c == 'P' ? page.pn : page.pna
 				switch (str[i + 1]) {
 				case '0':
 					s += '0'
-					d = (t & 1) ? '\u00ff' : t
+					d = (t & 1) ? noc : t
 					break
 				case '1':
 					s += '1'
-					d = (t & 1) ? t : '\u00ff'
+					d = (t & 1) ? t : noc
 					break
 				default:
 					d = t
