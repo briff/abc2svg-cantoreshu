@@ -286,6 +286,7 @@ abc2svg.page = {
 		} else {
 			sty = ''
 		}
+	    if (ht + h)
 		abc2svg.page.user_out(abc2svg.page.svg_tag(
 			cfmt.pagewidth, ht + h, "header")
 			+ sty +
@@ -294,7 +295,7 @@ abc2svg.page = {
 				page.hf + '</g>\n</svg>')
 		page.hmax -= h;
 		page.hf = ''
-	} else {
+	} else if (ht) {
 		abc2svg.page.user_out(abc2svg.page.svg_tag(cfmt.pagewidth, ht, "header")
 				+ '\n</svg>')
 	}
@@ -323,6 +324,7 @@ abc2svg.page = {
 	page.in_page = false
 	if (page.footer) {
 		h = page.hmax + page.fh - page.h
+	    if (h)	
 		abc2svg.page.user_out(
 			abc2svg.page.svg_tag(cfmt.pagewidth, h, "footer") +
 			page.ffsty +
