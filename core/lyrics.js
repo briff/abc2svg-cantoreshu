@@ -269,7 +269,7 @@ function get_lyrics(p, cont) {
 // install the words under a note
 // (this function is called during the generation)
 function ly_set(s) {
-    var	i, j, ly, d, s1, s2, p, w, spw, xx, sz, shift, dw,
+    var	i, j, ly, d, s1, s2, p, w, spw, xx, sz, shift, dw, r,
 	s3 = s,				// start of the current time sequence
 	wx = 0,
 	wl = 0,
@@ -316,18 +316,18 @@ function ly_set(s) {
 		}
 		spw = cwid(' ') * ly.font.swfac
 		w = ly.t.wh[0]
+		r = abc2svg.lypre.exec(p)
 		if (s.type == C.GRACE) {		// %%graceword
 			shift = s.wl
-		} else if ((p[0] >= '0' && p[0] <= '9' && p.length > 2)
-			|| p[1] == ':'
-			|| p[0] == '(' || p[0] == ')') {
+		} else if (r) {
+			r = r[0]
 			if (p[0] == '(') {
 				sz = spw
 			} else {
-				j = p.indexOf(' ')
 				set_font(ly.font)
-				if (j > 0)
-					sz = strwh(p.slice(0, j))[0]
+				if (p[r.length] == ' '
+				 || r.slice(-1) == ':')
+					sz = strwh(p.slice(0, r.length))[0]
 				else
 					sz = w * .2
 			}

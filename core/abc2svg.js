@@ -1,6 +1,6 @@
 // abc2svg - abc2svg.js
 //
-// Copyright (C) 2014-2024 Jean-Francois Moine
+// Copyright (C) 2014-2025 Jean-François Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -199,6 +199,9 @@ abc2svg.ft_re = new RegExp('\
 -?[DS]emi|-?[DS]emi[ -]?Bold|\
 -?Bold|-?Extra[ -]?Bold|-?Ultra[ -]?Bold|-?Black|-?Heavy/',
 	"i")
+
+// lyric prefix
+abc2svg.lypre = /^\d.+\.|^[\d-]+\.?|^\w+:|^\(|^\)/;
 
 // simplify a rational number n/d
 abc2svg.rat = function(n, d) {
