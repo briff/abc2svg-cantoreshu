@@ -1895,7 +1895,7 @@ function get_vover(type) {
 	    if (curvoice.ignore)
 		s = curvoice.last_bar
 	    else
-		for (s = curvoice.last_sym; /*s*/; s = s.prev) {
+		for (s = curvoice.last_sym; s; s = s.prev) {
 			if (s.type == C.BAR
 			 || s.time <= time)	/* (if start of tune) */
 				break
