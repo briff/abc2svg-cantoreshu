@@ -827,7 +827,8 @@ abc2svg.play_next = function(po) {
 		}
 	    }
 		while (1) {
-			if (!s || s == po.s_end || !s.ts_next) {
+			if (!s || s == po.s_end
+			 || !s.ts_next || s.ts_next == po.s_end) {
 				if (po.onend)
 					setTimeout(po.onend,
 						(t - now + d) * 1000,
