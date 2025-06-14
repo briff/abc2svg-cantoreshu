@@ -744,21 +744,6 @@ abc2svg.play_next = function(po) {
 			if (!s.part1)
 				break
 		    }
-			// fall thru
-		default:
-			if (s.part1				// if end of part
-			 && po.i_p != undefined) {
-				s2 = s.part1.p_s[++po.i_p]	// next part
-				if (s2) {
-					po.stim += (s.ptim - s2.ptim) / po.conf.speed
-					s = s2
-					t = po.stim + s.ptim / po.conf.speed
-				} else {
-					s = po.s_end
-				}
-				po.repv = 1
-			}
-			break
 		}
 	    if (s && s != po.s_end && !s.noplay) {
 		switch (s.type) {
@@ -837,6 +822,19 @@ abc2svg.play_next = function(po) {
 				return
 			}
 			s = s.ts_next
+
+			if (s.part1				// if end of part
+			 && po.i_p != undefined) {
+				s2 = s.part1.p_s[++po.i_p]	// next part
+				if (!s2) {
+					s = null		// end of tune
+					continue
+				}
+				po.stim += (s.ptim - s2.ptim) / po.conf.speed
+				s = s2
+				t = po.stim + s.ptim / po.conf.speed
+				po.repv = 1
+			}
 			if (!s.noplay)
 				break
 		}
