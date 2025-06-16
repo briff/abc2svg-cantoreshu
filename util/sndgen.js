@@ -663,12 +663,6 @@ abc2svg.play_next = function(po) {
 		return s
 	} // var_end()
 
-	if (po.stop) {
-		if (po.onend)
-			po.onend(po.repv)
-		return
-	}
-
 	while (s.noplay) {
 		s = s.ts_next
 		if (!s || s == po.s_end) {
@@ -813,7 +807,8 @@ abc2svg.play_next = function(po) {
 	    }
 		while (1) {
 			if (!s || s == po.s_end
-			 || !s.ts_next || s.ts_next == po.s_end) {
+			 || !s.ts_next || s.ts_next == po.s_end
+			 || po.stop) {
 				if (po.onend)
 					setTimeout(po.onend,
 						(t - now + d) * 1000,
@@ -872,6 +867,12 @@ abc2svg.play_next = function(po) {
     } // get_part()
 
     // --- play_next ---
+	if (po.stop) {
+		if (po.onend)
+			po.onend(po.repv)
+		return
+	}
+
 	get_part(po)
 
 	po.stim = po.get_time(po) + .3	// start time + 0.3s
