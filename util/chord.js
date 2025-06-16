@@ -140,7 +140,9 @@ abc2svg.chord = function(first,		// first symbol in time
 		if (a.slice(-1) == ')')			// if alternate chord
 			a = a.replace(/\(.*/, '')	// remove it
 		a = a.replace(/\(|\)|\[|\]/g,'')	// remove ()[]
-		a = a.match(/([A-G])([#♯b♭]?)([^/]*)\/?(.*)/)
+			.replace(/♯/g, '#')
+			.replace(/♭/g, 'b')
+			.match(/([A-G])([#b]?)([^/]*)\/?(.*)/)
 			// a[1] = note, a[2] = acc, a[3] = type, a[4] = bass
 		if (!a)
 			return
@@ -150,10 +152,8 @@ abc2svg.chord = function(first,		// first symbol in time
 			return
 
 			switch (a[2]) {
-			case "#":
-			case "♯": r++; break
-			case "b":
-			case "♭": r--; break
+			case "#": r++; break
+			case "b": r--; break
 			}
 			if (!a[3]) {
 				ch = chnm[""]
@@ -170,10 +170,8 @@ abc2svg.chord = function(first,		// first symbol in time
 				b = abc2svg.letmid[b]
 				if (b != undefined) {
 					switch (a[4][1]) {
-					case "#":
-					case "♯": b++; if (b >= 12) b = 0; break
-					case "b":
-					case "♭": b--;  if (b < 0) b = 11; break
+					case "#": b = (b + 1) % 12; break
+					case "b": b = (b + 11) % 12; break
 					}
 					b = b - r
 					if (b < 0)
