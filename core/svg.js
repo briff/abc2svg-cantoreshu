@@ -307,7 +307,7 @@ function set_g() {
 		else
 			output += 'transform="translate(0,' +
 					(posy - stv_g.dy).toFixed(1) +
-				') scale(' + stv_g.scale.toFixed(2) + ')"'
+				') scale(' + stv_g.scale + ')"'
 	}
 	if (stv_g.color) {
 		if (stv_g.scale != 1)
@@ -503,11 +503,9 @@ function g_open(x, y, rot, sx, sy) {
 	if (rot)
 		output += ') rotate(' + rot.toFixed(2)
 	if (sx) {
+		output += ') scale(' + sx
 		if (sy)
-			output += ') scale(' + sx.toFixed(2) +
-						', ' + sy.toFixed(2)
-		else
-			output += ') scale(' + sx.toFixed(2)
+			output += ', ' + sy
 	}
 	output += ')">\n';
 	stv_g.g++
@@ -1384,7 +1382,7 @@ function svg_flush() {
 	// the class is used to know that the container is global
 	if (cfmt.scale != 1) {
 		head += '<g class="g" transform="scale(' +
-			cfmt.scale.toFixed(2) + ')">\n';
+			cfmt.scale + ')">\n';
 		g = '</g>\n'
 	}
 
