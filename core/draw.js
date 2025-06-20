@@ -872,7 +872,7 @@ Abc.prototype.draw_hl = function(s) {
 		note = s.notes[i]
 		if (!p_staff.hlmap[note.pit - p_staff.hll])
 			hla.push([note.pit - 18,
-				  note.shhd * stv_g.scale])
+				  note.shhd * s.p_v.scale])
 	}
 	n = hla.length
 	if (!n)
@@ -885,7 +885,7 @@ Abc.prototype.draw_hl = function(s) {
 	yu =  top,
 	bot = (p_staff.hll - 17) / 2,
 	yl = bot,
-	dx = s.grace ? 4 : hw_tb[s.head] * 1.3
+	dx = (s.grace ? 4 : hw_tb[s.head] * 1.3) * s.p_v.scale
 
 	// get the x start and x stop of the intermediate helper lines
 	note = s.notes[s.stem < 0 ? s.nhd : 0]
@@ -1450,7 +1450,7 @@ function draw_gracenotes(s) {
 				y1 += 1
 		}
 		note = g.notes[g.stem < 0 ? 0 : g.nhd]
-		out_acciac(x_head(g, note), y_head(g, note),
+		out_acciac(g.x, y_head(g, note),
 				x1, y1, g.stem > 0)
 	}
 
@@ -1501,11 +1501,8 @@ function setdoty(s, y_tb) {
 	}
 }
 
-// get the x and y position of a note head
+// get the y offset of a note head
 // (when the staves are defined)
-function x_head(s, note) {
-	return s.x + note.shhd * stv_g.scale
-}
 function y_head(s, note) {
 	return staff_tb[s.st].y + 3 * (note.pit - 18)
 }
@@ -1639,7 +1636,8 @@ function draw_note(s,
     var	s2, i, m, y, slen, c, nflags,
 	y_tb = new Array(s.nhd + 1),
 	note = s.notes[s.stem < 0 ? s.nhd : 0],	// master note head
-	x = x_head(s, note),
+	x = s.x,
+	x_st = s.x - note.shhd * stv_g.scale,
 	y = y_head(s, note),
 	staffb = staff_tb[s.st].y
 
@@ -1659,16 +1657,16 @@ function draw_note(s,
 				else
 					slen += 1
 			}
-			out_stem(x, y, slen, s.grace)
+			out_stem(x_st, y, slen, s.grace)
 		} else {				/* stem and flags */
-			out_stem(x, y, slen, s.grace,
+			out_stem(x_st, y, slen, s.grace,
 				 nflags, s.fmt.straightflags)
 		}
 	} else if (s.xstem) {				/* cross-staff stem */
 		s2 = s.ts_prev;
 		slen = (s2.stem > 0 ? s2.y : s2.ys) - s.y;
 		slen += staff_tb[s2.st].y - staffb;
-		out_stem(x, y, slen)
+		out_stem(x_st, y, slen)
 	}
 
 	/* draw the tremolo bars */
@@ -3299,7 +3297,7 @@ function set_staff() {
 		p_voice = voice_tb[v]
 		if (p_voice.scale != 1)
 			p_voice.scale_str = 
-				'transform="scale(' + p_voice.scale.toFixed(2) + ')"'
+				'transform="scale(' + p_voice.scale + ')"'
 	}
 
 	// search the top staff
@@ -3396,7 +3394,7 @@ function set_staff() {
 			p_staff.scale_str =
 				'transform="translate(0,' +
 					(posy - dy).toFixed(1) + ') ' +
-				'scale(' + p_staff.staffscale.toFixed(2) + ')"'
+				'scale(' + p_staff.staffscale + ')"'
 		}
 	}
 
