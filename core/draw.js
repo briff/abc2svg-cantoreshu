@@ -1637,7 +1637,7 @@ function draw_note(s,
 	y_tb = new Array(s.nhd + 1),
 	note = s.notes[s.stem < 0 ? s.nhd : 0],	// master note head
 	x = s.x,
-	x_st = s.x - note.shhd * stv_g.scale,
+	x_st = s.x + note.shhd * stv_g.scale,
 	y = y_head(s, note),
 	staffb = staff_tb[s.st].y
 
