@@ -839,8 +839,7 @@ Abc.prototype.set_width = function(s) {
 
 		/* if preceeded by a grace note sequence, adjust */
 		if (s.prev && s.prev.type == C.GRACE) {
-			s.prev.wl += wlnote - 4.5
-			s.wl = s.prev.wl
+			s.wl = wlnote - 4.5
 		} else {
 			s.wl = wlw
 		}

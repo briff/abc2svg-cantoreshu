@@ -122,7 +122,7 @@ var w_tb = new Uint8Array([
 	2,	// clef
 	8,	// custos
 	6,	// sm (sequence marker, after bar)
-	0,	// grace (must be null)
+	7,	// grace
 	3,	// key
 	4,	// meter
 	9,	// mrest
@@ -364,8 +364,7 @@ function sort_all() {
 			 || s.time != time)
 				continue
 			w = w_tb[s.type]
-			if (!w
-			 && s.type == C.GRACE && s.next && s.next.type == C.GRACE)
+			if (s.type == C.GRACE && s.next && s.next.type == C.GRACE)
 				w--
 			if (w != wmin)
 				continue
