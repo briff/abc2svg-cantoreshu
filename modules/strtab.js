@@ -18,6 +18,7 @@
 // along with abc2svg.  If not, see <http://www.gnu.org/licenses/>.
 //
 // This module is loaded by %%strtab.
+//
 // The command %%strtab changes the display of the voice to a tablature.
 // Syntax:
 //	%%strtab <string list> [diafret]
@@ -27,10 +28,12 @@
 //	"!" digit "s!"
 // where 'digit' is the string range in the string list (last string is '1')
 //
-// The command %%minfret permits to force upper frets.
+// The command %%minfret indicates the smallest usable fret numbers.
 // Syntax:
 //	%%minfret [ <string number> : <fret number> ]*
 // Each command replaces the previous value.
+//
+//	%%cstabfont font_name size (default %%gchordfont)
 //
 // This module accepts Willem Vree's tablature syntax:
 //	https://wim.vree.org/svgParse/abc2xml.html#tab
