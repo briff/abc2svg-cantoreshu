@@ -33,7 +33,8 @@
 //	%%minfret [ <string number> : <fret number> ]*
 // Each command replaces the previous value.
 //
-//	%%cstabfont font_name size (default %%gchordfont)
+//	%%tabfont font_name size (default: sans-serifBold 7)
+//	%%cstabfont font_name size (default %%gchordfont with size / 1.6)
 //
 // This module accepts Willem Vree's tablature syntax:
 //	https://wim.vree.org/svgParse/abc2xml.html#tab
@@ -200,7 +201,9 @@ abc2svg.strtab = {
 
 	// draw the note heads
 	abc.set_scale(p_v.sym)		// (for draw_all_ties)
-	abc.out_svg('<g class="bn">\n')
+	abc.out_svg('<g class="'
+		+ abc.font_class(abc.get_font('tab'))
+		+ '">\n')
 	for (s = p_v.sym; s; s = s.next) {
 		switch (s.type) {
 		case C.GRACE:
@@ -713,7 +716,7 @@ abc2svg.strtab = {
 	decos["5s"] = "0 nil 0 0 0"
 	decos["6s"] = "0 nil 0 0 0"
 
-	abc.add_style("\n.bn{font:bold 7px sans-serif}")
+	abc.param_set_font("tabfont", "sans-serifBold 7")
     } // set_hooks()
 } // strtab
 
