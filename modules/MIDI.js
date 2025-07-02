@@ -25,6 +25,7 @@
 //	%%MIDI control k v
 //	%%MIDI drummap ABC_note MIDI_pitch
 //	%%MIDI temperamentequal nedo
+//	%%MIDI gchordbars n
 //	%%MIDI chordname <chord_type> <list of MIDI pitches>
 //	%%MIDI chordprog <#MIDI program> [octave=<n>]
 //	%%MIDI chordvol <volume>
@@ -136,6 +137,7 @@ abc2svg.MIDI = {
 //				//	M:6/8	fzcfzc
 //				//	M:9/8	fzcfzcfzc
 		// fall thru
+	case "gchordbars":	// %%MIDI gchordbars n
 	case "gchordon":	// %%MIDI gchordon
 	case "gchordoff":	// %%MIDI gchordoff
 		if (!cfmt.chord)
@@ -146,10 +148,14 @@ abc2svg.MIDI = {
 			s.play = s.invis = 1 //true
 			if (a[1][6] == 'o')
 				s.on = a[1][7] == 'n'
+			else if (a[1][6] == 'b')
+				s.gchnb = +a[2]
 			else
 				s.rhy = a[2]		// chord rhythm
 		} else if (a[1][6] == 'o') {
 			cfmt.chord.gchon = a[1][7] == 'n'
+		} else if (a[1][6] == 'b') {
+			cfmt.chord.gchnb = +a[2]
 		} else {
 			cfmt.chord.rhy = a[2]
 		}

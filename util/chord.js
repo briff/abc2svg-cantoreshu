@@ -61,7 +61,7 @@ abc2svg.letmid = {			// letter -> MIDI pitch
 abc2svg.chord = function(first,		// first symbol in time
 			 voice_tb,	// table of the voices
 			 cfmt) {	// tune parameters
-    var	chnm, i, k, vch, s, gchon, s_ch, rhy, ti, dt,
+    var	chnm, i, k, vch, s, gchon, s_ch, rhy, ti, dt, gchnb,
 	md = first.p_v.meter.wmeasure,	// measure duration
 	nextim = 0,
 	C = abc2svg.C,
@@ -129,7 +129,7 @@ abc2svg.chord = function(first,		// first symbol in time
 			rhy += c
 		}
 
-		dt = md / rhy.length		// delta time
+		dt = md / rhy.length * gchnb		// delta time
 	} // bld_rhy()
 
 	// generate a chord
@@ -337,8 +337,6 @@ abc2svg.chord = function(first,		// first symbol in time
 	voice_tb.push(vch)
 
 	s = first
-	bld_rhy(cfmt.chord.rhy			// chord rhythm
-		|| meterhy(s.p_v.meter))
 
 	// insert the MIDI program and the volume of the chord voice after the tempo
 	while (s.type != C.TEMPO
@@ -361,8 +359,11 @@ abc2svg.chord = function(first,		// first symbol in time
 
 	// loop on the symbols and add the accompaniment chords
 	gchon = cfmt.chord.gchon
+	gchnb = cfmt.chord.gchnb || 1
+	s = first
+	bld_rhy(cfmt.chord.rhy			// chord rhythm
+		|| meterhy(s.p_v.meter))
 	ti = 0					// time index in rhy
-//	s = first
 	while (1) {
 		if (gchon) {
 			while (s.time > nextim) {
@@ -389,7 +390,9 @@ abc2svg.chord = function(first,		// first symbol in time
 		}
 		if (!s.dur) {
 			if (s.bar_num) {		// if measure bar
-				ti = 0			// reset the time index
+				if (gchnb == 1
+				 || !((s.bar_num - 1) % gchnb))
+					ti = 0		// reset the time index
 			} else if (s.wmeasure) {	// if meter
 				md = s.wmeasure
 				if (rhy != '+')
@@ -397,6 +400,8 @@ abc2svg.chord = function(first,		// first symbol in time
 			} else if (s.subtype == "midigch") {
 				if (s.on != undefined)
 					gchon = s.on
+				if (s.gchnb)
+					gchnb = s.gchnb
 				if (gchon && s.rhy)
 					bld_rhy(s.rhy)	// new rhythm
 			}
