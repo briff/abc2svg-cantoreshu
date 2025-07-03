@@ -82,6 +82,28 @@ abc2svg.grid2 = {
 	}
     }, // do_grid()
 
+    // adjust the width of the symbol with a chord
+    set_w: function(of, s) {
+	of(s)
+	if (!s.p_v || !s.p_v.grid2
+	 || !s.a_gch
+	 || ((!s.prev || s.prev.invis)
+	  && (!s.next || s.next.invis)))
+		return
+    var	i, gch
+
+	for (i = 0; i < s.a_gch.length; i++) {
+		gch = s.a_gch[i]
+		if (gch.type == 'g') {
+			if (s.wl < -gch.x)
+				s.wl = -gch.x
+			if (s.wr < gch.text.wh[0])
+				s.wr = gch.text.wh[0]
+			break
+		}
+	}
+    }, // set_w()
+
     // draw the chord symbol in the middle of the staff
     draw_gchord: function(of, i, s, x, y) {
     var	an
@@ -122,6 +144,7 @@ abc2svg.grid2 = {
 	abc.draw_gchord = abc2svg.grid2.draw_gchord.bind(abc, abc.draw_gchord);
 	abc.output_music = abc2svg.grid2.output_music.bind(abc, abc.output_music);
 	abc.set_format = abc2svg.grid2.set_fmt.bind(abc, abc.set_format)
+	abc.set_width = abc2svg.grid2.set_w.bind(abc, abc.set_width)
     }
 } // grid2
 
