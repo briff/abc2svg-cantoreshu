@@ -2573,6 +2573,11 @@ function mrest_expand() {
 			s2.time = tim
 			while (s3.time < tim)
 				s3 = s3.ts_next	// bar at end of measure
+			if (s3.time == tim)
+				while (!s3.bar_type
+				    && s3.ts_next && s3.ts_next.time == tim)
+					s3 = s3.ts_next
+			s3 = s3.ts_next
 			while (s3 && s3.v < s.v && s3.type == C.BAR)
 				s3 = s3.ts_next	// keep in order
 			if (s3) {
