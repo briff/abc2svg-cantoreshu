@@ -173,16 +173,6 @@ function sort_all() {
 			}
 		}
 
-		if (!prev.next || prev.next.time == time) {
-			while ((prev.type == C.GRACE || prev.type == C.SPACE)
-			    && vtb[prev.v] && !vtb[prev.v].bar_type) {
-				delete prev.seqst
-				vtb[prev.v] = prev
-				prev = prev.ts_prev
-				fl = 1 //true
-			}
-		}
-
 		if (v == undefined)
 			return			// no problem
 
@@ -290,8 +280,7 @@ function sort_all() {
 			if (!s)
 				return
 			if (s.time != s.prev.time
-			 || w_tb[s.prev.type]
-			 || s.type == C.GRACE && s.prev.type == C.GRACE)
+			 || w_tb[s.prev.type])
 				s.seqst = 1 //true
 			if (s.type == C.PART) {		// move the part
 				s.prev.next =
@@ -336,8 +325,10 @@ function sort_all() {
 			if (!s || s.time > time)
 				continue
 			w = w_tb[s.type]
-			if (s.type == C.GRACE && s.next && s.next.type == C.GRACE)
-				w--
+			if (s.type == C.GRACE
+			 && s.next
+			 && s.next.type == C.BAR)
+				w = 5			// < bar
 			if (s.time < time) {
 				time = s.time;
 				wmin = w
@@ -364,8 +355,10 @@ function sort_all() {
 			 || s.time != time)
 				continue
 			w = w_tb[s.type]
-			if (s.type == C.GRACE && s.next && s.next.type == C.GRACE)
-				w--
+			if (s.type == C.GRACE
+			 && s.next
+			 && s.next.type == C.BAR)
+				w = 5			// < bar
 			if (w != wmin)
 				continue
 			if (!w
