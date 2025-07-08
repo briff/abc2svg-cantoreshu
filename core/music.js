@@ -2727,7 +2727,8 @@ function set_auto_clef(st, s_start, clef_type_start) {
 		if (clef_type == 't') {
 			if (s.notes[0].pit > 12		/* F, */
 			 || s.notes[s.nhd].pit > 20) {	/* G */
-				if (s.notes[0].pit > 20)
+				if (s.notes[0].pit > 20
+				 || s.notes[s.nhd].pit > 20)
 					s_last_chg = s
 				continue
 			}
@@ -2748,7 +2749,8 @@ function set_auto_clef(st, s_start, clef_type_start) {
 		} else {
 			if (s.notes[0].pit <= 12	/* F, */
 			 || s.notes[s.nhd].pit < 20) {	/* G */
-				if (s.notes[s.nhd].pit <= 12)
+				if (s.notes[s.nhd].pit <= 12
+				 || s.notes[0].pit <= 12)
 					s_last_chg = s
 				continue
 			}
