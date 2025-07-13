@@ -49,6 +49,7 @@ abc2svg.modules = {
 	pageheight: { fn: 'page' },
 	pedline: {},
 	percmap: { fn: 'perc' },
+	playswing: { fn: 'swing' },
 	roman: {},
 	soloffs: {},
 	sth: {},

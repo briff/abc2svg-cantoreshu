@@ -68,6 +68,7 @@ gen modules/wps.js modules/psvg.js > psvg-$MAJOR.js
 gen modules/roman.js > roman-$MAJOR.js
 gen modules/soloffs.js > soloffs-$MAJOR.js
 gen modules/sth.js > sth-$MAJOR.js
+gen modules/swing.js > swing-$MAJOR.js
 gen modules/strtab.js > strtab-$MAJOR.js
 gen modules/temper.js > temper-$MAJOR.js
 gen modules/tropt.js > tropt-$MAJOR.js
