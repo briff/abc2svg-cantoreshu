@@ -1,6 +1,6 @@
 // abc2svg - format.js - formatting functions
 //
-// Copyright (C) 2014-2024 Jean-Francois Moine
+// Copyright (C) 2014-2025 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -304,32 +304,19 @@ function param_set_font(xxxfont, p) {
 		}
 
 	if (!font.src) {			// if no url(...)
-		if (p[0] == '"') {
-			n = p.indexOf('"', 1)
-			if (n < 0) {
-				syntax(1, "No end of string in font family")
-				return
-			}
-			p = p.slice(1, n)
-		}
 
 		// here is the font family
 		p = p.trim()
 
-		switch (p) {
-		case "":
-		case "*": p = ""; break
-		case "Times-Roman":
-		case "Times":	p = "serif"; break
-		case "Helvetica": p = "sans-serif"; break
-		case "Courier": p = "monospace"; break
-		case "music": p = cfmt.musicfont.name; break
-		default:
+		if (p == '*')
+			p = ''
+		p = p.replace(/Times-Roman|Times/, "serif")
+			.replace("Helvetica", "sans-serif")
+			.replace("Courier", "monospace")
+			.replace("music", cfmt.musicfont.name)
 //hack: the font "Figurato" is used for figured bass
 			if (p.indexOf("Fig") > 0)
 				font.figb = true
-			break
-		}
 	}
 	if (p && !font.name)
 		font.name = p
