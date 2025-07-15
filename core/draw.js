@@ -1257,10 +1257,6 @@ function draw_mrest(s) {
 			xygl(x + 2, y, "r1")
 	} // omrest()
 
-	if (!s.next) {
-		error(1, s, "Lack of bar after multi-measure rest")
-		return
-	}
 	set_scale(s)
 
 	prev = s		// search the start of the previous time sequence

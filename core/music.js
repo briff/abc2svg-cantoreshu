@@ -2541,8 +2541,10 @@ function mrest_expand() {
 		s2 = s.next
 
 		// get the bar (there may be some other symbols before the bar)
-		while (!s2.bar_type)
+		while (s2 && !s2.bar_type)
 			s2 = s2.next
+		if (!s2)
+			return error(1, s, "Lack of bar after multi-measure rest")
 		bar = s2
 		while (!s2.bar_num)		// get the bar number
 			s2 = s2.ts_prev
