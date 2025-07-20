@@ -32,30 +32,57 @@ if (typeof abc2svg == "undefined")
 abc2svg.swing = {
 // this function is called from sndgen
     swing: function(first, voice_tb, cfmt) {
-    var	v, p_v, sw, s, d, m,
-	beat = 384,				// quarter note
+    var	v, p_v, sw, s, s2, d, m, beat,
+	C = abc2svg.C,
+	a_dur = [],
 	nv = voice_tb.length
+
+	// set the times of the notes subject to swing adjustment
+	function set_dur(s) {
+		if (!s.a_meter[0] || s.a_meter[0].top[0] == 'C'
+		 || !s.a_meter[0].bot)
+			beat = C.BLEN / 4		// quarter note
+		else if (s.a_meter[0].bot[0] == 8
+		      && s.a_meter[0].top[0] % 3 == 0)
+			beat = C.BLEN / 8 * 3
+		else
+			beat = C.BLEN / s.a_meter[0].bot[0] |0
+		a_dur[0] = beat / 2			// x/n/
+		a_dur[1] = beat / 4			// x3//n//
+		a_dur[2] = beat / 3			// (3::2xn/
+	} // set_dur()
 
 	for (v = 0; v < nv; v++) {
 		p_v = voice_tb[v]
 		sw = cfmt.swing
 		if (!sw && !p_v.swing)
 			continue
+		set_dur(p_v.meter)
 		for (s = p_v.sym; s.next; s = s.next) {
 			if (s.subtype == "swing")
 				sw = s.sw
 			if (!sw
-			 || !s.dur || !s.next.dur
-			 || s.time % beat
-			 || s.dur + s.next.dur != beat)
+			 || !s.dur) {
+				if (s.a_meter)
+					set_dur(s)
 				continue
-			d = beat * sw[0]
-			s.dur = d
+			}
+			if (!s2 || s2.time + s2.dur != s.time
+			 || (((s.time - a_dur[0]) % beat
+			   || s2.dur < a_dur[0])
+			  && ((s.time - a_dur[1]) % beat
+			   || s2.dur < a_dur[1])
+			  && ((s.time - a_dur[2]) % beat
+			   || s2.dur < a_dur[2]))) {
+				s2 = s
+				continue
+			}
+			d = s2.dur - (s2.time + s2.dur) % beat + sw[0] * beat
+			s2.dur = d
 			for (m = 0; m < s.nhd; m++)
-				s.notes[m].dur = d
-			s.next.time = s.time + beat * (sw[0] + sw[1])
-			s = s.next
-			d = beat * sw[2]
+				s2.notes[m].dur = d
+			s.time = ((s.time / beat | 0) + sw[0] + sw[1]) * beat
+			d = sw[2] * beat
 			s.dur = d
 			for (m = 0; m < s.nhd; m++)
 				s.notes[m].dur = d
@@ -73,6 +100,7 @@ abc2svg.swing = {
 
 		if (sw) {
 			sw = sw.splice(1)
+//fixme: check sw[0]+sw[1]+sw[2] < 100
 			for (i = 0; i < 3; i++)
 				sw[i] = +sw[i] / 100
 		}
