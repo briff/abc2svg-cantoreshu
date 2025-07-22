@@ -534,8 +534,8 @@ abc2svg.page = {
     }, // set_fmt()
 
     set_hooks: function(abc) {
+	abc.set_format("page-format", 1)	// do page formatting
 	abc.set_format = abc2svg.page.set_fmt.bind(abc, abc.set_format)
-	user.page_format = true			// do page formatting
 	abc.set_pagef()
     }
 } // page
