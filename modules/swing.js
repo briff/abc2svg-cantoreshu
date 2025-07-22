@@ -82,10 +82,21 @@ abc2svg.swing = {
 			for (m = 0; m < s.nhd; m++)
 				s2.notes[m].dur = d
 			s.time = ((s.time / beat | 0) + sw[0] + sw[1]) * beat
+
+			// check if the note sounds longer than a half beat
 			d = sw[2] * beat
+			if (s.dur > beat / 2 || s.ti1) {
+				for (s2 = s.next; s2; s2 = s2.next) {
+					if (s2.dur) {
+						d = s2.time - s.time
+						break
+					}
+				}
+			}
 			s.dur = d
 			for (m = 0; m < s.nhd; m++)
 				s.notes[m].dur = d
+			s2 = s
 		}
 	}
     }, // swing()
@@ -100,7 +111,8 @@ abc2svg.swing = {
 
 		if (sw) {
 			sw = sw.splice(1)
-//fixme: check sw[0]+sw[1]+sw[2] < 100
+			if (+sw[0] + +sw[1] + +sw[2] > 100)
+				return abc.syntax(1, "playswing greater than 100%")
 			for (i = 0; i < 3; i++)
 				sw[i] = +sw[i] / 100
 		}
