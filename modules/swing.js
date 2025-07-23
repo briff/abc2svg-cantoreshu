@@ -32,7 +32,7 @@ if (typeof abc2svg == "undefined")
 abc2svg.swing = {
 // this function is called from sndgen
     swing: function(first, voice_tb, cfmt) {
-    var	v, p_v, sw, s, s2, d, m, beat,
+    var	v, p_v, sw, s, s2, d, m, beat, anac,
 	C = abc2svg.C,
 	a_dur = [],
 	nv = voice_tb.length
@@ -50,12 +50,25 @@ abc2svg.swing = {
 		a_dur[0] = beat / 2			// x/n/
 		a_dur[1] = beat / 4			// x3//n//
 		a_dur[2] = beat / 3			// (3::2xn/
+
+		// check if there is an anacrusis
+		if (!s.time) {
+			anac = 0
+		    var	wm = s.wmeasure
+			while (s && s.time < wm) {
+				if (s.bar_type) {
+					anac = wm - s.time
+					break
+				}
+				s = s.next
+			} 
+		}
 	} // set_dur()
 
 	for (v = 0; v < nv; v++) {
 		p_v = voice_tb[v]
-		sw = cfmt.swing
-		if (!sw && !p_v.swing)
+		sw = cfmt.swing || p_v.swing
+		if (!sw || !p_v.sym)
 			continue
 		set_dur(p_v.meter)
 		for (s = p_v.sym; s.next; s = s.next) {
@@ -67,32 +80,24 @@ abc2svg.swing = {
 					set_dur(s)
 				continue
 			}
-			if (!s2 || s2.time + s2.dur != s.time
-			 || (((s.time - a_dur[0]) % beat
-			   || s2.dur < a_dur[0])
-			  && ((s.time - a_dur[1]) % beat
-			   || s2.dur < a_dur[1])
-			  && ((s.time - a_dur[2]) % beat
-			   || s2.dur < a_dur[2]))) {
+			if ((s.time + anac - a_dur[0]) % beat
+			 && (s.time + anac - a_dur[1]) % beat
+			 && (s.time + anac - a_dur[2]) % beat) {
 				s2 = s
 				continue
 			}
-			d = s2.dur - (s2.time + s2.dur) % beat + sw[0] * beat
-			s2.dur = d
-			for (m = 0; m < s.nhd; m++)
-				s2.notes[m].dur = d
-			s.time = ((s.time / beat | 0) + sw[0] + sw[1]) * beat
-
-			// check if the note sounds longer than a half beat
-			d = sw[2] * beat
-			if (s.dur > beat / 2 || s.ti1) {
-				for (s2 = s.next; s2; s2 = s2.next) {
-					if (s2.dur) {
-						d = s2.time - s.time
-						break
-					}
-				}
+			if (s2 && s2.time + s2.dur == s.time) {
+				d = s2.dur - (s2.time + s2.dur) % beat + sw[0] * beat
+				s2.dur = d
+				for (m = 0; m < s.nhd; m++)
+					s2.notes[m].dur = d
 			}
+			d = s.time + s.dur
+			s.time = ((s.time / beat | 0) + sw[0] + sw[1]) * beat
+			if (s.dur > beat / 2 || s.ti1)
+				d -= s.time
+			else
+				d = sw[2] * beat
 			s.dur = d
 			for (m = 0; m < s.nhd; m++)
 				s.notes[m].dur = d
