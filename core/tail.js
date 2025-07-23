@@ -64,6 +64,7 @@ Abc.prototype.get_staff_tb = function() { return staff_tb };
 Abc.prototype.get_top_v = function() { return par_sy.top_voice };
 Abc.prototype.get_tsfirst = function() { return tsfirst };
 Abc.prototype.get_unit = get_unit;
+Abc.prototype.get_user = function() { return user }
 Abc.prototype.get_voice_tb = function() { return voice_tb };
 Abc.prototype.glout = glout
 Abc.prototype.glovar = function() { return glovar }

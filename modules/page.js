@@ -38,7 +38,7 @@ abc2svg.page = {
     }, // abc_end()
 
     // output the SVG tag
-    svg_tag: function(w, h, ty) {
+    svg_tag: function(w, h, ty, user) {
 	w = Math.ceil(w)
 	h = Math.ceil(h)
 	return '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"\n\
@@ -290,7 +290,7 @@ abc2svg.page = {
 		}
 	    if (ht + h)
 		abc2svg.page.user_out(abc2svg.page.svg_tag(
-			cfmt.pagewidth, ht + h, "header")
+			cfmt.pagewidth, ht + h, "header", abc.get_user())
 			+ sty +
 			'<g transform="translate(0,' +
 				page.topmargin.toFixed(1) + ')">\n' +
@@ -298,7 +298,8 @@ abc2svg.page = {
 		page.hmax -= h;
 		page.hf = ''
 	} else if (ht) {
-		abc2svg.page.user_out(abc2svg.page.svg_tag(cfmt.pagewidth, ht, "header")
+		abc2svg.page.user_out(abc2svg.page.svg_tag(cfmt.pagewidth, ht,
+					"header", abc.get_user())
 				+ '\n</svg>')
 	}
 	if (page.footer) {
@@ -328,7 +329,8 @@ abc2svg.page = {
 		h = page.hmax + page.fh - page.h
 	    if (h)	
 		abc2svg.page.user_out(
-			abc2svg.page.svg_tag(cfmt.pagewidth, h, "footer") +
+			abc2svg.page.svg_tag(cfmt.pagewidth, h,
+				"footer", page.abc.get_user()) +
 			page.ffsty +
 			'<g transform="translate(0,' +
 				(h - page.fh).toFixed(1) + ')">\n' +
@@ -409,6 +411,7 @@ abc2svg.page = {
     // handle the page related parameters
     set_fmt: function(of, cmd, parm) {
     var	v,
+	user = this.get_user(),
 	cfmt = this.cfmt(),
 	page = this.page
 
