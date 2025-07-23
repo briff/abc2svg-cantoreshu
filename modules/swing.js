@@ -44,12 +44,11 @@ abc2svg.swing = {
 			beat = C.BLEN / 4		// quarter note
 		else if (s.a_meter[0].bot[0] == 8
 		      && s.a_meter[0].top[0] % 3 == 0)
-			beat = C.BLEN / 8 * 3
+			return 1			// no swing
 		else
 			beat = C.BLEN / s.a_meter[0].bot[0] |0
 		a_dur[0] = beat / 2			// x/n/
 		a_dur[1] = beat / 4			// x3//n//
-		a_dur[2] = beat / 3			// (3::2xn/
 
 		// check if there is an anacrusis
 		if (!s.time) {
@@ -70,7 +69,8 @@ abc2svg.swing = {
 		sw = cfmt.swing || p_v.swing
 		if (!sw || !p_v.sym)
 			continue
-		set_dur(p_v.meter)
+		if (set_dur(p_v.meter))
+			continue			// no swing
 		for (s = p_v.sym; s.next; s = s.next) {
 			if (s.subtype == "swing")
 				sw = s.sw
@@ -81,8 +81,7 @@ abc2svg.swing = {
 				continue
 			}
 			if ((s.time + anac - a_dur[0]) % beat
-			 && (s.time + anac - a_dur[1]) % beat
-			 && (s.time + anac - a_dur[2]) % beat) {
+			 && (s.time + anac - a_dur[1]) % beat) {
 				s2 = s
 				continue
 			}
