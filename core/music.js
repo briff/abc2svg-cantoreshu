@@ -1280,6 +1280,7 @@ function _bar(s) {
 // create an invisible bar for end of music lines
 function add_end_bar(s) {
 	if (s.type == C.KEY && !s.k_sf		// if an invisible key
+	 && !s.k_old_sf && !s.k_a_acc
 	 && s.prev && s.prev.bar_type) {	// before a bar
 		unlksym(s)			// remove it
 		return
