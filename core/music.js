@@ -935,10 +935,8 @@ Abc.prototype.set_width = function(s) {
 		s.wr = s.clef_small ? 8 : 13
 		return
 	case C.KEY:
-		if (s.invis) {				// if no accidental
-			s.wl = s.wr = 0			// no width
-			return
-		}
+		if (s.invis)
+			break				// no width
 		s.wl = 0
 		esp = 3
 			n1 = s.k_sf			/* new key sig */
@@ -1069,6 +1067,10 @@ Abc.prototype.set_width = function(s) {
 		break
 	}
 	s.wl = s.wr = 0
+
+	// move the invisible symbol to the next time sequence
+	if (s.ts_next)
+		s.ts_next.seqst = 0
 }
 
 // convert delta time to natural spacing
