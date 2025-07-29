@@ -35,8 +35,10 @@ abc2svg.page = {
 		abc2svg.page.close_page(page)
 
 	// restore user.img_out (needed when more generation)
-	this.get_user().img_out = abc2svg.page.user_out
-	abc2svg.page.user_out = null
+	if (abc2svg.page.user_out) {
+		this.get_user().img_out = abc2svg.page.user_out
+		abc2svg.page.user_out = null
+	}
       }
 	of()
     }, // abc_end()
