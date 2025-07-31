@@ -1543,6 +1543,9 @@ function get_staves(cmd, parm) {
 		// synchronize the voices
 		for (v = 0; v < nv; v++) {
 			p_voice = voice_tb[v]
+//fixme: does not work if measure bar and %%staves delta time < measure duration
+			if (maxtime - p_voice.time >= p_voice.meter.wmeasure)
+				p_voice.acc = []	// no accidental anymore
 			p_voice.time = maxtime
 			p_voice.lyric_restart = p_voice.last_sym
 			p_voice.sym_restart = p_voice.last_sym
