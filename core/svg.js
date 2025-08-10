@@ -169,13 +169,13 @@ var tgls = {
   fff: {x:-10, y:0, c:"\ue530"},
   ffff: {x:-14, y:0, c:"\ue531"},
   sfz: {x:-10, y:0, c:"\ue539"},
-  trl: {x:-5, y:-2, c:"\ue566"},	// trill
+  trl: {x:-3, y:-3, c:"\ue566"},	// trill
   turn: {x:-5, y:0, c:"\ue567"},
   turnx: {x:-5, y:0, c:"\ue569"},
   umrd: {x:-6, y:2, c:"\ue56c"},
   lmrd: {x:-6, y:2, c:"\ue56d"},
   dplus: {x:-3, y:0, c:"\ue582"},	// plus
-  sld: {x:-8, y:2, c:"\ue5d0"},		// slide
+  sld: {x:-3, y:2, c:"\ue5d0"},		// slide
   grm: {x:-3, y:-2, c:"\ue5e2"},	// grace mark
   dnb: {x:-3, y:0, c:"\ue610"},		// down bow
   upb: {x:-2, y:0, c:"\ue612"},		// up bow

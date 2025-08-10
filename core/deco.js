@@ -59,7 +59,7 @@ var	dd_tb = {},		// definition of the decorations
 var decos = {
 	dot: "0 stc 6 .7 1",
 	tenuto: "0 emb 6 4 3",
-	slide: "1 sld 10 7 1",
+	slide: "1 sld 5,5 7 1",
 	arpeggio: "2 arp 12 10 3",
 	roll: "3 roll 5,4 5 6",
 	lowermordent: "3 lmrd 6,5 4 6",
@@ -386,9 +386,9 @@ function d_slide(de) {
 			}
 		}
 		if (s.notes[m].pit <= yc + 3 && dx > 5)
-			xc = -dx
+			xc = -dx - 5
 		else
-			xc = -5
+			xc = -10
 	}
       } else {					// decoration tied to the stem
 		if (de.s.stem >= 0) {
@@ -1118,16 +1118,11 @@ function dh_cnv(s, nt) {
 			continue
 
 		switch (dd.func) {
-		case 0:
-		case 1:
+		case 1:			// slide
 		case 3:
-		case 4:
 		case 8:			// gliss
 			break
 		default:
-//		case 2:			// arpeggio
-//		case 5:			// trill
-//		case 7:			// d_cresc
 			error(1, s, "Cannot have !$1! on a head", nm)
 			continue
 		case 9:			// head replacement
@@ -1226,11 +1221,11 @@ function deco_wch(nt) {
 
 	for (i = 0; i < n; i++) {
 		dd = nt.a_dd[i]
-		if (dd.ty == '<') {
-			w = dd.wl + dd.wr + 4
-			if (w > wl)
-				wl = w
-		}
+		w = dd.wl + dd.wr
+		if (nt.shac)
+			w += nt.shac
+		if (w > wl)
+			wl = w
 	}
 	return wl
 } // deco_wch()
@@ -1329,15 +1324,9 @@ Abc.prototype.draw_all_deco = function() {
 		x = de.x + (dd.dx || 0)
 		y = de.y + staff_tb[st].y + (dd.dy || 0)
 
-		// update the coordinates if head decoration
-		if (de.m != undefined) {
-			note = s.notes[de.m];
-			if (note.shhd)
-				x += note.shhd * stv_g.scale;
-
 		/* center the dynamic marks between two staves */
 /*fixme: KO when deco on other voice and same direction*/
-		} else if (dd.func == 6
+		if (dd.func == 6
 			&& ((de.pos & C.SL_ALI_MSK) == C.SL_CENTER
 			 || ((de.pos & C.SL_ALI_MSK) == 0
 			  && !s.fmt.dynalign))
@@ -1603,6 +1592,13 @@ function draw_deco_near() {
 						de.x += dd.wl + 8
 					}
 				}
+			} else {
+				if (note.shhd)
+					de.x += note.shhd * stv_g.scale
+				if (note.shac)
+					de.x -= note.shac
+				if (dd.func != 8)	// if not glissendo
+					de.x -= dd.wl + dd.wr + 3
 			}
 
 			a_de.push(de)
