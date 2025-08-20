@@ -236,7 +236,7 @@ function dom_loaded() {
 	    var	j, k,
 		n = 0,
 		i = 0,
-		t = (typeof list_head == "undefined" ? "Tunes:" : list_head) + '<ul>\n'
+		t = (typeof list_head == "undefined" ? "Tunes:" : list_head) + '<ul>\n',
 		tt = typeof list_tail == "undefined" ? "(all tunes)" : list_tail
 
 		for (;;) {
