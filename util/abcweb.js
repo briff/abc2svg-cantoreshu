@@ -50,8 +50,7 @@ window.onerror = function(msg, url, line) {
 	return false
 }
 
-    var	user,
-	abcplay				// (usable for volume or tempo changes)
+    var	abcplay				// (usable for volume or tempo changes)
 
 if (typeof abc2svg == "undefined")
     var abc2svg = {}
@@ -136,10 +135,10 @@ function dom_loaded() {
 	    var	i, j, k, r,
 		o = '',
 		sh = document.styleSheets,
-		s = e.style
+		s = e.style,
+		c = e.getAttribute("class")
 
 		// from class=".."
-		c = e.getAttribute("class")
 		if (c) {
 			c = '.' + c				// selector
 			for (i = 0; i < sh.length; i++) {
@@ -402,7 +401,7 @@ Printing may be bad because the file contains pure HTML and %%pageheight\
 abc2svg.musgen = musgen			// used in set_music() below
 
 // -- abc2svg init argument
-    user = {
+abc2svg.user = {
 	read_file: function(fn) {
 		return a_inc[fn]
 	}, // read_file()
@@ -432,7 +431,7 @@ function clean_txt(txt) {
 			abcplay.stop()
 			return
 		}
-	    var	i, j,
+	    var	i, j, s,
 		svg = evt.target,
 		e = svg			// keep the clicked element
 
@@ -525,9 +524,9 @@ function clean_txt(txt) {
 
 	// initialize the generation
 	abc2svg.abc =				// for external access
-	abc = new abc2svg.Abc(user)
+	abc = new abc2svg.Abc(abc2svg.user)
 	if (typeof follow == "function")	// if snd-1.js loaded
-		follow(abc, user, playconf)	// initialize the play follow
+		follow(abc, abc2svg.user, playconf)	// initialize the play follow
 	if (abc2svg.music[0].t)
 		musgen(0)			// global definitions
 
@@ -576,7 +575,7 @@ abc2svg.set_music = function(d, t) {
 			mu.t = t
 			tunes = abc2svg.abc.tunes
 			tune_purge(mu)
-			abc2svg.abc = new abc2svg.Abc(user) // use a new Abc instance
+			abc2svg.abc = new abc2svg.Abc(abc2svg.user) // use a new Abc instance
 
 			// copy the old tunes to the new instance
 			abc2svg.abc.tunes.push.apply(abc2svg.abc.tunes, tunes)
