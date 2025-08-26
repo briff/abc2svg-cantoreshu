@@ -237,35 +237,33 @@ function ToAudio() {
 
 	// update the time linkage when the start time has changed
 	function relink(s, dt) {
-	    var	s2 = s.ts_next
+	    var	s2
 
 		s.time += dt			// update time and duration
 		if (s.dur)
 			s.dur -= dt
 		s.seqst = 1 //true		// new time sequence
-		if (s.ts_next)
-			s.ts_next.seqst = 1 //true
 
-		s2 = s
 		if (dt < 0) {			// if move backwards the grace notes
+			s2 = s
 			do {
-				s2 = s2.prev
-			} while (s2 && !s2.dur)
-			if (s2) {
-				s2.dur += dt
-				s2.pdur = s2.dur / play_fac
-				s2 = s2.ts_next
-				if (s2 == s)
+				s = s.prev
+			} while (s && !s.dur)
+			if (s) {
+				s.dur += dt
+				s.pdur = s.dur / play_fac
+				if (s.ts_next == s2) {
 					s2 = null	// no linkage change
+				} else {
+					s = s2.ts_prev
+					while (s && s.time >= s2.time)
+						s = s.ts_prev
+				}
 			}
 		} else {
-			if (!s.ts_next) {
-				s2 = null
-			} else {
+			s2 = s.ts_next
+			while (s2 && s2.time < s.time)
 				s2 = s2.ts_next
-				while (s2 && !s2.seqst)
-					s2 = s2.ts_next
-			}
 		}
 
 		// update the time linkage
@@ -288,9 +286,9 @@ function ToAudio() {
 	// generate the grace notes
 	function gen_grace(s) {
 		if (s.midgen)
-			return				// generation already done
+			return s			// generation already done
 		s.midgen = 1 //true
-	    var	g, i, n, t, d, prev,
+	    var	g, i, n, t, d, prev, s2,
 		next = s.next
 
 //fixme: assume the grace notes in the sequence have the same duration
@@ -313,6 +311,7 @@ function ToAudio() {
 			} else {
 				d = prev.dur / 2
 			}
+			s2 = s.ts_next			// (the grace note will move)
 			relink(s, -d)
 			s.ptim -= d / play_fac
 
@@ -331,6 +330,7 @@ function ToAudio() {
 			 && d > C.BLEN / 16)
 				d = C.BLEN / 16
 			relink(next, d)
+			s2 = s.ts_next			// (the normal note moved)
 		}
 
 		d /= n * play_fac
@@ -340,6 +340,7 @@ function ToAudio() {
 			g.pdur = d
 			t += d
 		}
+		return s2.ts_prev
 	} // gen_grace()
 
 	// change the tempo
@@ -490,10 +491,7 @@ function ToAudio() {
 			}
 			break
 		case C.GRACE:
-			d = s.ts_next			// the grace note may move
-			gen_grace(s)
-			if (d)
-				s = d.ts_prev
+			s = gen_grace(s)
 			break
 		case C.REST:
 		case C.NOTE:
