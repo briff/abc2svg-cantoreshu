@@ -90,6 +90,8 @@ abc2svg.chord = function(first,		// first symbol in time
 
 	// return a new chord rhythm from a meter (M:)
 	function meterhy(s) {
+		if (!s.a_meter[0])
+			return '+'		// M:none
 	    var	r,
 		t = s.a_meter[0].top,
 		b = s.a_meter[0].bot

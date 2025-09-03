@@ -588,4 +588,4 @@ abc2svg.set_music = function(d, t) {
 } // set_music()
 
 // wait for the scripts to be loaded
-window.addEventListener("load", dom_loaded, {once:true})
+window.addEventListener("DOMContentLoaded", dom_loaded, {once:true})

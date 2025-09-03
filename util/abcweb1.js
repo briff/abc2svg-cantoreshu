@@ -534,4 +534,4 @@ onclick="abc2svg.do_render(\'.*\')">' + tt +
 } // dom_loaded()
 
 // wait for the scripts to be loaded
-window.addEventListener("load", dom_loaded, {once:true})
+window.addEventListener("DOMContentLoaded", dom_loaded, {once:true})
