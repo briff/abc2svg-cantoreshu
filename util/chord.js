@@ -400,8 +400,11 @@ abc2svg.chord = function(first,		// first symbol in time
 				if (rhy != '+')
 					bld_rhy(meterhy(s))
 			} else if (s.subtype == "midigch") {
-				if (s.on != undefined)
+				if (s.on != undefined) {
 					gchon = s.on
+					if (!gchon && rhy == '+')
+						set_dur(vch.last_sym, s.time)
+				}
 				if (s.gchnb)
 					gchnb = s.gchnb
 				if (gchon && s.rhy)
