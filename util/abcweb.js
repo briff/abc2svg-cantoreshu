@@ -587,5 +587,8 @@ abc2svg.set_music = function(d, t) {
 	}
 } // set_music()
 
-// wait for the scripts to be loaded
-window.addEventListener("DOMContentLoaded", dom_loaded, {once:true})
+// check if the document is loaded
+if (document.readyState == "loading")
+	addEventListener("DOMContentLoaded", dom_loaded, {once:true})
+else
+	dom_loaded()			// yes, let's go

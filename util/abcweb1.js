@@ -533,5 +533,8 @@ onclick="abc2svg.do_render(\'.*\')">' + tt +
 		include()
 } // dom_loaded()
 
-// wait for the scripts to be loaded
-window.addEventListener("DOMContentLoaded", dom_loaded, {once:true})
+// check if the document is loaded
+if (document.readyState == "loading")
+	addEventListener("DOMContentLoaded", dom_loaded, {once:true})
+else
+	dom_loaded()			// yes, let's go
