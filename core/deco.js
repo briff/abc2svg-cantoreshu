@@ -365,32 +365,10 @@ function d_near(de) {
 
 /* 1: special case for slide */
 function d_slide(de) {
-    var	m, dx, xc,
-	s = de.s,
-	yc = s.y
+    var	m, dx, xc, yc,
+	s = de.s
 
-      if (de.dd.glyph == "sld") {		// !slide!
-	for (m = 0; m <= s.nhd; m++) {
-		if (s.notes[m].acc) {
-			dx = 4 + s.notes[m].shac
-		} else {
-			dx = 5 - s.notes[m].shhd
-			switch (s.head) {
-			case C.SQUARE:
-				dx += 3.5
-				break
-			case C.OVALBARS:
-			case C.OVAL:
-				dx += 2
-				break
-			}
-		}
-		if (s.notes[m].pit <= yc + 3 && dx > 5)
-			xc = -dx - 5
-		else
-			xc = -10
-	}
-      } else {					// decoration tied to the stem
+	if (s.decstm) {				// decoration tied to the stem
 		if (de.s.stem >= 0) {
 			if (s.nflags >= -1) {
 				xc = 3.5
@@ -401,7 +379,7 @@ function d_slide(de) {
 				xc = 0
 				yc = s.y + 21
 			}
-			yc = (yc + 3 * (s.notes[s.nhd].pit - 18)) / 2
+			de.y = (yc + 3 * (s.notes[s.nhd].pit - 18)) / 2
 		} else {
 			de.rotpi = 1//true	// rotate pi (180°)
 			if (s.nflags >= -1) {
@@ -413,11 +391,34 @@ function d_slide(de) {
 				xc = 0
 				yc = s.y - 21
 			}
-			yc = (yc + 3 * (s.notes[0].pit - 18)) / 2
+			de.y = (yc + 3 * (s.notes[0].pit - 18)) / 2
 		}
-      }
-	de.x += xc;
-	de.y = yc
+	} else {
+		xc = -5
+		de.y = 3 * (s.notes[0].pit - 18)
+		if (de.dd.glyph == "sld") {		// !slide!
+			xc = -10
+			for (m = 0; m <= s.nhd; m++) {
+				if (s.notes[m].acc) {
+					dx = -7 - s.notes[m].shac
+				} else {
+					dx = -10 + s.notes[m].shhd
+					switch (s.head) {
+					case C.SQUARE:
+						dx -= 3.5
+						break
+					case C.OVALBARS:
+					case C.OVAL:
+						dx -= 2
+						break
+					}
+				}
+				if (dx < xc)
+					xc = dx
+			}
+		}
+	}
+	de.x += xc
 
 	if (de.y < 0)
 		y_set(s.st, 0, de.x, de.dd.wl, de.y - de.dd.h)
@@ -901,8 +902,8 @@ function deco_cnv(s, prev) {
 			}
 			// fall thru
 		case 1:			// slide & deco on stem
-			if (nm != "slide")
-				s.decstm=dd.h		// deco stem
+			if (dd.glyph[0] == '|')
+				s.decstm = dd.h		// deco on stem
 			// fall thru
 		case 2:			// arp
 //			if (s.type != C.NOTE && s.type != C.REST) {
