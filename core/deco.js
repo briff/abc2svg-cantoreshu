@@ -368,7 +368,7 @@ function d_slide(de) {
     var	m, dx, xc, yc,
 	s = de.s
 
-	if (s.decstm) {				// decoration tied to the stem
+	if (s.decstm != null) {			// decoration tied to the stem
 		if (de.s.stem >= 0) {
 			if (s.nflags >= -1) {
 				xc = 3.5

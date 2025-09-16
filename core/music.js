@@ -4828,7 +4828,7 @@ Abc.prototype.set_stems = function() {
 		}
 		if (s.ntrem)
 			slen += 2 * s.ntrem		/* tremolo */
-		if (s.decstm) {				// if deco on the stem
+		if (s.decstm != null) {			// if deco on the stem
 			if (nflags <= 0) {
 				if (slen < s.decstm + 6)
 					slen = s.decstm + 6
