@@ -1102,7 +1102,8 @@ function new_tempo(text) {
 	if (!glovar.tempo)
 		syntax(0, "No previous tempo")
 	s.time = curvoice.time
-	text = 'Q' + s.time
+	text = 'Q' + (s.tempo_str1 ? 'S' : '') + s.time
+						// accept [Q:"text"][Q:1/4=60]
 	if (parse.pq
 	 && parse.pq[text] == s.time)
 		return				// already seen
