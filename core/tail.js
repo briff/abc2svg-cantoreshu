@@ -59,6 +59,7 @@ Abc.prototype.get_newpage = function() {
 		return true
 	}
 };
+Abc.prototype.get_parse = function() { return parse }
 Abc.prototype.get_posy = function() { return posy }
 Abc.prototype.get_staff_tb = function() { return staff_tb };
 Abc.prototype.get_top_v = function() { return par_sy.top_voice };
@@ -75,7 +76,6 @@ Abc.prototype.out_deco_str = out_deco_str;
 Abc.prototype.out_deco_val = out_deco_val;
 Abc.prototype.out_ltr = out_ltr;
 Abc.prototype.param_set_font = param_set_font;
-Abc.prototype.parse = parse;
 Abc.prototype.part_seq = part_seq
 Abc.prototype.psdeco = empty_function;
 Abc.prototype.psxygl = empty_function;

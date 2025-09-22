@@ -105,7 +105,7 @@ abc2svg.page = {
 			case 'd':
 				if (!abc2svg.get_mtime)
 					break // cannot know the change time of the file
-				d = abc2svg.get_mtime(abc.parse.fname)
+				d = abc2svg.get_mtime(abc.get_parse().fname)
 				// fall thru
 			case 'D':
 				if (c == 'D')
@@ -117,7 +117,7 @@ abc2svg.page = {
 			case 'F':
 				d = typeof document != "undefined"
 					? window.location.href
-					: page.abc.parse.fname
+					: page.abc.get_parse().fname
 				break
 			case 'I':
 				c = str[++i]

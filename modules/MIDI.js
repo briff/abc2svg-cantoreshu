@@ -74,7 +74,8 @@ abc2svg.MIDI = {
 	a = parm.split(/\s+/),
 	abc = this,
 	cfmt = abc.cfmt(),
-	curvoice = abc.get_curvoice()
+	curvoice = abc.get_curvoice(),
+	parse = abc.get_parse()
 
 	if (curvoice) {
 		if (curvoice.ignore)
@@ -142,7 +143,7 @@ abc2svg.MIDI = {
 	case "gchordoff":	// %%MIDI gchordoff
 		if (!cfmt.chord)
 			cfmt.chord = {}
-		if (abc.parse.state >= 2
+		if (parse.state >= 2
 		 && curvoice) {
 			s = abc.new_block("midigch")
 			s.play = s.invis = 1 //true
@@ -167,7 +168,7 @@ abc2svg.MIDI = {
 			break
 		}
 		v--				// channel range 1..16 => 0..15
-			if (abc.parse.state == 3) {
+			if (parse.state >= 2) {
 				s = abc.new_block("midiprog")
 				s.play = s.invis = 1 //true
 				s.chn = v
@@ -210,7 +211,7 @@ abc2svg.MIDI = {
 			abc.syntax(1, abc.errs.bad_val, "%%MIDI program")
 			break
 		}
-		if (abc.parse.state == 3) {
+		if (parse.state >= 2) {
 			s = abc.new_block("midiprog");
 			s.play = s.invis = 1 //true
 			s.instr = v[0]
@@ -232,7 +233,7 @@ abc2svg.MIDI = {
 			abc.syntax(1, "Bad controller value in %%MIDI")
 			break
 		}
-		if (abc.parse.state == 3) {
+		if (parse.state >= 2) {
 			s = abc.new_block("midictl");
 			s.play = s.invis = 1 //true
 			s.ctrl = n;
