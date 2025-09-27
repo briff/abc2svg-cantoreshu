@@ -29,17 +29,16 @@ abc2svg.page = {
 
     // function called at end of generation
     abc_end: function(of) {
-      if (this.cfmt().pageheight) {
     var page = this.page
 	if (page && page.in_page)
 		abc2svg.page.close_page(page)
 
-	// restore user.img_out (needed when more generation)
+	// restore user.img_out and abc2svg.abc_end (needed when more generation)
 	if (abc2svg.page.user_out) {
 		this.get_user().img_out = abc2svg.page.user_out
 		abc2svg.page.user_out = null
+		abc2svg.abc_end = of
 	}
-      }
 	of()
     }, // abc_end()
 
@@ -434,6 +433,7 @@ abc2svg.page = {
 			if (abc2svg.page.user_out) {
 				user.img_out = abc2svg.page.user_out
 				abc2svg.page.user_out = null
+				abc2svg.page.abc_end = abc2svg.page.abc_end_o
 			}
 			delete this.page
 			return
@@ -497,11 +497,13 @@ abc2svg.page = {
 				cfmt.dateformat = "%b %e, %Y %H:%M"
 
 			// set the hooks
-			if (!abc2svg.page.user_out)
+			if (!abc2svg.page.user_out) {
 				abc2svg.page.user_out = user.img_out
-			user.img_out = abc2svg.page.img_in.bind(this);
+				abc2svg.page.abc_end_o = abc2svg.abc_end
+			}
 			abc2svg.abc_end = abc2svg.page.abc_end.bind(this,
 								abc2svg.abc_end)
+			user.img_out = abc2svg.page.img_in.bind(this)
 		}
 		return
 	}
