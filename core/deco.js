@@ -204,8 +204,11 @@ function y_get(st, up, x, w) {
 	i = (x / 2) | 0,
 	j = ((x + w) / 2) | 0
 
-	if (i < 0)
+	if (i < 0) {
 		i = 0
+		if (j < 0)
+			j = 0
+	}
 	if (j >= YSTEP) {
 		j = YSTEP - 1
 		if (i > j)
@@ -236,8 +239,11 @@ function y_set(st, up, x, w, y) {
 	j = ((x + w) / 2) | 0
 
 	/* (may occur when annotation on 'y' at start of an empty staff) */
-	if (i < 0)
+	if (i < 0) {
 		i = 0
+		if (j < 0)
+			j = 0
+	}
 	if (j >= YSTEP) {
 		j = YSTEP - 1
 		if (i > j)
@@ -2157,8 +2163,7 @@ function draw_partempo() {
     var	ymin = staff_tb[st].topbar + 2,
 		dosh = 0,
 		shift = 1,
-		x = -100,	// (must be negative for %%soloffs)
-	yn = 0			// y min when x < 0
+	x = -100		// (must be negative for %%soloffs)
 
 	// output the parts
 	for (s = tsfirst; s; s = s.ts_next) {
@@ -2202,8 +2207,6 @@ function draw_partempo() {
 				p)
 			y_set(st, 1, s2.x, w + 3,
 				(ymin + h) / staff_tb[st].staffscale)
-			if (s2.x < 0)
-				yn = ymin + h
 			anno_stop(s2)
 		}
 	}
@@ -2219,8 +2222,6 @@ function draw_partempo() {
 //		if (s.time == 0 && s.x > 40)	// at start of tune and no %%soloffs,
 //			s.x = 40	// shift the tempo over the key signature
 		y = y_get(st, true, s.x - 16, w)
-		if (s.x - 16 < 0)
-			y = yn
 		if (y > ymin)
 			ymin = y
 		if (x >= s.x - 16 && !(dosh & (shift >> 1)))
