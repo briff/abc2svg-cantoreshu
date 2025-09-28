@@ -34,7 +34,7 @@ abc2svg.fit2box = {
     // generation function with %%fit2box
     do_fit: function(mus) {
     var	r, sv, v, w, h, hh, sc, marg, tit, cl,
-	parse = mus.parse,
+	parse = mus.get_parse(),
 	f = parse.file,
 	fn = parse.fname,
 	cfmt = mus.cfmt(),
@@ -181,7 +181,7 @@ abc2svg.fit2box = {
     }, // do_fit()
 
     tosvg: function(of, fn, file, bol, eof) {
-    var	parse = this.parse
+    var	parse = this.get_parse()
 
 	parse.fname = fn
 	parse.file = bol ? file.slice(bol) : file
@@ -207,7 +207,7 @@ abc2svg.fit2box = {
 	}
 
     var	cfmt = this.cfmt(),
-	parse = this.parse,
+	parse = this.get_parse(),
 	f = parse.file
 
 	cfmt.fit2box = parm.split(/\s+/)

@@ -109,7 +109,7 @@ abc2svg.swing = {
     var	parse, sw, curvoice, i, s
 
 	if (cmd == "playswing") {
-		parse = this.parse,
+		parse = this.get_parse(),
 		curvoice = this.get_curvoice()
 		sw = /(\d+)\s+(\d+)\s+(\d+)/.exec(parm)
 
