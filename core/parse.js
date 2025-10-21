@@ -1180,6 +1180,7 @@ function do_info(info_type, text) {
 			text: text,
 			time: curvoice.time
 		}
+	    if (info.P) {
 		tim = parse.pq && parse.pq[text] // time of previous P: with same text
 		if (tim == s.time)
 			break				// already seen
@@ -1187,6 +1188,7 @@ function do_info(info_type, text) {
 			syntax(1, "Misplaced P:")	// different dates
 			break
 		}
+	    }
 
 		if (cfmt.writefields.indexOf('P') < 0)
 			s.invis = 1 //true
