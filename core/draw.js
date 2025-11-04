@@ -1530,9 +1530,6 @@ function draw_basic_note(s, m, y_tb) {
 	/* draw the head */
 	if (note.invis) {
 		;
-	} else if (s.grace) {			// don't apply %%map to grace notes
-		p = "ghd";
-		x_note -= 4.5 * stv_g.scale
 	} else if (note.map && note.map[0]) {
 		i = head;
 		p = note.map[0][i]		// heads
@@ -1583,13 +1580,16 @@ function draw_basic_note(s, m, y_tb) {
 	if (note.color != undefined)
 		old_color = set_color(note.color)
 	if (p) {
-		if (inv) {
-			g_open(x_note, y_note, 0, 1, -1);
+		if (s.grace || inv) {
+			if (s.grace)
+				g_open(x_note, y_note, 0, .66, 0)
+			else
+				g_open(x_note, y_note, 0, 1, -1)
 			x_note = y_note = 0
 		}
 		if (!self.psxygl(x_note, y_note, p))
 			xygl(x_note, y_note, p)
-		if (inv)
+		if (s.grace || inv)
 			g_close()
 	}
 
