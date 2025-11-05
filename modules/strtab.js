@@ -21,9 +21,10 @@
 //
 // The command %%strtab changes the display of the voice to a tablature.
 // Syntax:
-//	%%strtab <string list> [diafret]
+//	%%strtab <string list> [diafret] [nodot]
 // <string list> is the list of the strings as ABC notes
 // diafret indicates the instrument has diatonic frets
+// nodot removes the dots of dotted notes
 // The fret may be forced by a decoration format
 //	"!" digit "s!"
 // where 'digit' is the string range in the string list (last string is '1')
@@ -310,6 +311,8 @@ abc2svg.strtab = {
 	    }
 		s.stemless = 1 //true
 		if (s.dots) {			// have nicer dots
+			if (p_v.nodot)
+				delete s.dots
 			s.xmx = 0
 			for (m = 0; m <= s.nhd; m++)
 				s.notes[m].shhd = 0
@@ -622,6 +625,9 @@ abc2svg.strtab = {
 		case "minfret=":
 			minfret(a[++i])
 			break
+		case "nodot":
+			p_v.nodot = 1 //true
+			break
 		}
 	}
 
@@ -632,6 +638,10 @@ abc2svg.strtab = {
 			if (strs.indexOf("diafret") >= 0) {
 				p_v.diafret = true
 				strs = strs.replace(/\s*diafret\s*/, "")
+			}
+			if (strs.indexOf("nodot") >= 0) {
+				p_v.nodot = 1 //true
+				strs = strs.replace(/\s*nodot\s*/, "")
 			}
 		}
 		if (strs) {
