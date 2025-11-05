@@ -393,9 +393,8 @@ abc2svg.strtab = {
 		}
 
 		s.y = 3 * (nt.pit - 18)
-
- 		// if no stem, don't get space below the tablature
-		s.ymn =	s.stemless ? -12 : 0
+		s.ymx = s.y + 2
+		s.ymn = 3 * (s.notes[0].pit - 18) - 2
 	} // set_notes()
 
 	// get the string number from the decoration
