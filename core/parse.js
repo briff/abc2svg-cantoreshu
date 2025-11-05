@@ -383,7 +383,10 @@ Abc.prototype.set_vp = function(a) {
 				curvoice.octave = val
 			break
 		case "cue=":
-			curvoice.scale = a.shift() == 'on' ? .7 : 1
+			// (ignore cue=off)
+//			curvoice.scale = a.shift() == 'on' ? .7 : 1
+			if (a.shift() == 'on')
+				curvoice.scale = .7
 			break
 		case "instrument=":
 
