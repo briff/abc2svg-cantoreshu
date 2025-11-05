@@ -1,6 +1,6 @@
 // abc2svg - strtab.js - tablature for string instruments
 //
-// Copyright (C) 2020-2024 Jean-Francois Moine
+// Copyright (C) 2020-2025 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -253,7 +253,7 @@ abc2svg.strtab = {
 			return
 	    var	p_v = this.get_curvoice()
 		if (!p_v) {
-			this.parse.tab = parm
+			this.get_parse().tab = parm
 			return
 		}
 		this.set_v_param("clef", "tab")
@@ -468,6 +468,7 @@ abc2svg.strtab = {
     // get the parameters of the current voice
     set_vp: function(of, a) {
     var	i, e, g, tab, strs, ok,
+	parse = this.get_parse(),
 	p_v = this.get_curvoice()
 
 	// convert a list of ABC notes into a list of MIDI pitches
@@ -626,8 +627,8 @@ abc2svg.strtab = {
 
 	// define the elements of the tablature
 	if (ok) {
-		if (!strs && this.parse.tab) {		// if a global definition
-			strs = this.parse.tab
+		if (!strs && parse.tab) {		// if a global definition
+			strs = parse.tab
 			if (strs.indexOf("diafret") >= 0) {
 				p_v.diafret = true
 				strs = strs.replace(/\s*diafret\s*/, "")

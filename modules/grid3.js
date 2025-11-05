@@ -1,6 +1,6 @@
 // grid3.js - module to insert a manual chords
 //
-// Copyright (C) 2020-2024 Jean-Francois Moine
+// Copyright (C) 2020-2025 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -330,7 +330,7 @@ abc2svg.grid3 = {
 
 	if (type) {
 		type += "3"
-		if (this.parse.state >= 2) {
+		if (this.get_parse().state >= 2) {
 			s = this.new_block(type)
 			s.text = txt
 			s.lm = lm
