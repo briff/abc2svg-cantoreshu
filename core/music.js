@@ -728,6 +728,7 @@ Abc.prototype.set_width = function(s) {
 				break
 			}
 		}
+		w = 0				// width of the chord decorations
 		for (m = 0; m <= s.nhd; m++) {
 			nt = s.notes[m]
 			xx = nt.shhd
@@ -749,9 +750,13 @@ Abc.prototype.set_width = function(s) {
 				if (wlnote < tmp)
 					wlnote = tmp
 			}
-			if (nt.a_dd)		// if decoration in chord
-				wlnote += deco_wch(nt)
+			if (nt.a_dd) {		// if decoration in chord
+				tmp = deco_wch(nt)
+				if (w < tmp)
+					w = tmp
+			}
 		}
+		wlnote += w
 		if (s2) {
 			switch (s2.type) {
 			case C.BAR:
