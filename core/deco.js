@@ -74,12 +74,12 @@ var decos = {
 	shortphrase: "5 sphr 0 1 16",
 	turnx: "3 turnx 7,2.5 5 6",
 	invertedturn: "3 turn 7,2 5 6",
-	"0": "3 fng 5,5 3 3 0",
-	"1": "3 fng 5,5 3 3 1",
-	"2": "3 fng 5,5 3 3 2",
-	"3": "3 fng 5,5 3 3 3",
-	"4": "3 fng 5,5 3 3 4",
-	"5": "3 fng 5,5 3 3 5",
+//	"0": "3 fng 5,5 3 3 0",			// dynamic - see deco_def()
+//	"1": "3 fng 5,5 3 3 1",
+//	"2": "3 fng 5,5 3 3 2",
+//	"3": "3 fng 5,5 3 3 3",
+//	"4": "3 fng 5,5 3 3 4",
+//	"5": "3 fng 5,5 3 3 5",
 	plus: "3 dplus 8,2 2 4",
 	"+": "3 dplus 8,2 2 4",
 	">": "5 accent 3.5,3.5 4 4",
@@ -678,9 +678,12 @@ function deco_def(nm, nmd) {
 	text = decos[nmd]
 
 	// check if a long decoration with number
-	if (!text && /\d[()]$/.test(nmd))
-		text = decos[nmd.replace(/\d/, '')]
-
+	if (!text) {
+		if (/\d[()]$/.test(nmd))
+			text = decos[nmd.replace(/\d/, '')]
+		else if (/^\d$/.test(nmd))	// or some fingering/string number
+			text = "3 fng 5,5 3 3 " + nmd
+	}
 	if (!text) {
 		if (cfmt.decoerr)
 			error(1, null, "Unknown decoration '$1'", nm)

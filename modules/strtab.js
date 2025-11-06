@@ -719,12 +719,12 @@ abc2svg.strtab = {
 
 	// define specific decorations used to force the string number
     var	decos = abc.get_decos()
-	decos["1s"] = "0 nil 0 0 0"
-	decos["2s"] = "0 nil 0 0 0"
-	decos["3s"] = "0 nil 0 0 0"
-	decos["4s"] = "0 nil 0 0 0"
-	decos["5s"] = "0 nil 0 0 0"
-	decos["6s"] = "0 nil 0 0 0"
+	decos["1s"] = "3 nil 0 0 0"
+	decos["2s"] = "3 nil 0 0 0"
+	decos["3s"] = "3 nil 0 0 0"
+	decos["4s"] = "3 nil 0 0 0"
+	decos["5s"] = "3 nil 0 0 0"
+	decos["6s"] = "3 nil 0 0 0"
 
 	abc.param_set_font("tabfont", "sans-serifBold 7")
     } // set_hooks()
