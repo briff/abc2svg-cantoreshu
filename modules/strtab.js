@@ -394,7 +394,7 @@ abc2svg.strtab = {
 
 		s.y = 3 * (nt.pit - 18)
 		s.ymx = s.y + 2
-		s.ymn = 3 * (s.notes[0].pit - 18) - 2
+		s.ymn = p_v.pos.stm == abc2svg.C.SL_HIDDEN ? 0 : -16
 	} // set_notes()
 
 	// get the string number from the decoration
