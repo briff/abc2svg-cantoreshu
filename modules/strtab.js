@@ -272,7 +272,7 @@ abc2svg.strtab = {
     }, // set_fmt()
 
     // change the notes when the global generation settings are done
-    set_glue: function(of, width) {
+    set_stems: function(of) {
     var	p_v, i, m, nt, n, bi, bn, strss, g,
 	C = abc2svg.C,
 	abc = this,
@@ -404,6 +404,9 @@ abc2svg.strtab = {
 		return n ? p_v.tab.length - n[1] : -1
 	} // strnum()
 
+	// set_stems entry
+	of()
+
 	// change the notes of the strings when a capo
 	p_v = abc.get_voice_tb()
 	for (n = 0; n < p_v.length; n++) {
@@ -415,8 +418,6 @@ abc2svg.strtab = {
 				p_v[n].tab[i] += m
 		}
 	}
-
-	of(width)				// do the normal work
 
 	// loop on the notes of the voices with a tablature
 	for ( ; s; s = s.ts_next) {
@@ -465,7 +466,7 @@ abc2svg.strtab = {
 		if (lstr[i] && lstr[i][2] < C.BLEN)
 			lstr[i][1].tabst = 1		// top of stem
 	}
-    }, // set_glue()
+    }, // set_stems()
 
     // get the parameters of the current voice
     set_vp: function(of, a) {
@@ -714,7 +715,7 @@ abc2svg.strtab = {
 	abc.draw_symbols = abc2svg.strtab.draw_symbols.bind(abc, abc.draw_symbols)
 	abc.gch_build = abc2svg.strtab.csan_bld.bind(abc, abc.gch_build)
 	abc.set_format = abc2svg.strtab.set_fmt.bind(abc, abc.set_format);
-	abc.set_sym_glue = abc2svg.strtab.set_glue.bind(abc, abc.set_sym_glue)
+	abc.set_stems = abc2svg.strtab.set_stems.bind(abc, abc.set_stems)
 	abc.set_vp = abc2svg.strtab.set_vp.bind(abc, abc.set_vp)
 
 	// define specific decorations used to force the string number
