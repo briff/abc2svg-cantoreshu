@@ -394,7 +394,7 @@ abc2svg.strtab = {
 
 		s.y = 3 * (nt.pit - 18)
 		s.ymx = s.y + 2
-		s.ymn = p_v.pos.stm == abc2svg.C.SL_HIDDEN ? 0 : -16
+		s.ymn = 3 * (s.notes[0].pit - 18)
 	} // set_notes()
 
 	// get the string number from the decoration
@@ -467,6 +467,21 @@ abc2svg.strtab = {
 			lstr[i][1].tabst = 1		// top of stem
 	}
     }, // set_stems()
+
+    // set the bottom of the stems at end of line generation
+    set_glue: function(of, w) {
+    var	v, p_v,
+	vtb = abc.get_voice_tb()
+
+	of(w)
+	for (v = 0; v < vtb.length; v++) {
+		p_v = vtb[v]
+		if (!p_v.tab || !p_v.sym
+		 || p_v.pos.stm == abc2svg.C.SL_HIDDEN)
+			continue
+		p_v.sym.ymn = -16
+	}
+    }, // set_glue()
 
     // get the parameters of the current voice
     set_vp: function(of, a) {
@@ -716,6 +731,7 @@ abc2svg.strtab = {
 	abc.gch_build = abc2svg.strtab.csan_bld.bind(abc, abc.gch_build)
 	abc.set_format = abc2svg.strtab.set_fmt.bind(abc, abc.set_format);
 	abc.set_stems = abc2svg.strtab.set_stems.bind(abc, abc.set_stems)
+	abc.set_sym_glue = abc2svg.strtab.set_glue.bind(abc, abc.set_sym_glue)
 	abc.set_vp = abc2svg.strtab.set_vp.bind(abc, abc.set_vp)
 
 	// define specific decorations used to force the string number
