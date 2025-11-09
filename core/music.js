@@ -5282,14 +5282,12 @@ Abc.prototype.set_sym_glue = function(width) {
 			if (xx == xse)			// if no space
 				xx += 10
 			spf = (width - xs - xse) / (xx - xse)
-		} else if (cfmt.trimsvg) {
-			spf = 1 - cfmt.maxshrink
 		} else {
 			spf = spf_last
 			if (ll && spf < s.fmt.stretchlast)
 				spf = s.fmt.stretchlast
-			else if (spf < 1 - cfmt.maxshrink)
-				spf = 1 - cfmt.maxshrink
+			else if (!ll)
+				spf = 1 - cfmt.maxshrink * .75
 			if (spf > (width - xs) / xx)
 				spf = (width - xs) / xx
 		}
