@@ -1507,7 +1507,7 @@ function y_head(s, note) {
 /* (the staves are defined) */
 // sets {x,y}_note
 function draw_basic_note(s, m, y_tb) {
-	var	i, p, yy, dotx, doty, inv,
+    var	i, p, yy, dotx, doty, inv, head, dots, nflags,
 		old_color = false,
 		note = s.notes[m],
 		staffb = staff_tb[s.st].y,	/* bottom of staff */
@@ -1522,10 +1522,16 @@ function draw_basic_note(s, m, y_tb) {
 //	 && m >= s.nohdi1 && m < s.nohdi2)
 //		return
 
-    var	elts = identify_note(s, note.dur),
-		head = elts[0],
-		dots = elts[1],
-		nflags = elts[2]
+	if (note.dur == s.dur) {
+		head = s.head
+		dots = s.dots
+		nflags = s.nflags
+	} else {
+		i = identify_note(s, note.dur)
+		head = i[0]
+		dots = i[1]
+		nflags = i[2]
+	}
 
 	/* draw the head */
 	if (note.invis) {
@@ -1595,7 +1601,8 @@ function draw_basic_note(s, m, y_tb) {
 
 	/* draw the dots */
 /*fixme: to see for grace notes*/
-	if (dots && s.dots) {
+	// (s.dots may be removed in tablatures - see strtab)
+	if (dots && (s.dots || note.dur != s.dur)) {
 		dotx = x + (6.6 + s.xmx) * stv_g.scale
 		if (y_tb[m] == undefined) {
 			y_tb[m] = 3 * (s.notes[m].pit - 18)
