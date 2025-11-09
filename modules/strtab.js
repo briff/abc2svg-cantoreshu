@@ -471,7 +471,7 @@ abc2svg.strtab = {
     // set the bottom of the stems at end of line generation
     set_glue: function(of, w) {
     var	v, p_v,
-	vtb = abc.get_voice_tb()
+	vtb = this.get_voice_tb()
 
 	of(w)
 	for (v = 0; v < vtb.length; v++) {
