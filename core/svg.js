@@ -1231,7 +1231,7 @@ function tempo_note(str, s, dur, dy) {
 
 // build the tempo string
 function tempo_build(s) {
-    var	i, j, bx, p, wh, dy,
+    var	i, j, bx, p, wh, dy, h,
 	w = 0,
 	str = []
 
@@ -1243,12 +1243,14 @@ function tempo_build(s) {
 		get_font("music")
 
 	set_font("tempo")
+	h = gene.curfont.size
 	if (s.tempo_str1) {
 		str.push(s.tempo_str1)
 		w += strwh(s.tempo_str1)[0]
 	}
 	if (s.tempo_notes) {
 		dy = ' dy="-1"'			// notes a bit higher
+		h *= 1.3
 		for (i = 0; i < s.tempo_notes.length; i++) {
 			j = tempo_note(str, s, s.tempo_notes[i], dy)
 			w += j * gene.curfont.swfac
@@ -1282,7 +1284,7 @@ function tempo_build(s) {
 	// build the string
 	s.tempo_str = str.join(' ')
 	w += cwidf(' ') * (str.length - 1)
-	s.tempo_wh = [w, gene.deffont.size]
+	s.tempo_wh = [w, h]
 } // tempo_build()
 
 // output a tempo
@@ -1292,7 +1294,7 @@ function writempo(s, x, y) {
 	set_font("tempo")
 	if (gene.curfont.box) {
 		gene.curfont.box = false
-		bh = gene.curfont.size + 4
+		bh = s.tempo_wh[1] + 2
 	}
 
 //fixme: xy_str() cannot be used because <tspan> in s.tempo_str

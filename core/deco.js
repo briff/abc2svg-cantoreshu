@@ -2235,7 +2235,6 @@ function draw_partempo() {
 	if (some_tempo) {
 		set_sscale(-1)
 		set_font("tempo")
-		h = gene.curfont.size
 		ymin += 2
 		ymin *= staff_tb[st].staffscale
 
@@ -2245,6 +2244,7 @@ function draw_partempo() {
 			 || s.invis)		// (displayed by %%titleformat)
 				continue
 			w = s.tempo_wh[0]
+			h = s.tempo_wh[1]
 			y = ymin
 			if (dosh & 1)
 				y += h
