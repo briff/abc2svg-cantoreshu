@@ -1224,7 +1224,7 @@ function draw_rest(s) {
 // -- draw a multi-measure rest --
 // (the staves are defined)
 function draw_mrest(s) {
-    var	x1, x2, prev,
+    var	x1, x2, s2,
 	p_st = staff_tb[s.st],
 	y = p_st.y + (p_st.topbar + p_st.botbar) / 2,
 	p = s.nmes.toString()
@@ -1259,15 +1259,19 @@ function draw_mrest(s) {
 
 	set_scale(s)
 
-	prev = s		// search the start of the previous time sequence
-	while (!prev.seqst)
-		prev = prev.ts_prev
-	prev = prev.ts_prev
-	while (!prev.seqst)
-		prev = prev.ts_prev
+	s2 = s			// search the start of the previous time sequence
+	while (!s2.seqst)
+		s2 = s2.ts_prev
+	s2 = s2.ts_prev
+	while (!s2.seqst)
+		s2 = s2.ts_prev
+	x1 = s2.x + 20
 
-	x1 = prev.x + 20
-	x2 = s.next.x - 20
+	s2 = s.ts_next		// search the next symbol on the same staff
+	if (s2.staff != s.staff)
+		s2 = s.next
+	x2 = s2.x - 20
+
 	s.x = (x1 + x2) / 2
 	anno_start(s)
 	if (!cfmt.oldmrest || s.nmes > cfmt.oldmrest) {
