@@ -2391,13 +2391,13 @@ function set_yval(s) {
 //	var bot = staff_tb[s.st].botbar
 	switch (s.type) {
 	case C.CLEF:
+		s.y = (s.clef_line - 1) * 6
 		if (s.second
 		 || s.invis) {
 //			s.ymx = s.ymn = (top + bot) / 2
 			s.ymx = s.ymn = 12
 			break
 		}
-		s.y = (s.clef_line - 1) * 6
 		switch (s.clef_type) {
 		default:			/* treble / perc */
 			s.ymx = s.y + 25
@@ -2948,17 +2948,11 @@ function set_clefs() {
 						s.ts_next,
 						staff_clef[s.st].clef.clef_type);
 			s.clef_line = s.clef_type == 't' ? 2 : 4
+			set_yval(s)
 		}
 
 		p_voice = s.p_v;
 		p_voice.clef = s
-		if (s.second) {
-/*fixme:%%staves:can this happen?*/
-//			if (!s.prev)
-//				break
-			unlksym(s)
-			continue
-		}
 		st = s.st
 // may have been inserted on %%staves
 //		if (s.clef_auto) {

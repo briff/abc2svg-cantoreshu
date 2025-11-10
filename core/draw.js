@@ -3948,11 +3948,13 @@ Abc.prototype.draw_symbols = function(p_voice) {
 		case C.BAR:
 			break			/* drawn in draw_systems */
 		case C.CLEF:
-			if (s.time >= staff_tb[st].clef.time)
+			if (s.time >= staff_tb[st].clef.time) {
+				if (s.time == staff_tb[st].clef.time
+				 && s.clef_type == staff_tb[st].clef.clef_type)
+					break
 				staff_tb[st].clef = s
-			if (s.second
-			 || !staff_tb[st].topbar
-			 || !gene.st_print[st])
+			}
+			if (!gene.st_print[st])
 				break
 			set_color();
 			set_sscale(st);
