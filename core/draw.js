@@ -3953,8 +3953,8 @@ Abc.prototype.draw_symbols = function(p_voice) {
 			break			/* drawn in draw_systems */
 		case C.CLEF:
 			if (s.time >= staff_tb[st].clef.time) {
-				if (s.time == staff_tb[st].clef.time
-				 && s.clef_type == staff_tb[st].clef.clef_type)
+				if (s.x == staff_tb[st].clef.x
+				 && s.v != staff_tb[st].clef.v)
 					break
 				staff_tb[st].clef = s
 			}

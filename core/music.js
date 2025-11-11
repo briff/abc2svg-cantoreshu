@@ -2896,6 +2896,7 @@ function set_clefs() {
 							staff_clef[st].clef.clef_type :
 							'a');
 					new_line = new_type == 't' ? 2 : 4
+					set_yval(p_voice.clef)
 				} else {
 					new_type = s2.clef_type;
 					new_line = s2.clef_line
@@ -2907,6 +2908,7 @@ function set_clefs() {
 								clone(p_voice.clef);
 						p_voice.clef.clef_type = new_type;
 						p_voice.clef.clef_line = new_line
+						set_yval(p_voice.clef)
 					}
 					staff_tb[st].clef =
 						staff_clef[st].clef = p_voice.clef
