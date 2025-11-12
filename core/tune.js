@@ -1983,9 +1983,6 @@ function get_clef(s) {
 	} else {
 		sym_link(s)
 	}
-
-	if (s.prev)				// if not the first clef of the voice
-		s.clef_small = 1 //true		// have a small clef
 }
 
 // treat K: (kp = key signature + parameters)

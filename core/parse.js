@@ -42,7 +42,8 @@ function new_clef(clef_def) {
 			v: curvoice.v,
 			p_v: curvoice,
 			time: curvoice.time,
-			dur: 0
+			dur: 0,
+			clef_small : 1 //true
 		},
 		i = 1
 
