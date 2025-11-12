@@ -1074,7 +1074,7 @@ Abc.prototype.set_width = function(s) {
 	s.wl = s.wr = 0
 
 	// move the invisible symbol to the next time sequence
-	if (s.ts_next)
+	if (s.seqst && s.ts_next)
 		s.ts_next.seqst = 0
 }
 
