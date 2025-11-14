@@ -63,9 +63,15 @@ abc2svg.strtab = {
 			if (not.nb.length > 1)
 				x -= 3
 			y = 3 * (not.pit - 18)
-			abc.out_svg('<text class="bg' + abc.bgn +
-				'" x="')
-			abc.out_sxsy(x, '" y="', stb + y - 2.5)
+			if (s.grace) {
+				abc.out_svg('<text class="bg' + abc.bgn
+					+ '" transform="translate(')
+				abc.out_sxsy(x, ',', stb + y - 1.9)
+				abc.out_svg(') scale(.75)')
+			} else {
+				abc.out_svg('<text class="bg' + abc.bgn + '" x="')
+				abc.out_sxsy(x, '" y="', stb + y - 2.5)
+			}
 			abc.out_svg('">' + not.nb + '</text>\n')
 		}
 	} // draw_heads()
