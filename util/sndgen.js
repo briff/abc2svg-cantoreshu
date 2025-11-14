@@ -220,6 +220,8 @@ function ToAudio() {
 		s.p_s = []			// pointers to the parts
 		while (1) {
 			if (!s.ts_next) {
+				while (!s.seqst)
+					s = s.ts_prev
 				s.part1 = first	// end of tune = end of part
 				break
 			}
