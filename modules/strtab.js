@@ -80,7 +80,7 @@ abc2svg.strtab = {
 	function draw_stems(stb, s) {
 		if (!s.tabst)
 			return			// don't draw any stem
-	    var	s1, s2, nfl, l,
+	    var	s1, s2, nfl, l, i, x,
 		y = stb + 3 * (s.notes[0].pit - 19) // -18) - 3
 				* s.p_v.staffscale,
 		h = (11 + 3 * (s.notes[0].pit - 18)) * s.p_v.staffscale
@@ -88,6 +88,16 @@ abc2svg.strtab = {
 		abc.out_svg('<path class="sW" d="M')
 		abc.out_sxsy(s.x, ' ', y)
 		abc.out_svg('v' + h.toFixed(1) +'"/>\n')
+
+		// draw the dots
+		if (s.dots) {
+			x = s.x + 4
+			i = (s.dur / 12) >> ((5 - s.nflags) - s.dots)
+			while (s.dots-- > 0) {
+				abc.xygl(x, stb - 8, (i & (1 << s.dots)) ? "dot" : "dot+")
+				x += 3.5
+			}
+		}
 
 		// draw the flag(s)
 		if (s.nflags <= 0
@@ -186,9 +196,6 @@ abc2svg.strtab = {
 			break
 		}
 	}
-	of(p_v)
-
-	abc.glout()			// output the stems
 
 	stb = abc.get_staff_tb()[p_v.st].y
 
@@ -223,6 +230,8 @@ abc2svg.strtab = {
 		}
 	}
 	abc.out_svg('</g>\n')
+
+	of(p_v)
     }, // draw_symbols()
 
     // change the font size of the chord symbols
@@ -307,13 +316,17 @@ abc2svg.strtab = {
 			strss[i] = s.time + s.dur
 	    if (p_v.pos.stm != C.SL_HIDDEN) {
 		if (!lstr[st])
-			lstr[st] = [ 10, null, C.BLEN ]
+			lstr[st] = [ 10, null, C.BLEN, null ]
 		if (lstr[st][0] > i) {
 			lstr[st][0] = i		// lowest string
 			lstr[st][1] = s
 		}
 		if (s.dur < lstr[st][2])
 			lstr[st][2] = s.dur
+		if (s.dots) {
+			lstr[st][3] = s.dots
+			delete s.dots
+		}
 	    }
 		s.stemless = 1 //true
 		if (s.dots) {			// have nicer dots
@@ -431,8 +444,10 @@ abc2svg.strtab = {
 		// let a stem on the lowest string
 		if (s.seqst || (s.ts_prev && s.ts_prev.type == C.GRACE)) {
 			for (i = 0; i < lstr.length; i++) {
-				if (lstr[i] && lstr[i][2] < C.BLEN)
+				if (lstr[i] && lstr[i][2] < C.BLEN) {
 					lstr[i][1].tabst = 1
+					lstr[i][1].dots = lstr[i][3]
+				}
 				lstr[i] = null
 			}
 		}
@@ -457,8 +472,10 @@ abc2svg.strtab = {
 			for (g = s.extra; g; g = g.next) {
 				set_notes(p_v, g)
 				for (i = 0; i < lstr.length; i++) {
-					if (lstr[i] && lstr[i][2] < C.BLEN)
+					if (lstr[i] && lstr[i][2] < C.BLEN) {
 						lstr[i][1].tabst = 1
+						lstr[i][1].dots = lstr[i][3]
+					}
 					lstr[i] = null
 				}
 			}
@@ -469,8 +486,10 @@ abc2svg.strtab = {
 		}
 	}
 	for (i = 0; i < lstr.length; i++) {
-		if (lstr[i] && lstr[i][2] < C.BLEN)
+		if (lstr[i] && lstr[i][2] < C.BLEN) {
 			lstr[i][1].tabst = 1		// top of stem
+			lstr[i][1].dots = lstr[i][3]
+		}
 	}
     }, // set_stems()
 
