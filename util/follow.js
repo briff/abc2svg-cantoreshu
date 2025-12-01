@@ -79,6 +79,7 @@ user.anno_stop = function(type, start, stop, x, y, w, h) {
 } // follow()
 
 // create the style of the rectangles
+if (typeof document != "undefined")	// snd-1.js can be used out of browser context
 (function () {
     var	sty = document.createElement("style")
 	sty.innerHTML = ".abcr {fill: #d00000; fill-opacity: 0; z-index: 15}"
