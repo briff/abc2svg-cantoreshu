@@ -1270,8 +1270,8 @@ function draw_mrest(s) {
 	x1 = s2.x + 20
 
 	s2 = s.ts_next		// search the next symbol on the same staff
-	if (s2.st != s.st)
-		s2 = s.next
+	for (s2 = s.ts_next; s2 && !s2.seqst; s2 = s2.ts_next)
+		;			// search the next symbol on the same staff
 	x2 = s2 ? s2.x - 20 : s.x + 20 
 
 	s.x = (x1 + x2) / 2
