@@ -1224,6 +1224,8 @@ function draw_rest(s) {
 // -- draw a multi-measure rest --
 // (the staves are defined)
 function draw_mrest(s) {
+	if (s.second)
+		return
     var	x1, x2, s2,
 	p_st = staff_tb[s.st],
 	y = p_st.y + (p_st.topbar + p_st.botbar) / 2,
