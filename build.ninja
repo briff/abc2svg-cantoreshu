@@ -137,7 +137,7 @@ build abcweb-$MAJOR.js: jscu util/abcweb.js
 build abcweb1-$MAJOR.js: jscu util/abcweb1.js
 build json-$MAJOR.js: jscu util/json.js
 build snd-$MAJOR.js: jscu util/play.js util/sndgen.js util/sndaud.js $
- util/sf2-parser.js util/sndmid.js util/follow.js util/chord.js
+ util/sf2-parser.js util/sndmid.js util/follow.js util/chord.js util/drum.js
 
 build edit-$MAJOR.xhtml: cpm editor/edit.xhtml
 build abckbd-$MAJOR.js: edit editor/abckbd.js
