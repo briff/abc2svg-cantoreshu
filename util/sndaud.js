@@ -1,6 +1,6 @@
 // sndaud.js - audio output using HTML5 audio
 //
-// Copyright (C) 2019-2024 Jean-Francois Moine
+// Copyright (C) 2019-2026 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -603,8 +603,15 @@ function Audio5(i_conf) {
 			if (!ac) {
 				conf.ac = ac = new (window.AudioContext ||
 							window.webkitAudioContext)
-				if (/iPad|iPhone|iPod/.test(model))
-					play_unlock()
+// Ensure the AudioContext is running and unlocked from the click handler. 
+// Some platforms/browsers keep the context suspended unless a buffer is started 
+// immediately from a user gesture; this can surface as "no sound" when the first 
+// note is scheduled later (e.g. slow practice playback). 
+				if (ac.state === "suspended")
+					ac.resume()
+// iOS explicitly needs an unlock buffer; on other platforms this is harmless and 
+// improves reliability when tempo is very slow. 
+				play_unlock()
 			}
 			gain = ac.createGain()
 			gain.gain.value = conf.gain
