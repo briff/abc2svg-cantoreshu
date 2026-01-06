@@ -48,7 +48,7 @@ abc2svg.drum = function(first,		// first symbol in time
 	    var	c, i, j, sdr, s2,
 		ti = ss.time,
 		te = s.time + (s.dur || 0),
-		d = dl / l		// base note duration
+		d = dl * nb / l		// base note duration
 
 		while (ti < te) {
 			j = 0
@@ -117,6 +117,16 @@ abc2svg.drum = function(first,		// first symbol in time
 	vdr.sym.ts_prev.ts_next =
 		s.ts_prev = vdr.sym
 
+	// get the measure duration at start of tune
+	dl = first.p_v.meter.wmeasure		// ending meter duration
+	for (s = first; s && !s.bar_type; s = s.ts_next) {
+		if (s.wmeasure) {
+			dl = s.wmeasure		// starting meter duration
+			break
+		}
+	}
+//fixme: can there be an anacrusis?
+
 	// generate the drum sequence per voice
 	for (v = 0; v < voice_tb.length; v++) {
 		on = str = null
@@ -148,19 +158,11 @@ abc2svg.drum = function(first,		// first symbol in time
 			}
 			if (on && str) {
 				ss = s
-				c = 0				// drum duration
-				i = s.time			// bar time
 				while (1) {
 					if (!s.next
 					 || s.next.subtype == "mididrum")
 						break
 					s = s.next
-					if (s.bar_num && !c) {
-						if (!i)
-							i = s.time
-						else
-							dl = c = (s.time - i) * nb
-					}
 				}
 				gendr(ss, s)
 			}
