@@ -20,7 +20,7 @@
 abc2svg.drum = function(first,		// first symbol in time
 			 voice_tb,	// voice table
 			 cfmt) {	// tune parameters
-    var	c, i, on, n, nb, ss, v, str, pits, vols, l, dl,
+    var	c, i, on, n, nb, ss, v, str, pits, vols, l, dl, i_rst, j_rst,
 	s = first,
 	C = abc2svg.C,
 	vdr = {				// create the percussion voice
@@ -50,9 +50,19 @@ abc2svg.drum = function(first,		// first symbol in time
 		te = s.time + (s.dur || 0),
 		d = dl * nb / l		// base note duration
 
+		while (!ss.dur)
+			ss = ss.next
 		while (ti < te) {
-			j = 0
-			for (i = 0; i < str.length; i++) {	// generate 'nb' measures
+			if (ss.bar_type
+			 && (ss.text >= '2' && ss.text <= '9')) {
+				i = i_rst - 1
+				j = j_rst - 2
+				while (!ss.dur)
+					ss = ss.ts_next
+			} else {
+				i = j = 0
+			}
+			for ( ; i < str.length; i++) {	// generate 'nb' measures
 				c = str[i]
 				if (c == 'z') {
 					ti += d
@@ -87,11 +97,20 @@ abc2svg.drum = function(first,		// first symbol in time
 					sdr.prev = vdr.last_sym
 					vdr.last_sym = sdr
 				}
-				while (s.time > ti)		// time linkage
-					s = s.ts_prev
-				while (s.time < ti)
+
+				// time linkage and repeat variants
+				while (ss.time < ti) {
+					if (ss.wmeasure)
+						dl = ss.wmeasure
+					if (ss.bar_type
+					 && ss.text && ss.text == '1')
+						i_rst = i, j_rst = j
+					ss = ss.ts_next
+				}
+				s = ss
+				while (!s.dur && s.time == ti)
 					s = s.ts_next
-				while (s.time == ti && s.v < sdr.v)
+				while (s.dur && s.time == ti && s.v < sdr.v)
 					s = s.ts_next
 				sdr.ts_next = s
 				sdr.ts_prev = s.ts_prev
