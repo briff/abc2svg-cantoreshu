@@ -55,8 +55,8 @@ abc2svg.drum = function(first,		// first symbol in time
 		while (ti < te) {
 			if (ss.bar_type
 			 && (ss.text >= '2' && ss.text <= '9')) {
-				i = i_rst - 1
-				j = j_rst - 2
+				i = i_rst
+				j = j_rst - 1
 				while (!ss.dur)
 					ss = ss.ts_next
 			} else {
@@ -79,7 +79,7 @@ abc2svg.drum = function(first,		// first symbol in time
 				sdr.dur = d
 				sdr.notes = [{
 					dur: d,
-					midi: pits[j++]
+					midi: pits[j++] || 38
 				}]
 				c = str[i + 1]
 				if (c >= '2' && c <= '9') {
@@ -99,17 +99,16 @@ abc2svg.drum = function(first,		// first symbol in time
 				}
 
 				// time linkage and repeat variants
-				while (ss.time < ti) {
-					if (ss.wmeasure)
-						dl = ss.wmeasure
-					if (ss.bar_type
-					 && ss.text && ss.text == '1')
-						i_rst = i, j_rst = j
+				while (ss.time < ti)
 					ss = ss.ts_next
-				}
 				s = ss
-				while (!s.dur && s.time == ti)
+				while (!s.dur && s.time == ti) {
+					if (s.bar_type
+					 && s.text == '1')
+						i_rst = i,
+						j_rst = j
 					s = s.ts_next
+				}
 				while (s.dur && s.time == ti && s.v < sdr.v)
 					s = s.ts_next
 				sdr.ts_next = s
@@ -119,6 +118,7 @@ abc2svg.drum = function(first,		// first symbol in time
 
 				ti += sdr.dur
 			}
+			ss = s
 		}
 	} //gendr()
 
@@ -151,10 +151,13 @@ abc2svg.drum = function(first,		// first symbol in time
 		on = str = null
 		nb = 1
 		for (s = voice_tb[v].sym; s; s = s.next) {
-			if (s.subtype != "mididrum")
+			if (s.subtype != "mididrum") {
+				if (s.wmeasure)
+					dl = s.wmeasure
 				continue
-			if (s.on)
-				on = 1 //true		// on/off
+			}
+			if (s.on != undefined)
+				on = s.on		// on/off
 			if (s.nb)
 				nb = s.nb		// number of bars
 			if (s.txt) {
@@ -179,7 +182,8 @@ abc2svg.drum = function(first,		// first symbol in time
 				ss = s
 				while (1) {
 					if (!s.next
-					 || s.next.subtype == "mididrum")
+					 || s.next.subtype == "mididrum"
+					 || s.next.wmeasure)
 						break
 					s = s.next
 				}
