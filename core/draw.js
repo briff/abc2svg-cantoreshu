@@ -1,6 +1,6 @@
 // abc2svg - draw.js - draw functions
 //
-// Copyright (C) 2014-2025 Jean-Francois Moine
+// Copyright (C) 2014-2026 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -1229,13 +1229,13 @@ function draw_mrest(s) {
     var	x1, x2, s2,
 	p_st = staff_tb[s.st],
 	y = p_st.y + (p_st.topbar + p_st.botbar) / 2,
-	p = s.nmes.toString()
+	p = s.nmeas.toString()
 
 	// output an old multimeasure rest
 	function omrest() {
 	    var	x = s.x,
 		y = p_st.y + 12,
-		n = s.nmes,
+		n = s.nmeas,
 		k = n >> 2			// number of rests
 
 		if (n & 3) {
@@ -1276,7 +1276,7 @@ function draw_mrest(s) {
 
 	s.x = (x1 + x2) / 2
 	anno_start(s)
-	if (!cfmt.oldmrest || s.nmes > cfmt.oldmrest) {
+	if (!cfmt.oldmrest || s.nmeas > cfmt.oldmrest) {
 		out_XYAB('<path d="mX Y', x1 + .6, y - 2.7)
 		output += 'v2.7h-1.4v-10.8h1.4v2.7h'
 			+ ((x2 - x1 - 2.8) / stv_g.scale).toFixed(1)

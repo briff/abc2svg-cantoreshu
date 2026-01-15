@@ -1,6 +1,6 @@
 // abc2svg - parse.js - ABC parse
 //
-// Copyright (C) 2014-2025 Jean-Francois Moine
+// Copyright (C) 2014-2026 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -2098,15 +2098,15 @@ Abc.prototype.new_note = function(grace, sls) {
 	case 'Z':
 		s.type = C.MREST;
 		c = line.next_char()
-		s.nmes = (c > '0' && c <= '9') ? line.get_int() : 1;
+		s.nmeas = (c > '0' && c <= '9') ? line.get_int() : 1;
 		if (curvoice.wmeasure == 1) {
 			error(1, s, "multi-measure rest, but no measure!")
 			return
 		}
-		s.dur = curvoice.wmeasure * s.nmes
+		s.dur = curvoice.wmeasure * s.nmeas
 
 		// convert 'Z'/'Z1' to a whole measure rest
-		if (s.nmes == 1) {
+		if (s.nmeas == 1) {
 			s.type = C.REST;
 			s.dur_orig = s.dur;
 			s.fmr = 1		// full measure rest

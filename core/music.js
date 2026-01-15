@@ -1,6 +1,6 @@
 // abc2svg - music.js - music generation
 //
-// Copyright (C) 2014-2025 Jean-Francois Moine
+// Copyright (C) 2014-2026 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -2544,7 +2544,7 @@ function mrest_expand() {
 	// expand a multi-rest into a set of rest + bar
 	function mexp(s) {
 	    var	bar, s3, s4, tim, nbar,
-		nb = s.nmes,
+		nb = s.nmeas,
 		dur = s.dur / nb,
 		s2 = s.next
 
@@ -2556,7 +2556,7 @@ function mrest_expand() {
 		bar = s2
 		while (!s2.bar_num)		// get the bar number
 			s2 = s2.ts_prev
-		nbar = s2.bar_num - s.nmes
+		nbar = s2.bar_num - s.nmeas
 
 		// change the multi-rest into a single rest
 		s.type = C.REST
@@ -2659,7 +2659,7 @@ function mrest_expand() {
 			s2 = s.ts_next
 			while (!s2.seqst) {
 				if (s2.type != C.MREST
-				 || s2.nmes != s.nmes)
+				 || s2.nmeas != s.nmeas)
 					break
 				s2 = s2.ts_next
 			}
