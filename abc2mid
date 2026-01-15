@@ -59,6 +59,7 @@ var abc2svg = {
 		tunes = abc.tunes		// generated tunes
 
 		midigen()			// generate the MIDI files
+abc2svg.printErr("[0] "+tunes[0][4].length)
 
 		// create the MIDI disk files
 		for (i = 0; i < args.length; i++) {
@@ -136,8 +137,7 @@ followed by the character of a ABC information field.")
 	load(path + "abc2svg-1.js")	// abc2svg core
 	load(path + "cmdline.js")	// command line driver
 
-	load(path + "util/sndgen.js")	// sound generator
-	load(path + "util/chord.js")	// chord generator
+	load(path + "snd-1.js")		// sound generator
 	load(path + "midigen.js")	// MIDI generator
 
 	// parse the ABC code
