@@ -672,7 +672,7 @@ Abc.prototype.set_format = function(cmd, param) {
 		break
 	case "concert-score":
 		if (cfmt.sound != "play")
-			cfmt.sound = "concert"
+			cfmt.sound = get_bool(param) ? "concert" : null
 		break
 	case "writefields":
 		set_writefields(param)
@@ -797,7 +797,7 @@ Abc.prototype.set_format = function(cmd, param) {
 		break
 	case "sounding-score":
 		if (cfmt.sound != "play")
-			cfmt.sound = "sounding"
+			cfmt.sound = get_bool(param) ? "sounding" : null
 		break
 	case "staffwidth":
 		v = get_unit(param)
