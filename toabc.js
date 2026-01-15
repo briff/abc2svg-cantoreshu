@@ -1,6 +1,6 @@
 // abc2svg - toabc.js - convert ABC to ABC
 //
-// Copyright (C) 2016-2024 Jean-Francois Moine
+// Copyright (C) 2016-2026 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -82,12 +82,12 @@ function abc_dump(tsfirst, voice_tb, info, cfmt) {
 	function voice_out() {
 		function vi_out(v) {
 		    var	p_voice = voice_tb[v],
-			ln = voice_tb.length == 1 ? '' : 'V:' + p_voice.id
+			ln = ""
 
 			curv = v
 			if (!vold[v]) {
 				vold[v] = true
-				if (ln		// if not the only voice
+				if (voice_tb.length != 1 // if not the only voice
 				 && p_voice.clef
 				 && p_voice.clef.clef_type != 'a')
 					ln += ' ' + clef_dump(p_voice.clef)
@@ -103,7 +103,7 @@ function abc_dump(tsfirst, voice_tb, info, cfmt) {
 					ln += ' microscale=' + p_voice.uscale
 			}
 			if (ln)
-				abc2svg.print(ln)
+				abc2svg.print('V:' + p_voice.id + ln)
 
 			if (p_voice.instr) {
 				for (var s = p_voice.sym; s && s.time == 0; s = s.next) {
