@@ -61,10 +61,14 @@
 		"Cb", "Gb", "Db", "Ab", "Eb", "Bb", "F",
 		"C",
 		"G", "D", "A", "E", "B", "F#", "C#", "G#", "D#", "A#"
+	],
+	instr_tb = [
+		"C", "^C", "D", "_E", "E", "F", "^F", "G", "_A", "A", "_B", "B",
+		"c", "^c", "d", "_e", "e", "f", "^f", "g", "_a", "a", "_b", "b"
 	]
 
 function abc_dump(tsfirst, voice_tb, info, cfmt) {
-    var	i, v, s, g, line, ulen, tmp, tmp2, grace, bagpipe, curv,
+    var	i, v, s, g, line, ulen, tmp, tmp2, grace, bagpipe, curv, n,
 	cfmtg = abc.cfmt(),	// global format
 	nv = voice_tb.length,
 	vo = [],		// dump line per voice
@@ -78,6 +82,15 @@ function abc_dump(tsfirst, voice_tb, info, cfmt) {
 		else
 			line += inf + '\n'
 	} // info_out()
+
+	// display the base instrument
+	function instr(n) {
+	    var	r = " instrument=" + instr_tb[n + 12]
+
+		if (cfmt.sound)			// if sounding pitch
+			r += "/c"
+		return r
+	} // instr()
 
 	function voice_out() {
 		function vi_out(v) {
@@ -101,6 +114,11 @@ function abc_dump(tsfirst, voice_tb, info, cfmt) {
 					ln += ' scale=' + p_voice.scale
 				if (p_voice.uscale)
 					ln += ' microscale=' + p_voice.uscale
+				n = p_voice.tr_ins		// instrument transpose
+					? abc2svg.b40m(p_voice.tr_ins + 42) - 12
+					: 0
+				if (n)
+					ln += instr(n)
 			}
 			if (ln)
 				abc2svg.print('V:' + p_voice.id + ln)

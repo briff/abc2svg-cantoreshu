@@ -393,27 +393,13 @@ Abc.prototype.set_vp = function(a) {
 
 			// instrument=M/N => score=MN and sound=cN
 			// (instrument=M == instrument=M/M)
-			item = a.shift()
-			val = item.indexOf('/')
-			if (val < 0) {
-				val = get_interval('c' + item)
-				if (val == undefined)
-					break
-				curvoice.sound = val
-				tr_p |= 2
-				val = 0
+			val = a.shift().split('/')
+			if (val.length == 1) {
+				self.set_vp(["sound=", 'c' + val[0]])
 			} else {
-				val = get_interval('c' + item.slice(val + 1))
-				if (val == undefined)
-					break
-				curvoice.sound = val
-				tr_p |= 2
-				val = get_interval(item.replace('/', ''))
-				if (val == undefined)
-					break
+				self.set_vp(["sound=", 'c' + val[1]])
+				self.set_vp(["score=", val.join('')])
 			}
-			curvoice.score = cfmt.sound ? curvoice.sound : val
-			tr_p |= 1
 			break
 		case "map=":			// %%voicemap
 			curvoice.map = a.shift()
@@ -462,10 +448,14 @@ Abc.prototype.set_vp = function(a) {
 			// score=MN
 			// (score=M == score=Mc)
 			item = a.shift()
-			if (cfmt.sound)
+			if (cfmt.sound && curvoice.time)
 				break
 			val = get_interval(item, true)
 			if (val != undefined) {
+				if (!curvoice.time)	// keep the first score shift
+					curvoice.tr_ins = -val
+				if (cfmt.sound)
+					break
 				curvoice.score = val
 				tr_p |= 1
 			}
@@ -494,8 +484,10 @@ Abc.prototype.set_vp = function(a) {
 				break
 			curvoice.sound = val
 			if (cfmt.sound)
-				curvoice.score = val
+				curvoice.score = (curvoice.score || 0) + val
 			tr_p |= 2
+			if (!curvoice.time)		// keep the first sound shift
+				curvoice.tr_ins = val	// instrument sound
 			break
 		case "subname=":
 		case "sname=":
