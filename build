@@ -49,6 +49,7 @@ gen modules/chordnames.js > chordnames-$MAJOR.js
 gen modules/clair.js > clair-$MAJOR.js
 gen modules/clip.js > clip-$MAJOR.js
 gen modules/combine.js > combine-$MAJOR.js
+gen modules/cp.js > cpp-$MAJOR.js
 gen modules/diag.js > diag-$MAJOR.js
 gen modules/equalbars.js > equalbars-$MAJOR.js
 gen modules/fit2box.js > fit2box-$MAJOR.js

@@ -1,6 +1,6 @@
 // abc2svg - modules.js - module handling
 //
-// Copyright (C) 2018-2025 Jean-Francois Moine
+// Copyright (C) 2018-2026 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -34,6 +34,7 @@ abc2svg.modules = {
 	chordnames: {},
 	clip: {},
 	clairnote: { fn: 'clair' },
+	cpp: {},
 	voicecombine: { fn: 'combine' },
 	diagram: { fn: 'diag' },
 	equalbars: {},
