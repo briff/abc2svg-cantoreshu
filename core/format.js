@@ -261,6 +261,10 @@ function param_set_font(xxxfont, p) {
 		p = p.replace(a[0], "")
 	}
 
+//hack: the font "Figurato" is used for figured bass
+	if (p.indexOf("Figur") >= 0)
+		font.figb = 1 //true
+
 	// accept local(..) and url(...) as the font source
 	if ((p[0] == 'u' && p.slice(0, 4) == "url(")
 	 || (p[0] == 'l' && p.slice(0, 6) == "local(")) {
@@ -314,9 +318,6 @@ function param_set_font(xxxfont, p) {
 			.replace("Helvetica", "sans-serif")
 			.replace("Courier", "monospace")
 			.replace("music", cfmt.musicfont.name)
-//hack: the font "Figurato" is used for figured bass
-			if (p.indexOf("Fig") > 0)
-				font.figb = true
 	}
 	if (p && !font.name)
 		font.name = p
