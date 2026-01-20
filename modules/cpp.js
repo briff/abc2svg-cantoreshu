@@ -111,7 +111,7 @@ abc2svg.cpp = {
 
 	// expand text
 	function exp(p) {			// text
-		if (!Object.keys(mac).length)
+		if (!p || !Object.keys(mac).length)
 			return p		// no macro yet
 		if (!macre)
 			macre = new RegExp(Object.keys(mac).join("|"), "g")
@@ -131,19 +131,19 @@ abc2svg.cpp = {
 		i = f.indexOf("\n#", j)
 		o += !ctx.skip && !ctx.susp
 			? exp(f.slice(k, i >= 0 ? i : f.length))
-			: f.slice(k, i >= 0 ? i : f.length).replace(/[^\n]+/g, '')
+			: f.slice(k, i >= 0 ? i : f.length).replace(/[^\n]+/g, '%')
 		if (i < 0)
 			break
 		i += 2
 		j = f.indexOf("\n", i)
 		do_cmd(f.slice(i, j))
-		o += '\n\n'			// keep sources in sync
-		k = j + 1
+		o += '\n%\n%'			// keep sources in sync
+		k = j
 	}
 //console.log("----- generated\n"+o)
 
 	// generate and return
-	abc2svg.cpp.otosvg.call(mus, "cpp", o, 0, o.length)
+	abc2svg.cpp.otosvg.call(mus, parse.fname, o, 0, o.length)
     }, // do_exp()
 
 	// expand the source
