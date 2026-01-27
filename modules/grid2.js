@@ -1,6 +1,6 @@
 // grid2.js - module to replace a voice in the music by a chord grid
 //
-// Copyright (C) 2018-2025 Jean-Francois Moine
+// Copyright (C) 2018-2026 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
@@ -67,7 +67,7 @@ abc2svg.grid2 = {
 				if (s.tf)	// don't show the tuplets
 					s.tf[0] = 1
 				if (!s.a_gch) {
-					if (s.time == bt)
+					if (s.time == bt && c_a_cs)
 						s.a_gch = [ this.clone(c_a_cs) ]
 					continue
 				}
