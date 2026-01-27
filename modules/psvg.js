@@ -369,16 +369,12 @@ function Psvg(abcobj_r) {
 		_sin = gcur.sin,
 		_cos = gcur.cos;
 	x = xtmp * _cos - y * _sin;
-	y = xtmp * _sin + y * _cos;
+	y = -xtmp * _sin - y * _cos
 	gcur.xoffs = x / gcur.xscale;
 	gcur.yoffs = y / gcur.yscale;
 
-	xtmp = gcur.cx;
-	y = gcur.cy;
-	x = xtmp * _cos - y * _sin;
-	y = -xtmp * _sin + y * _cos;
-	gcur.cx = x / gcur.xscale;
-	gcur.cy = y / gcur.yscale;
+	x = (gcur.cx * _cos + gcur.cy * _sin)  / gcur.xscale
+	y = (-gcur.cx * _sin + gcur.cy * _cos) / gcur.yscale
 
 	// rotate
 	a = 360 - a;
@@ -390,13 +386,12 @@ function Psvg(abcobj_r) {
 	a = gcur.rotate * Math.PI / 180;
 	gcur.sin = _sin = Math.sin(a);
 	gcur.cos = _cos = Math.cos(a);
-	x = gcur.cx;
-	gcur.cx = (x * _cos + gcur.cy * _sin) * gcur.xscale;
-	gcur.cy = (-x * _sin + gcur.cy * _cos) * gcur.yscale;
+	gcur.cx = (x * _cos - y * _sin) * gcur.xscale
+	gcur.cy = (x * _sin + y * _cos) * gcur.yscale
 	x = gcur.xoffs;
-	gcur.xoffs = (x * _cos + gcur.yoffs * _sin) *
+	gcur.xoffs = (x * _cos - gcur.yoffs * _sin) *
 			gcur.xscale;
-	gcur.yoffs = (-x * _sin + gcur.yoffs * _cos) *
+	gcur.yoffs = -(x * _sin + gcur.yoffs * _cos) *
 			gcur.yscale;
 	gchg = true
     }

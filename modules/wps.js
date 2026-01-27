@@ -105,6 +105,22 @@ function PsParser() {
     // TODO 1e10 1E-5 real numbers
     // TODO radix numbers 8#1777 16#FFFE 2#1000
     var C = xchar();
+
+//jfm 26-01-25
+// handle octal values
+	if (C == '8' && peek() == '#') {
+		xchar()
+	    var	N = 0	
+		while (1) {
+			C = peek()
+			if (C < '0' || C > '7')
+				break
+			N = N * 8 + C.charCodeAt(0) - '0'.charCodeAt(0)
+			xchar()
+		}
+		return N	//.toString(10)
+	}
+
     if(member(C, "()<>/% \t\n")) throw new Error("Symbol expected, got " + C);
     var N = member(C, "+-0123456789.");
     var F = "." == C;
@@ -315,6 +331,15 @@ function Wps(psvg_i) {
 		Os.push(A & B)
 	}
 //jfm--
+//jfm 26-01-25
+	Sd["bitshift"] = function() {
+	    var	A = Os.pop(),
+		B = Os.pop()
+		Os.push(A < 0 ? B >> -A : A > 0 ? B << A : B)
+	}
+	Sd["cvi"] = function() {
+		Os.push(Os.pop() | 0)
+	}
   Sd["repeat"] = function Xrepeat() { // TODO in ps
     var B = Os.pop();
     var N = Os.pop();

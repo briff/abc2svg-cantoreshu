@@ -5467,6 +5467,7 @@ Abc.prototype.output_music = function() {
 			draw_sym_near();		// delayed output
 			line_height = set_staff();
 		    if (line_height) {			// if some music
+			glovar.music_h = line_height + posy	// (for tablature)
 			draw_systems(indent);
 			draw_all_sym();
 			delayed_update();

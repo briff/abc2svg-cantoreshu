@@ -55,6 +55,7 @@ abc2svg.modules = {
 	soloffs: {},
 	sth: {},
 	strtab: {},
+	tablature: { fn: 'tblt' },
 	temperament: { fn: 'temper' },
 	temponame: { fn: 'tempo' },
 	tropt: {},
