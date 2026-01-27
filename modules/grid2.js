@@ -54,18 +54,21 @@ abc2svg.grid2 = {
 			if (!s.dur) {
 				if (s.bar_type)
 					bt = s.time
+				if (s.extra)		// (grace note)
+					s.invis = 1//true
 				continue
 			}
 
 			// set all notes
 				s.invis = true;	//  as invisible
 				delete s.sl1;	//  with no slur
+				delete s.sls
 				delete s.ti1	//  and no tie
 				delete s.ti2
 				for (ix = 0; ix <= s.nhd; ix++)
 					delete s.notes[ix].tie_ty
-				if (s.tf)	// don't show the tuplets
-					s.tf[0] = 1
+				if (s.tp)	// don't show the tuplets
+					s.tp[0].f[0] = 1
 				if (!s.a_gch) {
 					if (s.time == bt && c_a_cs)
 						s.a_gch = [ this.clone(c_a_cs) ]
