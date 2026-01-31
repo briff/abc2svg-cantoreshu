@@ -3391,7 +3391,7 @@ function set_rest_offset() {
 					d = s.next.y
 			else if (s.prev && s.prev.type == C.REST)
 				d = s.prev.y
-			if (s.multi > 0) {
+			if (s.stem > 0 || s.multi > 0) {
 				if (d >= 12)
 					v_s.d = d - s.y
 			} else {
