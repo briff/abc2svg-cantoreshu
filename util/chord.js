@@ -1,6 +1,6 @@
 // chord.js - generation of accompaniment
 //
-// Copyright (C) 2020-2025 Jean-Francois Moine and Seymour Shlien
+// Copyright (C) 2020-2026 Jean-Francois Moine and Seymour Shlien
 //
 // This file is part of abc2svg.
 //
@@ -83,8 +83,8 @@ abc2svg.chord = function(first,		// first symbol in time
 					r[j] = ch[(j + i) % r.length]
 			else
 				r.unshift(b)
+			r[0] -= 12			// bass one octave lower
 		}
-		r[0] -= 12			// bass one octave lower
 		return r
 	} // chcr()
 
@@ -255,7 +255,7 @@ abc2svg.chord = function(first,		// first symbol in time
 			break
 		case 'f':
 			s.notes[0] = {
-				midi: s_ch.notes[0].midi
+				midi: s_ch.notes[0].midi - 12	// one octave lower
 			}
 			s.nhd = 0		// keep the chord root
 			break
