@@ -2106,12 +2106,10 @@ Abc.prototype.new_note = function(grace, sls) {
 				pit: 18,
 				dur: s.dur
 			}]
+			s.nmeas = 0
 		} else {
 			glovar.mrest_p = true
-			if (par_sy.voices.length == 1) {
-				s.tacet = curvoice.tacet
-				delete s.invis	// show the 'H' when 'Xn'
-			}
+			s.tacet = curvoice.tacet
 		}
 		break
 	case 'y':

@@ -550,6 +550,10 @@ Abc.prototype.voice_adj = function (sys_chg) {
 					break
 				}
 				continue
+			case C.MREST:
+				if (voice_tb.length == 1 && s.tacet && s.invis)
+					s.invis = 0	// show the |---|
+				break
 			case C.NOTE:
 				if (s.feathered_beam)
 					set_feathered_beam(s)
