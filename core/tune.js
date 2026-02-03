@@ -1,6 +1,6 @@
 // abc2svg - tune.js - tune generation
 //
-// Copyright (C) 2014-2025 Jean-Francois Moine
+// Copyright (C) 2014-2026 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -1472,7 +1472,7 @@ function fill_mr_ba(p_v) {
 		frm: 1, //true			// full measure rest
 		dur: dur,
 		dur_orig: dur,
-		nmes: dur / p_v.wmeasure,
+		nmeas: dur / p_v.wmeasure,
 		notes: [{
 			pit: 18,
 			dur: dur
