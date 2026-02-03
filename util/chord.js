@@ -117,20 +117,23 @@ abc2svg.chord = function(first,		// first symbol in time
 
 	// build a chord rhythm
 	function bld_rhy(p) {
-	    var	i, c,
-		j = 0
+	    var	i, c, n
 
-		rhy = p[0]
-		for (i = 1; i < p.length; i++) {
-			c = p[i]
-			if (c >= '1' && c <= '9') {
-				while (--c > 0)
-					rhy += '+'	// continue playing
-				continue
+		rhy = p == '+'
+			? p			// no rhythm
+			: p.match(/(\[[G-Lg-l]+,*\]\d?)|[bcf-lG-L],*\d?/g)
+		if (!rhy)
+//fixme: error
+			rhy = '+'
+		for (i = 0; i < rhy.length; i++) {
+			c = rhy[i]
+			n = c.slice(-1)
+			if (n >= '2' && n <= '9') {
+				rhy[i] = c.slice(0, -1)
+				while (--n > 0)
+					rhy.splice(++i, 0, '+')
 			}
-			rhy += c
 		}
-
 		dt = md / rhy.length * gchnb		// delta time
 	} // bld_rhy()
 
@@ -235,10 +238,10 @@ abc2svg.chord = function(first,		// first symbol in time
 		s.time = tim
 		switch (i) {
 		case 'c':
-			s.nhd = s_ch.nhd - 1		// remove the root note
+			s.nhd = s_ch.nhd
 			for (m = 0; m <= s.nhd; m++)
 				s.notes[m] = {
-					midi: s_ch.notes[m + 1].midi
+					midi: s_ch.notes[m].midi
 				}
 			break
 		default:
@@ -260,9 +263,12 @@ abc2svg.chord = function(first,		// first symbol in time
 			s.nhd = 0		// keep the chord root
 			break
 		case 'b':
-			s.nhd = s_ch.nhd
-			for (m = 0; m <= s.nhd; m++)
-				s.notes[m] = {
+			s.nhd = s_ch.nhd + 1
+			s.notes[0] = {
+				midi: s_ch.notes[0].midi - 12	// one octave lower
+			}
+			for (m = 0; m < s.nhd; m++)
+				s.notes[m + 1] = {
 					midi: s_ch.notes[m].midi
 				}
 			break
