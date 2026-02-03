@@ -113,7 +113,7 @@ abc2svg.tblt = {
 
     // draw a tablature
     draw_tblt: function(of) {
-    var	fnt, v, p_v,
+    var	fnt, v, p_v, tblt,
 	mus = this,
 	C = abc2svg.C,
 	glovar = mus.glovar(),
