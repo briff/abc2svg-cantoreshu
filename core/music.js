@@ -2622,7 +2622,7 @@ function mrest_expand() {
 			delete s4.soln
 			delete s4.a_gch
 			delete s4.part
-			lkvsym(s4, s.next)	// before symbol after mrest
+			lkvsym(s4, s2.next)	// after last bar
 			s4.time = tim
 
 			while (s3 && !s3.dur && s3.time == tim)
