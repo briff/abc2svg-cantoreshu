@@ -1,6 +1,6 @@
 // abc2svg - svg.js - svg functions
 //
-// Copyright (C) 2014-2025 Jean-Francois Moine
+// Copyright (C) 2014-2026 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -123,13 +123,13 @@ var tgls = {
   flu5: {x:-.3, y:12.5, c:"\ue248"},
   fld5: {x:-.3, y:-14, c:"\ue249"},
  "acc-1": {x:-1, y:0, c:"\ue260"},		// flat
- "cacc-1": {x:-18, y:0, c:"\ue26a\ue260\ue26b"}, // courtesy flat (note deco)
+ "cacc-1": {x:0, y:0, c:"\ue26a\ue260\ue26b"}, // courtesy flat (note deco)
  "sacc-1": {x:-1, y:0, sc:.7, c:"\ue260"},	// small flat (editorial)
   acc3: {x:-1, y:0, c:"\ue261"},		// natural
- "cacc3": {x:-18, y:0, c:"\ue26a\ue261\ue26b"},	// courtesy natural (note deco)
+ "cacc3": {x:0, y:0, c:"\ue26a\ue261\ue26b"},	// courtesy natural (note deco)
   sacc3: {x:-1, y:0, sc:.7, c:"\ue261"},	// small natural (editorial)
   acc1: {x:-2, y:0, c:"\ue262"},		// sharp
- "cacc1": {x:-18, y:0, c:"\ue26a\ue262\ue26b"},	// courtesy sharp (note deco)
+ "cacc1": {x:0, y:0, c:"\ue26a\ue262\ue26b"},	// courtesy sharp (note deco)
   sacc1: {x:-2, y:0, sc: .7, c:"\ue262"},	// small sharp (editorial)
   acc2: {x:-3, y:0, c:"\ue263"},	// double sharp
  "acc-2": {x:-3, y:0, c:"\ue264"},	// double flat
@@ -679,6 +679,8 @@ function xygl(x, y, gl) {
 			if (tgl.sc) {
 				out_XYAB('<text transform="translate(X,Y) scale(A)">B</text>\n',
 					x, y, tgl.sc, tgl.c);
+			} else if (tgl.c.length > 1) {		// many glyphs
+				out_XYAB('<text x="X" y="Y">A</text>\n', x, y, tgl.c)
 			} else {
 //				out_XYAB('<text x="X" y="Y">A</text>\n', x, y, tgl.c)
 				gla[0].push(sx(x))

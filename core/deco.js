@@ -1,6 +1,6 @@
 // abc2svg - deco.js - decorations
 //
-// Copyright (C) 2014-2025 Jean-Francois Moine
+// Copyright (C) 2014-2026 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -171,9 +171,9 @@ var decos = {
 	sacc3: "3 sacc3 6,5 4 4",
 	sacc1: "3 sacc1 6,4 4 4",
 	courtesy: "43 0 0 0 0",
-	"cacc-1": "3 cacc-1 0 0 0",
-	cacc3: "3 cacc3 0 0 0",
-	cacc1: "3 cacc1 0 0 0",
+	"cacc-1": "3 cacc-1 0 16 0",
+	cacc3: "3 cacc3 0 16 0",
+	cacc1: "3 cacc1 0 16 0",
 	"tie(": "44 0 0 0 0",
 	"tie)": "44 0 0 0 0",
 	fg: "45 0 0 0 0"},
