@@ -1072,10 +1072,9 @@ function deco_cnv(s, prev) {
 				error(1, s, errs.must_note, nm)
 				continue
 			}
-			j = curvoice.acc[s.notes[0].pit + 19]
-			if (s.notes[0].acc || !j)
+			if (s.notes[0].acc)
 				continue
-			court = 1			// defer
+			court = curvoice.acc[s.notes[0].pit + 19] || 3	// defer
 			break
 		case 44:		// cross-voice ties
 			if (s.type != C.NOTE) {
@@ -1109,7 +1108,7 @@ function deco_cnv(s, prev) {
 	}
 	// handle the possible courtesy accidental
 	if (court) {
-		a_dcn.push("cacc" + j)
+		a_dcn.push("cacc" + court)
 		dh_cnv(s, s.notes[0])
 	}
 }
