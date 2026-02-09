@@ -254,10 +254,10 @@ abc2svg.chord = function(first,		// first symbol in time
 		s.time = tim
 		switch (i[0]) {
 		case 'c':
-			s.nhd = chmid.length - 1
-			for (m = 1; m <= s.nhd; m++)
+			s.nhd = chmid.length - 2
+			for (m = 0; m <= s.nhd; m++)
 				s.notes.push({
-					midi: chmid[m]
+					midi: chmid[m + 1]
 				})
 			break
 		case '[':
