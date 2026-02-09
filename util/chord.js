@@ -1,6 +1,6 @@
 // chord.js - generation of accompaniment
 //
-// Copyright (C) 2020-2026 Jean-Francois Moine and Seymour Shlien
+// Copyright (C) 2020-2026 Jean-François Moine and Seymour Shlien
 //
 // This file is part of abc2svg.
 //
@@ -61,7 +61,8 @@ abc2svg.letmid = {			// letter -> MIDI pitch
 abc2svg.chord = function(first,		// first symbol in time
 			 voice_tb,	// table of the voices
 			 cfmt) {	// tune parameters
-    var	chnm, i, k, vch, s, gchon, s_ch, rhy, ti, dt, gchnb,
+    var	chnm, i, k, vch, s, gchon, rhy, ti, dt, gchnb,
+	chmid = [],			// bass and chord pitches
 	md = first.p_v.meter.wmeasure,	// measure duration
 	nextim = 0,
 	C = abc2svg.C,
@@ -69,22 +70,30 @@ abc2svg.chord = function(first,		// first symbol in time
 
 	// create a chord according to the bass note
 	function chcr(b, ch) {
-	    var	j,
-		r = ch.slice(),
-		i = r.length
+	    var	j, r,
+		i = ch.length
 
 		if (b) {
 			while (--i > 0) {
-				if (r[i] == b)		// search the bass in the chord
+				if (ch[i] == b)		// search the bass in the chord
 					break
 			}
-			if (i > 0)
-				for (j = 0; j < r.length; j++)
-					r[j] = ch[(j + i) % r.length]
-			else
-				r.unshift(b)
-			r[0] -= 12			// bass one octave lower
+			if (i > 0) {
+				r = []
+				for (j = i; j < ch.length; j++)
+					r.push(ch[j])
+				for (j = 0; j < i; j++)
+					r.push(ch[j] + 12)
+			}
 		}
+		if (!r)
+			r = ch.slice()
+		r.splice(0, 0, r[0] - 12)		// add the bass
+		if (b && !i)
+			r[0] = b - 12
+		if (rhy == '+'				// if no rhythm
+		 && (ch[i] == 3 || ch[i] == 4))
+			r[1] = ch[0]			// don't double the third
 		return r
 	} // chcr()
 
@@ -121,7 +130,7 @@ abc2svg.chord = function(first,		// first symbol in time
 
 		rhy = p == '+'
 			? p			// no rhythm
-			: p.match(/(\[[G-Lg-l]+,*\]\d?)|[bcf-lG-L],*\d?/g)
+			: p.match(/\[([G-Kg-k]\,*)+\]\d?|[bcf-kG-K],*\d?/g)
 		if (!rhy)
 //fixme: error
 			rhy = '+'
@@ -183,18 +192,13 @@ abc2svg.chord = function(first,		// first symbol in time
 						b += 12
 				}
 			}
-		ch = chcr(b, ch)
 
 		// generate the notes of the chord
-		n = ch.length
+		chmid = chcr(b, ch)
+		n = chmid.length
 		r += trans
-		for (m = 0; m < n; m++) {
-			nt = s_ch.notes[m]
-			if (!nt)
-				s_ch.notes[m] = nt = []
-			nt.midi = r + ch[m]
-		}
-		s_ch.nhd = n - 1
+		for (m = 0; m < n; m++)
+			chmid[m] += r
 	} // gench()
 
 	// stop the previous chord by setting its duration
@@ -208,19 +212,31 @@ abc2svg.chord = function(first,		// first symbol in time
 			s2.notes[m].dur = s2.dur
 	} // set_dur()
 
+	// add a note to a chord
+	function addnt(s, p) {
+		p = "GHIJKghijk".indexOf(p)
+		if ((p % 5) >= chmid.length)		// no such note in this chord
+			return
+		s.nhd++
+		s.notes.push({
+			midi: chmid[p % 5 + 1]		// skip the bass
+		})
+		if (p >= 5)
+			s.notes[s.nhd].midi += 12	// upper octave
+	} // addnt()
+
 	// insert a chord in the chord voice
 	function insch(s_next, tim) {
-		if (s_ch.nhd == undefined)
+		if (!chmid.length)
 			return			// no defined chord yet
 	    var	s, m,
 		s2 = vch.last_sym,
 		i = rhy[ti++]
 
-		switch (i) {
+		switch (i[0]) {
 		case '+':			// same chord
 			if (rhy != '+')
 				return
-			i = 'b'			// no rhythm
 			ti = 0
 			break
 		case undefined:
@@ -236,41 +252,44 @@ abc2svg.chord = function(first,		// first symbol in time
 			notes: []
 		}
 		s.time = tim
-		switch (i) {
+		switch (i[0]) {
 		case 'c':
-			s.nhd = s_ch.nhd
-			for (m = 0; m <= s.nhd; m++)
-				s.notes[m] = {
-					midi: s_ch.notes[m].midi
-				}
+			s.nhd = chmid.length - 1
+			for (m = 1; m <= s.nhd; m++)
+				s.notes.push({
+					midi: chmid[m]
+				})
+			break
+		case '[':
+			s.nhd = -1
+			for (m = 1; m < i.length - 1; m++) {
+				addnt(s, i[m])
+				while (i[m + 1] == ',')
+					s.notes[s.nhd].midi -= 12,
+					m++
+			}
 			break
 		default:
-			i = "GHIJKghijk".indexOf(i)
-			if (i < 0			// bad character
-			 || (i % 5) > s_ch.nhd)
-				return
-			s.notes[0] = {
-				midi: s_ch.notes[i % 5].midi
-			}
-			if (i >= 5)
-				s.notes[0].midi += 12	// upper octave
-			s.nhd = 0			// just one note
+			s.nhd = -1
+			addnt(s, i[0])
+			m = 1
+			while (i[m] == ',')
+				s.notes[0].midi -= 12,
+				m++
 			break
 		case 'f':
 			s.notes[0] = {
-				midi: s_ch.notes[0].midi - 12	// one octave lower
+				midi: chmid[0]
 			}
 			s.nhd = 0		// keep the chord root
 			break
+		case '+':			// no rhythm
 		case 'b':
-			s.nhd = s_ch.nhd + 1
-			s.notes[0] = {
-				midi: s_ch.notes[0].midi - 12	// one octave lower
-			}
-			for (m = 0; m < s.nhd; m++)
-				s.notes[m + 1] = {
-					midi: s_ch.notes[m].midi
-				}
+			s.nhd = chmid.length - 1
+			for (m = 0; m <= s.nhd; m++)
+				s.notes.push({
+					midi: chmid[m]
+				})
 			break
 		}
 		s.prev = s2			// previous chord
@@ -357,13 +376,6 @@ abc2svg.chord = function(first,		// first symbol in time
 	if (s.ts_next)
 		s.ts_next.ts_prev = vch.sym.next
 	s.ts_next = vch.sym
-
-	s_ch = {				// chord template
-//		v: vch.v,
-//		p_v: vch,
-//		type: C.NOTE,
-		notes: []
-	}
 
 	// loop on the symbols and add the accompaniment chords
 	if (cfmt.chord.gchon != false)

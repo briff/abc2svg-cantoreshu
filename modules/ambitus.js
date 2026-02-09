@@ -1,6 +1,6 @@
 // ambitus.js - module to insert an ambitus at start of a voice
 //
-// Copyright (C) 2018-2023 Jean-Francois Moine
+// Copyright (C) 2018-2026 Jean-Francois Moine
 //
 // This file is part of abc2svg.
 //
