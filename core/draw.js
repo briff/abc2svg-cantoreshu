@@ -3992,6 +3992,7 @@ Abc.prototype.draw_symbols = function(p_voice) {
 		case C.METER:
 			p_voice.meter = s
 			if (s.second
+			 || !gene.st_print[st]
 			 || !staff_tb[s.st].topbar)
 				break
 			set_color();
@@ -4003,6 +4004,7 @@ Abc.prototype.draw_symbols = function(p_voice) {
 		case C.KEY:
 			p_voice.ckey = s
 			if (s.second
+			 || !gene.st_print[st]
 			 || !staff_tb[s.st].topbar)
 				break
 			set_color();
