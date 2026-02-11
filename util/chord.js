@@ -387,7 +387,8 @@ abc2svg.chord = function(first,		// first symbol in time
 	ti = 0					// time index in rhy
 	while (1) {
 		if (gchon) {
-			while (s.time > nextim) {
+			while (s.time > nextim
+			       && ti < rhy.length) {
 				insch(s, nextim)	// generate the rhythm
 				nextim += rhy == '+' ? 100000 : dt
 			}
