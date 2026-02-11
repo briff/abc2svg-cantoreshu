@@ -130,7 +130,7 @@ abc2svg.chord = function(first,		// first symbol in time
 
 		rhy = p == '+'
 			? p			// no rhythm
-			: p.match(/\[([G-Kg-k]\,*)+\]\d?|[bcf-kG-K],*\d?/g)
+			: p.match(/\[([G-Lg-l]\,*)+\]\d?|[bcf-lzG-L],*\d?/g)
 		if (!rhy)
 //fixme: error
 			rhy = '+'
