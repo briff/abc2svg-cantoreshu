@@ -282,4 +282,4 @@ abc2svg.tblt = {
 
 if (!abc2svg.mhooks)
 	abc2svg.mhooks = {}
-abc2svg.mhooks.cpp = abc2svg.tblt.set_hooks
+abc2svg.mhooks.tblt = abc2svg.tblt.set_hooks
