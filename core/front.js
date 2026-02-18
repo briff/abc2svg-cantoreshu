@@ -326,7 +326,8 @@ function tosvg(in_fname,		// file name
 		init_tune()
 		img.chg = true;
 		set_page();
-		if (cfmt.show_source) {
+		if (cfmt.show_source
+		 && user.img_out) {
 			user.img_out("</div>")
 			if (cfmt.show_source[0][0] == 'a')
 				user.img_out(sav.src)
@@ -544,6 +545,8 @@ function tosvg(in_fname,		// file name
 			}
 			switch (a[1]) {
 			case "show_source":
+				if (!user.img_out)
+					continue
 				b = uncomment(a[2])
 				switch (b[0]) {
 				case '*':
@@ -704,7 +707,8 @@ function tosvg(in_fname,		// file name
 			sav.maps = clone(maps, 1);
 			sav.mac = clone(mac);
 			sav.maci = clone(maci);
-			if (cfmt.show_source) {
+			if (cfmt.show_source
+			 && user.img_out) {
 				bol -= 2
 				set_src(cfmt.show_source)
 				if (cfmt.show_source[0][0] == 'b')
