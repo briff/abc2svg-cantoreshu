@@ -1,6 +1,6 @@
 // abc2svg - subs.js - text output
 //
-// Copyright (C) 2014-2025 Jean-Francois Moine
+// Copyright (C) 2014-2026 Jean-Francois Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -757,8 +757,6 @@ function partname(c) {
 Abc.prototype.tunhd = function() {
     var	i, j, area, composer, origin, rhythm, down1, down2, p,
 		lwidth = get_lwidth()
-
-	vskip(cfmt.topspace)
 
 	/* titles */
 	if (info.T
