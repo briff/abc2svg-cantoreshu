@@ -2335,6 +2335,9 @@ function draw_slurs(s, last) {
 		}
 
 		// set the slur position
+	    if (sl.slr)					// if a slur with repeat
+		sl.ty = sl.slr.ty
+	    else
 		switch (sl.ty & 0x07) {
 		case C.SL_ABOVE: dir = 1; break
 		case C.SL_BELOW: dir = -1; break

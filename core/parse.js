@@ -1274,7 +1274,7 @@ function adjust_dur(s) {
 
 /* -- parse a bar -- */
 function new_bar() {
-	var	s2, c, bar_type,
+	var	s2, c, bar_type, i,
 		line = parse.line,
 		s = {
 			type: C.BAR,
@@ -1376,6 +1376,11 @@ function new_bar() {
 			delete s.text
 		}
 		curvoice.tie_s_rep = null	// no tie anymore on new variant
+		i = curvoice.sls.length
+		while (--i >= 0) {		// remove the slurs with repeat
+			if (!curvoice.sls[i].rep)
+				curvoice.sls.splice(i, 1)
+		}
 	}
 
 	// handle the accidentals (ties and repeat)
@@ -1387,6 +1392,10 @@ function new_bar() {
 				curvoice.acc_tie_rep = curvoice.acc_tie.slice()
 			else if (curvoice.acc_tie_rep)
 				curvoice.acc_tie_rep = null
+			for (i = 0; i < curvoice.sls.length; i++) {
+				if (!curvoice.sls[i].rep)
+					curvoice.sls[i].rep = 1
+			}
 		} else {
 			curvoice.tie_s = curvoice.tie_s_rep
 			if (curvoice.acc_tie_rep)
@@ -1882,7 +1891,15 @@ function slur_add(s, nt) {		// nt = note if slur ending on note
 		// the slur must not start and stop on a same symbol
 		if (sl.ss == s)
 			continue
-		curvoice.sls.splice(i, 1)
+
+		// if there was a repeat (|: or [1), keep the slur in the voice
+		if (sl.rep) {
+			if (sl.rep >= 10)
+				break
+			sl.rep = 10		// normal end
+		} else {
+			curvoice.sls.splice(i, 1)
+		}
 		sl.se = s			// ending symbol
 		if (nt)
 			sl.nte = nt
@@ -1898,17 +1915,18 @@ function slur_add(s, nt) {		// nt = note if slur ending on note
 	}
 
 	// the lack of a starting slur may be due to a repeat
+    if (sl && sl.rep)					// if repeat
 	for (s2 = s.prev; s2; s2 = s2.prev) {
 		if (s2.type == C.BAR
-		 && s2.bar_type[0] == ':'
-		 && s2.text) {
+		 && (s2.bar_type[0] == ':'
+		  || s2.text)) {
 			if (!s2.sls)
 				s2.sls = [];
 			s2.sls.push({
-//fixme: should go back to the bar "|1" and find the slur type...
 				ty: C.SL_AUTO,
 				ss: s2,
-				se: s
+				se: s,
+				slr: sl		// (for the slur direction)
 			})
 			if (nt)
 				s2.sls[s2.sls.length - 1].nte = nt

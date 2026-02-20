@@ -490,6 +490,8 @@ Abc.prototype.voice_adj = function (sys_chg) {
 				sl = p_voice.sls.shift()
 				if (!sl)
 					break
+				if (sl.rep)		// if slur with repeat
+					continue
 				s = sl.ss
 //					error(1, s, "Lack of ending slur(s)")
 					if (!s.sls)
