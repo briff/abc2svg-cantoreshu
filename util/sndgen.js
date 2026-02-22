@@ -403,7 +403,7 @@ function ToAudio() {
 
 	// if some chord stuff, set the accompaniment data
 	if (cfmt.chord)
-		abc2svg.chord(first, voice_tb, cfmt)
+		abc2svg.genchrd(first, voice_tb, cfmt)
 
 	// if some drum stuff, generate the drum sequences
 	if (cfmt.drum)
