@@ -1,1 +1,1 @@
-abc2svg.version="v1.22.36";abc2svg.vdate="2026-01-28"
+abc2svg.version="v1.22.37";abc2svg.vdate="2026-02-22"
