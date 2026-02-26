@@ -1749,8 +1749,8 @@ function set_nl(s) {			// s = start of line
 					s.space = 0
 				}
 				delete s2.part
+				s2.bar_type = "|"
 			}
-			s2.bar_type = "||"
 		} // eol_bar()
 
 		// check if there is a left repeat bar at start of the new line
