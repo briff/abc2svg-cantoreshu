@@ -407,7 +407,7 @@ function ToAudio() {
 
 	// if some drum stuff, generate the drum sequences
 	if (cfmt.drum)
-		abc2svg.drum(s, voice_tb, cfmt)
+		abc2svg.gendrum(s, voice_tb, cfmt)
 
 	// if %%playbeats, create the sounds
 	s_m = first.p_v.meter			// current meter
