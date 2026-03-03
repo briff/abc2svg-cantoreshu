@@ -29,7 +29,8 @@ abc2svg.ambitus = {
     do_ambitus: function() {
     var	C = abc2svg.C,
 	s, v, p_v, min, max,
-	voice_tb = this.get_voice_tb()
+	voice_tb = this.get_voice_tb(),
+	staff_tb = this.get_staff_tb()
 
 	for (v = 0; v < voice_tb.length; v++) {
 		p_v = voice_tb[v];
@@ -50,7 +51,7 @@ abc2svg.ambitus = {
 		if (min == 100)
 			continue			// no note
 
-		s = p_v.clef;
+		s = staff_tb[p_v.sym.st].clef		// clef at start of line
 		s.stem = 1;
 		s.head = C.FULL;
 		s.stemless = true;
