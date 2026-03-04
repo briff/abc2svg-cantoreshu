@@ -3780,6 +3780,14 @@ function set_words(p_voice) {
 			start_flag = true
 			break
 		case C.BAR:
+			if (s.text) {
+				res = s.fmt.bardef[s.bar_type + s.text]
+				if (res) {
+					res = /([|:[\]]+)(.*)/.exec(res)
+					s.bar_type = res[1]
+					s.text = res[2]
+				}
+			}
 			res = s.fmt.bardef[s.bar_type]
 			if (res)
 				s.bar_type = res

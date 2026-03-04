@@ -1,6 +1,6 @@
 // abc2svg - format.js - formatting functions
 //
-// Copyright (C) 2014-2025 Jean-Francois Moine
+// Copyright (C) 2014-2026 Jean-François Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -612,13 +612,13 @@ Abc.prototype.set_format = function(cmd, param) {
 		param = ":: " + param
 		// fall thru
 	case "bardef":			// %%bardef oldbar newbar
-		v = param.split(/\s+/)
-		if (v.length != 2) {
+		v = /([^\s]+)\s*(.+)/.exec(param)
+		if (!v) {
 			syntax(1, errs.bad_val, "%%bardef")
 		} else {
 			if (parse.ufmt)
-				cfmt.bardef = Object.create(cfmt.bardef)	// new object
-			cfmt.bardef[v[0]] = v[1]
+				cfmt.bardef = Object.create(cfmt.bardef)
+			cfmt.bardef[v[1]] = v[2]
 		}
 		break
 	case "chordalias":
