@@ -3443,7 +3443,7 @@ function draw_systems(indent) {
 		thb = ""
 
 	/* -- set the bottom and height of the measure bars -- */
-	function bar_set() {
+	function bar_set(tim) {
 	    var	st, sc, i, j, l, stlines, b, hlmap,
 		dy = 0
 
@@ -3506,6 +3506,8 @@ function draw_systems(indent) {
 			return
 		while (--i >= 0) {
 			b = ba[i]
+			if (b[0].time != tim)
+				break
 			st = b[0].st
 			if (b[1] > bar_bot[st])
 				b[1] = bar_bot[st]
@@ -3513,8 +3515,6 @@ function draw_systems(indent) {
 				b[2] = bar_height[st]
 			if (b[3] < bar_ng[st])
 				b[3] = bar_ng[st]
-			if (b[0].seqst)		// end of time sequence
-				break
 		}
 	} // bar_set()
 
@@ -3781,7 +3781,7 @@ function draw_systems(indent) {
 		stl[st] = cur_sy.st_print[st]		// staff at start of line
 		xstaff[st] = !stl[st] ? -1 : 0;
 	}
-	bar_set();
+	bar_set(0)
 	draw_lstaff(0)
 	for (s = tsfirst; s; s = s.ts_next) {
 		switch (s.type) {
@@ -3814,7 +3814,7 @@ function draw_systems(indent) {
 				xstaff[st] = sy.st_print[st] ? x2 : -1
 			}
 			cur_sy = sy;
-			bar_set()
+			bar_set(s.time)
 			continue
 		case C.BAR:		// display the bars after the staves
 			if (s.invis || !s.bar_type
