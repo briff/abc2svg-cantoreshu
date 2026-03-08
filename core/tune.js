@@ -1117,7 +1117,7 @@ Abc.prototype.do_pscom = function(text) {
 		}
 		if (param.slice(-1) == 'f') {
 			s.stbrk_forced = true
-			param = param.replace(/\sf$/, '')
+			param = param.replace(/\s+f$/, '')
 		}
 		if (param) {
 			val = get_unit(param)
@@ -1126,8 +1126,11 @@ Abc.prototype.do_pscom = function(text) {
 				return
 			}
 			s.xmx = val
-		} else {
-			s.xmx = 14
+		} else {		// no width, change to %%staves without synchro.
+			s.type = C.STAVES
+			s.sy = clone(par_sy, 2)		// clone the staves and voices
+			par_sy.next = s.sy
+			par_sy = s.sy
 		}
 		sym_link(s)
 		return
@@ -1539,7 +1542,7 @@ function get_staves(cmd, parm) {
 		if (p_voice.time > maxtime)
 			maxtime = p_voice.time
 	}
-	if (!maxtime) {				// if first %%staves
+	if (staves_found < 0) {				// if first %%staves
 		par_sy.staves = []
 		par_sy.voices = []
 	} else {
