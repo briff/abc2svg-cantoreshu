@@ -910,7 +910,7 @@ abc2svg.genchrd = function(first,	// first symbol in time
 					gchnb = s.gchnb
 				if (s.on != undefined) {
 					gchon = s.on
-					if (!gchon && rhy[0] == '+')
+					if (!gchon)
 						set_dur(vch.last_sym, s.time)
 				}
 			}
