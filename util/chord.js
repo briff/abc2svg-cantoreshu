@@ -271,7 +271,7 @@ abc2svg.chord = {
 	cfmt = abc.cfmt(),
 	curv = abc.get_curvoice(),
 	parse = abc.get_parse(),
-	a = parm.match(/=|[^\s=]+/g),
+	a = parm.match(/=|"[^"]*"|[^\s"=]+/g),
 	val = {}
 
 	function bad() {
@@ -299,13 +299,46 @@ abc2svg.chord = {
 		return o
 	} // abc2pit()
 
-	// convert a fuzzy instrument name into a MIDI program number
+	// convert an instrument name into a MIDI program number
 	function get_prog(p) {
-		p = '\\d+ ' + p.toLowerCase(p).replace(/(.)/g, '[$1].*') + '\n'
-		p = new RegExp(p)
-		p = abc2svg.chord.prg_nam.match(p)
-		if (p)
-			return p[0].split(' ', 1)[0]
+	    var	i, j, k, l,
+		nm = abc2svg.chord.prg_nam
+
+		p = p.replace(/[-_]/g, ' ').trim().toLowerCase().split(' ')
+		i = 0
+		while (1) {			// search the 1st word
+			j = nm.indexOf(p[i])
+			if (j > 0
+			 && (nm[j - 1] == ' ' || nm[j - 1] == '('))
+				break
+			if (++i >= p.length)
+				return		// no instrument!
+		}
+		l = nm.lastIndexOf('\n', j)
+		if (l < 0)
+			l = 0			// candidate
+		j = l
+		if (i < p.length - 1)
+		    while (1) {			// search if many words in a line
+			k = nm.indexOf(p[i + 1], j + 1)
+			if (k < 0)
+				break
+			if (nm[k - 1] != ' ' && nm[k - 1] != '(') {
+				j = k
+				continue
+			}
+			k = nm.lastIndexOf('\n', k)
+			j = nm.indexOf(p[i], k)
+			if (j < 0)
+				break
+			j = nm.lastIndexOf('\n', j)
+			if (j == k) {
+//fixme: continue with the next word
+				l = j
+				break
+			}
+		}
+		return parseInt(nm.slice(l, l + 3))
 	} //get_prog()
 
 	if (!a)
@@ -341,8 +374,11 @@ abc2svg.chord = {
 		case "alias":
 			return bad()			// don't change this object
 		case "instr":
-			if (v[0] < '1' || v[0] > '9')
+			if (v[0] < '1' || v[0] > '9') {
+				if (v[0] == '"')
+					v = v.slice(1, -1)
 				v = get_prog(v)
+			}
 			k = "prog"
 			// fall thru
 		case "prog":
