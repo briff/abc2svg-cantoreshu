@@ -151,12 +151,13 @@ abc2svg.drum = {
 			if (k < 0)
 				break
 			k = abc2svg.perc_nam.lastIndexOf('\n', k)
-			j = abc2svg.perc_nam.indexOf(p[i], j)
+			j = abc2svg.perc_nam.indexOf(p[i], k)
 			if (j < 0)
 				break
 			j = abc2svg.perc_nam.lastIndexOf('\n', j)
 			if (j == k) {
 //fixme: continue with the next word
+				l = j
 				break
 			}
 		}
