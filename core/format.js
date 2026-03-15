@@ -585,6 +585,7 @@ Abc.prototype.set_format = function(cmd, param) {
 			"* * " + (get_bool(param) ? "box" : "nobox"))
 		break
 	case "altchord":
+	case "barwings":
 	case "bstemdown":
 	case "breakoneoln":
 	case "cancelkey":

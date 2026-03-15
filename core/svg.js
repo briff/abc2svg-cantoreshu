@@ -717,15 +717,37 @@ function out_brace(x, y, h) {
 			')">' + tgls.brace.c + '</text>\n'
 }
 
+// staff system bracket or wings for repeat bars
+// 'f'= bit0 = 0 for [ or 1 for ]
+//	bit1 = 1 for no top wing
+//	bit2 = 1 for no bottom wing
+function out_wings(x, y, h, f) {
+	x += posx
+	y = posy - y - 1
+	h += 2
+	output += '<path d="m' + x.toFixed(1) + ' ' + y.toFixed(1)
+	if (f & 1) {
+		output += (f & 2)
+			? 'h-3\n v'
+			: 'c-10.5 1 -12 -4.5 -12 -3.5c0 1 3.5 5.5 9 5.5\n v'
+		output += h.toFixed(1)
+			+ ((f & 4)
+			? 'h3"/>\n'
+			: 'c-5 0 -9 4.5 -8.5 5.5c0 1 1.5 -4.5 12 -3.5"/>\n')
+	} else {
+		output += (f & 2)
+			? 'h3\n v'
+			: 'c10.5 1 12 -4.5 12 -3.5c0 1 -3.5 5.5 -9 5.5\n v'
+		output += h.toFixed(1)
+			+ ((f & 4)
+			? 'h-3"/>\n'
+			: 'c5 0 9 4.5 8.5 5.5c0 1 -1.5 -4.5 -12 -3.5"/>\n')
+	}
+} // out_wings()
+
 // staff system bracket
 function out_bracket(x, y, h) {
-	x += posx - 5;
-	y = posy - y - 3;
-	h += 2;
-	output += '<path d="m' + x.toFixed(1) + ' ' + y.toFixed(1) + '\n\
-	c10.5 1 12 -4.5 12 -3.5c0 1 -3.5 5.5 -8.5 5.5\n\
-	v' + h.toFixed(1) + '\n\
-	c5 0 8.5 4.5 8.5 5.5c0 1 -1.5 -4.5 -12 -3.5"/>\n'
+	out_wings(x - 5, y + 2, h, 0)
 }
 // hyphen
 function out_hyph(x, y, w) {

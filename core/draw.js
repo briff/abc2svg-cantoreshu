@@ -3591,7 +3591,7 @@ function draw_systems(indent) {
 
 	// draw a measure bar
 	function draw_bar(s, bot, h, ng) {
-	    var	i, s2, yb, w,
+	    var	i, s2, yb, w, f,
 		bar_type = s.bar_type,
 		st = s.st,
 		p_staff = staff_tb[st],
@@ -3658,6 +3658,26 @@ function draw_systems(indent) {
 //			case "[":
 //			case "]":
 				x -= 3;
+				if (cfmt.barwings
+				 && (bar_type[0] == ':' || bar_type.slice(-1) == ':')
+				 && (!st || (cur_sy.staves[st - 1].flags & STOP_BAR)
+				  || st == cur_sy.nstaff
+				  || (cur_sy.staves[st].flags & STOP_BAR))) {
+					f = (!st || (cur_sy.staves[st - 1].flags
+								& STOP_BAR))
+							? 0 : 2	// no top if 2
+					f |= (st == cur_sy.nstaff
+						  || (cur_sy.staves[st].flags
+								& STOP_BAR))
+							? 0 : 4	// no bottom if 4
+					if (bar_type[i] == ']')
+						out_wings(x + 3, bot + h + 2.5,
+								h + 3, f + 1)
+					else
+						out_wings(x, bot + h + 2.5,
+								 h + 3, f)
+					break
+				}
 				if (s.color)
 					out_XYAB('<path class="bthW" d="MX YvF"/>\n',
 						x + 1.5, bot, -h)
