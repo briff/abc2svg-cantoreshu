@@ -209,6 +209,11 @@ abc2svg.MIDI = {
 	case "gchordbars":	// %%MIDI gchordbars n
 	case "gchordon":	// %%MIDI gchordon
 	case "gchordoff":	// %%MIDI gchordoff
+		if (a[1].length == 6			// if %%MIDI gchord <list>
+		 && !/^[0-9bcf-kG-Kz]+$/.test(a[2])) {
+			abc.syntax(1, abc.errs.bad_val, "%%MIDI gchord")
+			break
+		}
 		if (!cfmt.chord)
 			cfmt.chord = {}
 		if (parse.state >= 2
