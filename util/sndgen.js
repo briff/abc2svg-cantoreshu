@@ -471,6 +471,8 @@ function ToAudio() {
 				if (b_typ & 1)
 					break
 				b_typ |= 1
+				if (s.bar_type.slice(-1) == ':')
+					rst = s
 				s.rep_s = rsk = [rst]	// repeat skip
 							// and memorize the restart
 				if (rst.bar_type
@@ -696,15 +698,19 @@ abc2svg.play_next = function(po) {
 		case C.BAR:
 			s2 = null
 			if (s.rep_p) {		// right repeat
-				po.repv++
-				if (!po.repn	// if repeat a first time
-				 && (!s.rep_v	// and no variant (anymore)
-				  || po.repv <= s.rep_v.length)) {
+				n = s.rep_v
+					? s.rep_v.length
+					: s.bar_type[1] == ":"
+						? s.bar_type[2] == ":"
+							? s.bar_type[3] == ":"
+								? 6
+								: 5
+							: 4
+						: 3
+				if (++po.repv < n) {
 					s2 = s.rep_p	// left repeat
 					po.repn = true
 				} else {
-					if (s.rep_v)
-						s2 = var_end(s)
 					po.repn = false
 					if (s.bar_type.slice(-1) == ':') // if ::
 						po.repv = 1
