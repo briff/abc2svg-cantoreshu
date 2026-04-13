@@ -32,8 +32,8 @@ abc2svg.cpp = {
 //	doremi = {
 //		do:"c", re:"d", "ré":"d", mi:"e", fa:"f", sol:"g", la:"a", si:"b", ti:"b"
 //	},
-	o = "",
-	parse = mus.get_parse()
+	parse = mus.get_parse(),
+	o = parse.file.slice(0, parse.eol)
 
 	// handle the commands and set the context ctx
 	function do_cmd(a) {
@@ -123,9 +123,6 @@ abc2svg.cpp = {
 	// loop on the '#'commands
 	f = parse.file				// music source
 	j = k = parse.eol			// index of the end of the command
-	if (k)
-		k++
-	o += f.slice(0, j).replace(/[!\n]+/g, '')
 
 	while (1) {
 		i = f.indexOf("\n#", j)
@@ -137,7 +134,7 @@ abc2svg.cpp = {
 		i += 2
 		j = f.indexOf("\n", i)
 		do_cmd(f.slice(i, j))
-		o += '\n%\n%'			// keep sources in sync
+		o += '\n%'			// keep sources in sync
 		k = j
 	}
 //console.log("----- generated\n"+o)
@@ -151,8 +148,8 @@ abc2svg.cpp = {
     var	parse = this.get_parse()
 
 	parse.fname = fn
-	parse.file = bol ? file.slice(bol) : file
-	parse.eol = 0
+	parse.file = file
+	parse.eol = bol
 
 	abc2svg.cpp.do_exp(this)
     }, // tosvg()
