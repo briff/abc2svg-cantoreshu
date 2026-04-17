@@ -3172,8 +3172,6 @@ function draw_sym_near() {
 		}
 	}
 
-	draw_deco_note()
-
 	for (v = 0; v < voice_tb.length; v++) {
 		p_voice = voice_tb[v];
 		s = p_voice.sym
@@ -3214,6 +3212,8 @@ function draw_sym_near() {
 
 	if (cfmt.measurenb >= 0)
 		draw_measnb();
+
+	draw_deco_note()		// out of the staff
 
 	/* if any lyric, draw them now as unscaled */
 	set_dscale(-1)

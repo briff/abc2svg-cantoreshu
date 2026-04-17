@@ -82,9 +82,9 @@ var decos = {
 //	"5": "3 fng 5,5 3 3 5",
 	plus: "3 dplus 8,2 2 4",
 	"+": "3 dplus 8,2 2 4",
-	">": "5 accent 3.5,3.5 4 4",
-	accent: "5 accent 3.5,3.5 4 4",
-	emphasis: "5 accent 3.5,3.5 4 4",
+	">": "3 accent 3.5,3.5 4 4",
+	accent: "3 accent 3.5,3.5 4 4",
+	emphasis: "3 accent 3.5,3.5 4 4",
 	marcato: "3 marcato 9 5 5",
 	"^": "3 marcato 9 5 5",
 	mordent: "3 lmrd 6,5 4 6",
@@ -115,9 +115,9 @@ var decos = {
 	"D.S.alcoda": "5 dacs 16 32 32 D.S. al Coda",
 	"D.C.alfine": "5 dacs 16 32 32 D.C. al Fine",
 	"D.S.alfine": "5 dacs 16 32 32 D.S. al Fine",
-	fermata: "5 hld 12 7.5 7.5",
+	fermata: "3 hld 12 7.5 7.5",
 	fine: "5 dacs 16 12 12 Fine",
-	invertedfermata: "7 hld 12 8 8",
+	invertedfermata: "4 hld 12 8 8",
 	segno: "5 sgno 22,2 5 5",
 	f: "6 f 12,5 3 4",
 	ff: "6 ff 12,5 8 5",
@@ -185,13 +185,13 @@ var decos = {
 		d_arp		// 2 - arpeggio
 	],
 	f_note = [
-		null, null, null, null,
+		null, null, null,
+		d_upstaff,	// 3 - tied to note
 		d_upstaff	// 4 (below the staff)
 	],
 	f_staff = [
 		null, null, null,
-		d_upstaff,	// 3 - tied to note
-		null,
+		null, null,
 		d_upstaff,	// 5 (above the staff)
 		d_upstaff,	// 6 - tied to staff (dynamic marks)
 		d_upstaff	// 7 (below the staff)
@@ -919,15 +919,6 @@ function deco_cnv(s, prev) {
 			if (!s.notes) {
 				error(1, s, errs.must_note_rest, nm)
 				continue
-			}
-			break
-		case 3:
-			if (fg && dd.glyph == "fng") { // move the fingers out of staves
-				for (i = 0; i <= 5; i++) {
-					decos[i.toString()] = "5 fng 5,5 3 3 " + i
-					if (dd_tb[i.toString()])
-						dd_tb[i.toString()].func = 5
-				}
 			}
 			break
 		case 4:			// below the staff
