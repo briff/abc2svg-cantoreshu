@@ -277,7 +277,7 @@ function param_set_font(xxxfont, p) {
 		font.src = p.slice(0, n + 1)
 		font.fid = abc2svg.font_tb.length
 		abc2svg.font_tb.push(font)
-		font.name = 'ft' + font.fid
+		font.name = font.src.match(/(\w+)\.\w+\)$/)[1]
 		p = p.replace(font.src, '')
 	}
 
