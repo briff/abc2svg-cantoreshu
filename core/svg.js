@@ -183,8 +183,8 @@ var tgls = {
   roll: {x:0, y:0, c:"\ue618"},
   thumb: {x:-2, y:-2, c:"\ue624"},
   snap: {x:-2, y:-2, c:"\ue630"},
-  ped: {x:-10, y:0, c:"\ue650"},
-  pedoff: {x:-5, y:0, c:"\ue655"},
+  ped: {x:-10, y:-2, c:"\ue650"},
+  pedoff: {x:-5, y:-2, c:"\ue655"},
  "mtro.": {x:0, y:0, c:"\ue910"},	// tempus perfectum prolatione perfecta
   mtro:   {x:0, y:0, c:"\ue911"},		// tempus perfectum
  "mtro|": {x:0, y:0, c:"\ue912"},	// tempus perfectum (twice as fast)

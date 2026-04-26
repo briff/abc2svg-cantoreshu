@@ -131,10 +131,10 @@ var decos = {
 	pppp: "6 pppp 12,5 14 17",
 	pralltriller: "3 umrd 6,5 4 6",
 	sfz: "6 sfz 12,5 9 9",
-	ped: "6 ped 9 6 10",
-	"ped-up": "6 pedoff 9 4 4",
-	"ped(": "7 lped 14 1 1",
-	"ped)": "7 lped 14 1 1",
+	ped: "6 ped 10 4 10",
+	"ped-up": "6 pedoff 10 4 4",
+	"ped(": "6 lped 12,2 1 1",
+	"ped)": "6 lped 12,2 0 2",
 	"crescendo(": "6 cresc 15,2 0 0",
 	"crescendo)": "6 cresc 15,2 0 0",
 	"<(": "6 cresc 15,2 0 0",
@@ -447,6 +447,8 @@ function d_trill(de) {
 	// in the cases "T!trill(!" and "!pp!!<(!"
 	// (side effect on x)
 	function sh_st() {
+		if (dd.name == "ped)")
+			return
 	    var	de3,
 		de2 = de.start,			// start of the decoration
 		s = de2.s,
@@ -479,7 +481,7 @@ function d_trill(de) {
 	    var	de3,
 		i = de.ix			// index of the current decoration
 
-		while (--i > 0) {
+		while (--i >= 0) {
 			de3 = a_de[i]
 			if (!de3 || de3.s != s2)
 				break
@@ -498,11 +500,15 @@ function d_trill(de) {
 				break
 			}
 		}
+		if (dd.name == 'ped)')		// if pedal up
+			w -= 15
 	} //sh_en()
 
 	// d_trill()
+//--fixme:conflict with sh_st?
+//-- what if no 'x' change?
 	if (de2) {			// same height
-		x = de2.s.x + de.dd.wl + 2
+//		x = de2.s.x + de.dd.wl + 2
 		de2.val -= de2.dd.wr
 		if (de2.val < 8)
 			de2.val = 8
@@ -609,6 +615,9 @@ function d_upstaff(de) {
 		de.x = x
 		de.y = y
 		return
+	case "pedoff":
+		de.x = x -= 16
+		break
 	}
 
 	if (s.nhd)
@@ -1997,7 +2006,7 @@ function draw_deco_staff() {
 			continue
 		w = de.val || 10
 		de.y = y_get(de.st, 0, de.x, w)
-			- (dd.dd_st && cfmt.pedline ? 10 : dd.h)
+			- (dd.dd_st && cfmt.pedline ? 4 : dd.h)
 		y_set(de.st, 0, de.x, w, de.y)	// (no descent)
 	}
 
