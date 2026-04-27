@@ -698,15 +698,12 @@ abc2svg.play_next = function(po) {
 		case C.BAR:
 			s2 = null
 			if (s.rep_p) {		// right repeat
-				n = s.rep_v
-					? s.rep_v.length
-					: s.bar_type[1] == ":"
-						? s.bar_type[2] == ":"
-							? s.bar_type[3] == ":"
-								? 6
-								: 5
-							: 4
-						: 3
+				if (s.rep_v) {		// if variants
+					n = s.rep_v.length
+				} else {		// else number of ':'s
+					n = s.bar_type.match(/(:+)[|[\]]/)
+					n = (n ? n[1].length : 1) + 2
+				}
 				if (++po.repv < n) {
 					s2 = s.rep_p	// left repeat
 					po.repn = true
