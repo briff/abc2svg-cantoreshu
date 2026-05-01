@@ -1,6 +1,6 @@
 // equalbars.js - module to set equal spaced measure bars
 //
-// Copyright (C) 2018-2025 Jean-François Moine
+// Copyright (C) 2018-2026 Jean-François Moine
 //
 // This file is part of abc2svg.
 //
@@ -28,9 +28,9 @@ if (typeof abc2svg == "undefined")
 
 abc2svg.equalbars = {
 
-    // new tune - clear the width of the start of the staff
+    // new tune - set the offset of the left symbol and the number of bars
     output_music: function(of) {
-	this.equalbars_d = 0;
+	this.equalbars = { d: 0, n: 0 }
 	of()
     },
 
@@ -97,8 +97,10 @@ abc2svg.equalbars = {
 		t += s.dur;
 
 	n = bars.length
-	if (n <= 1)
+	if (n <= 1) {
+		Object.assign(this.equalbars, { d: 0, n: 0 } )
 		return				// one or no bar
+	}
 
 	// if small width, get the widest measure
 	if (s.x < width) {
@@ -115,12 +117,28 @@ abc2svg.equalbars = {
 		this.set_realwidth(width)
 	}
 
-	// set the measure parameters
-	x = s2.type == C.GRACE ? s2.extra.x : (s2.x - s2.wl)
-	if (this.equalbars_d < x)
-		this.equalbars_d = x		// new offset of the first note/rest
+	// if any, don't touch the anacrusis
+	if (bars[0][1] < bars[1][1]) {
+		s2 = bars[0][0]
+		t0 = s2.time
+		n--
+		wb -= s2.wl
+		bars.shift()			// remove the first bar
+		while (!s2.dur)
+			s2 = s2.next
+	}
 
-	d = this.equalbars_d
+	// set the offset of the first symbol
+	x = s2.type == C.GRACE ? s2.extra.x : (s2.x - s2.wl)
+
+	if (n != this.equalbars.n)
+		this.equalbars.d = 0
+	if (this.equalbars.d < x) {
+		this.equalbars.d = x		// new offset of the first note/rest
+		this.equalbars.n = n
+	}
+
+	d = this.equalbars.d
 	w = (width - wb - d) / (t - t0)		// width per time unit
 
 	// loop on the bars
