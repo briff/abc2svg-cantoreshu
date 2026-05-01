@@ -51,7 +51,8 @@ abc2svg.equalbars = {
     var	C = abc2svg.C,
 	s, s2, d, w, i, n, x, g, t, t0, f,
 	bars = [],
-	tsfirst = this.get_tsfirst();
+	tsfirst = this.get_tsfirst(),
+	wb = 0				// width of the bars (.wl)
 
 	of(width)			// compute the x offset of the symbols
 	if (!this.cfmt().equalbars)
@@ -80,12 +81,14 @@ abc2svg.equalbars = {
 		if (s.type == C.BAR && s.seqst && s.time != t) {
 			bars.push([s, s.time - t]);
 			t = s.time
+			wb += s.wl
 		}
 	}
 
 	// push the last bar or replace it in the array
 	if (s.time != t)
-		bars.push([s, s.time - t])
+		bars.push([s, s.time - t]),
+		wb += s.wl
 	else
 		bars[bars.length - 1][0] = s	// replace the last bar
 
@@ -118,7 +121,7 @@ abc2svg.equalbars = {
 		this.equalbars_d = x		// new offset of the first note/rest
 
 	d = this.equalbars_d
-	w = (width - d) / (t - t0)		// width per time unit
+	w = (width - wb - d) / (t - t0)		// width per time unit
 
 	// loop on the bars
 	for (i = 0; i < n; i++) {
@@ -145,7 +148,7 @@ abc2svg.equalbars = {
 				s2.x = d + (s2.x - x) * f
 			}
 		}
-		d += w * bars[i][1];
+		d += w * bars[i][1] + s.wl
 		x = s2.x
 		while (1) {
 			s2.x = d;
