@@ -4969,10 +4969,9 @@ Abc.prototype.block_gen = function(s) {
 		blkdiv = 2		// start the next SVG in a new page
 		break
 	case "sep":
-		set_page();
 		vskip(s.sk1);
 		output += '<path class="stroke"\n\td="M';
-		out_sxsy((img.width -s.l) / 2 - img.lm, ' ', 0)
+		out_sxsy((get_lwidth() - s.l) / 2, ' ', 0)
 		output += 'h' + s.l.toFixed(1) + '"/>\n';
 		vskip(s.sk2);
 		break
