@@ -331,6 +331,8 @@ function ToAudio() {
 			s2 = s.ts_next			// (the normal note moved)
 		}
 
+		s.dur = d
+		s.pdur = d / play_fac
 		d /= n * play_fac
 		t = 0
 		for (g = s.extra; g; g = g.next) {
@@ -706,6 +708,7 @@ abc2svg.play_next = function(po) {
 			s = s2
 			s2 = null
 			po.stim = t - s.ptim / po.conf.speed
+			t = po.stim + s.ptim / po.conf.speed // next time
 			while (s && !s.dur)
 				s = s.ts_next
 		}
@@ -723,7 +726,7 @@ abc2svg.play_next = function(po) {
 			s = s.ts_next		// skip display only symbols
 			continue
 		}
-		t = po.stim + s.ptim / po.conf.speed // next time
+//		t = po.stim + s.ptim / po.conf.speed // next time
 		if (t > maxt)
 			break			// let's sleep
 
@@ -760,6 +763,8 @@ abc2svg.play_next = function(po) {
 						d)
 				}
 			}
+if(s.pdur==undefined)toto()
+			t += s.pdur / po.conf.speed
 			s = s.ts_next
 			continue
 		case C.NOTE:
@@ -790,6 +795,7 @@ abc2svg.play_next = function(po) {
 					d -= .1
 				setTimeout(po.onnote, st + d * 1000, i, false)
 			}
+			t += s.pdur / po.conf.speed
 		default:
 			s = s.ts_next		// ignore the other symbols
 			continue
