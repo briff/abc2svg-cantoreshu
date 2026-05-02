@@ -726,7 +726,6 @@ abc2svg.play_next = function(po) {
 			s = s.ts_next		// skip display only symbols
 			continue
 		}
-//		t = po.stim + s.ptim / po.conf.speed // next time
 		if (t > maxt)
 			break			// let's sleep
 
@@ -763,7 +762,6 @@ abc2svg.play_next = function(po) {
 						d)
 				}
 			}
-if(s.pdur==undefined)toto()
 			t += s.pdur / po.conf.speed
 			s = s.ts_next
 			continue
