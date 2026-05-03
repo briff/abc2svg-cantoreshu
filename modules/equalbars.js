@@ -160,10 +160,10 @@ abc2svg.equalbars = {
 		for ( ; s2 != s; s2 = s2.ts_next) {
 			if (s2.type == C.GRACE) {
 				for (g = s2.extra; g; g = g.next)
-					g.x = d + (g.x - x) * f
+					g.x = d + (g.x - x + s.wl) * f
 //			} else if (s2.x) {
 			} else {
-				s2.x = d + (s2.x - x) * f
+				s2.x = d + (s2.x - x + s.wl) * f
 			}
 		}
 		d += w * bars[i][1] + s.wl
