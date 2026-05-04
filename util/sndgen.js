@@ -745,8 +745,7 @@ abc2svg.play_next = function(po) {
 					po.v_c[p_v.v] = s.chn
 				}
 			}
-			s = s.ts_next
-			continue
+			break
 		case C.GRACE:
 			if (!po.p_v[s.v])
 				set_ctrl(po, s, t)
@@ -762,9 +761,7 @@ abc2svg.play_next = function(po) {
 						d)
 				}
 			}
-			t += s.pdur / po.conf.speed
-			s = s.ts_next
-			continue
+			break
 		case C.NOTE:
 		case C.REST:
 			if (!po.p_v[s.v])		// if new voice
@@ -793,12 +790,18 @@ abc2svg.play_next = function(po) {
 					d -= .1
 				setTimeout(po.onnote, st + d * 1000, i, false)
 			}
-			t += s.pdur / po.conf.speed
-		default:
-			s = s.ts_next		// ignore the other symbols
-			continue
-		case C.BAR:			// but the bars
 			break
+		}
+		if (!s.bar_type) {
+			if (s.ts_next) {
+				s = s.ts_next
+				if (s.ptim != s.ts_prev.ptim)
+					t = po.stim + s.ptim / po.conf.speed
+			} else if (s.p_dur) {
+				t += s.pdur / po.conf.speed
+				s = null
+			}
+			continue
 		}
 		if (s.rep_p) {			// right repeat
 			if (s.rep_v) {		// if variants
