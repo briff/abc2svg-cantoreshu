@@ -778,7 +778,6 @@ function deco_def(nm, nmd) {
 	c = nm.slice(-1)
 	if (c == '(' ||
 	    (c == ')' && nm.indexOf('(') < 0)) {	// not (#)
-		dd.str = null;			// (no string)
 		nm2 = nm.slice(0, -1) + (c == '(' ? ')' : '(');
 		dd2 = dd_tb[nm2]
 		if (dd2) {
