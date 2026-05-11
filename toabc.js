@@ -120,8 +120,7 @@ function abc_dump(tsfirst, voice_tb, info, cfmt) {
 				if (n)
 					ln += instr(n)
 			}
-			if (ln)
-				abc2svg.print('V:' + p_voice.id + ln)
+			abc2svg.print('V:' + p_voice.id + (ln || ''))
 
 			if (p_voice.instr) {
 				for (var s = p_voice.sym; s && s.time == 0; s = s.next) {
