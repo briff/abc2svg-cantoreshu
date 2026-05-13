@@ -148,7 +148,7 @@ function sort_all() {
 
 	// check if different bars at the same time
 	function b_chk() {
-	    var	bt, s, s2, v, t,
+	    var	bt, s, s2, s3, v, t,
 		ir = 0
 
 		while (1) {
@@ -160,15 +160,10 @@ function sort_all() {
 			 || s.time != time)
 				continue
 			if (!bt) {
+				s3 = s
 				bt = s.bar_type
-				if (s.text && bt == '|')
-					t = s.text
-				continue
-			}
-			if (s.bar_type != bt)
-				break
-			if (s.text && !t && bt == '|') {
-				t = s.text
+			} else if (s.bar_type != bt
+				|| s.text != s3.text) {
 				break
 			}
 		}
@@ -177,42 +172,85 @@ function sort_all() {
 			return			// no problem
 
 		// change "::" to ":| |:"
-		// and    "|1" to "| [1"
-		if (bt == "::" || bt == ":|"
-		 || t) {
+		// or     "|1" to "| [1"
+		if (bt[0] == ':'
+		 && s.bar_type[0] == ':'
+		 && (bt == "::" || s.bar_type == '::')) {
 			ir = 0
-			bt = t ? '|' : "::"
 			while (1) {
 				v = vn[ir++]
 				if (v == undefined)
-					break
+					return
 				s = vtb[v]
-				if (!s || s.invis
-				 || s.bar_type != bt
-				 || (bt == '|' && !s.text))
+				if (!s || s.invis)
 					continue
-				s2 = clone(s)
-				if (bt == "::") {
-					s.bar_type = ":|"
-					s2.bar_type = "|:"
-				} else {
-//					s.bar_type = '|'
-					delete s.text
-					delete s.rbstart
-					s2.bar_type = '['
-					s2.invis = 1 //true
-					s2.xsh = 0
+				if (s.bar_type[0] != ':') // must be :: or :|
+					break
+				if (s.bar_type != '::') {
+					if (s.bar_type != ":|")
+						break
+					s2 = s
+					while (s2.next
+					 && s2.next.time == s3.time) {
+						s2 = s2.next
+						if (s2.bar_type)
+							break
+					}
+					if (s2.bar_type == "|:")
+						continue
+					break
 				}
+				s2 = clone(s)
+				s.bar_type = ":|"
+				s2.bar_type = "|:"
 				s2.next = s.next
 				if (s2.next)
 					s2.next.prev = s2
 				s2.prev = s
 				s.next = s2
 			}
-		} else {
-			error(1, s, "Different bars $1 and $2",
-				(bt + (t || '')), (s.bar_type + (s.text || '')))
+		} else if (s3.text || s.text) {
+			if (!s3.text)
+				s3 = s
+			t = s3.text
+			ir = 0
+			while (1) {
+				v = vn[ir++]
+				if (v == undefined)
+					return
+				s = vtb[v]
+				if (!s || s.invis)
+					continue
+				if (s.text) {
+					if (s.text == t)
+						continue
+					break
+				}
+				s2 = s
+				while (s2.next
+				 && s2.next.time == s.time) {
+					s2 = s2.next
+					if (s2.text)
+						break
+				}
+				if (!s2.text || s2.text != t)
+					break
+				s2 = clone(s)
+				delete s.text
+				delete s.rbstart
+				s2.bar_type = '['
+				s2.invis = 1 //true
+				s2.xsh = 0
+				s2.next = s.next
+				if (s2.next)
+					s2.next.prev = s2
+				s2.prev = s
+				s.next = s2
+			}
 		}
+		error(1, s3, "Different bars $1 and $2",
+			(bt + (s3.text || '')),
+			(s.bar_type + (s.text || '')))
 	} // b_chk()
 
 	// set the first symbol of each voice
