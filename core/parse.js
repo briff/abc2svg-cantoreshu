@@ -2688,9 +2688,14 @@ function parse_music_line() {
 
 	// parse a macro
 	function parse_mac(k, m, b) {
-	    var	te, ti, curv, s,
+	    var	te, ti, curv,
 		line_sav = line,
-		istart_sav = parse.istart;
+		istart_sav = parse.istart,
+		s = curvoice.last_sym
+
+		if (!s
+		 && cfmt.writefields.indexOf('m') < 0)
+			return syntax(1, "Bad length of the macro sequence")
 
 		parse.line = line = new scanBuf;
 		parse.istart += line_sav.index;
@@ -2700,7 +2705,6 @@ function parse_music_line() {
 
 			// build the display sequence from the original sequence
 			line.buffer = k.replace('n', n2n(b))
-			s = curvoice.last_sym
 			ti = curvoice.time		// start time
 			parse_seq(true)
 			if (!s)
