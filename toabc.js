@@ -650,19 +650,6 @@ break
 		if (staff.flags & CLOSE_BRACKET)
 			ln += ']';
 
-		// output the following bars
-		for (s = s.ts_next; s; s = s.ts_next) {
-			if (s.type != C.BAR)
-				break
-			if (s.time != vti[s.v])
-				continue
-			sym_dump(s);
-			s.del = true
-			if (line) {
-				vo[s.v] += line
-				line = ""
-			}
-		}
 		voice_out();
 		abc2svg.print(ln)
 		for (v = 0; v < nv; v++)
