@@ -540,7 +540,7 @@ Here are the scripts which are used in a web context:
   contains a regular expression in the 'hash' value ('#' followed by
   a string at the end of the URL).
   This string does a
-  [%%select](http://moinejf.free.fr/abcm2ps-doc/select.xhtml).
+  [%%select](http://moinejf.free.fr/abcm2ps-doc/select.html).
 
 	When one or many tunes are displayed, a menu in the top/right corner
   offers to go back to the tune list or to modify the ABC source.
