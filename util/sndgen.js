@@ -797,7 +797,8 @@ abc2svg.play_next = function(po) {
 				s = s.ts_next
 				if (s.ptim != s.ts_prev.ptim)
 					t = po.stim + s.ptim / po.conf.speed
-			} else if (s.p_dur) {
+			} else {
+			    if (s.p_dur)
 				t += s.pdur / po.conf.speed
 				s = null
 			}
