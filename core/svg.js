@@ -751,19 +751,23 @@ function out_bracket(x, y, h) {
 }
 // hyphen
 function out_hyph(x, y, w) {
-	var	n, a_y,
-		d = 25 + ((w / 20) | 0) * 3
+    var	i,
+	sz = cwidf('-'),			// hyphen width
+	d = 5 * sz,				// expected width between - .. -
+	n = ((w - 2 * sz) / d) | 0
 
-	if (w > 15.)
-		n = ((w - 15) / d) | 0
-	else
-		n = 0;
-	x += (w - d * n - 5) / 2;
-	out_XYAB('<path class="stroke" stroke-width="1.2"\n\
-	stroke-dasharray="5,A"\n\
-	d="mX YhB"/>\n',
-		x, y + 4,		// set the line a bit upper
-		Math.round((d - 5) / stv_g.scale), d * n + 5)
+	if (n < 0)
+		n = 0
+	x += (w - n * d - sz) / 2
+	output += '<text class="' + font_class(gene.curfont)
+		+ '" x="' + sx(x).toFixed(2)
+	i = n
+	while (--n >= 0) {
+		x += d
+		output += "," + sx(x).toFixed(2)
+	}
+	output += '" y="' + sy(y).toFixed(2)
+		+ '">' + '-'.repeat(i + 1) + '</text>\n'
 }
 // stem [and flags]
 function out_stem(x, y, h, grace,
