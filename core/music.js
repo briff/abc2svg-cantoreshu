@@ -2830,6 +2830,33 @@ function set_clefs() {
 	sy = cur_sy,
 	mid = []
 
+	// adjust the pitches when a voice is transposed
+	function adjoct(s) {
+	    var	d, g, m
+
+		if (s.clef_oct_transp == voice_tb[s.v + 1].clef.clef_oct_transp
+		 && s.clef_octave == voice_tb[s.v + 1].clef.clef_octave)
+			return			// keep the transposition
+		s = (s.clef_octave && !s.clef_oct_transp)
+				? s.p_v.sym
+				:  voice_tb[s.v + 1].sym
+		d = s.p_v.clef.clef_octave
+		s.p_v.clef.clef_octave = null
+		while (s) {
+			if (s.type == C.NOTE) {
+				for (m = 0; m <= s.nhd; m++)
+					s.notes[m].pit += d
+			} else if (s.type == C.GRACE) {
+				for (g = s.extra; g; g = g.next)
+					for (m = 0; m <= g.nhd; m++)
+						g.notes[m].pit += d
+			}
+			s = s.next
+		}
+	} // adjoct
+
+	// ----- set_clefs -----
+
 	// create the staff table
 	staff_tb = new Array(nstaff + 1)
 	for (st = 0; st <= nstaff; st++) {
@@ -2881,10 +2908,23 @@ function set_clefs() {
 				p_voice = voice_tb[v];
 				st = sy.voices[v].st;
 				s2 = p_voice.clef
+
+				// if the next voice is in the same staff,
+				// update the pitches if clef +8/-8
+				// and set the clef to auto
+				if (v < voice_tb.length - 1
+				 && sy.voices[v + 1].st == st) {
+					if ((voice_tb[v + 1].clef.clef_octave
+					  && !voice_tb[v + 1].clef.clef_oct_transp)
+					 || (s2.clef_octave
+					  && !s2.clef_oct_transp))
+						adjoct(s2)
+					if (voice_tb[v + 1].clef.clef_type
+							!= s2.clef_type)
+						s2.clef_auto = 1
+				}
+
 				if (s2.clef_auto) {
-//fixme: the staff may have other voices with explicit clefs...
-//					if (!staff_clef[st].autoclef)
-//						???
 					new_type = set_auto_clef(st, s,
 						staff_clef[st].clef ?
 							staff_clef[st].clef.clef_type :
@@ -3041,8 +3081,9 @@ Abc.prototype.set_pitch = function(last_s) {
 		staff_delta[st] = delta_tb[s.clef_type] + s.clef_line * 2
 		if (s.clefpit)
 			staff_delta[st] += s.clefpit
+	    if (s.clef_octave)
 		if (cfmt.sound) {
-			if (s.clef_octave && !s.clef_oct_transp)
+			if (!s.clef_oct_transp)
 				staff_delta[st] += s.clef_octave
 		} else {
 			if (s.clef_oct_transp)
