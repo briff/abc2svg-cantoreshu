@@ -543,6 +543,7 @@ function ToAudio() {
 //  - stim: start time
 //  - repn: don't repeat
 //  - repv: variant number
+//  - repp: current left repeat
 //  - timouts: array of the current timeouts
 //		this array may be used by the upper function in case of hard stop
 //  - p_v: voice table used for MIDI control
@@ -805,6 +806,10 @@ abc2svg.play_next = function(po) {
 			continue
 		}
 		if (s.rep_p) {			// right repeat
+			if (s.rep_p != po.repp) {	// the left repeat changes
+				po.repv = 1
+				po.repp = s.rep_p
+			}
 			if (s.rep_v) {		// if variants
 				n = s.rep_v.length
 			} else {		// else number of ':'s
@@ -819,9 +824,15 @@ abc2svg.play_next = function(po) {
 			po.repn = false
 			po.repv = 1
 		}
-		if (s.rep_s) {			// first variant
+		if (s.rep_s) {			// variant
 			s2 = s.rep_s[po.repv]	// next variant
 			if (s2) {
+				if (s2.rep_p			// same left repeat?
+				 && s2.rep_p != po.repp) {
+					po.repv = 1
+					po.repp = s2.rep_p	// no, update
+					s2 = s.rep_s[po.repv]
+				}
 				po.repn = false
 				if (s2 != s)
 					continue
