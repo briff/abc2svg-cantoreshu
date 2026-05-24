@@ -1,6 +1,6 @@
 // abc2svg - lyrics.js - lyrics
 //
-// Copyright (C) 2014-2025 Jean-Francois Moine
+// Copyright (C) 2014-2026 Jean-François Moine
 //
 // This file is part of abc2svg-core.
 //
@@ -365,15 +365,7 @@ function ly_set(s) {
 
 	// if not room enough, shift the following notes to the right
 	dx -= 6
-//fixme: test
-	if (a_ly[0].ln && dx < wl) {
-		a_ly[0].ln = 0
-		dx += 4
-	}
-
-	if (dx < wx && s2
-//fixme
-	 && n) {
+	if (dx < wx && s2) {
 		dx = (wx - dx) / n
 		s1 = s.ts_next
 		while (1) {
