@@ -3112,8 +3112,8 @@ function draw_sym_near() {
 			y_set(s.st, true, s.x + 16, 32, s.ymx + 2)
 			continue
 		default:
-			y_set(s.st, true, s.x - s.wl, s.wl + s.wr, s.ymx + 2);
-			y_set(s.st, false, s.x - s.wl, s.wl + s.wr, s.ymn - 2)
+			y_set(s.st, true, s.x - s.wl + 2, s.wl + s.wr - 4, s.ymx + 2);
+			y_set(s.st, false, s.x - s.wl + 2, s.wl + s.wr - 4, s.ymn - 2)
 			// fall thru
 		case C.PART:
 		case C.TEMPO:
