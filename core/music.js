@@ -2912,7 +2912,7 @@ function set_clefs() {
 				// if the next voice is in the same staff,
 				// update the pitches if clef +8/-8
 				// and set the clef to auto
-				if (v < voice_tb.length - 1
+				if (sy.voices[v + 1]
 				 && sy.voices[v + 1].st == st) {
 					if ((voice_tb[v + 1].clef.clef_octave
 					  && !voice_tb[v + 1].clef.clef_oct_transp)
