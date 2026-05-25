@@ -347,7 +347,8 @@ function ly_set(s) {
 		ly.shift = shift
 		if (shift > wl)
 			wl = shift		// max left space
-		w += spw * 1.5			// space after the syllable
+	    if (ly.ln != 1)			// (no space for a hyphen)
+		w += spw			// space after the syllable
 		w -= shift			// right width
 		if (w > wx)
 			wx = w			// max width
@@ -432,6 +433,7 @@ function draw_lyric_line(p_voice, j, y) {
 			if (ln == 3) {			// '_'
 				ln = 2
 			} else if (ln < 2) {		// not '-'
+			    if (s.x - shift - lastx > gene.curfont.swfac * .4)
 				out_hyph(lastx, y, s.x - shift - lastx);
 				hyflag = false;
 				lastx = s.x + s.wr
