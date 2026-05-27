@@ -870,7 +870,7 @@ abc2svg.play_next = function(po) {
 		for (i = 0; i < s_p.p_s.length; i++) {
 			if (s_p.p_s[i] == s) {
 				po.i_p = i	// index in the parts
-				po.ps = s.p_s	// array of pointers to P:
+				po.ps = s_p.p_s	// array of pointers to P:
 				return
 			}
 		}
