@@ -378,6 +378,30 @@ error(2, s, "Bad linkage")
 
 /* -- unlink a symbol -- */
 function unlksym(s) {
+	if (tsfirst == s) {		// if first symbol of the line
+		tsfirst = s.ts_next	// just start on the next symbol
+		if (!tsfirst)
+			return		// no symbol anymore
+		tsfirst.ts_prev = null
+//--fixme
+		if (gene.tslast) {
+			s.ts_prev = gene.tslast
+			gene.tslast = s
+		}
+		tsfirst.seqst = 1 //true
+		if (s.p_v.s_prev
+		 && s.p_v.s_prev.next == s) {	// if symbol of the old sequence
+			s.prev = s.p_v.s_prev	// don't unlink
+			s.p_v.s_prev = s
+			s.next.prev = null
+			s.p_v.sym = s.next
+			return
+		}
+		if (s.p_v.sym == s) {
+			s.p_v.sym = s.next
+			return
+		}
+	}
 	if (s.next)
 		s.next.prev = s.prev
 	if (s.prev)
@@ -407,10 +431,6 @@ function unlksym(s) {
 	}
 	if (s.ts_prev)
 		s.ts_prev.ts_next = s.ts_next
-	if (tsfirst == s)
-		tsfirst = s.ts_next
-	if (tsnext == s)
-		tsnext = s.ts_next
 }
 
 /* -- insert a clef change (treble or bass) before a symbol -- */
@@ -5033,7 +5053,8 @@ Abc.prototype.block_gen = function(s) {
 /* -- define the start and end of a piece of tune -- */
 /* tsnext becomes the beginning of the next line */
 function set_piece() {
-    var	s, last, p_voice, st, v, nv, tmp, non_empty,
+    var	s, last, p_voice, st, v, tmp, non_empty,
+	nv = voice_tb.length,
 	non_empty_gl = [],
 	sy = cur_sy
 
@@ -5220,7 +5241,6 @@ function set_piece() {
 		last.ts_next = null;
 
 		// and the end of the voices
-		nv = voice_tb.length
 		for (v = 0; v < nv; v++) {
 			p_voice = voice_tb[v]
 			if (p_voice.sym
@@ -5237,6 +5257,27 @@ function set_piece() {
 			}
 			p_voice.s_next = p_voice.sym;
 			p_voice.sym = null
+		}
+	} else {				// check the 1st symbols of the voices
+		for (v = 0; v < nv; v++) {
+			p_v = voice_tb[v]
+			if (p_v.sym
+			 && p_v.sym.time < tsfirst.time) {	// if old voice
+				p_v.s_next = p_v.sym	// no symbol in this line
+				p_v.sym = null
+			}
+		}
+	}
+
+	// if not the first line, set the starting symbols of the voices
+	if (tsfirst.time) {
+		for (v = 0; v < nv; v++) {
+		    var	p_v = voice_tb[v]
+			if (p_v.sym
+			 && p_v.sym.prev) {
+				p_v.s_prev = p_v.sym.prev
+				p_v.sym.prev = null
+			}
 		}
 	}
 
@@ -5389,20 +5430,17 @@ function set_sym_line() {
 	// set the first symbol of each voice
 	while (--v >= 0) {
 		p_v = voice_tb[v]
-		if (p_v.sym && p_v.s_prev) {
-			p_v.sym.prev = p_v.s_prev
-			p_v.s_prev.next = p_v.sym
+		s = p_v.s_prev			// start
+		if (s) {			// (may be null if time skip)
+			s.next.prev = s
+			p_v.s_prev = null
 		}
 		s = p_v.s_next			// (set in set_piece)
-		p_v.s_next = null
-		p_v.sym = s
 		if (s) {
 			if (s.prev)
 				s.prev.next = s
-			p_v.s_prev = s.prev	// (save for play)
-			s.prev = null
-		} else {
-			p_v.s_prev = null
+			p_v.s_next = null
+			p_v.sym = s
 		}
 	}
 }
@@ -5443,8 +5481,6 @@ function gen_init() {
 			break
 		}
 		unlksym(s)
-		if (s.p_v.s_next == s)
-			s.p_v.s_next = s.next
 	}
 	tsfirst = null			/* no more notes */
 }
@@ -5452,7 +5488,7 @@ function gen_init() {
 /* -- generate the music -- */
 // (possible hook)
 Abc.prototype.output_music = function() {
-    var v, lwidth, indent, lsh, line_height, ts1st, tslast, p_v, meter1,
+    var v, lwidth, indent, lsh, line_height, ts1st, p_v, meter1,
 	nv = voice_tb.length
 
 	set_global()
@@ -5534,20 +5570,20 @@ Abc.prototype.output_music = function() {
 		blk_flush()
 		while (blocks.length)
 			self.block_gen(blocks.shift())
-		if (tslast)
-			tslast.ts_next.ts_prev = tslast
+		if (gene.tslast)			// (don't use tsfirst)
+			gene.tslast.ts_next.ts_prev = gene.tslast
 		if (!tsnext)
 			break
 		tsnext.ts_prev.ts_next =		// (restore for play)
 			tsfirst = tsnext
 
 		// next line
+		gene.tslast = tsfirst.ts_prev
+		tsfirst.ts_prev = null
+		set_sym_line()
 		gen_init()
 		if (!tsfirst)
 			break
-		tslast = tsfirst.ts_prev
-		tsfirst.ts_prev = null;
-		set_sym_line();
 		lwidth = get_lwidth()	// the image size may have changed
 	}
 
@@ -5558,9 +5594,15 @@ Abc.prototype.output_music = function() {
 	v = nv
 	while (--v >= 0) {
 		p_v = voice_tb[v]
-		if (p_v.sym && p_v.s_prev)
-			p_v.sym.prev = p_v.s_prev
+		if (p_v.s_prev)		// restore link start line to previous line
+			p_v.s_prev.next.prev = p_v.s_prev
 		p_v.sym = p_v.osym
+		if (p_v.sym) {
+			if (p_v.sym.next)
+			        p_v.sym.next.prev = p_v.sym
+			if (p_v.sym.ts_next)
+			        p_v.sym.ts_next.ts_prev = p_v.sym
+		}
 	}
 	ts1st.p_v.meter = meter1
 }
