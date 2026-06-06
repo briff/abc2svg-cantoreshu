@@ -2102,7 +2102,7 @@ function draw_measnb() {
 		default:
 			continue
 		case C.BAR:
-			if (!s.bar_num || s.bar_num <= 1)
+			if (!s.bar_num)
 				continue
 			break
 		}
