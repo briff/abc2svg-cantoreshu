@@ -576,9 +576,6 @@ function tosvg(in_fname,		// file name
 					delete parse.select
 					continue
 				}
-				select = select.replace(/\(/g, '\\(');
-				select = select.replace(/\)/g, '\\)');
-//				select = select.replace(/\|/g, '\\|');
 				parse.select = new RegExp(select, 'm')
 				continue
 			case "tune":
