@@ -741,6 +741,10 @@ function draw_meter(s) {
 	p_staff = staff_tb[s.st],
 	y = p_staff.y
 
+	if (tsnext
+	 && s.time == tsnext.time)		// if the meter changes at end of line
+		insert_meter = 1 ///true	// draw it at start of next line
+
 	// adjust the vertical offset according to the staff definition
 	if (p_staff.stafflines != '|||||')
 		y += (p_staff.topbar + p_staff.botbar) / 2 - 12	// bottom
