@@ -1327,7 +1327,7 @@ function add_end_bar(s) {
 //	if (s.ts_next)
 		s.ts_next.ts_prev = b
 	s.next = s.ts_next = b
-	b.shrink = sn.shrink
+	b.shrink = s.wr + b.wl
 	sn.shrink = sn.wl + 10
 	b.space = sn.space * .9 - 3
 }
@@ -1873,104 +1873,109 @@ function set_nl(s) {			// s = start of line
 	// put the warning symbols
 	// the new symbols go in the previous line
 	function do_warn(s) {		// start of next line
-	    var s1, s2, s3, s4, w
+	    var s1, s2, s3, s4, s5, i, type,
+		nl = s,			// new next line
+		sym_a = []
 
-		// advance in the next line
-		for (s2 = s; s2 && s2.time == s.time; s2 = s2.ts_next) {
-			switch (s2.type) {
+		// go backwards in the current line
+		// and find the clefs, keys, meters and bars
+		for (s1 = s.ts_prev; s1 && s1.time == s.time; s1 = s1.ts_prev) {
+			if (s1.type == C.CLEF
+			  || s1.type == C.KEY
+			  || s1.type == C.METER)
+				sym_a.push(s1)
+			else if (s1.bar_type && s1.seqst)
+				s3 = s1
+		}
+
+		if (!s3)			// set the insert point of the clefs
+			s3 = s1.ts_next
+		else if (s3.bar_type[0] == ":")
+			s3 = s3.next
+				
+		// advance in the next line and move the clefs, keys and meters
+		// that must show a warning
+next_sym:	for (s2 = s; s2 && s2.time == s.time; s2 = s2.ts_next) {
+			type = s2.type
+			switch (type) {
+			default:
+				continue
 			case C.KEY:
-				if (!s2.fmt.keywarn
-				 || s2.invis)
-					continue
-				for (s1 = s.ts_prev; s1 ;s1 = s1.ts_prev) {
-					if (s1.type != C.METER)
-						break
-				}
-				// fall thru
+				if (s2.fmt.keywarn
+				 && !s2.invis)
+					break
+				continue
 			case C.METER:
-				if (s2.type == C.METER) {
-					if (!s.fmt.timewarn)
-						continue
-					s1 = s.ts_prev
-				}
-				// fall thru
+				if (s2.fmt.timewarn)
+					break
+				continue
 			case C.CLEF:
-				if (!s2.prev)		// start of voice
-					continue
-				if (s2.type == C.CLEF) {
-					if (s2.clef_none) // if 'K: clef=none' after bar
-						break
-					for (s1 = s.ts_prev; s1; s1 = s1.ts_prev) {
-						switch (s1.type) {
-						case C.BAR:
-							if (s1.bar_type[0] == ':')
-								break
-							// fall thru
-						case C.KEY:
-						case C.METER:
-							continue
-						}
-						break
-					}
-				}
-
-				// put the warning symbol at end of line
-				s3 = clone(s2)		// duplicate the K:/M:/clef
-
-				lktsym(s3, s1.ts_next)	// time link
-
-				s1 = s3
-				while (1) {
-					s1 = s1.ts_next
-					if (s1.v == s2.v)
-						break
-				}
-				lkvsym(s3, s1)		// voice link
-
-				// care with spacing
-				if (s3.seqst) {
-					self.set_width(s3)
-					s3.shrink = s3.wl
-					s4 = s3.ts_prev
-					w = 0
-					while (1) {
-						if (s4.wr > w)
-							w = s4.wr
-						if (s4.seqst)
-							break
-						s4 = s4.ts_prev
-					}
-					s3.shrink += w
-					s3.space = 0
-					s4 = s3
-					while (1) {
-						if (s4.ts_next.seqst)
-							break
-						s4 = s4.ts_next
-					}
-					w = 0
-					while (1) {
-						if (s4.wl > w)
-							w = s4.wl
-						s4 = s4.ts_next
-						if (s4.seqst)
-							break
-					}
-					s4.shrink = s3.wr + w
-				}
-				delete s3.part
+				if (!s2.clef_none)	// if 'K: clef=none' after bar
+					break
 				continue
 			}
-			if (w_tb[s2.type])
-				break		// symbol with a width
+
+			for (i = 0; i < sym_a.length; i++) {
+				if (sym_a[i].v == s2.v	// if already in current line
+				 && sym_a[i].type == type)
+					continue next_sym
+			}
+
+			s1 = type == C.CLEF ? s3 : nl	// move point
+
+			if (s2 == s1) {			// if move to the same point
+				while (s2.ts_next && s2.ts_next.type == type)
+					s2 = s2.ts_next
+				nl = s2.ts_next		// move the start of next line
+				continue
+			}
+
+			// move the symbols to the current line
+			for (s4 = s2;
+			     s4.type == type;
+			     s4 = s4.ts_next) {
+				for (s5 = s1; s5.v != s4.v; s5 = s5.ts_next)
+					;
+				s4.prev.next=s4.next		// symbol linkage
+				s4.next.prev=s4.prev
+				s4.prev = s5.prev
+				s4.prev.next = s4
+				s5.prev = s4
+				s4.next = s5
+			}
+
+			s5 = s4.ts_prev
+			// sx <-> s2 .. s5 <-> s4
+			// ==> sx <-> sy
+			s2.ts_prev.ts_next = s4
+			s4.ts_prev = s2.ts_prev
+			// s1.ts_prev <-> s2 .. s5 <-> s1
+			s1.ts_prev.ts_next = s2
+			s2.ts_prev = s1.ts_prev
+			s1.ts_prev = s5
+			s5.ts_next = s1
+
+			s2 = s4
 		}
+
+		// adjust the spacing if the start of new line moved
+		if (nl != s) {
+			if(!nl.seqst) {
+				nl.seqst = 1 //true
+				nl.shrink = nl.wl + nl.prev.wr
+			}
+			nl.ts_prev.ts_next = null
+			set_allsymwidth(s)
+			nl.ts_prev.ts_next = nl
+		}
+		return nl
 	} // do_warn()
 
 	// divide the left repeat and variant bars
 	s = bardiv(s)
 
 	// add the warning symbols at the end of the previous line
-	do_warn(s)
+	s = do_warn(s)
 
 	/* if normal symbol, cut here */
 	if (s.ts_prev.type != C.STAVES) {
