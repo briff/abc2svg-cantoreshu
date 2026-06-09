@@ -97,6 +97,7 @@ H "History: "',
 	rbmin: 2,
 	repeatfont: {name: txt_ff, size: 9},
 	scale: 1,
+//	shrinksys: 0,
 	slurheight: 1.0,
 	spatab: 	// spacing table (see "notespacingfactor" and set_space())
 		new Float32Array([	// default = "1.3, 38"
@@ -155,6 +156,7 @@ measrepnb: true,
 rbmax: true,
 rbmin: true,
 shiftunison: true,
+shrinksys: 1, //true
 slurheight: true,
 squarebreve: true,    
 staffsep: true,
@@ -636,6 +638,7 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "maxsysstaffsep":
 	case "musicspace":
 	case "partsspace":
+	case "shrinksys":
 	case "staffsep":
 	case "subtitlespace":
 	case "sysstaffsep":

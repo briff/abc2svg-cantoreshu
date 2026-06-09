@@ -1431,7 +1431,11 @@ function svg_flush() {
 		i = 1			// header and first music line
 		blkdiv = 0
 	}
+	if (fmt.shrinksys)
+		user.img_out(`<div style="height:${posy - fmt.shrinksys}px">`)
 	user.img_out(head + output + g + "</svg>");
+	if (fmt.shrinksys)
+		user.img_out("</div>")
 	if (i)
 		user.img_out("</div>")
 	output = ""
