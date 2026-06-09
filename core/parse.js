@@ -1116,6 +1116,7 @@ function do_info(info_type, text) {
 		switch (info_type) {
 		default:
 			return
+		case 'L':
 		case 'P':
 		case 'Q':
 		case 'V':
