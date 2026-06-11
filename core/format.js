@@ -57,6 +57,7 @@ var cfmt = {
 	footerfont: { name: txt_ff, size: 16 },
 	fullsvg: '',
 	gchordfont: { name: "text,sans-serif", size: 12 },
+//	gracedur: null,
 	gracespace: new Float32Array([6, 8, 11]),	// left, inside, right
 	graceslurs: true,
 	headerfont: { name: txt_ff, size: 16 },
@@ -147,6 +148,7 @@ bstemdown: true,
 cancelkey: true,
 dynalign: true,
 flatbeams: true,
+gracedur: 1, //true
 gracespace: true,
 hyphencont: true,
 keywarn: true,
@@ -554,6 +556,7 @@ Abc.prototype.set_format = function(cmd, param) {
 		break
 	case "beamslope":
 	case "breaklimit":			// float values
+	case "gracedur":
 	case "lineskipfac":
 	case "maxshrink":
 	case "pagescale":

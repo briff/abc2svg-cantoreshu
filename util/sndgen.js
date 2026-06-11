@@ -306,6 +306,8 @@ function ToAudio() {
 			} else {
 				d = prev.dur / 2
 			}
+			if (s.fmt.gracedur != null)
+				d *= s.fmt.gracedur
 			s2 = s.ts_next			// (the grace note will move)
 			relink(s, -d)
 			s.ptim -= d / play_fac
@@ -324,6 +326,8 @@ function ToAudio() {
 			if (s.sappo		// (appogiatura at start of tune!)
 			 && d > C.BLEN / 16)
 				d = C.BLEN / 16
+			if (s.fmt.gracedur != null)
+				d *= s.fmt.gracedur
 			relink(next, d)
 			s2 = s.ts_next			// (the normal note moved)
 		}
