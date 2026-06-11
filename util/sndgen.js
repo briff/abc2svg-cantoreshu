@@ -245,18 +245,15 @@ function ToAudio() {
 		if (dt < 0) {			// if move backwards the grace notes
 			s2 = s
 			do {
-				s = s.prev
-			} while (s && !s.dur)
-			if (s) {
-				s.dur += dt
-				s.pdur = s.dur / play_fac
-				if (s.ts_next == s2) {
-					s2 = null	// no linkage change
-				} else {
-					s = s2.ts_prev
-					while (s && s.time >= s2.time)
-						s = s.ts_prev
-				}
+				s2 = s2.prev
+			} while (s2 && !s2.dur)
+			if (s2) {
+				s2.dur += dt
+				s2.pdur = s2.dur / play_fac
+				while (s2 && s2.time >= s.time)
+					s2 = s2.prev
+				if (s2)
+					s2 = s2.next
 			}
 		} else {
 			s2 = s.ts_next
@@ -265,7 +262,7 @@ function ToAudio() {
 		}
 
 		// update the time linkage
-		if (s2) {
+		if (s2 && s2 != s.ts_next) {
 			s.ts_prev.ts_next = s.ts_next	// remove from the time linkage
 			if (s.ts_next)
 				s.ts_next.ts_prev = s.ts_prev
