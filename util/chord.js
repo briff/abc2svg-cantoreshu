@@ -844,15 +844,6 @@ abc2svg.genchrd = function(first,	// first symbol in time
 		}
 	}
 
-	// define the MIDI channel
-	k = 0
-	for (i = 0; i < voice_tb.length; i++) {
-		if (k < voice_tb[i].chn)
-			k = voice_tb[i].chn
-	}
-	if (k == 9)
-		k++			// skip the channel 10
-
 	// create the chord voice
 	vch = {
 		v: voice_tb.length,
@@ -861,7 +852,7 @@ abc2svg.genchrd = function(first,	// first symbol in time
 		sym: {
 			type: C.BLOCK,
 			subtype: "midiprog",
-			chn: k + 1,
+			chn: 15,				// MIDI channel
 			instr: cfmt.chord.prog || 0,
 			time: 0,
 			dur: 0,
