@@ -85,9 +85,10 @@ function ToAudio() {
 	// create the starting beats
 	function def_beats() {
 	    var	i, s2, s3, tim,
+		nb,				// number of beats
+		npv = cfmt.playbeats.split(/\s+/),
 		beat = get_beat(),		// time between two beats
 		d = first.p_v.meter.wmeasure,	// duration of a measure
-		nb = d / beat | 0,		// number of beats in a measure
 		v = voice_tb.length,		// beat voice number
 		p_v = {				// voice for the beats
 			id: "_beats",
@@ -119,13 +120,18 @@ function ToAudio() {
 			}]
 		}
 
-		abc_time = -d			// start time of the beat ticks
+		i = Number(npv[0])		// number of measures
+		if (!isNaN(i))
+			d *= i
+		i = Number(npv[1])		// drum instrument
+		if (!isNaN(i))
+			s.notes[0].midi = i
 
 		// check for an anacrusis
 		for (s2 = first; s2; s2 = s2.ts_next) {
 			if (s2.bar_type && s2.time) {
-				nb = (2 * d - s2.time) / beat | 0
-				abc_time -= d - s2.time
+				nb = (d + first.p_v.meter.wmeasure - s2.time) / beat | 0
+				abc_time = -beat * nb	// start time of the beat ticks
 				break
 			}
 		}
