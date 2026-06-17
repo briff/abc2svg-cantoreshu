@@ -268,7 +268,9 @@ function ToAudio() {
 		}
 
 		// update the time linkage
-		if (s2 && s2 != s.ts_next) {
+		if (s2
+		 && s2 != s
+		 && s2 != s.ts_next) {
 			s.ts_prev.ts_next = s.ts_next	// remove from the time linkage
 			if (s.ts_next)
 				s.ts_next.ts_prev = s.ts_prev
