@@ -149,6 +149,7 @@ var decos = {
 	"~)": "8 glisq 0 0 0",
 // internal
 //	color: "10 0 0 0 0",
+//	color: "11 0 0 0 0",
 	invisible: "32 0 0 0 0",
 	beamon: "33 0 0 0 0",
 	trem1: "34 0 0 0 0",
@@ -715,7 +716,7 @@ function deco_def(nm, nmd) {
 		error(1, null, "%%deco: bad C function value '$1'", a[1])
 		return //undefined
 	}
-	if (c_func > 10
+	if (c_func > 11
 	 && (c_func < 32 || c_func > 45)) {
 		error(1, null, "%%deco: bad C function index '$1'", c_func)
 		return //undefined
@@ -974,6 +975,8 @@ function deco_cnv(s, prev) {
 			} else {
 				s.color = nm
 			}
+			break
+		case 11:
 			break
 		case 32:		/* invisible */
 			s.invis = true
@@ -1244,6 +1247,7 @@ Abc.prototype.draw_all_deco = function() {
 	if (!a_de.length)
 		return
 	var	de, dd, s, note, f, st, x, y, y2, ym, uf, i, str, a,
+		ocol,
 		new_de = [],
 		ymid = []
 
@@ -1308,6 +1312,18 @@ Abc.prototype.draw_all_deco = function() {
 
 		if (dd.dd_en)			// start of long decoration
 			continue
+
+		if (dd.func == 11) {	// set deco color
+			if (ocol) {
+				set_color(ocol)
+				ocol = 0
+			}
+			if (/^#0+$/.test(dd.name))	// if black
+				set_color(0)
+			else
+				ocol = set_color(dd.name)
+			continue
+		}
 
 		// handle the stem direction
 		s = de.s
@@ -1466,7 +1482,8 @@ function draw_deco_near() {
 			y = s.y
 			switch (dd.func) {
 			default:
-				if (dd.func >= 10)
+				if (dd.func >= 10
+				 && dd.func != 11)
 					continue
 				pos = 0
 				break
