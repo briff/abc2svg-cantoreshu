@@ -1417,7 +1417,8 @@ function new_bar() {
 		s2 = curvoice.last_sym
 
 		// if the previous symbol is also a bar
-		if (s2 && s2.type == C.BAR) {
+		if (s2 && s2.type == C.BAR
+		 && !s2.text) {
 //		&& !s2.a_gch && !s2.a_dd
 //		&& !s.a_gch && !s.a_dd) {
 
