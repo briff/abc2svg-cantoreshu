@@ -1936,6 +1936,8 @@ next_sym:	for (s2 = s; s2 && s2.time == s.time; s2 = s2.ts_next) {
 			     s4 = s4.ts_next) {
 				for (s5 = s1; s5.v != s4.v; s5 = s5.ts_next)
 					;
+				if (s4 == s5)
+					continue
 				s4.prev.next=s4.next		// symbol linkage
 				s4.next.prev=s4.prev
 				s4.prev = s5.prev
