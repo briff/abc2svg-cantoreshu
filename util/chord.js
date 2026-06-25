@@ -604,6 +604,10 @@ abc2svg.genchrd = function(first,	// first symbol in time
 	    var	r, ch, b, m, n, nt,
 		a = sb.a_gch[i].otext
 
+		if (a[0] == 'n' || a[0] == 'N') {	// if no chord (N.C.)
+			chmid = []
+			return
+		}
 		if (a.slice(-1) == ')')			// if alternate chord
 			a = a.replace(/\(.*/, '')	// remove it
 		a = a.replace(/\(|\)|\[|\]/g,'')	// remove ()[]
@@ -615,8 +619,6 @@ abc2svg.genchrd = function(first,	// first symbol in time
 			return
 
 		r = abc2svg.letmid[a[1]]		// root
-		if (r == undefined)			// "N" or no chord
-			return
 
 			switch (a[2]) {
 			case "#": r++; break
@@ -916,7 +918,8 @@ abc2svg.genchrd = function(first,	// first symbol in time
 				if (s.a_gch[i].type != 'g')
 					continue
 				gench(s, i)
-				if (rhy[0] == '+')
+				if (rhy[0] == '+'
+				 && chmid.length)
 					nextim = s.time
 				break
 			}
