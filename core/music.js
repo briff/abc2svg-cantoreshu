@@ -1909,10 +1909,8 @@ next_sym:	for (s2 = s; s2 && s2.time == s.time; s2 = s2.ts_next) {
 				if (s2.fmt.timewarn)
 					break
 				continue
-			case C.CLEF:
-				if (!s2.clef_none)	// if 'K: clef=none' after bar
-					break
-				continue
+//			case C.CLEF:
+//				break
 			}
 
 			for (i = 0; i < sym_a.length; i++) {
@@ -1920,19 +1918,26 @@ next_sym:	for (s2 = s; s2 && s2.time == s.time; s2 = s2.ts_next) {
 				 && sym_a[i].type == type)
 					continue next_sym
 			}
+			sym_a.push(s2)
 
 			s1 = type == C.CLEF ? s3 : nl	// move point
 
+			if (s2 == nl) {
+				do {
+					nl = nl.ts_next
+				} while (nl.type == type && !nl.seqst)
+			}
+
 			if (s2 == s1) {			// if move to the same point
-				while (s2.ts_next && s2.ts_next.type == type)
+				while (s2.ts_next && s2.ts_next.type == type
+				    && !s2.ts_next.seqst)
 					s2 = s2.ts_next
-				nl = s2.ts_next		// move the start of next line
 				continue
 			}
 
 			// move the symbols to the current line
-			for (s4 = s2;
-			     s4.type == type;
+			for (s4 = s2.ts_next;
+			     s4.type == type && !s4.seqst;
 			     s4 = s4.ts_next) {
 				for (s5 = s1; s5.v != s4.v; s5 = s5.ts_next)
 					;
