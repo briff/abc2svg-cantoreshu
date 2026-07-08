@@ -1337,7 +1337,7 @@ function add_end_bar(s) {
 // and once more for each new music line
 function set_allsymwidth(first) {
     var	val, st, s_chs, stup, itup,
-	s = tsfirst,
+	s = first || tsfirst,
 	s2 = s,
 	xa = 0,
 	xl = [],
@@ -1379,7 +1379,7 @@ function set_allsymwidth(first) {
 			s2.space = s2.ts_prev.space /= 2
 
 		if (itup) {
-			if (!first)
+			if (first)		// if not the first time
 				break
 			if (!stup)
 				stup = s2
@@ -3796,7 +3796,7 @@ function init_music_line() {
 			;
 	s2 = s.ts_next
 	s.ts_next = null
-	set_allsymwidth()
+	set_allsymwidth(tsfirst)
 	s.ts_next = s2
 } // init_music_line()
 
@@ -5517,7 +5517,7 @@ Abc.prototype.output_music = function() {
 		set_rest_offset();	/* set the vertical offset of rests */
 		set_overlap();		/* shift the notes on voice overlap */
 	}
-	set_allsymwidth(1)		// set the width of all symbols
+	set_allsymwidth()		// set the width of all symbols
 
 	// output the blocks and define the page layout
 	gen_init()
