@@ -1909,8 +1909,8 @@ next_sym:	for (s2 = s; s2 && s2.time == s.time; s2 = s2.ts_next) {
 				if (s2.fmt.timewarn)
 					break
 				continue
-//			case C.CLEF:
-//				break
+			case C.CLEF:
+				break
 			}
 
 			for (i = 0; i < sym_a.length; i++) {
