@@ -1962,18 +1962,18 @@ next_sym:	for (s2 = s; s2 && s2.time == s.time; s2 = s2.ts_next) {
 			s1.ts_prev = s5
 			s5.ts_next = s1
 
-			s2 = s4
-		}
-
-		// adjust the spacing if the start of new line moved
-		if (nl != s) {
-			if(!nl.seqst) {
-				nl.seqst = 1 //true
-				nl.shrink = nl.wl + nl.prev.wr
+			// adjust the spacing
+			if (!s2.seqst) {
+				s2.seqst = 1 //true
+				s4.seqst = 0
+				for (s5 = s2.ts_prev; !s5.seqst; s5 = s5.ts_prev)
+					;
+				s4.ts_prev.ts_next = null
+				set_allsymwidth(s5)
+				s4.ts_prev.ts_next = s4
 			}
-			nl.ts_prev.ts_next = null
-			set_allsymwidth(s)
-			nl.ts_prev.ts_next = nl
+
+			s2 = s4
 		}
 		return nl
 	} // do_warn()
