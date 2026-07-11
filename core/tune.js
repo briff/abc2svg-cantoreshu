@@ -1580,7 +1580,7 @@ function get_staves(cmd, parm) {
 		if (p_voice.time > maxtime)
 			maxtime = p_voice.time
 	}
-	if (staves_found < 0) {				// if first %%staves
+	if (!maxtime) {				// if %%staves at start of tune
 		par_sy.staves = []
 		par_sy.voices = []
 	} else {
