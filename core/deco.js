@@ -364,6 +364,13 @@ function d_near(de) {
 		y -= dd.h
 		s.ymn = y - dd.hd
 	}
+
+	// shift the dot
+	if (dd.glyph == "stc" && !s.a_dd[1]		// if alone on the note,
+	 && !(s.beam_st && s.beam_end)			// on a beam
+	 && ((up && s.stem >= 0) || (!up && s.stem < 0))) // and in the same direction
+		de.x += up ? 3.5 : -3.5
+
 	de.x -= dd.wl
 	de.y = y
 	if (s.type == C.NOTE)
