@@ -2526,11 +2526,8 @@ function draw_tuplet(s1) {
 	set_dscale(dir == C.SL_ABOVE ? stu : std)
 
 	if (s1 == s2				// tuplet with 1 note (!)
-	 || tp.f[1] == 2) {			// what == nothing
+	 || tp.f[1] >= 1) {			// 'with' == nothing or slur
 		nb_only = true
-	} else if (tp.f[1] == 1) {			/* 'what' == slur */
-		nb_only = true;
-		draw_slur([s1, s2], {ty: dir})
 	} else {
 
 		/* search if a bracket is needed */
@@ -2583,7 +2580,7 @@ function draw_tuplet(s1) {
 
 	/* if number only, draw it */
 	if (nb_only) {
-		if (tp.f[2] == 1)		/* if 'which' == none */
+		if (tp.f[2] == 1)		/* if 'what' == none */
 			return
 		set_font("tuplet")
 		xm = (s2.x + s1.x) / 2
@@ -2594,10 +2591,13 @@ function draw_tuplet(s1) {
 					gene.curfont.size
 
 		if (s1.stem * s2.stem > 0) {
-			if (s1.stem > 0)
-				xm += 4
-			else
-				xm -= 4
+			if (s1.stem > 0) {
+				if (dir == C.SL_ABOVE)
+					xm += 3
+			} else {
+				if (dir != C.SL_ABOVE)
+					xm -= 3
+			}
 		}
 
 		yy = ym + gene.curfont.size * .22
@@ -2620,10 +2620,14 @@ function draw_tuplet(s1) {
 				s3.ymn = ym;
 			y_set(std, 0, xm - 3, 6, ym)
 		}
+
+		// if any, draw the slur now
+		if (tp.f[1] == 1)			// 'with' == slur
+			draw_slur([s1, s3, s2], {ty: dir})
 		return
 	}
 
-	// here, 'what' is square bracket
+	// here, 'with' is square bracket
 
 /*fixme: two staves not treated*/
 /*fixme: to optimize*/
