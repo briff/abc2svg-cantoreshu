@@ -4266,6 +4266,8 @@ function same_head(s1, s2) {
 	}
 	if (s1.stem * s2.stem > 0)
 		return false
+	if ((s1.tp || s2.tp) && l1 != l2)
+		return
 
 	/* check if a common unison */
 	i1 = i2 = 0
