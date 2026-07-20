@@ -2833,7 +2833,7 @@ function draw_tie(not1, not2,
 				// 3: no start for clef or staff change
     var	m, x1, s, y, h, time,
 	p = job == 2 ? not1.pit : not2.pit,
-	dir = (not1.tie_ty & 0x07) == C.SL_ABOVE ? 1 : -1,
+	dir = (not1.tie_ty & 0x07) == C.SL_BELOW ? -1 : 1,
 	s1 = not1.s,
 	st = s1.st,
 	s2 = not2.s,
@@ -4325,9 +4325,6 @@ function set_tie_room() {
 	for (v = 0; v < voice_tb.length; v++) {
 		p_voice = voice_tb[v];
 		s = p_voice.sym
-		if (!s)
-			continue
-		s = s.next
 		if (!s)
 			continue
 		set_tie_dir(s)
