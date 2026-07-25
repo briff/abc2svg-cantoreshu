@@ -1,6 +1,6 @@
 // abcweb-1.js file to include in html pages
 //
-// Copyright (C) 2014-2025 Jean-Francois Moine
+// Copyright (C) 2014-2026 Jean-François Moine
 //
 // This file is part of abc2svg.
 //
@@ -314,6 +314,11 @@ Printing may be bad because the file contains pure HTML and %%pageheight\
 
 			// start the generation
 			outb = err = ""
+			if (!ix			// if global parameters
+			 && abc2svg.a_inc && abc2svg.a_inc["default.abc"])
+				abc.tosvg("default.abc",
+						abc2svg.a_inc["default.abc"])
+		    if (t)
 			abc.tosvg(mu.n, t)	// music source
 
 			// mu.d can be null when parameters in query string
@@ -527,8 +532,7 @@ function clean_txt(txt) {
 	abc = new abc2svg.Abc(abc2svg.user)
 	if (typeof follow == "function")	// if snd-1.js loaded
 		follow(abc, abc2svg.user, playconf)	// initialize the play follow
-	if (abc2svg.music[0].t)
-		musgen(0)			// global definitions
+	musgen(0)				// global definitions
 
 	// create a list of all <div>'s
 	abc2svg.alldiv = []
@@ -579,8 +583,7 @@ abc2svg.set_music = function(d, t) {
 
 			// copy the old tunes to the new instance
 			abc2svg.abc.tunes.push.apply(abc2svg.abc.tunes, tunes)
-			if (abc2svg.music[0].t)
-				abc2svg.musgen(0)	// global definitions
+			abc2svg.musgen(0)		// global definitions
 			abc2svg.musgen(i)
 			break
 		}

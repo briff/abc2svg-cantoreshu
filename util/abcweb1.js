@@ -1,6 +1,6 @@
 // abcweb1-1.js file to include in html pages for rendering the ABC music
 //
-// Copyright (C) 2019-2025 Jean-Francois Moine
+// Copyright (C) 2019-2026 Jean-François Moine
 //
 // This file is part of abc2svg.
 //
@@ -327,6 +327,10 @@ onclick="abc2svg.do_render(\'.*\')">' + tt +
 			abc.tosvg(app, "%%select " + select)
 			window.location.hash = encodeURIComponent(select)
 		}
+		if (abc2svg.a_inc && abc2svg.a_inc["default.abc"])
+			abc.tosvg("default.abc", abc2svg.a_inc["default.abc"])
+
+		// generate the page
 		try {
 			abc.tosvg(app, page)
 		} catch (e) {
