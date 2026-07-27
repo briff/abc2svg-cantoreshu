@@ -399,7 +399,11 @@ Printing may be bad because the file contains pure HTML and %%pageheight\
 		abc = abc2svg.abc	// reload the Abc instance after edition
 
 		// load the required modules and the include files before rendering
-		if (abc2svg.modules.load(t, include))
+		if (abc2svg.modules.load(
+				!ix && abc2svg.a_inc && abc2svg.a_inc["default.abc"]
+					? abc2svg.a_inc["default.abc"]
+					: t,
+				include))
 			include()
 	} // musgen()
 

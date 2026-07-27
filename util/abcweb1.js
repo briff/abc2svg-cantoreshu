@@ -533,7 +533,11 @@ onclick="abc2svg.do_render(\'.*\')">' + tt +
 	abc2svg.abc_end = function() {}
 
 	// load the required modules, then render the music
-	if (abc2svg.modules.load(page, include))
+	if (abc2svg.modules.load(
+			abc2svg.a_inc && abc2svg.a_inc["default.abc"]
+				? abc2svg.a_inc["default.abc"]
+				: page,
+			include))
 		include()
 } // dom_loaded()
 
