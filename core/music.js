@@ -379,15 +379,14 @@ error(2, s, "Bad linkage")
 /* -- unlink a symbol -- */
 function unlksym(s) {
 	if (tsfirst == s) {		// if first symbol of the line
+		if (gene.tslast) {
+			s.ts_prev = gene.tslast
+			gene.tslast = s	// new end of previous line
+		}
 		tsfirst = s.ts_next	// just start on the next symbol
 		if (!tsfirst)
 			return		// no symbol anymore
 		tsfirst.ts_prev = null
-//--fixme
-		if (gene.tslast) {
-			s.ts_prev = gene.tslast
-			gene.tslast = s
-		}
 		tsfirst.seqst = 1 //true
 		if (s.p_v.s_prev
 		 && s.p_v.s_prev.next == s) {	// if symbol of the old sequence
