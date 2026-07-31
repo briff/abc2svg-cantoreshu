@@ -552,7 +552,8 @@ abc2svg.get_music = function(d) {
 
 	for (var i = 1; i < abc2svg.music.length; i++) {
 		mu = abc2svg.music[i]
-		if (mu.d == d)
+		if (mu.d == d
+		 || mu.d == d.parentNode)
 			return mu.t
 	}
 //	return ""
@@ -579,7 +580,8 @@ abc2svg.set_music = function(d, t) {
 
 	for (i = 1; i < abc2svg.music.length; i++) {
 		mu = abc2svg.music[i]
-		if (mu.d == d) {
+		if (mu.d == d
+		 || mu.d == d.parentNode) {
 			mu.t = t
 			tunes = abc2svg.abc.tunes
 			tune_purge(mu)
