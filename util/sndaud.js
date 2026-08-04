@@ -195,6 +195,8 @@ function Audio5(i_conf) {
 //fixme: what when many instruments?
 		    if (!gen.instrument)
 			continue
+		    if (gen.velRange?.lo > 1)
+			continue		// ignore loud samples
 
 		    infos = get_instr(gen.instrument.amount).info
 		    for (i = 0; i < infos.length; i++) {
@@ -202,8 +204,7 @@ function Audio5(i_conf) {
 
 			// check if already a generator for this key range
 			j = gen.keyRange.lo
-			parm = params[instr][j]
-			parm =  Object.create(parm || gparm)
+			parm = {}
 
 			if (gen.attackVolEnv)
 				parm.attack = Math.pow(2,
@@ -228,6 +229,8 @@ function Audio5(i_conf) {
 		    if (gen.sampleID) {
 			sid = gen.sampleID.amount
 			sample_hdr = sf2par.sampleHeader[sid]
+			if (sample_hdr.sampleType == 2)		// if stereo left
+				continue
 			sample = sf2par.sample[sid]
 			parm.buffer = ac.createBuffer(1,
 						sample.length,
@@ -254,9 +257,12 @@ function Audio5(i_conf) {
 		    }
 
 			for (j = gen.keyRange.lo; j <= gen.keyRange.hi; j++) {
+			    if (gen.sampleID)
 				rates[instr][j] = Math.pow(Math.pow(2, 1 / 12),
 							(j + tune) * scale)
-				params[instr][j] = parm
+				if (!params[instr][j])
+					params[instr][j] = {...gparm}
+				Object.assign(params[instr][j], parm)
 			}
 		    }
 		}
