@@ -256,6 +256,8 @@ function Audio5(i_conf) {
 		    }
 
 			for (j = gen.keyRange.lo; j <= gen.keyRange.hi; j++) {
+				if (params[instr][j]?.buffer)
+					continue		// use the first sample
 			    if (gen.sampleID)
 				rates[instr][j] = Math.pow(Math.pow(2, 1 / 12),
 							(j + tune) * scale)
