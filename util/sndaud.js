@@ -223,8 +223,6 @@ function Audio5(i_conf) {
 //						gen.releaseVolEnv.amount / 1200)
 			if (gen.initialAttenuation)
 				parm.atte = gen.initialAttenuation / 10		// in dB
-			if (gen.sampleModes && gen.sampleModes.amount & 1)
-				parm.sm = 1
 
 		    if (gen.sampleID) {
 			sid = gen.sampleID.amount
@@ -238,7 +236,8 @@ function Audio5(i_conf) {
 
 			sample_cp(parm.buffer, sample)
 
-			if (parm.sm) {
+			if (gen.sampleModes?.amount & 1) {	// sample loop?
+				parm.sm = 1
 				parm.loopStart = sample_hdr.startLoop /
 					sample_hdr.sampleRate
 				parm.loopEnd = sample_hdr.endLoop /
