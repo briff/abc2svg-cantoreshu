@@ -238,10 +238,14 @@ function Audio5(i_conf) {
 
 			if (gen.sampleModes?.amount & 1) {	// sample loop?
 				parm.sm = 1
-				parm.loopStart = sample_hdr.startLoop /
-					sample_hdr.sampleRate
-				parm.loopEnd = sample_hdr.endLoop /
-					sample_hdr.sampleRate
+				parm.loopStart =
+					(sample_hdr.startLoop
+					 + gen.startloopAddrsOffset?.amount)
+						/ sample_hdr.sampleRate
+				parm.loopEnd =
+					(sample_hdr.endLoop
+					 + gen.endloopAddrsOffset?.amount)
+						/ sample_hdr.sampleRate
 			}
 
 			// define the notes
