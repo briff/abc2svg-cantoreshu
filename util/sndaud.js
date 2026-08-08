@@ -240,11 +240,11 @@ function Audio5(i_conf) {
 				parm.sm = 1
 				parm.loopStart =
 					(sample_hdr.startLoop
-					 + gen.startloopAddrsOffset?.amount || 0)
+					 + (gen.startloopAddrsOffset?.amount || 0))
 						/ sample_hdr.sampleRate
 				parm.loopEnd =
 					(sample_hdr.endLoop
-					 + gen.endloopAddrsOffset?.amount || 0)
+					 + (gen.endloopAddrsOffset?.amount || 0))
 						/ sample_hdr.sampleRate
 			}
 
