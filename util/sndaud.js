@@ -592,7 +592,7 @@ function Audio5(i_conf) {
 	}, // get_outputs()
 
 	// play the symbols
-	play: function(i_start, i_end, i_lvl) {
+	play: function(i_start, i_end, i_lvl, i_loop) {
 
 		// get the callback functions
 		errmsg = conf.errmsg || alert
@@ -654,6 +654,9 @@ function Audio5(i_conf) {
 			gain: gain,
 			rates: rates
 		}
+		if (i_loop)
+			po.s_loop = i_start
+
 		w_instr++			// play lock
 		load_res(i_start)
 		if (--w_instr == 0)		// all resources are there

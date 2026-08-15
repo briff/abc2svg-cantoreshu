@@ -715,6 +715,16 @@ abc2svg.play_next = function(po) {
 		}
 
 		// handle the time jumps
+		if (po.s_loop
+		 && (!s || s == po.s_end)
+		 && !po.stop) {
+			s2 = po.s_loop.ts_next
+			if (s2?.p_v.id == "_beats") {
+				while (s2?.p_v.id == "_beats")
+					s2 = s2.ts_next
+			}
+		}
+
 		if (s2) {
 			s = s2
 			s2 = null

@@ -1,6 +1,6 @@
 // snd-1.js - file to include in html pages with abc2svg-1.js for playing
 //
-// Copyright (C) 2015-2024 Jean-Francois Moine
+// Copyright (C) 2015-2026 Jean-François Moine
 //
 // This file is part of abc2svg.
 //
@@ -69,9 +69,10 @@ function AbcPlay(i_conf) {
 	function vf() {}			// void function
 
 	// start playing when no defined output
-	function play(istart, i_iend, a_e) {
+	function play(istart, i_iend, a_e, loop) {
 		init.istart = istart;
 		init.i_iend = i_iend;
+		init.loop = loop
 		init.a_e = a_e
 		if (midi5)
 			midi5.get_outputs(play2) // get the MIDI ports
@@ -131,7 +132,7 @@ function AbcPlay(i_conf) {
 		abcplay.stop = current.stop
 		if (current.set_output)
 			current.set_output(out[o]);
-		abcplay.play(init.istart, init.i_iend, init.a_e);
+		abcplay.play(init.istart, init.i_iend, init.a_e, init.loop)
 	} // play2()
 
 	// set default configuration values

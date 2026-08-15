@@ -1,6 +1,6 @@
 // sndmid.js - audio output using HTML5 MIDI
 //
-// Copyright (C) 2019-2024 Jean-Francois Moine
+// Copyright (C) 2019-2026 Jean-François Moine
 //
 // This file is part of abc2svg.
 //
@@ -209,7 +209,7 @@ if(0){
 		},
 
 		// play the symbols
-		play: function(i_start, i_end, i_lvl) {
+		play: function(i_start, i_end, i_lvl, i_loop) {
 			po = {
 				conf: conf,	// configuration
 				onend: conf.onend || empty,
@@ -231,6 +231,10 @@ if(0){
 				v_c: [],	// voice to channel
 				c_i: []		// channel to instrument
 			}
+
+			// if playback loop, set the restart point
+			if (i_loop)
+				po.s_loop = i_start
 
 			abc2svg.play_next(po)
 		}, // play()
