@@ -69,7 +69,11 @@ rule edit
       if command -v jsmin >/dev/null 2>&1; then $
 	sed "s+@MAJOR@+$MAJOR+" $in | jsmin > $out;$
       else $
-	sed "s+@MAJOR@+$MAJOR+" $in | uglifyjs > $out;$
+	if command -v qjs >/dev/null 2>&1; then $
+	  sed "s+@MAJOR@+$MAJOR+" $in | ./jsmin >> $out;$
+	else $
+	  sed "s+@MAJOR@+$MAJOR+" $in | uglifyjs > $out;$
+	fi;$
       fi;$
    else $
 	sed "s+@MAJOR@+$MAJOR+" $in > $out;$
