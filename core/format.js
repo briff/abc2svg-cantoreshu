@@ -550,6 +550,7 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "abc-version":
 	case "bgcolor":
 	case "fgcolor":
+	case "playbeats":			// used in sndgen.js
 	case "propagate-accidentals":
 	case "writeout-accidentals":
 		cfmt[cmd] = param
