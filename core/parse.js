@@ -894,7 +894,9 @@ function new_meter(p) {
 						break
 					meter.top += p[i++]
 				}
-				m1 = eval(meter.top.replace(/ /g, '+'))
+				m1 = meter.top
+					.split(/[ +]+/)
+					.reduce((a, v) => a + +v, 0)
 				break
 			}
 			if (!in_parenth) {
