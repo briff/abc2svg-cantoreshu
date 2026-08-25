@@ -393,11 +393,34 @@ function ly_set(s) {
 /* -- draw the lyrics under (or above) notes -- */
 /* (the staves are not yet defined) */
 function draw_lyric_line(p_voice, j, y) {
-	var	p, lastx, w, s, s2, ly, lyl, ln,
+    var	p, lastx, w, s, ly, lyl, ln,
 		hyflag, lflag, x0, shift
 
+	// output a syllable
+	function out_ly(s, x, w, p) {
+		if (user.anno_start || user.anno_stop) {
+		    var	s2 = {
+				p_v: s.p_v,
+				st: s.st,
+				istart: s.a_ly[j].istart,
+				iend: s.a_ly[j].iend,
+				ts_prev: s,
+				ts_next: s.ts_next,
+				x: x,
+				y: y,
+				ymn: y,
+				ymx: y + gene.curfont.size,
+				wl: 0,
+				wr: w
+			}
+			anno_start(s2, 'lyrics')
+		}
+		xy_str(x, y, p)
+		anno_stop(s2, 'lyrics')
+	} // out_ly()
+
 	if (p_voice.hy_st & (1 << j)) {
-		hyflag = true;
+		hyflag = {}
 		p_voice.hy_st &= ~(1 << j)
 	}
 	for (s = p_voice.sym; /*s*/; s = s.next)
@@ -429,13 +452,25 @@ function draw_lyric_line(p_voice, j, y) {
 		ln = ly.ln || 0
 		w = p.wh[0]
 		shift = ly.shift
+		x0 = s.x - shift
 		if (hyflag) {
 			if (ln == 3) {			// '_'
 				ln = 2
 			} else if (ln < 2) {		// not '-'
-			    if (s.x - shift - lastx > gene.curfont.swfac * .4)
-				out_hyph(lastx, y, s.x - shift - lastx);
-				hyflag = false;
+				if (s.x - shift - lastx > gene.curfont.swfac * .4) {
+					if (hyflag.s)
+						out_ly(hyflag.s, hyflag.x, hyflag.w,
+							hyflag.p)
+					out_hyph(lastx, y, s.x - shift - lastx)
+					hyflag = null
+				} else {
+					if (hyflag.s) {
+						x0 = hyflag.x
+						w += hyflag.w
+						p = hyflag.p + p
+					}
+					hyflag = null
+				}
 				lastx = s.x + s.wr
 			}
 		}
@@ -448,39 +483,25 @@ function draw_lyric_line(p_voice, j, y) {
 		if (ln >= 2) {				// '-' or '_'
 			if (x0 == 0 && lastx > s.x - 18)
 				lastx = s.x - 18
-			if (ln == 2)			// '-'
-				hyflag = true
-			else
+			if (ln != 2)
 				lflag = true;
 			x0 = s.x - shift
 			continue
 		}
-		x0 = s.x - shift;
 		if (ln)					// '-' at end
-			hyflag = true
-		if (user.anno_start || user.anno_stop) {
-			s2 = {
-				p_v: s.p_v,
-				st: s.st,
-				istart: ly.istart,
-				iend: ly.iend,
-				ts_prev: s,
-				ts_next: s.ts_next,
+			hyflag = {
+				s: s,
 				x: x0,
-				y: y,
-				ymn: y,
-				ymx: y + gene.curfont.size,
-				wl: 0,
-				wr: w
+				w: w,
+				p: p
 			}
-			anno_start(s2, 'lyrics')
-		}
-		xy_str(x0, y, p)
-		anno_stop(s2, 'lyrics')
+		else
+			out_ly(s, x0, w, p)
 		lastx = x0 + w
 	}
 	if (hyflag) {
-		hyflag = false;
+		if (hyflag.s)
+			out_ly(hyflag.s, hyflag.x, hyflag.w, hyflag.p)
 		x0 = realwidth - 10
 		if (x0 < lastx + 10)
 			x0 = lastx + 10;
