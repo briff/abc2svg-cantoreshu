@@ -189,9 +189,16 @@ function get_lyrics(p, cont) {
 			i++
 			continue
 		case '-':
+			if (ly?.ln != 3)
+				word = '-', ln = 2
+			else
+				word = '_', ln = 3
+			break
 		case '_':
-			word = p[i]
-			ln = p[i] == '-' ? 2 : 3	// line continuation
+			if (ly && ly.ln && ly.ln != 3)
+				word = '-', ln = 2
+			else
+				word = '_', ln = 3
 			break
 		case '*':
 			word = ""
@@ -394,10 +401,11 @@ function ly_set(s) {
 /* (the staves are not yet defined) */
 function draw_lyric_line(p_voice, j, y) {
     var	p, lastx, w, s, ly, lyl, ln,
-		hyflag, lflag, x0, shift
+	lflag, x0, shift,
+	hyflag = {}
 
 	// output a syllable
-	function out_ly(s, x, w, p) {
+	function out_ly(s, w, p) {
 		if (user.anno_start || user.anno_stop) {
 		    var	s2 = {
 				p_v: s.p_v,
@@ -406,7 +414,7 @@ function draw_lyric_line(p_voice, j, y) {
 				iend: s.a_ly[j].iend,
 				ts_prev: s,
 				ts_next: s.ts_next,
-				x: x,
+				x: lastx,
 				y: y,
 				ymn: y,
 				ymx: y + gene.curfont.size,
@@ -415,20 +423,33 @@ function draw_lyric_line(p_voice, j, y) {
 			}
 			anno_start(s2, 'lyrics')
 		}
-		xy_str(x, y, p)
+		xy_str(lastx, y, p)
 		anno_stop(s2, 'lyrics')
 	} // out_ly()
 
-	if (p_voice.hy_st & (1 << j)) {
-		hyflag = {}
-		p_voice.hy_st &= ~(1 << j)
-	}
+	function set_hy(v) {
+		if (v) {
+			hyflag.s = s
+			hyflag.p = p
+			hyflag.w = w
+		} else {
+			hyflag.s = null
+			hyflag.p = ""
+			hyflag.w = 0
+		}
+	} // set_hy()
+
 	for (s = p_voice.sym; /*s*/; s = s.next)
 		if (s.type != C.CLEF
 		 && s.type != C.KEY && s.type != C.METER)
 			break
 	lastx = s.prev ? s.prev.x : tsfirst.x;
-	x0 = 0
+	x0 = lastx
+	set_hy(0)
+	if (p_voice.hy_st & (1 << j)) {
+		hyflag.s = s
+		p_voice.hy_st &= ~(1 << j)
+	}
 	for ( ; s; s = s.next) {
 		if (s.a_ly)
 			ly = s.a_ly[j]
@@ -439,8 +460,8 @@ function draw_lyric_line(p_voice, j, y) {
 			case C.REST:
 			case C.MREST:
 				if (lflag) {
-					out_wln(lastx + 3, y, x0 - lastx);
-					lflag = false;
+					out_wln(lflag, y, x0 - lflag)
+					lflag = 0
 					lastx = s.x + s.wr
 				}
 			}
@@ -452,56 +473,49 @@ function draw_lyric_line(p_voice, j, y) {
 		ln = ly.ln || 0
 		w = p.wh[0]
 		shift = ly.shift
-		x0 = s.x - shift
-		if (hyflag) {
-			if (ln == 3) {			// '_'
-				ln = 2
-			} else if (ln < 2) {		// not '-'
-				if (s.x - shift - lastx > gene.curfont.swfac * .4) {
-					if (hyflag.s)
-						out_ly(hyflag.s, hyflag.x, hyflag.w,
-							hyflag.p)
-					out_hyph(lastx, y, s.x - shift - lastx)
-					hyflag = null
-				} else {
-					if (hyflag.s) {
-						x0 = hyflag.x
-						w += hyflag.w
-						p = hyflag.p + p
-					}
-					hyflag = null
-				}
-				lastx = s.x + s.wr
-			}
-		}
-		if (lflag
-		 && ln != 3) {				// not '_'
-			out_wln(lastx + 3, y, x0 - lastx + 3);
-			lflag = false;
-			lastx = s.x + s.wr
-		}
-		if (ln >= 2) {				// '-' or '_'
-			if (x0 == 0 && lastx > s.x - 18)
-				lastx = s.x - 18
-			if (ln != 2)
-				lflag = true;
-			x0 = s.x - shift
+
+		if (ln == 3) {				// if '_'
+			if (!lflag)
+				lflag = x0 + 3
+			x0 = s.x - shift + w
 			continue
 		}
-		if (ln)					// '-' at end
-			hyflag = {
-				s: s,
-				x: x0,
-				w: w,
-				p: p
+		if (lflag) {
+			out_wln(lflag, y, x0 - lflag)
+			lflag = 0
+		}
+		x0 = s.x - shift
+		if (ln == 1				// first '-'
+		 && !hyflag.s) {
+			set_hy(1)
+			lastx = x0//s.x - shift
+			continue
+		}
+		if (ln == 2)				// more '-'
+			continue
+		if (hyflag.s) {
+			if (x0 - hyflag.w - lastx > gene.curfont.swfac) {
+				out_ly(hyflag.s, hyflag.w, hyflag.p)
+				lastx += hyflag.w
+				out_hyph(lastx, y, x0 - lastx)
+				set_hy(0)
+				lastx = x0
+			} else {
+				x0 = lastx
 			}
-		else
-			out_ly(s, x0, w, p)
-		lastx = x0 + w
+			p = hyflag.p + p		// concatenate
+			w += hyflag.w
+			set_hy(ln)			// (set or reset)
+			if (ln)
+				continue
+		} else {
+			lastx = x0
+		}
+		out_ly(s, w, p)
+		x0 += w
 	}
-	if (hyflag) {
-		if (hyflag.s)
-			out_ly(hyflag.s, hyflag.x, hyflag.w, hyflag.p)
+	if (hyflag.s) {
+		out_ly(hyflag.s, hyflag.w, hyflag.p)
 		x0 = realwidth - 10
 		if (x0 < lastx + 10)
 			x0 = lastx + 10;
@@ -511,24 +525,21 @@ function draw_lyric_line(p_voice, j, y) {
 	}
 
 	/* see if any underscore in the next line */
-	for (p_voice.s_next; s; s = s.next) {
+    if (lflag) {
+	for (s = p_voice.s_next; s; s = s.next) {
 		if (s.type == C.NOTE) {
 			if (!s.a_ly)
 				break
 			ly = s.a_ly[j]
 			if (ly && ly.ln == 3) {		 // '_'
-				lflag = true;
-				x0 = realwidth - 15
-				if (x0 < lastx + 12)
-					x0 = lastx + 12
+				if (x0 < realwidth - 15)
+					x0 = realwidth - 15
 			}
 			break
 		}
 	}
-	if (lflag) {
-		out_wln(lastx + 3, y, x0 - lastx + 3);
-		lflag = false
-	}
+	out_wln(lflag, y, x0 - lflag)
+    }
 }
 
 function draw_lyrics(p_voice, nly, a_h, y,
