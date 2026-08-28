@@ -752,9 +752,9 @@ function out_bracket(x, y, h) {
 // hyphen
 function out_hyph(x, y, w) {
     var	i,
-	sz = cwidf('-'),			// hyphen width
+	sz = 8,					// spacing around the hyphen
 	d = 5 * sz,				// expected width between - .. -
-	n = ((w - 2 * sz) / d) | 0
+	n = ((w - 6 * sz) / d) | 0
 
 	if (n < 0)
 		n = 0
