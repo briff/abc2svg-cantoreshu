@@ -443,8 +443,8 @@ function draw_lyric_line(p_voice, j, y) {
 		if (s.type != C.CLEF
 		 && s.type != C.KEY && s.type != C.METER)
 			break
-	lastx = s.prev ? s.prev.x : tsfirst.x;
-	x0 = lastx
+	x0 = s.x - s.wl - 10
+	lastx = 0
 	set_hy(0)
 	if (p_voice.hy_st & (1 << j)) {
 		hyflag.s = s
@@ -488,13 +488,15 @@ function draw_lyric_line(p_voice, j, y) {
 		if (ln == 1				// first '-'
 		 && !hyflag.s) {
 			set_hy(1)
-			lastx = x0//s.x - shift
+			lastx = x0
 			continue
 		}
 		if (ln == 2)				// more '-'
 			continue
 		if (hyflag.s) {
 			if (x0 - hyflag.w - lastx > gene.curfont.swfac) {
+				if (!lastx)
+					lastx = x0 - ly.font.size
 				out_ly(hyflag.s, hyflag.w, hyflag.p)
 				lastx += hyflag.w
 				out_hyph(lastx, y, x0 - lastx)
@@ -508,14 +510,14 @@ function draw_lyric_line(p_voice, j, y) {
 			set_hy(ln)			// (set or reset)
 			if (ln)
 				continue
-		} else {
-			lastx = x0
 		}
+		lastx = x0
 		out_ly(s, w, p)
 		x0 += w
 	}
 	if (hyflag.s) {
 		out_ly(hyflag.s, hyflag.w, hyflag.p)
+		lastx += hyflag.w
 		x0 = realwidth - 10
 		if (x0 < lastx + 10)
 			x0 = lastx + 10;
