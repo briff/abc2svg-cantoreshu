@@ -275,7 +275,8 @@ function defs_add(text) {
 				break
 			ie += 3 + tag.length
 		}
-		if (text.substr(is, 7) == '<filter')
+		if (text.substr(is, 7) == '<filter'
+		 || text.substr(is, 7) == '<marker')
 			fulldefs += text.slice(is, ie) + '\n'
 		else
 			glyphs[gl] = text.slice(is, ie)

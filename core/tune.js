@@ -974,6 +974,17 @@ Abc.prototype.do_pscom = function(text) {
 	case "linebreak":
 		set_linebreak(param)
 		return
+	case "loadjs":				// any JS file
+		cmd = param.match(/[^\s]+/)
+		if (!cmd)
+			return
+		cmd = cmd[0]
+		param = param.replace(cmd, '').trim()
+		b = cmd.match(/([^/]*)\.js/)
+		b = b ? b[1] : cmd
+		if (abc2svg[b])
+			abc2svg[b](self, param)	// set the Abc instance and argument
+		return
 	case "map":
 		get_map(param)
 		return

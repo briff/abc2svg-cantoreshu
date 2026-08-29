@@ -44,6 +44,7 @@ abc2svg.modules = {
 	grid2: {},
 	jazzchord: {},
 	jianpu: {},
+	loadjs: {},				// dummy module
 	mdnn: {},
 	MIDI: {},
 	nns: {},
@@ -90,7 +91,7 @@ abc2svg.modules = {
 		}
 
 		// test if some keyword in the file
-	    var	m, i, fn,
+	    var	m, i, j, k, fn,
 		nreq_i = this.nreq,
 		ls = file.match(/(%%|I:).+?\b/g)
 
@@ -102,6 +103,32 @@ abc2svg.modules = {
 
 		for (i = 0; i < ls.length; i++) {
 			fn = ls[i].replace(/\n?(%%|I:)/, '')
+
+			if (fn == "loadjs") {	// load any JS file
+				k = 0
+				while (1) {
+					j = file.indexOf("%%loadjs ", k)
+					if (j < 0)
+						break
+					k = file.indexOf("\n", j)
+					fn = file.slice(j + 9, k)
+					j = fn.indexOf('%')
+					if (j > 0)
+						fn = fn.slice(0, j)
+					fn = fn.match(/[^\s]+/)[0]
+					m = fn.match(/([^/]*)\.js/)
+					m = m ? m[1] : fn	// module name
+					if (typeof abc2svg[m] != "function"
+							// if not statically loaded
+					 && !abc2svg.modules[m]) {
+						abc2svg.modules[m] = {loaded: 1}
+						this.nreq++
+						abc2svg.loadjs(fn, load_end)
+					}
+				}
+				continue
+			}
+
 			m = abc2svg.modules[fn]
 			if (!m || m.loaded)
 				continue

@@ -31,6 +31,8 @@ Abc.prototype.deco_put = function(nm, s) {
 	a_dcn.push(nm)
 	deco_cnv(s)
 }
+Abc.prototype.deco_val_tb = deco_val_tb
+Abc.prototype.decos = decos
 Abc.prototype.defs_add = defs_add
 Abc.prototype.dh_put = function(nm, s, nt) {
 	a_dcn.push(nm)
