@@ -3806,7 +3806,7 @@ function check_end_bar() {
 	while (s.ts_next)
 		s = s.ts_next
 	if (s.type != C.BAR) {
-		for (s2 = s.ts_prev; s2 && s2.time == s.time; s2 = s2.ts_prev) {
+		for (s2 = s; s2 && s2.time == s.time; s2 = s2.ts_prev) {
 			if (s2.bar_type)	// don't add a bar if "bar block*"
 				return
 			if (s2.type != C.BLOCK)
