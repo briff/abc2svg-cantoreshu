@@ -753,16 +753,24 @@ function out_bracket(x, y, h) {
 // hyphen
 function out_hyph(x, y, w) {
     var	i,
-	sz = 8,					// spacing around the hyphen
-	d = 5 * sz,				// expected width between - .. -
-	n = ((w - 6 * sz) / d) | 0
+	d = 10,					// offset 1st hyphen and hyphen width
+	n = w / d / 7 |0			// number of hyphens less 1
 
-	if (n < 0)
-		n = 0
-	x += (w - n * d - sz) / 2
+	if (!n)					// if only one hyphen
+		d = (w - d) / 2 + 4		// x offset
+	else
+		w -= d * 3			// ending spaces and the last hyphen
+	x += d					// offset first hyphen
+	if (n) {
+		d *= n < 2 ? 6 : 8
+		x += d / 8			// 1st hyphen a bit further
+		w -= d / 4
+	}
+
 	output += '<text class="' + font_class(gene.curfont)
 		+ '" x="' + sx(x).toFixed(2)
 	i = n
+	d = w / n
 	while (--n >= 0) {
 		x += d
 		output += "," + sx(x).toFixed(2)
