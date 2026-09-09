@@ -1,0 +1,25 @@
+# Pinned TLS certificate for the upstream Fossil server (chiselapp.com).
+#
+# This is the SHA-256 digest of the server's DER certificate, in the same format
+# fossil prints when it cannot verify a cert.  tools/update-from-upstream.sh feeds
+# it to fossil's "accept this cert and continue (y/N/fingerprint)?" prompt, so a
+# sync succeeds only against exactly this certificate.  No exception is stored in
+# the fossil repository: the pin is re-checked on every run.
+#
+# Why pinned instead of verified: chiselapp.com's Let's Encrypt certificate
+# expired on 2026-08-31 and, as of 2026-09-09, has not been renewed, so a normal
+# chain validation fails.  Pinning keeps the connection authenticated against a
+# fingerprint we recorded and cross-checked with openssl.
+#
+# Recorded 2026-09-09:
+#   subject:   CN = chiselapp.com
+#   issuer:    C = US, O = Let's Encrypt, CN = YR1
+#   notBefore: 2026-06-02 03:41:56 UTC
+#   notAfter:  2026-08-31 03:41:55 UTC
+#
+# When the host renews, the sync will fail with "SSL cert declined".  Inspect the
+# new certificate with
+#     tools/update-from-upstream.sh --show-cert
+# and, once the details look right, replace the digest below.  If the chain
+# validates again you can drop pinning altogether and sync with --strict-tls.
+aa3ec194420161805052591a5a90319722a10d8bbca5a6b6c51f3a005f8fb71c
