@@ -90,6 +90,21 @@ test('the default advance between stanzas is one size grade', () => {
 	near(second - first, BODY * 1.2, 'garmond to cicero')
 })
 
+// The reason for the grade: a descender of one line and an ascender of the
+// next - a 'j' under an 'Á' - must pass without touching.  abc2svg puts the
+// baseline .22 of the body above the line box's bottom and the ascender .78
+// above it, so the clearance between two stanzas is (advance - body), and at
+// 1.2 that is a fifth of the body.  Upstream's 1.1 leaves half as much.
+test('a descender and the next ascender pass without touching', () => {
+	const [[first, second]] = lyricBaselines('', HIGH)
+	const descender = first + BODY * .22		// bottom of the 'j'
+	const ascender = second - BODY * .78		// top of the 'Á'
+
+	assert.ok(ascender > descender,
+		`the Á starts at ${ascender}, the j ends at ${descender}`)
+	near(ascender - descender, BODY * .2, 'a fifth of the body')
+})
+
 test('%%lyricskipfac moves the stanzas apart and leaves the first line', () => {
 	const [[first1, second1]] = lyricBaselines('%%lyricfirstskipfac 1\n', HIGH)
 	const [[first2, second2]] =
