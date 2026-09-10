@@ -99,7 +99,7 @@ build sf: sf | Scc1t2/
 build abc2svg-$MAJOR.js: jsc core/abc2svg.js core/deco.js core/draw.js $
  font.js core/format.js core/front.js core/music.js core/parse.js core/subs.js $
  core/svg.js core/tune.js core/lyrics.js core/gchord.js core/tail.js $
- core/modules.js
+ core/modules.js modules/huchords.js
 
 build ambitus-$MAJOR.js: jscu modules/ambitus.js
 build break-$MAJOR.js: jscu modules/break.js

@@ -31,7 +31,7 @@ cp core/license $out
 gen core/abc2svg.js core/deco.js core/draw.js\
  font.js core/format.js core/front.js core/music.js core/parse.js core/subs.js\
  core/svg.js core/tune.js core/lyrics.js core/gchord.js core/tail.js\
- core/modules.js >> $out
+ core/modules.js modules/huchords.js >> $out
  echo "abc2svg.version=\"$VERSION\";abc2svg.vdate=\"$DATE\"" >> $out
 
 out=mei2svg-$MAJOR.js
