@@ -552,7 +552,13 @@ var lyric_asc_tb = {},		// ascent per font
 // above the top of the letters.
 	BEAM_GAP = 1.7
 
-// -- baseline to ascender height of a font --
+// -- baseline to the top of the letters --
+// What is wanted is the ink of the tallest thing a lyric line puts above the
+// baseline - an accented capital - so the measurement is of that, not of the
+// font's design box: fontBoundingBoxAscent is drawn to hold every glyph and
+// every diacritic the face defines, and in an old-style face (EB Garamond) it
+// stands well above where the letters themselves reach, which would leave a
+// gap that no setting of the factor could close.
 // (measured in a browser - elsewhere, the .78 that abc2svg itself assumes
 //  in its a_h * .22 baseline offset)
 function lyric_ascent(font, a_h) {
@@ -568,10 +574,10 @@ function lyric_ascent(font, a_h) {
 		c = document.createElement("canvas").getContext("2d");
 		c.font = f;
 		m = c.measureText("\u00c1y")
-		if (m.fontBoundingBoxAscent)
-			r = m.fontBoundingBoxAscent
-		else if (m.actualBoundingBoxAscent)
+		if (m.actualBoundingBoxAscent)
 			r = m.actualBoundingBoxAscent
+		else if (m.fontBoundingBoxAscent)
+			r = m.fontBoundingBoxAscent
 
 		// cache only a really loaded face, so that a render started
 		// while a webfont is in flight cannot pin the fallback metrics

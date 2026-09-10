@@ -73,9 +73,15 @@ window the note moves two units when it needs sixteen. Clearing each syllable
 against `y_get()` individually is worse still: it breaks the raster-parallel
 rule and leaves a ragged lyric line.
 
-`lyric_ascent()` measures the baseline-to-ascender height with a canvas
-`measureText("Áy")`, and falls back to `.78` of the line height outside a
-browser or when the measurement throws — that being the ascent abc2svg itself
+`lyric_ascent()` measures the top of the letters with a canvas
+`measureText("Áy")`, taking `actualBoundingBoxAscent` — the ink of an accented
+capital, the tallest thing a lyric line puts above the baseline. It does *not*
+take `fontBoundingBoxAscent`, which is the face's design box: that is drawn to
+hold every glyph and diacritic the face defines, and in an old-style face such
+as EB Garamond it stands well above where the letters reach, leaving a gap that
+no setting of the factor could close. The design box is the fallback when a
+browser reports no ink metric, and `.78` of the line height the fallback beyond
+that — outside a browser, or when the measurement throws — that being the ascent abc2svg itself
 assumes in its `a_h * .22` baseline offset. A measurement is cached only once
 `document.fonts.check()` says the face is really loaded, so a render started
 while a webfont is still in flight cannot pin the fallback metrics. Because a

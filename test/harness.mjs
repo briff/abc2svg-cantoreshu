@@ -24,6 +24,9 @@ export const FALLBACK_ASCENT = LYRIC_SIZE * .78		// 28.08
 /** Engrave `directives + tune` and return the whole SVG. */
 export function engrave(directives, tune, opts = {}) {
 	const sandbox = { abc2svg: {} }
+
+	if (opts.document)
+		sandbox.document = opts.document
 	vm.createContext(sandbox)
 	vm.runInContext(ENGINE, sandbox)
 
@@ -50,10 +53,10 @@ export function engrave(directives, tune, opts = {}) {
  *
  * @return {Array<Array<number>>} one array of baselines per engraved system
  */
-export function lyricBaselines(directives, tune) {
+export function lyricBaselines(directives, tune, opts) {
 	const systems = []
 
-	for (const [, body] of engrave(directives, tune)
+	for (const [, body] of engrave(directives, tune, opts)
 				.matchAll(/<g transform="translate\(0,[\d.]+\)">([\s\S]*?)<\/g>/g)) {
 		const ys = [...new Set([...body.matchAll(
 			/<text class="f\d+" x="[\d.]+" y="([-\d.]+)"/g)].map((m) => +m[1]))]
@@ -64,8 +67,8 @@ export function lyricBaselines(directives, tune) {
 }
 
 /** The first lyric baseline of every system. */
-export function firstBaselines(directives, tune) {
-	return lyricBaselines(directives, tune).map((ys) => ys[0])
+export function firstBaselines(directives, tune, opts) {
+	return lyricBaselines(directives, tune, opts).map((ys) => ys[0])
 }
 
 /**
@@ -76,6 +79,21 @@ export function firstBaselines(directives, tune) {
 export function texts(directives, tune) {
 	return [...engrave(directives, tune)
 			.matchAll(/<text class="f\d+"[^>]*>([^<]*)/g)].map((m) => m[1])
+}
+
+/**
+ * A `document` just complete enough for lyric_ascent(): one canvas whose
+ * measureText() answers with `metrics`, and a font set that says `loaded`.
+ * Passing one makes the engine take its measured path instead of the .78
+ * fallback, which is otherwise unreachable outside a browser.
+ */
+export function fakeDocument(metrics, loaded = true) {
+	return {
+		createElement: () => ({
+			getContext: () => ({ font: '', measureText: () => metrics })
+		}),
+		fonts: { check: () => loaded }
+	}
 }
 
 /** Baselines are sums of float text heights, so compare them as such. */

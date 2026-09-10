@@ -85,9 +85,11 @@ function render() {
   const m = c.measureText('Áy')
   const ys = [...svg.matchAll(/<text class="f\d+" x="[\d.]+" y="([-\d.]+)"/g)]
                 .map((x) => +x[1])
+  const n = (v) => (v === undefined ? '   -  ' : v.toFixed(2).padStart(6))
   $('facts').textContent =
-      `measured ascent  ${(m.fontBoundingBoxAscent || m.actualBoundingBoxAscent || 0).toFixed(2)}\n`
-    + `.78 fallback     ${(size * 0.78).toFixed(2)}\n`
+      `letters  (used)  ${n(m.actualBoundingBoxAscent)}   Áy, actual ink\n`
+    + `font design box  ${n(m.fontBoundingBoxAscent)}   holds every diacritic\n`
+    + `.78 fallback     ${n(size * 0.78)}   headless only\n`
     + `loaded face      ${document.fonts.check(c.font)}\n`
     + `lyric baselines  ${[...new Set(ys)].join(', ')}`
 }

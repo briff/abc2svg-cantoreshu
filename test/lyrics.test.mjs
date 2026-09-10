@@ -6,7 +6,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 
-import { FALLBACK_ASCENT, firstBaselines, lyricBaselines, near }
+import { FALLBACK_ASCENT, fakeDocument, firstBaselines, lyricBaselines, near }
 	from './harness.mjs'
 
 /** The gap between two beams, the unit the clearance is counted in. */
@@ -145,4 +145,33 @@ test('a stanza advance of 0 is honoured too', () => {
 test('an unset factor is one beam gap', () => {
 	near(firstBaselines('', HIGH)[0],
 		firstBaselines('%%lyricfirstskipfac 1\n', HIGH)[0], 'unset == 1')
+})
+
+// -- the measured path --
+//
+// Everything above runs headless, where lyric_ascent() takes its .78 fallback.
+// A fake canvas reaches the branch a browser really uses.
+
+test('the ink of the letters is measured, not the font design box', () => {
+	const doc = fakeDocument(
+		{ actualBoundingBoxAscent: 20, fontBoundingBoxAscent: 40 })
+
+	// fontBoundingBoxAscent holds every diacritic the face defines and stands
+	// far above the letters; taking it would leave a gap no factor can close
+	near(firstBaselines('%%lyricfirstskipfac 0\n', LOW, { document: doc })[0],
+		16.02 + 20, 'the letters, not the box')
+})
+
+test('the design box is still the fallback when there is no ink metric', () => {
+	const doc = fakeDocument({ fontBoundingBoxAscent: 40 })
+
+	near(firstBaselines('%%lyricfirstskipfac 0\n', LOW, { document: doc })[0],
+		16.02 + 40, 'fontBoundingBoxAscent')
+})
+
+test('with no usable metric at all it is .78 of the body', () => {
+	const doc = fakeDocument({})
+
+	near(firstBaselines('%%lyricfirstskipfac 0\n', LOW, { document: doc })[0],
+		16.02 + FALLBACK_ASCENT, 'the fallback')
 })
