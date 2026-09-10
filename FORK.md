@@ -1,4 +1,4 @@
-# abc-cantoreshu — what this fork changes
+# abc2svg-cantoreshu — what this fork changes
 
 An unofficial git mirror and fork of
 [abc2svg](https://chiselapp.com/user/moinejf/repository/abc2svg) by

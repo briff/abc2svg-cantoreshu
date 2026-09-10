@@ -1,6 +1,6 @@
 > ## This is not the abc2svg project
 >
-> **abc-cantoreshu** is an unofficial git mirror and fork of
+> **abc2svg-cantoreshu** is an unofficial git mirror and fork of
 > [abc2svg](https://chiselapp.com/user/moinejf/repository/abc2svg) by
 > Jean-François Moine, maintained for the needs of
 > [cantores.hu](https://cantores.hu). It is **modified**: see
