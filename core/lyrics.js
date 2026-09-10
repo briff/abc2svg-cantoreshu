@@ -588,8 +588,15 @@ function draw_lyrics(p_voice, nly, a_h, y,
 				std) {	/* a lyric voice is already under the staff */
 	var	j, top, asc, yg, yl,
 		sc = staff_tb[p_voice.st].staffscale,
-		lsf = tsfirst.fmt.lyricskipfac || 1.2,	// between lyric lines
-		lff = tsfirst.fmt.lyricfirstskipfac || 1;	// clearance, in beam gaps
+		lsf = tsfirst.fmt.lyricskipfac,		// between lyric lines
+		lff = tsfirst.fmt.lyricfirstskipfac	// clearance, in beam gaps
+
+// (0 is a meaningful setting for either - the letters then touch what they
+//  clear - so test for the value being there, not for it being true)
+	if (lsf == undefined)
+		lsf = 1.2
+	if (lff == undefined)
+		lff = 1
 
 	set_font("vocal")
 	if (incr > 0) {				/* under the staff */

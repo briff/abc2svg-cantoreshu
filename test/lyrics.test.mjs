@@ -108,6 +108,25 @@ test('the two factors answer to nothing but themselves', () => {
 	assert.ok(second > first, 'and the stanza still comes after it')
 })
 
+// 0 is a real setting, not an absent one: it puts the letters right against
+// what they clear.  A `|| 1` fallback would silently turn it into the default.
+test('a factor of 0 lets the letters touch the ink', () => {
+	near(firstBaselines('%%lyricfirstskipfac 0\n', LOW)[0],
+		16.02 + FALLBACK_ASCENT, 'the ascender line rests on the ink')
+
+	const zero = firstBaselines('%%lyricfirstskipfac 0\n', HIGH)[0]
+	const one = firstBaselines('%%lyricfirstskipfac 1\n', HIGH)[0]
+
+	near(one - zero, BEAM_GAP, '0 is a beam gap tighter than 1, not equal to it')
+})
+
+test('a stanza advance of 0 is honoured too', () => {
+	const [ys] = lyricBaselines('%%lyricskipfac 0\n', HIGH)
+
+	// both stanzas land on one baseline, so the harness dedupes them to one
+	assert.equal(ys.length, 1, 'the two lyric lines coincide')
+})
+
 test('an unset factor is one beam gap', () => {
 	near(firstBaselines('', HIGH)[0],
 		firstBaselines('%%lyricfirstskipfac 1\n', HIGH)[0], 'unset == 1')

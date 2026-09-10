@@ -40,7 +40,11 @@ is the ink — abc2svg keeps 2.02 units under the bottom line even for a
 stemless note, and that is the minimum the rule ever gives.
 
 The unit is the gap between two beams, `BEAM_GAP` — 1.7, from `draw_beams()`'s
-`bshift` 3.5 less `bh` 1.8. The factor scales it, so `2` is two beam gaps.
+`bshift` 3.5 less `bh` 1.8. The factor scales it, so `2` is two beam gaps and
+`0` sets the letters right against the ink, touching it. Both parameters take
+`0` as the real setting it is rather than as an absent one; a negative is
+refused by `set_format()`, which shares its numeric branch with `%%scale` and
+the rest.
 
 Between stanzas the engraved rule is different again: the advance is the body
 of **one size grade larger**, so that ascenders and descenders pass each other
