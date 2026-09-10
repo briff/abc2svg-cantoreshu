@@ -596,9 +596,11 @@ function draw_lyrics(p_voice, nly, a_h, y,
 		} else {
 
 			// anchor the baseline on the bottom staff line, and
-			// keep the lowest ink as a floor under it
+			// keep the lowest ink as a floor under it - counted in
+			// the same ascents, so that the ascender line rests on
+			// the ink exactly as it rests on the staff line
 			asc = lyric_ascent(gene.curfont, a_h[0]);
-			yg = y * sc - asc * .35;
+			yg = y * sc - asc * lff;
 			yl = -tsfirst.fmt.vocalspace * sc - asc * lff;
 			y = (yl < yg ? yl : yg) - a_h[0] * .22
 		}

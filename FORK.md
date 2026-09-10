@@ -22,7 +22,7 @@ to that same `1.1` so nothing moves unless asked:
 
 | Parameter | What it sets |
 | --- | --- |
-| `%%lyricfirstskipfac` | where the *first* `w:` line's baseline sits below the **bottom staff line**, counted in the lyric face's own ascent — under `1` the lyrics reach up into the staff, which is the only way to get them really tight |
+| `%%lyricfirstskipfac` | the clearance between the lowest ink of the music and the *first* `w:` line, counted in the lyric face's own ascent — at `1` the ascender line of the lyrics rests exactly on the lowest ink |
 | `%%lyricskipfac` | advance from one `w:` line to the next |
 
 `%%lineskipfac` applies only to `%%text`/`%%words`/history blocks, never to
@@ -30,31 +30,39 @@ to that same `1.1` so nothing moves unless asked:
 gap: it can push lyrics down but never pull them closer than the lowest stem
 hangs, so in practice anything under ~15pt does nothing at all.
 
-The first line is anchored on the staff line rather than advanced from the
-music, because abc2svg's own rule is a collision rule, not a placement rule:
-counting from the lowest ink drew the lyrics 32.1, 36.1 and 39.1 units below
-the staff on the three systems of one hymn, purely because a low note here and
-a hanging stem there moved the ink. Counting in the *line box* drifted a second
-way, a box being between 1.26 em and 1.36 em tall for the same nominal size
-depending on the face. Measuring the face's ascent and anchoring on the staff
-line takes out both: a system reads the same as its neighbour, and a face the
-same as the next face. The music stays a floor — ink that hangs low enough to
-be written over pushes the baseline down to clear it by `.35` of an ascent.
+Two things are wrong with upstream's own gap, and the parameter fixes both.
+It is measured in the *line box*, which is between 1.26 em (Merriweather) and
+1.36 em (Alegreya) tall at the same nominal size, so one setting reads
+differently in every face; and the box is not the ink, so a syllable set under
+a note that hangs low is written over. Counting in the measured ascent instead
+makes a face read the same as the next face, and makes a factor of `1` mean
+exactly "the top of the lyrics touches the bottom of the music".
+
+The price is that the distance follows the music: a system whose notes dip
+lower carries its lyrics lower. That is deliberate. The alternative — a fixed
+distance from the bottom staff line — was tried first and cannot be made safe:
+even music that stays high leaves ink some 8 units below the line, so any fixed
+anchor either sits clear of the deepest possible note (and so is far too low
+for everything else) or is written over. A single low note under one syllable
+is enough to show it.
 
 `lyric_ascent()` measures the baseline-to-ascender height with a canvas
 `measureText("Áy")`, and falls back to `.78` of the line height outside a
 browser or when the measurement throws — that being the ascent abc2svg itself
 assumes in its `a_h * .22` baseline offset. A measurement is cached only once
 `document.fonts.check()` says the face is really loaded, so a render started
-while a webfont is still in flight cannot pin the fallback metrics.
+while a webfont is still in flight cannot pin the fallback metrics. Because a
+headless render always takes the fallback, `test/preview.html` is the only way
+to see the distances the application will actually get.
 
 A staff that already carries a lyric voice takes the upstream path for the next
 one (`draw_all_lyrics()` passes `lyst_tb[st].lyd`): there the incoming `y` is
 the previous voice's lyrics rather than the music, and those must be stacked
-under with a full advance instead of anchored.
+under with a full advance instead of cleared.
 
 Touches `core/format.js` (defaults, `set_format`) and `core/lyrics.js`
 (`lyric_ascent`, `draw_lyrics`, `draw_all_lyrics`).
+Covered by `test/lyrics.test.mjs`.
 
 ### 2026-09-10 — `modules/huchords.js`, Hungarian chord-symbol spelling
 
@@ -122,7 +130,15 @@ Assert on `abc2svg.version` if a consumer needs to pin the engine.
 `prepare` runs `./build`, so a git dependency builds on install and a registry
 publish carries the built files.
 
-## Building
+## Building and testing
 
 `./build`, or `ninja` / `samu`. See section 3 of the
 [README](README.md). Built files are git-ignored.
+
+    npm test        # builds, then runs test/*.test.mjs against abc2svg-1.js
+
+The tests engrave with the built file in a `vm` and read the geometry back out
+of the SVG. There is no DOM there, so `lyric_ascent()` always takes its
+fallback — open `test/preview.html` off the disk for a live render with real
+font metrics, sliders for both factors, and the measured ascent printed next to
+the fallback.
