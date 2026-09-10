@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>abc2svg-cantoreshu preview</title>
+<!--
+  Open this straight off the disk - no server needed.  It loads the built
+  ../abc2svg-1.js, so run ./build first, and reload after every rebuild.
+
+  The point of this page is the one thing test/harness.mjs cannot do: in a
+  browser lyric_ascent() measures the real face with a canvas, instead of
+  falling back to .78 of the line height.  The numbers here are the ones the
+  application will see; the ones in the tests are not.
+-->
+<style>
+:root { color-scheme: light dark }
+body { margin: 0; font: 14px system-ui, sans-serif; display: grid;
+       grid-template-columns: 24rem 1fr; height: 100vh }
+#panel { padding: 1rem; overflow: auto; border-right: 1px solid #8888;
+         display: flex; flex-direction: column; gap: .75rem }
+#out { padding: 1rem; overflow: auto; background: #fff }
+textarea { width: 100%; height: 14rem; font: 12px ui-monospace, monospace }
+label { display: grid; grid-template-columns: 11rem 1fr auto; gap: .5rem;
+        align-items: center }
+input[type=range] { width: 100% }
+#err { color: #c00; white-space: pre-wrap; font: 12px ui-monospace, monospace }
+#facts { font: 12px ui-monospace, monospace; opacity: .8; white-space: pre }
+svg { display: block }
+</style>
+
+<div id="panel">
+  <label>%%lyricfirstskipfac
+    <input type="range" id="first" min="0.3" max="2.5" step="0.05" value="1">
+    <output id="firstv">1</output></label>
+  <label>%%lyricskipfac
+    <input type="range" id="skip" min="0.5" max="3" step="0.05" value="1.1">
+    <output id="skipv">1.1</output></label>
+  <label>vocal font
+    <input type="text" id="font" value="Merriweather" spellcheck="false"><span></span></label>
+  <label>vocal size
+    <input type="range" id="size" min="8" max="48" step="1" value="36">
+    <output id="sizev">36</output></label>
+  <textarea id="abc" spellcheck="false"></textarea>
+  <div id="facts"></div>
+  <div id="err"></div>
+</div>
+<div id="out"></div>
+
+<script src="../abc2svg-1.js"></script>
+<script>
+const FIXTURES = {
+  'low note under one syllable': 'X:1\nK:C\nL:1/4\nA,\nw: D\n',
+  hymn: 'X:1\nK:Eb\nL:1/4\n'
+    + 'E F G G | G A c2 | B4 | E F G G | G A B2 | G4 | B B c B | A G F G |'
+    + ' B A G2 | F4 | B B c B | A G F G | A G F2 | E4 |]\n'
+    + 'w: Áld-jad em-ber e nagy Jó-dat, Ke-nyér-szín-ben'
+    + ' Meg-vál-tó-dat.\n',
+}
+const $ = (id) => document.getElementById(id)
+$('abc').value = FIXTURES.hymn
+
+function render() {
+  const first = $('first').value, skip = $('skip').value, size = $('size').value
+  $('firstv').value = first; $('skipv').value = skip; $('sizev').value = size
+
+  let svg = '', errs = []
+  const abc = new abc2svg.Abc({
+    img_out: (s) => { svg += s },
+    errmsg: (m) => { errs.push(m) },
+    read_file: () => null,
+  })
+  try {
+    abc.tosvg('preview',
+      '%%pagewidth 642.52px\n%%pagescale 1\n%%musicspace 0\n%%topspace 0\n'
+      + '%%vocalspace 0\n'
+      + `%%vocalfont "${$('font').value}" ${size}\n`
+      + `%%lyricfirstskipfac ${first}\n%%lyricskipfac ${skip}\n`
+      + $('abc').value)
+  } catch (e) { errs.push(String(e)) }
+
+  $('out').innerHTML = svg
+  $('err').textContent = errs.join('\n')
+
+  // what the engine actually measured, and where it put each system
+  const c = document.createElement('canvas').getContext('2d')
+  c.font = `${size}px "${$('font').value}"`
+  const m = c.measureText('Áy')
+  const ys = [...svg.matchAll(/<text class="f\d+" x="[\d.]+" y="([-\d.]+)"/g)]
+                .map((x) => +x[1])
+  $('facts').textContent =
+      `measured ascent  ${(m.fontBoundingBoxAscent || m.actualBoundingBoxAscent || 0).toFixed(2)}\n`
+    + `.78 fallback     ${(size * 0.78).toFixed(2)}\n`
+    + `loaded face      ${document.fonts.check(c.font)}\n`
+    + `lyric baselines  ${[...new Set(ys)].join(', ')}`
+}
+
+for (const id of ['first', 'skip', 'size', 'font', 'abc'])
+  $(id).addEventListener('input', render)
+document.fonts.ready.then(render)
+render()
+</script>
