@@ -547,7 +547,9 @@ function draw_lyric_line(p_voice, j, y) {
 function draw_lyrics(p_voice, nly, a_h, y,
 				incr) {	/* 1: below, -1: above */
 	var	j, top,
-		sc = staff_tb[p_voice.st].staffscale;
+		sc = staff_tb[p_voice.st].staffscale,
+		lsf = tsfirst.fmt.lyricskipfac || 1.1,	// between lyric lines
+		lff = tsfirst.fmt.lyricfirstskipfac || 1.1;	// staff to first line
 
 	set_font("vocal")
 	if (incr > 0) {				/* under the staff */
@@ -555,7 +557,7 @@ function draw_lyrics(p_voice, nly, a_h, y,
 			y = -tsfirst.fmt.vocalspace;
 		y *= sc
 		for (j = 0; j < nly; j++) {
-			y -= a_h[j] * 1.1;
+			y -= a_h[j] * (j ? lsf : lff);
 			draw_lyric_line(p_voice, j,
 				y + a_h[j] * .22)	// (descent)
 		}
@@ -569,7 +571,7 @@ function draw_lyrics(p_voice, nly, a_h, y,
 	y *= sc
 	for (j = nly; --j >= 0;) {
 		draw_lyric_line(p_voice, j, y + a_h[j] * .22)
-		y += a_h[j] * 1.1
+		y += a_h[j] * lsf
 	}
 	return y / sc
 }

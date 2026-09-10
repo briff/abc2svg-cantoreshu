@@ -77,6 +77,8 @@ H "History: "',
 	leftmargin: 1.4 * CM,
 	lineskipfac: 1.1,
 	linewarn: true,
+	lyricfirstskipfac: 1.1,
+	lyricskipfac: 1.1,
 	maxshrink: .65,		// nice scores
 	maxstaffsep: 2000,
 	maxsysstaffsep: 2000,
@@ -559,6 +561,8 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "breaklimit":			// float values
 	case "gracedur":
 	case "lineskipfac":
+	case "lyricfirstskipfac":
+	case "lyricskipfac":
 	case "maxshrink":
 	case "pagescale":
 	case "parskipfac":
