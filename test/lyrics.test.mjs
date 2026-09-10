@@ -9,12 +9,18 @@ import assert from 'node:assert/strict'
 import { FALLBACK_ASCENT, firstBaselines, lyricBaselines, near }
 	from './harness.mjs'
 
+/** The gap between two beams, the unit the clearance is counted in. */
+const BEAM_GAP = 1.7
+
 // Nothing here reaches far below the staff, so it shows the ordinary case.
 const HIGH = 'X:1\nK:C\nL:1/4\ncdec|cdec|\n'
 	+ 'w: la la la la la la la la\nw: ti ti ti ti ti ti ti ti\n'
 
 // One low note under one syllable: the case the .35 clearance drew over.
 const LOW = 'X:1\nK:C\nL:1/4\nA,\nw: D\n'
+
+// A whole note on a space, no stem: nothing at all below the bottom line.
+const NO_INK = 'X:1\nK:C\nL:1/4\nc4|\nw: la\n'
 
 // Its systems dip to different depths, so it shows the distance following the
 // music.  Under upstream's own rule this hymn was the reported fault.
@@ -25,11 +31,26 @@ const HYMN = 'X:1\nK:Eb\nL:1/4\n'
 	+ ' Itt je-len van szent tes-té-vel é-des Jé-zus, Je-len va-gyon szent'
 	+ ' vé-ré-vel ál-dott Jé-zus.\n'
 
-test('at a factor of 1 the ascender line rests on the lowest ink', () => {
-	near(firstBaselines('%%lyricfirstskipfac 1\n', LOW)[0], 44.1,
-		'the low note is cleared by a full ascent')
-	near(firstBaselines('%%lyricfirstskipfac 1\n', HIGH)[0], 36.1,
-		'ordinary music is cleared by a full ascent too')
+test('the letters clear the lowest ink by one beam gap', () => {
+	near(firstBaselines('%%lyricfirstskipfac 1\n', LOW)[0],
+		16.02 + FALLBACK_ASCENT + BEAM_GAP, 'the low note')
+	near(firstBaselines('%%lyricfirstskipfac 1\n', HIGH)[0],
+		8.02 + FALLBACK_ASCENT + BEAM_GAP, 'ordinary music')
+})
+
+// The staff is ink too, so a line with nothing hanging below it measures from
+// the bottom of the staff - which is the minimum the whole rule ever gives.
+// abc2svg keeps 2.02 units of its own under the bottom line even for a
+// stemless note, and that is the floor the clearance is added to.
+test('with nothing below the staff, the staff itself is the ink', () => {
+	const min = 2.02 + FALLBACK_ASCENT + BEAM_GAP
+
+	near(firstBaselines('%%lyricfirstskipfac 1\n', NO_INK)[0], min,
+		'a stemless note clears the staff only')
+	for (const tune of [HIGH, LOW, HYMN])
+		for (const base of firstBaselines('%%lyricfirstskipfac 1\n', tune))
+			if (base < min - 0.11)
+				throw new Error(`${base} is above the minimum ${min}`)
 })
 
 test('a low note under a syllable is never written over', () => {
@@ -37,22 +58,22 @@ test('a low note under a syllable is never written over', () => {
 		const base = firstBaselines(`%%lyricfirstskipfac ${factor}\n`, LOW)[0]
 
 		// the ink of that note ends 16.02 below the bottom staff line
-		assert.ok(base - FALLBACK_ASCENT * factor >= 16.02 - 0.11,
+		assert.ok(base - FALLBACK_ASCENT >= 16.02 + BEAM_GAP * factor - 0.11,
 			`factor ${factor}: ascender line at`
-			+ ` ${base - FALLBACK_ASCENT * factor}, ink at 16.02`)
+			+ ` ${base - FALLBACK_ASCENT}, ink at 16.02`)
 	}
 })
 
-test('the factor scales the clearance, in ascents', () => {
+test('the factor scales the clearance, in beam gaps', () => {
 	const one = firstBaselines('%%lyricfirstskipfac 1\n', HIGH)[0]
-	const half = firstBaselines('%%lyricfirstskipfac 0.5\n', HIGH)[0]
+	const two = firstBaselines('%%lyricfirstskipfac 2\n', HIGH)[0]
 
-	near(one - half, FALLBACK_ASCENT * .5, 'half a factor is half an ascent')
+	near(two - one, BEAM_GAP, 'one more factor is one more beam gap')
 })
 
 test('the distance follows the music, system by system', () => {
 	assert.deepEqual(firstBaselines('%%lyricfirstskipfac 1\n', HYMN),
-			[36.1, 32.1, 39.1, 39.1, 32.1])
+			[37.8, 33.8, 40.8, 40.8, 33.8])
 })
 
 test('%%lyricskipfac moves the stanzas apart and leaves the first line', () => {
@@ -73,8 +94,7 @@ test('the two factors answer to nothing but themselves', () => {
 	assert.ok(second > first, 'and the stanza still comes after it')
 })
 
-test('an unset factor is upstream\'s own 1.1', () => {
+test('an unset factor is one beam gap', () => {
 	near(firstBaselines('', HIGH)[0],
-		firstBaselines('%%lyricfirstskipfac 1.1\n', HIGH)[0],
-		'unset == 1.1')
+		firstBaselines('%%lyricfirstskipfac 1\n', HIGH)[0], 'unset == 1')
 })

@@ -544,7 +544,13 @@ function draw_lyric_line(p_voice, j, y) {
     }
 }
 
-var lyric_asc_tb = {}		// ascent per font
+var lyric_asc_tb = {},		// ascent per font
+
+// The gap between two beams (draw_beams(): bshift 3.5 less bh 1.8).  Engraving
+// measures the clearance between the music and the lyrics in this unit: the
+// deepest ink of a line sets the lyric plane for the whole line, one beam gap
+// above the top of the letters.
+	BEAM_GAP = 1.7
 
 // -- baseline to ascender height of a font --
 // (measured in a browser - elsewhere, the .78 that abc2svg itself assumes
@@ -583,7 +589,7 @@ function draw_lyrics(p_voice, nly, a_h, y,
 	var	j, top, asc, yg, yl,
 		sc = staff_tb[p_voice.st].staffscale,
 		lsf = tsfirst.fmt.lyricskipfac || 1.1,	// between lyric lines
-		lff = tsfirst.fmt.lyricfirstskipfac || 1.1;	// staff to first line
+		lff = tsfirst.fmt.lyricfirstskipfac || 1;	// clearance, in beam gaps
 
 	set_font("vocal")
 	if (incr > 0) {				/* under the staff */
@@ -595,14 +601,16 @@ function draw_lyrics(p_voice, nly, a_h, y,
 			y -= a_h[0] * lff
 		} else {
 
-			// anchor the baseline on the bottom staff line, and
-			// keep the lowest ink as a floor under it - counted in
-			// the same ascents, so that the ascender line rests on
-			// the ink exactly as it rests on the staff line
+			// The lyrics of a line share one baseline, so the
+			// deepest ink of the line sets it: the top of the
+			// letters goes one beam gap under that.  With nothing
+			// hanging below the staff, the bottom staff line is
+			// the ink.
 			asc = lyric_ascent(gene.curfont, a_h[0]);
-			yg = y * sc - asc * lff;
-			yl = -tsfirst.fmt.vocalspace * sc - asc * lff;
-			y = (yl < yg ? yl : yg) - a_h[0] * .22
+			yg = y * sc;			// the lowest ink
+			yl = -tsfirst.fmt.vocalspace * sc;	// or the staff
+			y = (yl < yg ? yl : yg)
+				- asc - lff * BEAM_GAP - a_h[0] * .22
 		}
 		for (j = 0; j < nly; j++) {
 			if (j)

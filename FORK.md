@@ -17,34 +17,48 @@ This file is the "prominent notice of modification" that
 
 The vertical advance between lyric lines was the literal `1.1` inside
 `draw_lyrics()`, which is closure-local and so reachable neither from a module
-hook nor from the ABC source. Split into two format parameters, both defaulting
-to that same `1.1` so nothing moves unless asked:
+hook nor from the ABC source. Split into two format parameters, and the gap
+between the music and the first lyric line re-derived from engraving practice
+rather than from that constant:
 
 | Parameter | What it sets |
 | --- | --- |
-| `%%lyricfirstskipfac` | the clearance between the lowest ink of the music and the *first* `w:` line, counted in the lyric face's own ascent — at `1` the ascender line of the lyrics rests exactly on the lowest ink |
-| `%%lyricskipfac` | advance from one `w:` line to the next |
+| `%%lyricfirstskipfac` | the clearance between the lowest ink of the line and the top of the letters of the first `w:` line, counted in beam gaps — `1` is the engraved default |
+| `%%lyricskipfac` | advance from one `w:` line to the next, as a multiple of the line's height |
 
 `%%lineskipfac` applies only to `%%text`/`%%words`/history blocks, never to
 `w:` lines, and `%%vocalspace` is only a floor under the staff-to-first-lyric
 gap: it can push lyrics down but never pull them closer than the lowest stem
 hangs, so in practice anything under ~15pt does nothing at all.
 
-Two things are wrong with upstream's own gap, and the parameter fixes both.
-It is measured in the *line box*, which is between 1.26 em (Merriweather) and
-1.36 em (Alegreya) tall at the same nominal size, so one setting reads
-differently in every face; and the box is not the ink, so a syllable set under
-a note that hangs low is written over. Counting in the measured ascent instead
-makes a face read the same as the next face, and makes a factor of `1` mean
-exactly "the top of the lyrics touches the bottom of the music".
+The rule the parameter implements is the engraved one. Lyrics are always
+raster-parallel, so the **deepest ink of a line sets the lyric plane for the
+whole line**: if a single note dips low, the top of the letters of *its*
+syllable goes one beam gap under it, and that plane then holds for every
+syllable in the line. With nothing hanging below the staff, the staff itself
+is the ink — abc2svg keeps 2.02 units under the bottom line even for a
+stemless note, and that is the minimum the rule ever gives.
 
-The price is that the distance follows the music: a system whose notes dip
-lower carries its lyrics lower. That is deliberate. The alternative — a fixed
-distance from the bottom staff line — was tried first and cannot be made safe:
-even music that stays high leaves ink some 8 units below the line, so any fixed
-anchor either sits clear of the deepest possible note (and so is far too low
-for everything else) or is written over. A single low note under one syllable
-is enough to show it.
+The unit is the gap between two beams, `BEAM_GAP` — 1.7, from `draw_beams()`'s
+`bshift` 3.5 less `bh` 1.8. The factor scales it, so `2` is two beam gaps.
+
+Two things were wrong with upstream's own gap. It is measured in the *line
+box*, which is between 1.26 em (Merriweather) and 1.36 em (Alegreya) tall at
+the same nominal size, so one setting reads differently in every face; and the
+box is not the ink, so a syllable set under a note that hangs low is written
+over. Measuring the face's real ascent fixes the first, and clearing the ink
+rather than the staff line fixes the second.
+
+Two earlier shapes of this patch are worth recording, because both look
+reasonable and neither works. Anchoring the first baseline on the bottom staff
+line gives a beautifully even page, but cannot be made safe: even music that
+stays high leaves ink some 8 units below the line, so a fixed anchor is either
+far below everything or written over by something, and no tolerance constant
+splits the difference — pushing a low `A,` clear needs over `.43` of an ascent,
+leaving an ordinary hymn's deepest system alone needs under `.61`, and in that
+window the note moves two units when it needs sixteen. Clearing each syllable
+against `y_get()` individually is worse still: it breaks the raster-parallel
+rule and leaves a ragged lyric line.
 
 `lyric_ascent()` measures the baseline-to-ascender height with a canvas
 `measureText("Áy")`, and falls back to `.78` of the line height outside a
@@ -62,7 +76,8 @@ under with a full advance instead of cleared.
 
 Touches `core/format.js` (defaults, `set_format`) and `core/lyrics.js`
 (`lyric_ascent`, `draw_lyrics`, `draw_all_lyrics`).
-Covered by `test/lyrics.test.mjs`.
+Covered by `test/lyrics.test.mjs`; `test/preview.html` shows it with real
+font metrics.
 
 ### 2026-09-10 — `modules/huchords.js`, Hungarian chord-symbol spelling
 

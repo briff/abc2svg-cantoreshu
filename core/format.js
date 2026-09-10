@@ -77,7 +77,7 @@ H "History: "',
 	leftmargin: 1.4 * CM,
 	lineskipfac: 1.1,
 	linewarn: true,
-	lyricfirstskipfac: 1.1,
+	lyricfirstskipfac: 1,
 	lyricskipfac: 1.1,
 	maxshrink: .65,		// nice scores
 	maxstaffsep: 2000,
