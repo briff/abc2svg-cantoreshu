@@ -1,0 +1,46 @@
+{
+  "name": "@cantoreshu/abc2svg",
+  "version": "1.0.0",
+  "description": "abc2svg fork for cantores.hu: lyric spacing anchored on the staff, Hungarian chord-symbol spelling",
+  "keywords": [
+    "abc",
+    "abc2svg",
+    "music",
+    "notation",
+    "sheet-music",
+    "svg"
+  ],
+  "license": "LGPL-3.0-or-later",
+  "author": "Bertalan Fodor <fodber@organum.hu>",
+  "contributors": [
+    "Jean-François Moine (abc2svg itself)"
+  ],
+  "homepage": "https://github.com/briff/abc2svg-cantoreshu#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/briff/abc2svg-cantoreshu.git"
+  },
+  "bugs": {
+    "url": "https://github.com/briff/abc2svg-cantoreshu/issues"
+  },
+  "upstream": {
+    "project": "https://chiselapp.com/user/moinejf/repository/abc2svg",
+    "version": "v1.23.5"
+  },
+  "scripts": {
+    "prepare": "./build"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "*-1.js",
+    "abc2svg.ttf",
+    "COPYING",
+    "COPYING.LESSER",
+    "LICENSE",
+    "MIT.txt",
+    "FORK.md",
+    "README.md"
+  ]
+}

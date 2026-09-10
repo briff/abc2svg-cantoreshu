@@ -100,6 +100,28 @@ check-in, each carrying its `FossilOrigin-Name:` trailer. Local work lives on
 
     tools/update-from-upstream.sh --merge
 
+## Using it from an application
+
+Published as **`@cantoreshu/abc2svg`**. It is not an ES or CommonJS module: the
+core assigns the global `abc2svg` and is meant to be served as a file and
+loaded with a plain `<script src>`, so the package has no `main` and no
+`exports` — take the files by path:
+
+    node_modules/@cantoreshu/abc2svg/abc2svg-1.js
+
+The optional modules (`clip-1.js`, `MIDI-1.js`, …) are shipped too, but the
+core only ever asks for one if the page has installed a real `abc2svg.loadjs`;
+the built-in one is a no-op that reports failure. The `abcweb-*` wrappers
+provide one, `abc2svg-1.js` alone does not.
+
+The package version is the *fork's* own and does not track upstream's — the
+built file self-reports the upstream release it was made from as
+`abc2svg.version`, and `package.json` records it under `upstream.version`.
+Assert on `abc2svg.version` if a consumer needs to pin the engine.
+
+`prepare` runs `./build`, so a git dependency builds on install and a registry
+publish carries the built files.
+
 ## Building
 
 `./build`, or `ninja` / `samu`. See section 3 of the
