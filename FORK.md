@@ -22,7 +22,7 @@ to that same `1.1` so nothing moves unless asked:
 
 | Parameter | What it sets |
 | --- | --- |
-| `%%lyricfirstskipfac` | advance from the music down to the *first* `w:` line, counted from the lowest ink of the staff — under `1` is the only way to get lyrics really tight |
+| `%%lyricfirstskipfac` | where the *first* `w:` line's baseline sits below the **bottom staff line**, counted in the lyric face's own ascent — under `1` the lyrics reach up into the staff, which is the only way to get them really tight |
 | `%%lyricskipfac` | advance from one `w:` line to the next |
 
 `%%lineskipfac` applies only to `%%text`/`%%words`/history blocks, never to
@@ -30,8 +30,31 @@ to that same `1.1` so nothing moves unless asked:
 gap: it can push lyrics down but never pull them closer than the lowest stem
 hangs, so in practice anything under ~15pt does nothing at all.
 
+The first line is anchored on the staff line rather than advanced from the
+music, because abc2svg's own rule is a collision rule, not a placement rule:
+counting from the lowest ink drew the lyrics 32.1, 36.1 and 39.1 units below
+the staff on the three systems of one hymn, purely because a low note here and
+a hanging stem there moved the ink. Counting in the *line box* drifted a second
+way, a box being between 1.26 em and 1.36 em tall for the same nominal size
+depending on the face. Measuring the face's ascent and anchoring on the staff
+line takes out both: a system reads the same as its neighbour, and a face the
+same as the next face. The music stays a floor — ink that hangs low enough to
+be written over pushes the baseline down to clear it by `.35` of an ascent.
+
+`lyric_ascent()` measures the baseline-to-ascender height with a canvas
+`measureText("Áy")`, and falls back to `.78` of the line height outside a
+browser or when the measurement throws — that being the ascent abc2svg itself
+assumes in its `a_h * .22` baseline offset. A measurement is cached only once
+`document.fonts.check()` says the face is really loaded, so a render started
+while a webfont is still in flight cannot pin the fallback metrics.
+
+A staff that already carries a lyric voice takes the upstream path for the next
+one (`draw_all_lyrics()` passes `lyst_tb[st].lyd`): there the incoming `y` is
+the previous voice's lyrics rather than the music, and those must be stacked
+under with a full advance instead of anchored.
+
 Touches `core/format.js` (defaults, `set_format`) and `core/lyrics.js`
-(`draw_lyrics`).
+(`lyric_ascent`, `draw_lyrics`, `draw_all_lyrics`).
 
 ### 2026-09-10 — `modules/huchords.js`, Hungarian chord-symbol spelling
 

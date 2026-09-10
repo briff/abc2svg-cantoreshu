@@ -544,20 +544,67 @@ function draw_lyric_line(p_voice, j, y) {
     }
 }
 
+var lyric_asc_tb = {}		// ascent per font
+
+// -- baseline to ascender height of a font --
+// (measured in a browser - elsewhere, the .78 that abc2svg itself assumes
+//  in its a_h * .22 baseline offset)
+function lyric_ascent(font, a_h) {
+    var	c, m,
+	f = st_font(font),
+	r = lyric_asc_tb[f]
+
+	if (r != undefined)
+		return r
+	r = a_h * .78
+	if (typeof document != "undefined" && document.createElement) {
+	    try {
+		c = document.createElement("canvas").getContext("2d");
+		c.font = f;
+		m = c.measureText("\u00c1y")
+		if (m.fontBoundingBoxAscent)
+			r = m.fontBoundingBoxAscent
+		else if (m.actualBoundingBoxAscent)
+			r = m.actualBoundingBoxAscent
+
+		// cache only a really loaded face, so that a render started
+		// while a webfont is in flight cannot pin the fallback metrics
+		if (document.fonts && document.fonts.check(f))
+			lyric_asc_tb[f] = r
+	    } catch (e) {
+	    }
+	}
+	return r
+} // lyric_ascent()
+
 function draw_lyrics(p_voice, nly, a_h, y,
-				incr) {	/* 1: below, -1: above */
-	var	j, top,
+				incr,	/* 1: below, -1: above */
+				std) {	/* a lyric voice is already under the staff */
+	var	j, top, asc, yg, yl,
 		sc = staff_tb[p_voice.st].staffscale,
 		lsf = tsfirst.fmt.lyricskipfac || 1.1,	// between lyric lines
 		lff = tsfirst.fmt.lyricfirstskipfac || 1.1;	// staff to first line
 
 	set_font("vocal")
 	if (incr > 0) {				/* under the staff */
-		if (y > -tsfirst.fmt.vocalspace)
-			y = -tsfirst.fmt.vocalspace;
-		y *= sc
+		if (std) {
+
+			// the incoming y is the previous voice's lyrics, not
+			// the music: stack under them with a full advance
+			y *= sc;
+			y -= a_h[0] * lff
+		} else {
+
+			// anchor the baseline on the bottom staff line, and
+			// keep the lowest ink as a floor under it
+			asc = lyric_ascent(gene.curfont, a_h[0]);
+			yg = y * sc - asc * .35;
+			yl = -tsfirst.fmt.vocalspace * sc - asc * lff;
+			y = (yl < yg ? yl : yg) - a_h[0] * .22
+		}
 		for (j = 0; j < nly; j++) {
-			y -= a_h[j] * (j ? lsf : lff);
+			if (j)
+				y -= a_h[j] * lsf;
 			draw_lyric_line(p_voice, j,
 				y + a_h[j] * .22)	// (descent)
 		}
@@ -682,10 +729,13 @@ function draw_all_lyrics() {
 		st = p_voice.st;
 // don't scale the lyrics
 		set_dscale(st, true)
-		if (nly_tb[v] > 0)
+		if (nly_tb[v] > 0) {
 			lyst_tb[st].bot = draw_lyrics(p_voice, nly_tb[v],
 							h_tb[v],
-							lyst_tb[st].bot, 1)
+							lyst_tb[st].bot, 1,
+							lyst_tb[st].lyd);
+			lyst_tb[st].lyd = 1
+		}
 	}
 
 	/* draw the lyrics above the staff */
