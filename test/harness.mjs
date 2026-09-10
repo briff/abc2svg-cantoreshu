@@ -58,8 +58,13 @@ export function lyricBaselines(directives, tune, opts) {
 
 	for (const [, body] of engrave(directives, tune, opts)
 				.matchAll(/<g transform="translate\(0,[\d.]+\)">([\s\S]*?)<\/g>/g)) {
+		// abc2svg lays the hyphens between syllables out as text of their
+		// own, a hundredth above the baseline they belong to - so drop
+		// them, or one can come back as a line's baseline
 		const ys = [...new Set([...body.matchAll(
-			/<text class="f\d+" x="[\d.]+" y="([-\d.]+)"/g)].map((m) => +m[1]))]
+			/<text class="f\d+" x="[\d.]+" y="([-\d.]+)"[^>]*>([^<]*)/g)]
+				.filter((m) => m[2].trim() && m[2].trim() != '-')
+				.map((m) => +m[1]))]
 		if (ys.length)
 			systems.push(ys)
 	}
