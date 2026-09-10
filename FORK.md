@@ -24,7 +24,7 @@ rather than from that constant:
 | Parameter | What it sets |
 | --- | --- |
 | `%%lyricfirstskipfac` | the clearance between the lowest ink of the line and the top of the letters of the first `w:` line, counted in beam gaps — `1` is the engraved default |
-| `%%lyricskipfac` | advance from one `w:` line to the next, as a multiple of the line's height |
+| `%%lyricskipfac` | advance from one `w:` line to the next, as a multiple of the line's measured height — `1.2` is the engraved default |
 
 `%%lineskipfac` applies only to `%%text`/`%%words`/history blocks, never to
 `w:` lines, and `%%vocalspace` is only a floor under the staff-to-first-lyric
@@ -41,6 +41,15 @@ stemless note, and that is the minimum the rule ever gives.
 
 The unit is the gap between two beams, `BEAM_GAP` — 1.7, from `draw_beams()`'s
 `bshift` 3.5 less `bh` 1.8. The factor scales it, so `2` is two beam gaps.
+
+Between stanzas the engraved rule is different again: the advance is the body
+of **one size grade larger**, so that ascenders and descenders pass each other
+without touching. On the hand-setting scale that is borgis 9 → garmond 10
+(1.111), garmond → cicero (1.200), cicero → mittel (1.167); in millimetres,
+3.76 / 4.51 / 5.26, against a recommended 3.5–5 / 4.5–5 / 5–5.5 for the three
+sizes. Every computed value falls inside its own range, and `1.2` sits inside
+all three, so that is the default here — upstream's `1.1` is below the
+recommendation for every size.
 
 Two things were wrong with upstream's own gap. It is measured in the *line
 box*, which is between 1.26 em (Merriweather) and 1.36 em (Alegreya) tall at

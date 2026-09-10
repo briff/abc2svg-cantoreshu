@@ -588,7 +588,7 @@ function draw_lyrics(p_voice, nly, a_h, y,
 				std) {	/* a lyric voice is already under the staff */
 	var	j, top, asc, yg, yl,
 		sc = staff_tb[p_voice.st].staffscale,
-		lsf = tsfirst.fmt.lyricskipfac || 1.1,	// between lyric lines
+		lsf = tsfirst.fmt.lyricskipfac || 1.2,	// between lyric lines
 		lff = tsfirst.fmt.lyricfirstskipfac || 1;	// clearance, in beam gaps
 
 	set_font("vocal")

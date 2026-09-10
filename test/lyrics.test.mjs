@@ -12,6 +12,9 @@ import { FALLBACK_ASCENT, firstBaselines, lyricBaselines, near }
 /** The gap between two beams, the unit the clearance is counted in. */
 const BEAM_GAP = 1.7
 
+/** The body size the fixtures set their lyrics at (harness LYRIC_SIZE). */
+const BODY = 36
+
 // Nothing here reaches far below the staff, so it shows the ordinary case.
 const HIGH = 'X:1\nK:C\nL:1/4\ncdec|cdec|\n'
 	+ 'w: la la la la la la la la\nw: ti ti ti ti ti ti ti ti\n'
@@ -74,6 +77,17 @@ test('the factor scales the clearance, in beam gaps', () => {
 test('the distance follows the music, system by system', () => {
 	assert.deepEqual(firstBaselines('%%lyricfirstskipfac 1\n', HYMN),
 			[37.8, 33.8, 40.8, 40.8, 33.8])
+})
+
+// Engraving sets the advance between lyric lines to the body of the next size
+// up in the traditional scale, so ascenders and descenders pass without
+// touching: borgis 9 -> garmond 10 is 1.111, garmond -> cicero 1.200, cicero
+// -> mittel 1.167.  In millimetres that is 3.76 / 4.51 / 5.26, and the same
+// source recommends 3.5-5 / 4.5-5 / 5-5.5 - so 1.2 sits in every range.
+test('the default advance between stanzas is one size grade', () => {
+	const [[first, second]] = lyricBaselines('', HIGH)
+
+	near(second - first, BODY * 1.2, 'garmond to cicero')
 })
 
 test('%%lyricskipfac moves the stanzas apart and leaves the first line', () => {
