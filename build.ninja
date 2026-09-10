@@ -37,6 +37,8 @@ rule jsc
       else $
 	if command -v qjs >/dev/null 2>&1; then $
 	  cat $in | ./jsmin >> $out;$
+	elif command -v node >/dev/null 2>&1; then $
+	  cat $in | node tools/jsmin-node.js >> $out;$
 	else $
 	  cat $in | uglifyjs >> $out;$
 	fi;$
@@ -56,6 +58,8 @@ rule jscu
       else $
 	if command -v qjs >/dev/null 2>&1; then $
 	  cat $in | ./jsmin >> $out;$
+	elif command -v node >/dev/null 2>&1; then $
+	  cat $in | node tools/jsmin-node.js >> $out;$
 	else $
 	  cat $in | uglifyjs >> $out;$
 	fi;$

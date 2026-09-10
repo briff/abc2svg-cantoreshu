@@ -17,6 +17,11 @@ fi
 gen() {
  cat "$@" | qjs --std jsmin-min.js
 }
+elif command -v node >/dev/null 2>&1; then
+# same script under nodeJS
+gen() {
+ cat "$@" | node tools/jsmin-node.js
+}
 else
 # no minify
 gen() {
