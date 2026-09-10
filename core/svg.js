@@ -750,26 +750,29 @@ function out_wings(x, y, h, f) {
 function out_bracket(x, y, h) {
 	out_wings(x - 5, y + 2, h, 0)
 }
-// hyphen
+// hyphen(s) between two syllables of a word
+// The hyphen is centered in the gap - it is a glyph of the lyric font, so its
+// own width is what it takes there, and the 8 units upstream reckons with are
+// only that width at about 14pt.  A long gap gets a run of them instead, one
+// every four bodies, which is upstream's own 56 units at that same size.
 function out_hyph(x, y, w) {
     var	i,
-	d = 8,					// offset 1st hyphen and hyphen width
-	n = w / d / 7 |0			// number of hyphens less 1
+	hw = strwh('-')[0],			// the hyphen's own width
+	d = 0,
+	n = w / (gene.curfont.size * 4) |0	// number of hyphens less 1
 
-	if (!n)					// if only one hyphen
-		d = (w - d) / 2 + 2		// x offset
-	else
-		w -= d * 3			// ending spaces and the last hyphen
-	x += d					// offset first hyphen
-	if (n) {
-		x -= d / 2			// 1st hyphen a bit closer
-		w += d				// last hyphen a bit furtherer
+	if (!n) {				// if only one hyphen
+		x += (w - hw) / 2		// centered in the gap
+	} else {
+
+		// spread, keeping half a hyphen of air at each end
+		d = (w - hw * 2) / n
+		x += hw / 2
 	}
 
 	output += '<text class="' + font_class(gene.curfont)
 		+ '" x="' + sx(x).toFixed(2)
 	i = n
-	d = w / n
 	while (--n >= 0) {
 		x += d
 		output += "," + sx(x).toFixed(2)

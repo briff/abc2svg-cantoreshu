@@ -77,6 +77,59 @@ export function firstBaselines(directives, tune, opts) {
 }
 
 /**
+ * Per system, the lyric line's syllables and hyphens in engraving order.
+ *
+ * A hyphen is a <text> like any other, and a long gap gets a run of them in
+ * one element with a comma-separated x list - the first x is taken for those.
+ *
+ * @return {Array<Array<{t: string, x: number}>>} one array per engraved system
+ */
+export function syllables(directives, tune, opts) {
+	const systems = []
+
+	for (const [, body] of engrave(directives, tune, opts)
+				.matchAll(/<g transform="translate\(0,[\d.]+\)">([\s\S]*?)<\/g>/g)) {
+		const line = [...body.matchAll(
+			/<text class="f\d+" x="([\d.,]+)" y="[-\d.]+"[^>]*>([^<]*)/g)]
+			.filter((m) => m[2].trim())
+			.map((m) => ({ t: m[2], x: +m[1].split(',')[0] }))
+		if (line.length)
+			systems.push(line)
+	}
+	return systems
+}
+
+/**
+ * Per system, the x of every notehead.
+ *
+ * abc2svg draws the stem 3.5 units off the middle of the head, on the left of
+ * a note whose stem goes down - which every note of the fixtures here does, so
+ * the stems give the noteheads away.
+ *
+ * @return {Array<Array<number>>} one array per engraved system
+ */
+export function noteXs(directives, tune, opts) {
+	const systems = []
+
+	for (const [body] of engrave(directives, tune, opts)
+				.matchAll(/<svg[\s\S]*?<\/svg>/g)) {
+		const xs = [...body.matchAll(/class="sW" d="([^"]+)"/g)]
+			.flatMap((m) => [...m[1].matchAll(/M([\d.]+) /g)])
+			.map((m) => +m[1] + 3.5)
+		if (xs.length)
+			systems.push(xs)
+	}
+	return systems
+}
+
+/** The syllables and hyphens of every system, flattened, as strings. */
+export function syllableText(directives, tune, opts) {
+	return syllables(directives, tune, opts)
+		.flat()
+		.map((s) => s.t)
+}
+
+/**
  * Every laid-out string in engraving order.  abc2svg numbers its font classes
  * per tune, so a fixture that wants only its chord symbols back must carry no
  * title and no lyrics.

@@ -273,6 +273,23 @@ function get_lyrics(p, cont) {
 	curvoice.lyric_cont = s
 }
 
+// -- the room a hyphen is given between two syllables --
+// Its own width and a twentieth of that of air on each side, so the stroke
+// does not touch the letters - or %%lyrichyphenmin where that asks for more.
+// The hyphen already carries side bearings of its own inside that width, so
+// the air here is only what keeps them from reading as none; asking for much
+// more turns into a syllable glued to the one before it on a line that had
+// room for the hyphen all along.  It is measured the way the syllables
+// themselves are, through strwh(), which asks the browser when there is one,
+// so that the room and what goes in it are the same face.
+// (the caller has set gene.curfont to the font of the syllable)
+function hyphen_room(s) {
+    var	w = strwh("-")[0] * 1.1,
+	min = s.fmt.lyrichyphenmin
+
+	return min > w ? min : w
+} // hyphen_room()
+
 // install the words under a note
 // (this function is called during the generation)
 function ly_set(s) {
@@ -338,24 +355,45 @@ function ly_set(s) {
 				else
 					sz = w * .2
 			}
-			shift = (w - sz) * .4
-			if (shift > 14)
-				shift = 14
-			shift += sz
+
+			// the prefix - a verse number, a bracket - hangs to
+			// the left of the note, and what follows it is what
+			// gets centered
+			shift = sz + (w - sz) * .5
 			if (p[0] >= '0' && p[0] <= '9') {
 				if (shift > align)
 					align = shift
 			}
 		} else {
-			shift = w * .4
-			if (shift > 14)
-				shift = 14
+
+			// A syllable is centered on the notehead, so half of
+			// it stands left of the note.  (upstream takes .4 of
+			// it, and no more than 14 units whatever the size:
+			// that leaves anything wider than 35 units - which at
+			// a singable size is every syllable there is - hanging
+			// to the right of its note by the rest)
+			shift = w * .5
 		}
 		ly.shift = shift
 		if (shift > wl)
 			wl = shift		// max left space
-	    if (ly.ln != 1)			// (no space for a hyphen)
-		w += spw			// space after the syllable
+
+		// A syllable is followed by room for whatever comes next: a
+		// space before the next word, and before a hyphen only what
+		// %%lyrichyphenmin asks for, which is nothing by default.
+		// The syllables themselves are what the notes are moved for -
+		// they may not be set one over another - and a hyphen is not:
+		// it is set in the room the spacing happens to leave, and
+		// where that is too little it is dropped and the two
+		// syllables pulled into one word rather than the noteheads
+		// pushed off their advance to hold it.  Justification is what
+		// most often leaves the room, and it runs after this and
+		// before the drawing, so a hyphen on a stretched line is kept
+		// even where the spacing here could not have paid for it.
+		// %%lyrichyphenmin is how a score buys the room outright: the
+		// notes are then spread for the hyphen too, and no hyphen is
+		// dropped, at the cost of fewer notes to the system.
+		w += ly.ln == 1 ? s.fmt.lyrichyphenmin : spw
 		w -= shift			// right width
 		if (w > wx)
 			wx = w			// max width
@@ -401,7 +439,7 @@ function ly_set(s) {
 /* (the staves are not yet defined) */
 function draw_lyric_line(p_voice, j, y) {
     var	p, lastx, w, s, ly, lyl, ln,
-	lflag, x0, shift,
+	lflag, x0, shift, hyw, gap,
 	hyflag = {}
 
 	// output a syllable
@@ -494,7 +532,31 @@ function draw_lyric_line(p_voice, j, y) {
 		if (ln == 2)				// more '-'
 			continue
 		if (hyflag.s) {
-			if (x0 - hyflag.w - lastx > gene.curfont.swfac) {
+
+			// The room a hyphen wants, which is what ly_set() has
+			// asked the spacing for: the two agree, so a line the
+			// page can hold keeps every hyphen.
+			// (upstream compares against swfac here, a whole em and
+			//  more, which no syllabic setting ever leaves - which
+			//  is why its hyphens all but vanish under a large
+			//  lyric font)
+			hyw = hyphen_room(s)
+			gap = x0 - hyflag.w - lastx
+
+			// Short of that, but the stroke itself would still be
+			// seen whole: the ink of a hyphen is about two thirds
+			// of the width it advances, the rest being the side
+			// bearings, so down to .6 of the room there is still
+			// air on either side of the stroke.  Gluing would take
+			// the syllable further from its note than closing that
+			// air does, so the gap is opened and the hyphen kept.
+			// (the band is aretino-chant's, from
+			//  emitAlignedSyllables())
+			if (gap < hyw && gap > hyw * .6) {
+				x0 = lastx + hyflag.w + hyw
+				gap = hyw
+			}
+			if (gap >= hyw) {
 				if (!lastx)
 					lastx = x0 - ly.font.size
 				out_ly(hyflag.s, hyflag.w, hyflag.p)
@@ -503,6 +565,11 @@ function draw_lyric_line(p_voice, j, y) {
 				set_hy(0)
 				lastx = x0
 			} else {
+
+				// no room for the hyphen at all: drop it and
+				// pull the syllables together into one word.
+				// That gives back the room it would have taken,
+				// so the next hyphen of the word has more.
 				x0 = lastx
 			}
 			p = hyflag.p + p		// concatenate

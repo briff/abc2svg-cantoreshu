@@ -78,6 +78,7 @@ H "History: "',
 	lineskipfac: 1.1,
 	linewarn: true,
 	lyricfirstskipfac: 1,
+	lyrichyphenmin: 0,
 	lyricskipfac: 1.2,
 	maxshrink: .65,		// nice scores
 	maxstaffsep: 2000,
@@ -644,6 +645,7 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "infospace":
 	case "maxstaffsep":
 	case "maxsysstaffsep":
+	case "lyrichyphenmin":
 	case "musicspace":
 	case "partsspace":
 	case "shrinksys":

@@ -5,10 +5,26 @@
   Open this straight off the disk - no server needed.  It loads the built
   ../abc2svg-1.js, so run ./build first, and reload after every rebuild.
 
-  The point of this page is the one thing test/harness.mjs cannot do: in a
-  browser lyric_ascent() measures the real face with a canvas, instead of
-  falling back to .78 of the line height.  The numbers here are the ones the
-  application will see; the ones in the tests are not.
+  The point of this page is the two things test/harness.mjs cannot do.
+
+  One: in a browser lyric_ascent() measures the real face with a canvas
+  instead of falling back to .78 of the line height.
+
+  Two: string widths.  abc2svg binds strwh() once, when the engine script
+  runs, and it measures the real face only if abc2svg.el - a hidden span -
+  already exists at that moment; otherwise it estimates every string from a
+  built-in Times table times 1.1, which is about a tenth too wide and throws
+  the note spacing and the hyphens out with it.  The "string widths" switch
+  below picks which of the two the page loads with, and reloads to rebind, so
+  a page of the application can be judged either way.
+
+  The %%lyrichyphenmin slider is the third thing worth seeing here.  At 0 the
+  notes keep the advance the music gives them and the hyphens take what is left
+  over, so raising the vocal size drops them one by one and sets the words
+  whole; raising the slider buys the room outright and spreads the notes to
+  give it, at the cost of fewer notes to the system.  A single-system fixture
+  is not stretched to the page, so what it shows is the unstretched case - the
+  hymn's own systems are justified and keep their hyphens far longer.
 
   The faces come from Google Fonts, so the page wants a network on first load.
   Offline it falls back to a local serif and the metrics change accordingly.
@@ -41,6 +57,14 @@ svg { display: block }
   <label>%%lyricskipfac
     <input type="range" id="skip" min="0" max="3" step="0.05" value="1.2">
     <output id="skipv">1.2</output></label>
+  <label>%%lyrichyphenmin
+    <input type="range" id="hymin" min="0" max="60" step="1" value="0">
+    <output id="hyminv">0</output></label>
+  <label>string widths
+    <select id="metrics">
+      <option value="measured">measured (abc2svg.el is set)</option>
+      <option value="guessed">guessed (Times x 1.1)</option>
+    </select><span></span></label>
   <label>vocal font
     <select id="font">
       <option selected>Alegreya</option>
@@ -58,6 +82,21 @@ svg { display: block }
 </div>
 <div id="out"></div>
 
+<script>
+// strwh() binds once, below, and measures the real face only if this span is
+// already there - so it is made here, before the engine script, and left out
+// when the URL asks for the guessing path instead.
+if (!/[?&]guess\b/.test(location.search)) {
+  var abc2svg = {}
+  const e = document.createElement("span")
+  e.style.position = "absolute"
+  e.style.top = e.style.padding = 0
+  e.style.visibility = "hidden"
+  e.style.lineHeight = 1
+  document.body.appendChild(e)
+  abc2svg.el = e
+}
+</script>
 <script src="../abc2svg-1.js"></script>
 <script>
 // Two stanzas, so the %%lyricskipfac grade can be judged on the case it is
@@ -79,6 +118,7 @@ const FIXTURES = {
   'low note under one syllable': 'X:1\nK:C\nL:1/4\nA,\nw: D\n',
   'stemless whole notes (the minimum)':
     'X:1\nK:C\nL:1/4\nc4|e4|\nw: la la\nw: ti ti\n',
+  'hyphens under three notes': 'X:1\nK:Eb\nL:1/4\nC D E\nw: Meg-vál-tó\n',
   hymn: 'X:1\nK:Eb\nL:1/4\n'
     + 'E F G G | G A c2 | B4 | E F G G | G A B2 | G4 | B B c B | A G F G |'
     + ' B A G2 | F4 | B B c B | A G F G | A G F2 | E4 |]\n'
@@ -98,7 +138,9 @@ $('abc').value = TWO_STANZAS
 function render() {
   const first = $('first').value, skip = $('skip').value
   const size = $('size').value, family = $('font').value
+  const hymin = $('hymin').value
   $('firstv').value = first; $('skipv').value = skip; $('sizev').value = size
+  $('hyminv').value = hymin
 
   let svg = '', errs = []
   const abc = new abc2svg.Abc({
@@ -112,6 +154,7 @@ function render() {
       + '%%vocalspace 0\n'
       + `%%vocalfont "${family}" ${size}\n`
       + `%%lyricfirstskipfac ${first}\n%%lyricskipfac ${skip}\n`
+      + `%%lyrichyphenmin ${hymin}\n`
       + $('abc').value)
   } catch (e) { errs.push(String(e)) }
 
@@ -130,6 +173,8 @@ function render() {
     + `font design box  ${n(m.fontBoundingBoxAscent)}   holds every diacritic\n`
     + `.78 fallback     ${n(size * 0.78)}   headless only\n`
     + `loaded face      ${document.fonts.check(c.font)}\n`
+    + `string widths    ${abc2svg.el ? 'measured in the real face'
+                          : 'guessed - Times x 1.1'}\n`
     + `lyric baselines  ${[...new Set(ys)].join(', ')}`
 }
 
@@ -145,9 +190,15 @@ $('fixture').addEventListener('change', (e) => {
   $('abc').value = FIXTURES[e.target.value]
   render()
 })
+// the binding is one-shot, so this one has to go round the page again
+$('metrics').value = abc2svg.el ? 'measured' : 'guessed'
+$('metrics').addEventListener('change', (e) => {
+  location.search = e.target.value == 'guessed' ? '?guess' : ''
+})
+
 $('font').addEventListener('change', reload)
 $('size').addEventListener('input', reload)
-for (const id of ['first', 'skip', 'abc'])
+for (const id of ['first', 'skip', 'hymin', 'abc'])
   $(id).addEventListener('input', render)
 
 document.fonts.ready.then(reload)
