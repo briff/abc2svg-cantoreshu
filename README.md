@@ -1,3 +1,21 @@
+> ## This is not the abc2svg project
+>
+> **abc-cantoreshu** is an unofficial git mirror and fork of
+> [abc2svg](https://chiselapp.com/user/moinejf/repository/abc2svg) by
+> Jean-François Moine, maintained for the needs of
+> [cantores.hu](https://cantores.hu). It is **modified**: see
+> [FORK.md](FORK.md) for what was changed and when.
+>
+> Upstream is authoritative and is developed in Fossil, not git:
+> <https://chiselapp.com/user/moinejf/repository/abc2svg>
+>
+> **Bugs in abc2svg belong upstream, not here.** Please report them on the
+> [abcusers list](https://groups.io/g/abcusers) or in upstream's own ticket
+> tracker, where the author will see them. Issues opened here about abc2svg
+> itself only delay your answer.
+>
+> Everything below this box is upstream's own README, kept as it is.
+
 <style>
 p{margin-left:.5cm;max-width:21cm}
 li{margin-left:.5cm;max-width:20cm}

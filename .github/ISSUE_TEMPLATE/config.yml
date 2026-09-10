@@ -1,0 +1,17 @@
+blank_issues_enabled: false
+contact_links:
+  - name: A bug in abc2svg itself
+    url: https://groups.io/g/abcusers
+    about: >-
+      This repository is only an unofficial fork. abc2svg is written and
+      maintained by Jean-François Moine, who does not read this tracker.
+      Rendering bugs, ABC parsing questions and feature requests belong on
+      the abcusers list, where he will see them.
+  - name: Upstream source and ticket tracker
+    url: https://chiselapp.com/user/moinejf/repository/abc2svg
+    about: >-
+      The authoritative abc2svg repository, developed in Fossil. Report
+      upstream bugs and browse the wiki here.
+  - name: abc2svg documentation
+    url: https://moinejf.pages-perso.free.fr/abcm2ps-doc/index.html
+    about: The ABC parameters shared by abcm2ps and abc2svg.

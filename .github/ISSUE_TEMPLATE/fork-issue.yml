@@ -1,0 +1,37 @@
+name: An issue with this fork
+description: >-
+  Only for the changes this fork adds - see FORK.md. Bugs in abc2svg itself go
+  to the abcusers list instead.
+labels: [fork]
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        **Before opening this:** does the same thing happen with upstream
+        abc2svg from
+        <https://chiselapp.com/user/moinejf/repository/abc2svg>?
+        If it does, it is an upstream bug and belongs on the
+        [abcusers list](https://groups.io/g/abcusers), not here.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part of the fork?
+      options:
+        - "%%lyricfirstskipfac / %%lyricskipfac"
+        - "modules/huchords.js (Hungarian chord spelling)"
+        - "tools/jsmin-node.js (build / minification)"
+        - "tools/update-from-upstream.sh (fossil mirroring)"
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happens, and what you expected instead
+    validations:
+      required: true
+  - type: textarea
+    id: abc
+    attributes:
+      label: A minimal ABC source that shows it
+      render: text
