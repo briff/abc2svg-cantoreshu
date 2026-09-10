@@ -546,11 +546,27 @@ function draw_lyric_line(p_voice, j, y) {
 
 var lyric_asc_tb = {},		// ascent per font
 
-// The gap between two beams (draw_beams(): bshift 3.5 less bh 1.8).  Engraving
-// measures the clearance between the music and the lyrics in this unit: the
-// deepest ink of a line sets the lyric plane for the whole line, one beam gap
-// above the top of the letters.
-	BEAM_GAP = 1.7
+// The beam geometry of draw_beams(), which the clearance between the music and
+// the lyrics is measured in: the deepest ink of a line sets the lyric plane for
+// the whole line, one beam gap above the top of the letters.
+//
+// draw_beams() advances BEAM_PITCH from beam to beam and divides BEAM_TH by the
+// graphic scale, so the gap it draws is BEAM_PITCH - BEAM_TH / scale in the
+// staff's own units.  Lyrics are laid out unscaled, and that gap converts as
+// (BEAM_PITCH - BEAM_TH / scale) * scale, hence beam_gap() below.  Both are 1.7
+// at the default scale.
+	BEAM_PITCH = 3.5,	// draw_beams(): bshift
+	BEAM_TH = 1.8		// draw_beams(): bh
+
+// -- the gap between two beams, in the unscaled units the lyrics are set in --
+function beam_gap(p_voice) {
+    var	g = BEAM_PITCH * (p_voice.scale || 1)
+			* staff_tb[p_voice.st].staffscale - BEAM_TH
+
+	// abc2svg keeps the beams a constant thickness however small the staff,
+	// so under about .52 they would touch; no negative clearance from that
+	return g > 0 ? g : 0
+} // beam_gap()
 
 // -- baseline to the top of the letters --
 // What is wanted is the ink of the tallest thing a lyric line puts above the
@@ -623,7 +639,8 @@ function draw_lyrics(p_voice, nly, a_h, y,
 			yg = y * sc;			// the lowest ink
 			yl = -tsfirst.fmt.vocalspace * sc;	// or the staff
 			y = (yl < yg ? yl : yg)
-				- asc - lff * BEAM_GAP - a_h[0] * .22
+				- asc - lff * beam_gap(p_voice)
+				- a_h[0] * .22
 		}
 		for (j = 0; j < nly; j++) {
 			if (j)

@@ -175,3 +175,22 @@ test('with no usable metric at all it is .78 of the body', () => {
 	near(firstBaselines('%%lyricfirstskipfac 0\n', LOW, { document: doc })[0],
 		16.02 + FALLBACK_ASCENT, 'the fallback')
 })
+
+// -- the beam gap under %%staffscale --
+//
+// draw_beams() advances 3.5 from beam to beam but divides the 1.8 thickness by
+// the graphic scale, so the gap it draws is not a constant.  Measure it as the
+// difference between two factors rather than as a baseline, which cancels the
+// ink and the ascent; and multiply the factor up, because abc2svg rounds the y
+// it writes to one decimal and the gap itself is smaller than that.
+test('the clearance tracks the beams through %%staffscale', () => {
+	for (const scale of [1, 0.7, 1.5, 0.52, 0.4]) {
+		const at = (f) => firstBaselines(
+			`%%staffscale ${scale}\n%%lyricfirstskipfac ${f}\n`, LOW)[0]
+		const gap = (at(10) - at(0)) / 10
+
+		// ... and abc2svg keeps the beams a constant thickness however
+		// small the staff, so under about .52 they would touch
+		near(gap, Math.max(0, 3.5 * scale - 1.8), `staffscale ${scale}`)
+	}
+})
