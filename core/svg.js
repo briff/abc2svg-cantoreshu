@@ -758,34 +758,33 @@ function out_bracket(x, y, h) {
 // A gap wide enough - a word broken over a system, or a long melisma - gets a
 // run of them instead, one every four bodies, as upstream does.
 function out_hyph(x, y, w, g) {
-    var	i, l,
-	d = 0,
+    var	i, l, d,
 	n = w / (gene.curfont.size * 4) |0	// number of strokes less 1
 
 	if (!n) {
 
 		// one stroke, as long as the room allows between its two
-		// bounds, centered in the gap
+		// bounds
 		l = w - g.sp * 2
 		if (l > g.max)
 			l = g.max
 		else if (l < g.min)
 			l = g.min
-		x += (w - l) / 2
 	} else {
-
-		// spread, each at its full length, half a stroke of air at
-		// each end
-		l = g.max;
-		d = (w - l * 2) / n
-		x += l / 2
+		l = g.max			// a wide gap affords full length
 	}
+
+	// the strokes and the air share the gap evenly - as much air at each
+	// end as between any two strokes - so a run of them reads as the one
+	// hyphen it is, and a single stroke stands in the middle of the gap
+	d = (w - l * (n + 1)) / (n + 2)
+	x += d
 	y += g.dy				// hung in the lower-case letters
 	for (i = 0; i <= n; i++) {
 		out_XYAB('<path class="stroke lyhy" stroke-width="G"\n\
 	d="mX YhF"/>\n',
 			x, y, l, g.th);
-		x += d
+		x += l + d
 	}
 }
 // stem [and flags]

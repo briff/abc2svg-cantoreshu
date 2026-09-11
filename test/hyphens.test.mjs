@@ -206,6 +206,31 @@ test('%%lyrichyphenspace is kept clear on either side', () => {
 	}
 })
 
+// -- a run of strokes --
+//
+// A gap too wide for one stroke - a long melisma, or a word broken over a
+// system - is filled with a run of them, and what makes the run read as the
+// one hyphen it is, is even spacing: as much air at either end of the run as
+// between any two of its strokes.
+test('a run of strokes is spread evenly across the gap', () => {
+	const tune = 'X:1\nK:C\nL:1/1\nC C C |\nw: \u00c1ld-jad\n'
+	const line = syllables('%%stretchlast 1\n' + at(12), tune)[0]
+	const run = line.filter((s) => s.t == '-')
+	const last = run[run.length - 1]
+	const next = line[line.lastIndexOf(last) + 1]
+	const pitch = run[1].x - run[0].x
+
+	assert.ok(run.length > 2,
+		`the gap is filled with a run: ${run.length} strokes`)
+	for (let i = 1; i < run.length; i++)
+		assert.ok(Math.abs(run[i].x - run[i - 1].x - pitch) < .11,
+			`stroke ${i} keeps the pitch: ${run[i].x - run[i - 1].x}`
+			+ ` of ${pitch}`)
+	assert.ok(Math.abs(next.x - last.x - pitch) < .11,
+		`the air before the next syllable is the air between two`
+		+ ` strokes: ${next.x - last.x} of ${pitch}`)
+})
+
 // -- what the noteheads are moved for, and what they are not --
 //
 // The syllables: two of them may not be set one over another, so the spacing
