@@ -1,6 +1,6 @@
 {
   "name": "@cantoreshu/abc2svg",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "abc2svg fork for cantores.hu: lyric spacing anchored on the staff, Hungarian chord-symbol spelling",
   "keywords": [
     "abc",
