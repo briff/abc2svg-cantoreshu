@@ -199,9 +199,10 @@ var decos = {
 	]
 
 /* -- get the max/min vertical offset -- */
-function y_get(st, up, x, w) {
+function y_get(st, up, x, w, lyrics) {
 	var	y,
 		p_staff = staff_tb[st],
+	bot = lyrics ? p_staff.lyric_bot : p_staff.bot,
 	i = (x / 2) | 0,
 	j = ((x + w) / 2) | 0
 
@@ -223,19 +224,21 @@ function y_get(st, up, x, w) {
 			i++
 		}
 	} else {
-		y = p_staff.bot[i++]
+		y = bot[i++]
 		while (i <= j) {
-			if (y > p_staff.bot[i])
-				y = p_staff.bot[i];
+			if (y > bot[i])
+				y = bot[i];
 			i++
 		}
 	}
 	return y
 }
 
+// lyric_y optionally excludes symbol padding already supplied by lyric clearance.
 /* -- adjust the vertical offsets -- */
-function y_set(st, up, x, w, y) {
+function y_set(st, up, x, w, y, lyric_y) {
     var	p_staff = staff_tb[st],
+	ly = lyric_y == undefined ? y : lyric_y,
 	i = (x / 2) | 0,
 	j = ((x + w) / 2) | 0
 
@@ -260,6 +263,10 @@ function y_set(st, up, x, w, y) {
 		while (i <= j) {
 			if (p_staff.bot[i] > y)
 				p_staff.bot[i] = y;
+			if (p_staff.lyric_bot) {
+				if (p_staff.lyric_bot[i] > ly)
+					p_staff.lyric_bot[i] = ly
+			}
 			i++
 		}
 	}

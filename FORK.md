@@ -24,7 +24,9 @@ The fork changes lyric layout for large, singable type.
   verse numbers) remain to the left.
 - The first lyric line clears the lowest musical ink; subsequent stanzas use a
   measured lyric-line advance. The calculation follows staff and beam scaling,
-  and uses the lyric face's measured ink ascent where a browser can provide it.
+  and pairs each first-stanza syllable's measured ascent with the music above
+  its horizontal span, then chooses a shared baseline that clears every pair.
+  Browser ink metrics are used, with conservative fallback for inline markup.
 - `%%lyricfirstskipfac` sets the clearance above the first lyric line in beam
   gaps (default `1`), and `%%lyricskipfac` sets the stanza advance as a multiple
   of the measured line height (default `1.2`). Both accept `0`.

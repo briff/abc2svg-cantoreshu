@@ -3036,6 +3036,8 @@ function draw_sym_near() {
 				y = k * i + b
 				if (p_st.bot[i] > y)
 					p_st.bot[i] = y
+				if (p_st.lyric_bot[i] > y)
+					p_st.lyric_bot[i] = y
 				i++
 			}
 		}
@@ -3049,9 +3051,11 @@ function draw_sym_near() {
 		p_st = staff_tb[st]
 		p_st.top = new Float32Array(YSTEP)
 		p_st.bot = new Float32Array(YSTEP)
+		p_st.lyric_bot = new Float32Array(YSTEP)
 		for (i = 0; i < YSTEP; i++) {
 			p_st.top[i] = 0
 			p_st.bot[i] = 24
+			p_st.lyric_bot[i] = 24
 		}
 //		p_st.top.fill(0.)
 //		p_st.bot.fill(24.)
@@ -3162,7 +3166,14 @@ function draw_sym_near() {
 				w = s.beam_end ? 5 : 16
 			}
 			dx += s.notes[0].shhd;
-			y_set(s.st, false, s.x + dx, w, s.ymn)
+			// A plain stem's collision box includes 2.5 units of padding.
+			// Lyrics supply their own clearance; measure from the tip,
+			// keeping the notehead bound and all other obstacles.
+			y_set(s.st, false, s.x + dx, w, s.ymn,
+				!s.stemless && s.nflags <= 0 && !s.ntrem
+				&& s.decstm == null && s.ymn == ((s.ys - 2.5) | 0)
+				? Math.min(s.ys, 3 * (s.notes[0].pit - 18) - 4)
+				: s.ymn)
 		}
 
 		/* have room for the accidentals */
@@ -3215,6 +3226,8 @@ function draw_sym_near() {
 				p_st.top[i] = top
 			if (bot < p_st.bot[i])
 				p_st.bot[i] = bot
+			if (bot < p_st.lyric_bot[i])
+				p_st.lyric_bot[i] = bot
 		}
 	}
 

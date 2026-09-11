@@ -726,7 +726,7 @@ function draw_lyric_line(p_voice, j, y) {
     }
 }
 
-var lyric_asc_tb = {},		// ascent per font
+var lyric_asc_tb = {},		// ascent per font and text
 	lyric_xh_tb = {},	// x-height per font
 
 // The beam geometry of draw_beams(), which the clearance between the music and
@@ -751,19 +751,16 @@ function beam_gap(p_voice) {
 	return g > 0 ? g : 0
 } // beam_gap()
 
-// -- baseline to the top of the letters --
-// What is wanted is the ink of the tallest thing a lyric line puts above the
-// baseline - an accented capital - so the measurement is of that, not of the
-// font's design box: fontBoundingBoxAscent is drawn to hold every glyph and
-// every diacritic the face defines, and in an old-style face (EB Garamond) it
-// stands well above where the letters themselves reach, which would leave a
-// gap that no setting of the factor could close.
-// (measured in a browser - elsewhere, the .78 that abc2svg itself assumes
-//  in its a_h * .22 baseline offset)
-function lyric_ascent(font, a_h) {
+// -- baseline to the top of the letters actually present --
+// Measure each system's first stanza instead of reserving an accented capital
+// on every line. Marked-up strings retain the conservative sample; without
+// canvas metrics, retain the headless .78 line-height fallback.
+function lyric_ascent(font, a_h, str) {
     var	c, m,
 	f = st_font(font),
-	r = lyric_asc_tb[f]
+	t = str && !/[<&]/.test(str) ? str.toString() : "\u00c1y",
+	key = f + "\n" + t,
+	r = lyric_asc_tb[key]
 
 	if (r != undefined)
 		return r
@@ -772,7 +769,7 @@ function lyric_ascent(font, a_h) {
 	    try {
 		c = document.createElement("canvas").getContext("2d");
 		c.font = f;
-		m = c.measureText("\u00c1y")
+		m = c.measureText(t)
 		if (m.actualBoundingBoxAscent)
 			r = m.actualBoundingBoxAscent
 		else if (m.fontBoundingBoxAscent)
@@ -781,7 +778,7 @@ function lyric_ascent(font, a_h) {
 		// cache only a really loaded face, so that a render started
 		// while a webfont is in flight cannot pin the fallback metrics
 		if (document.fonts && document.fonts.check(f))
-			lyric_asc_tb[f] = r
+			lyric_asc_tb[key] = r
 	    } catch (e) {
 	    }
 	}
@@ -827,7 +824,7 @@ function lyric_xheight(font) {
 function draw_lyrics(p_voice, nly, a_h, y,
 				incr,	/* 1: below, -1: above */
 				std) {	/* a lyric voice is already under the staff */
-	var	j, top, asc, yg, yl,
+	var	j, top, asc, yg, yl, s, ly,
 		sc = staff_tb[p_voice.st].staffscale,
 		lsf = tsfirst.fmt.lyricskipfac,		// between lyric lines
 		lff = tsfirst.fmt.lyricfirstskipfac	// clearance, in beam gaps
@@ -849,17 +846,25 @@ function draw_lyrics(p_voice, nly, a_h, y,
 			y -= a_h[0] * lff
 		} else {
 
-			// The lyrics of a line share one baseline, so the
-			// deepest ink of the line sets it: the top of the
-			// letters goes one beam gap under that.  With nothing
-			// hanging below the staff, the bottom staff line is
-			// the ink.
-			asc = lyric_ascent(gene.curfont, a_h[0]);
-			yg = y * sc;			// the lowest ink
-			yl = -tsfirst.fmt.vocalspace * sc;	// or the staff
-			y = (yl < yg ? yl : yg)
-				- asc - lff * beam_gap(p_voice)
-				- a_h[0] * .22
+			// Pair each syllable's ascent with the music over its own
+			// horizontal span, then take the lowest required baseline.
+			// A tall letter elsewhere must not add height under a stem
+			// that only overlaps a shorter syllable.
+			yl = -tsfirst.fmt.vocalspace * sc
+			yg = Infinity
+			for (s = p_voice.sym; s; s = s.next) {
+				ly = s.a_ly && s.a_ly[0]
+				if (!ly || ly.ln >= 2)
+					continue
+				asc = lyric_ascent(ly.font, ly.t.wh[1], ly.t)
+				top = y_get(p_voice.st, 0,
+					s.x - ly.shift, ly.t.wh[0], true) * sc
+				yg = Math.min(yg, Math.min(yl, top) - asc)
+			}
+			if (yg == Infinity)
+				yg = Math.min(yl, y * sc)
+					- lyric_ascent(gene.curfont, a_h[0])
+			y = yg - lff * beam_gap(p_voice) - a_h[0] * .22
 		}
 		for (j = 0; j < nly; j++) {
 			if (j)
@@ -929,7 +934,7 @@ function draw_all_lyrics() {
 				y = y_get(p_voice.st, 1, x, w)
 				if (top < y)
 					top = y;
-				y = y_get(p_voice.st, 0, x, w)
+				y = y_get(p_voice.st, 0, x, w, true)
 				if (bot > y)
 					bot = y
 				while (nly < a_ly.length)
@@ -947,7 +952,7 @@ function draw_all_lyrics() {
 			y = y_get(p_voice.st, 1, 0, realwidth)
 			if (top < y)
 				top = y;
-			y = y_get(p_voice.st, 0, 0, realwidth)
+			y = y_get(p_voice.st, 0, 0, realwidth, true)
 			if (bot > y)
 				bot = y
 		}

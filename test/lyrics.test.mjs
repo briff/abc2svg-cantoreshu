@@ -80,7 +80,7 @@ test('the letters clear the lowest ink by one beam gap', () => {
 	near(firstBaselines('%%lyricfirstskipfac 1\n', LOW)[0],
 		16.02 + FALLBACK_ASCENT + BEAM_GAP, 'the low note')
 	near(firstBaselines('%%lyricfirstskipfac 1\n', HIGH)[0],
-		8.02 + FALLBACK_ASCENT + BEAM_GAP, 'ordinary music')
+		6.02 + FALLBACK_ASCENT + BEAM_GAP, 'ordinary music')
 })
 
 // The staff is ink too, so a line with nothing hanging below it measures from
@@ -118,7 +118,7 @@ test('the factor scales the clearance, in beam gaps', () => {
 
 test('the distance follows the music, system by system', () => {
 	assert.deepEqual(firstBaselines('%%lyricfirstskipfac 1\n', HYMN),
-			[37.8, 33.8, 40.8, 40.8, 33.8])
+			[35.8, 33.8, 38.8, 38.8, 33.8])
 })
 
 // Engraving sets the advance between lyric lines to the body of the next size
@@ -235,4 +235,58 @@ test('the clearance tracks the beams through %%staffscale', () => {
 		// small the staff, so under about .52 they would touch
 		near(gap, Math.max(0, 3.5 * scale - 1.8), `staffscale ${scale}`)
 	}
+})
+
+// Compare with the emitted stem, not the padded symbol bounding box.
+test('plain downward stems use their drawn tips for lyric clearance', () => {
+	for (const pitch of ['B', 'c']) {
+		for (const factor of [0, 1, 2]) {
+			const tune = `X:1\nK:C\nL:1/4\n${pitch}\nw: la\n`
+			const directives = `%%lyricfirstskipfac ${factor}\n`
+			const svg = engrave(directives, tune)
+			const stem = svg.match(/class="sW" d="M[\d.]+ ([\d.]+)v([\d.]+)"/)
+			assert.ok(stem, 'a downward stem is drawn')
+			const staff = +svg.match(/<g transform="translate\(0,([\d.]+)\)">/)[1]
+			const tip = +stem[1] + +stem[2] - staff
+			near(firstBaselines(directives, tune)[0] - FALLBACK_ASCENT - tip,
+				factor * BEAM_GAP, 'clearance measured from the visible tip')
+		}
+	}
+})
+
+test('each system clears the letters it contains, including later accents', () => {
+	const measured = []
+	const doc = fakeDocument({})
+	doc.createElement = () => ({ getContext: () => ({
+		font: '',
+		measureText: (text) => {
+			measured.push(text)
+			return { actualBoundingBoxAscent: text.includes('Á') ? 31 : 24 }
+		}
+	}) })
+	const tune = 'X:1\nK:C\nL:1/4\nc4|\nw: Áldjad\n'
+		+ 'c4|\nw: kenyér\nc4|\nw: itt\nc4|\nw: Áldjad\n'
+	const bases = firstBaselines('%%barsperstaff 1\n%%lyricfirstskipfac 0\n',
+		tune, { document: doc })
+	assert.equal(bases.length, 4)
+	near(bases[0] - bases[1], 7, 'shorter letters leave no unused accent space')
+	near(bases[1], bases[2], 'equal letter heights have equal spacing')
+	near(bases[0], bases[3], 'a later accent still gets its full height')
+	assert.ok(measured.includes('kenyér'))
+	assert.ok(measured.includes('itt'))
+})
+
+test('a tall syllable elsewhere does not add height below a low stem', () => {
+	const doc = fakeDocument({})
+	doc.createElement = () => ({ getContext: () => ({
+		font: '',
+		measureText: text => ({ actualBoundingBoxAscent: text.includes('Á') ? 31 : 18 })
+	}) })
+	const render = words => firstBaselines('%%lyricfirstskipfac 0\n',
+		`X:1\nK:C\nL:1/4\nB c4|\nw: ${words}\n`, { document: doc })[0]
+	// B's stem reaches 9 units below the staff, while c4 has no stem.
+	// The staff's reserved lower edge is 2 units below its bottom line.
+	near(render('v Á'), Math.max(9 + 18, 2 + 31), 'local pairs set the baseline')
+	near(render('Á v'), 9 + 31, 'an accent under the stem needs more room')
+	assert.ok(render('v Á') < render('Á v'), 'moving the accent changes clearance')
 })
