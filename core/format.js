@@ -82,9 +82,10 @@ H "History: "',
 	// the hyphen between two syllables of a word is a stroke of its own,
 	// not the font's hyphen: the lengths below are multiples of the lyric
 	// font size, and %%lyrichyphenpos is one of the face's x-height.
-	// The defaults are the engraver's - .8, .4, .1 and .05 of a staff
-	// space - reckoned against an 11pt body, which is the size a hymnal
-	// sings from: .8 * 6 / 11 and so on down
+	// The three lengths are the engraver's - .8, .4 and .1 of a staff
+	// space - reckoned against a 14.5pt body, which is the size a hymnal
+	// sings from: .8 * 6 / 14.5 and so on down.  The air is wider than
+	// that scheme gives it, .05 of the body itself.
 	lyrichyphenmaxlen: .33,
 	lyrichyphenminlen: .17,
 	lyrichyphenpos: .55,

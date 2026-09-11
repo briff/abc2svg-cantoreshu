@@ -16,8 +16,11 @@ import assert from 'node:assert/strict'
 
 import { noteXs, syllables, syllableText } from './harness.mjs'
 
-/** The defaults of the six parameters, as multiples of the lyric size. */
-const MINLEN = .22, MAXLEN = .44, WIDTH = .055, SPACE = .027, POS = .6
+/**
+ * The defaults of the five lengths, as core/format.js sets them: multiples of
+ * the lyric size, save POS, which is one of the face's x-height.
+ */
+const MINLEN = .17, MAXLEN = .33, WIDTH = .04, SPACE = .05, POS = .55
 
 /** What lyric_xheight() returns with no DOM to measure in: Times' own. */
 const XHEIGHT = .45
@@ -149,7 +152,7 @@ test('its height is %%lyrichyphenpos of the x-height', () => {
 
 	assert.ok(Math.abs(base - line.find((s) => s.t == '-').y
 				- POS * XHEIGHT * 24) < .06,
-		'the default puts it .6 of an x-height over the baseline')
+		`the default puts it ${POS} of an x-height over the baseline`)
 	assert.ok(Math.abs(dy('%%lyrichyphenpos 0\n')) < .06,
 		'0 puts it on the baseline')
 	assert.ok(Math.abs(dy('%%lyrichyphenpos 1\n') - XHEIGHT * 24) < .06,
@@ -178,7 +181,7 @@ test('and the bounds are what the directives say', () => {
 	assert.ok(Math.abs(hyphen(keepHyphens(24) + d).w - 24) < .06,
 		'a fixed length is drawn at any room')
 	assert.ok(Math.abs(hyphen(keepHyphens(24)
-				+ '%%lyrichyphenmaxlen 0.2\n').w
+				+ '%%lyrichyphenmaxlen 0.1\n').w
 			- MINLEN * 24) < .06,
 		'a maximum under the minimum gives way: the minimum is a floor')
 })
