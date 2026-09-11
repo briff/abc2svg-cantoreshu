@@ -19,7 +19,9 @@ by [the license](LICENSE).
 The fork changes lyric layout for large, singable type.
 
 - Syllables are centered on their noteheads, without upstream's fixed-width
-  cap. Recognized lyric prefixes (such as verse numbers) remain to the left.
+  cap. At the start of a slur or tie, the syllable's left edge aligns with the
+  left edge of the first notehead instead. Recognized lyric prefixes (such as
+  verse numbers) remain to the left.
 - The first lyric line clears the lowest musical ink; subsequent stanzas use a
   measured lyric-line advance. The calculation follows staff and beam scaling,
   and uses the lyric face's measured ink ascent where a browser can provide it.
@@ -41,14 +43,14 @@ Hyphen appearance and behaviour are controlled by these fork-specific format
 parameters. Lengths and thickness are multiples of the lyric font size;
 `lyrichyphenpos` is in x-heights of the lyric face.
 
-| Parameter | Default | Meaning |
-| --- | --- | --- |
-| `%%lyrichyphenminlen` | `0.22` | Minimum drawable stroke length |
-| `%%lyrichyphenmaxlen` | `0.44` | Maximum stroke length |
-| `%%lyrichyphenwidth` | `0.055` | Stroke thickness |
-| `%%lyrichyphenspace` | `0.027` | Space on either side of a stroke |
-| `%%lyrichyphenpos` | `0.6` | Stroke height above the baseline |
-| `%%lyrichyphenremove` | `true` | Allow ordinary hyphens to be omitted when tight |
+| Parameter | Meaning |
+| --- | --- |
+| `%%lyrichyphenminlen` | Minimum drawable stroke length |
+| `%%lyrichyphenmaxlen` | Maximum stroke length |
+| `%%lyrichyphenwidth` | Stroke thickness |
+| `%%lyrichyphenspace` | Space on either side of a stroke |
+| `%%lyrichyphenpos` | Stroke height above the baseline |
+| `%%lyrichyphenremove` | Allow ordinary hyphens to be omitted when tight |
 
 The lyric implementation is in `core/format.js`, `core/lyrics.js`, and
 `core/svg.js`. `test/lyrics.test.mjs` and `test/hyphens.test.mjs` cover it;

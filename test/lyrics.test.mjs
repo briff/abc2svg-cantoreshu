@@ -6,8 +6,31 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 
-import { FALLBACK_ASCENT, fakeDocument, firstBaselines, lyricBaselines, near }
+import { FALLBACK_ASCENT, fakeDocument, firstBaselines, lyricBaselines, near,
+	noteXs, syllables }
 	from './harness.mjs'
+
+for (const music of ['(cd)e', 'c-ce', '(cde)', 'c-c-c', '(c2d)e', 'c2-c2e']) {
+	test(`lyrics start at the left note of ${music}`, () => {
+		const tune = `X:1\nK:C\nL:1/4\n${music}|\nw: Alle _ _\n`
+		const errors = []
+		const [notes] = noteXs('', tune, { errors })
+		const [line] = syllables('', tune, { errors })
+		assert.deepEqual(errors, [])
+		const headLeft = music.includes('2') ? 3.8 : 3.7
+		near(line[0].x, notes[0] - headLeft, 'left edge of the first notehead')
+	})
+}
+
+test('a syllable after a slur or tie remains centered', () => {
+	for (const music of ['(cd)e', 'c-ce']) {
+		const tune = `X:1\nK:C\nL:1/4\n${music}|\nw: la _ la\n`
+		const [notes] = noteXs('', tune)
+		const [line] = syllables('', tune)
+		near(line[0].x, notes[0] - 3.7, 'slur or tie start')
+		assert.ok(line[1].x < notes[2] - 1, 'following syllable is centered')
+	}
+})
 
 /** The gap between two beams, the unit the clearance is counted in. */
 const BEAM_GAP = 1.7

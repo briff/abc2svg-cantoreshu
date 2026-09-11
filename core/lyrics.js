@@ -392,6 +392,15 @@ function ly_set(s) {
 	n = 0,
 	dx = 0,
 	a_ly = s.a_ly,
+	left = s.ti1 || (s.sls && s.sls.some(function(sl) {
+		return sl.ss == s && sl.se != s
+	})),
+	// Match the drawn head's left edge, including chord displacement
+	// and music scaling (lyrics themselves are not scaled).
+	leftshift = left ? ([3.7, 3.8, 5.2, 7, 6][s.head]
+		- Math.min.apply(null, s.notes.map(function(nt) {
+			return nt.shhd || 0
+		}))) * s.p_v.scale * staff_tb[s.st].staffscale : 0,
 	align = 0
 
 	// get the available horizontal space before the next lyric words
@@ -450,8 +459,8 @@ function ly_set(s) {
 
 			// the prefix - a verse number, a bracket - hangs to
 			// the left of the note, and what follows it is what
-			// gets centered
-			shift = sz + (w - sz) * .5
+			// follows the syllable's alignment
+			shift = sz + (left ? leftshift : (w - sz) * .5)
 			if (p[0] >= '0' && p[0] <= '9') {
 				if (shift > align)
 					align = shift
@@ -464,7 +473,9 @@ function ly_set(s) {
 			// that leaves anything wider than 35 units - which at
 			// a singable size is every syllable there is - hanging
 			// to the right of its note by the rest)
-			shift = w * .5
+			// Slurs and ties anchor the syllable's left edge to
+			// their first notehead's left edge instead.
+			shift = left ? leftshift : w * .5
 		}
 		ly.shift = shift
 		if (shift > wl)

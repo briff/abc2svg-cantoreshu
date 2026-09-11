@@ -85,12 +85,12 @@ H "History: "',
 	// The defaults are the engraver's - .8, .4, .1 and .05 of a staff
 	// space - reckoned against an 11pt body, which is the size a hymnal
 	// sings from: .8 * 6 / 11 and so on down
-	lyrichyphenmaxlen: .44,
-	lyrichyphenminlen: .22,
-	lyrichyphenpos: .6,
+	lyrichyphenmaxlen: .33,
+	lyrichyphenminlen: .17,
+	lyrichyphenpos: .55,
 	lyrichyphenremove: true,
-	lyrichyphenspace: .027,
-	lyrichyphenwidth: .055,
+	lyrichyphenspace: .05,
+	lyrichyphenwidth: .04,
 	lyricskipfac: 1.2,
 	maxshrink: .65,		// nice scores
 	maxstaffsep: 2000,
