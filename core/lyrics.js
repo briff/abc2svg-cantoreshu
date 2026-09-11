@@ -123,7 +123,7 @@ function get_sym(p, cont) {
 
 /* -- parse a lyric (vocal) line (w:) -- */
 function get_lyrics(p, cont) {
-    var s, word, i, j, ly, dfnt, ln, c, cf
+    var s, word, i, j, ly, dfnt, ln, c, cf, hard_hyphen
 
 	if (curvoice.ignore)
 		return
@@ -176,6 +176,7 @@ function get_lyrics(p, cont) {
 		if (!p[i])
 			break
 		ln = 0
+		hard_hyphen = false
 		j = parse.istart + i + 2	// start index
 		switch (p[i]) { 
 		case '|':
@@ -226,6 +227,11 @@ function get_lyrics(p, cont) {
 				case '\\':
 					if (!p[++i])
 						continue
+					if (p[i] == '-') {
+						ln = 1
+						hard_hyphen = true
+						break
+					}
 					word += p[i++]
 					continue
 				case '$':
@@ -262,6 +268,8 @@ function get_lyrics(p, cont) {
 			}
 			if (ln)
 				ly.ln = ln
+			if (hard_hyphen)
+				ly.hard_hyphen = true
 			if (!s.a_ly)
 				s.a_ly = []
 			s.a_ly[curvoice.lyric_line] = ly
@@ -273,22 +281,106 @@ function get_lyrics(p, cont) {
 	curvoice.lyric_cont = s
 }
 
+// -- the geometry of the hyphen between two syllables of a word --
+// The hyphen is not the font's hyphen glyph but a stroke drawn between the
+// syllables, so that it answers to the size of the lyrics and to nothing else:
+// a glyph carries side bearings of its own, differs from face to face, and at
+// a singable size draws a mark the engraver never asked for.  Everything here
+// is a multiple of the lyric size, save the height, which is of the face's
+// x-height - the stroke belongs in the middle of the lower-case letters.
+//
+// The length gives way to the room there is, between %%lyrichyphenminlen and
+// %%lyrichyphenmaxlen, so a stretched line draws a long stroke and a tight one
+// a short one without either of them moving a notehead.
+// (the caller has set gene.curfont to the font of the syllable)
+function hyphen_geom(s) {
+    var	f = s.fmt,
+	sz = gene.curfont.size,
+	g = {
+		min: f.lyrichyphenminlen * sz,
+		max: f.lyrichyphenmaxlen * sz,
+		sp: f.lyrichyphenspace * sz,	// air between stroke and letters
+		th: f.lyrichyphenwidth * sz,	// the stroke's thickness
+		dy: f.lyrichyphenpos * lyric_xheight(gene.curfont)
+	}
+
+	if (g.max < g.min)
+		g.max = g.min
+	return g
+} // hyphen_geom()
+
 // -- the room a hyphen is given between two syllables --
-// Its own width and a twentieth of that of air on each side, so the stroke
-// does not touch the letters - or %%lyrichyphenmin where that asks for more.
-// The hyphen already carries side bearings of its own inside that width, so
-// the air here is only what keeps them from reading as none; asking for much
-// more turns into a syllable glued to the one before it on a line that had
-// room for the hyphen all along.  It is measured the way the syllables
-// themselves are, through strwh(), which asks the browser when there is one,
-// so that the room and what goes in it are the same face.
+// The shortest stroke it may be drawn as, and the air on either side that
+// keeps it from touching the letters.  Under that there is no hyphen to draw,
+// and what happens then is %%lyrichyphenremove: the stroke goes and the two
+// syllables are pulled into one word, or - where the score says no - the room
+// is bought from the spacing and the noteheads spread to give it.
+//
+// `s` is the note the *first* of the two syllables is on.
 // (the caller has set gene.curfont to the font of the syllable)
 function hyphen_room(s) {
-    var	w = strwh("-")[0] * 1.1,
-	min = s.fmt.lyrichyphenmin
+    var	g = hyphen_geom(s)
 
-	return min > w ? min : w
+	return g.min + g.sp * 2
 } // hyphen_room()
+
+// -- the room the spacing buys between two syllables of a word --
+// Nothing, while %%lyrichyphenremove stands: the notes keep the advance the
+// music gives them, the hyphen is set in whatever the spacing happens to leave
+// - justification most often leaves it - and where that is too little the
+// hyphen goes rather than the noteheads coming off their advance to hold a
+// stroke.  A score that turns the directive off buys the room outright
+// instead, and no hyphen of it is ever dropped, at the cost of fewer notes to
+// the system.  A hymnal is set that way.
+// (this runs while the music is generated, where the current font is the
+//  music's own, so the syllable's is put on for the measurement)
+function hyphen_bought(s, ly) {
+    var	w,
+	cf = gene.curfont
+
+	if (s.fmt.lyrichyphenremove && !ly.hard_hyphen)
+		return 0
+	gene.curfont = ly.font
+	w = hyphen_room(s)
+	gene.curfont = cf
+	return w
+} // hyphen_bought()
+
+// -- the doubled digraphs Hungarian writes across a hyphen --
+// A long consonant spelt with two or three letters is written out whole on
+// both sides of the hyphen that splits it - asz-szony, pogy-gyász,
+// brid-dzsel - where the word itself has it only once and a half: asszony,
+// poggyász, briddzsel.  So a syllable break undone has to undo the doubling
+// with it, or the word comes back a letter too long.
+// (longest first, so 'dzs' is seen before the 'dz' inside it)
+var hu_digraphs = ['dzs', 'cs', 'dz', 'gy', 'ly', 'ny', 'sz', 'ty', 'zs']
+
+// -- glue two syllables of a word into the one word they came from --
+// The letters are all there is to read here, and they cannot tell the doubling
+// apart from a compound whose two parts happen to meet at the same digraph -
+// kulcs-csomó is written kulcscsomó, with both of them kept - so such a word
+// would come out a letter short.  The doubling is much the commoner, and the
+// seam of a compound is a hyphen the score wants kept anyway: writing `\\-`
+// buys its room, and a hyphen that is printed is never glued.
+function ly_glue(left, right) {
+    var	i, d, n
+
+	left = left.toString()
+	right = right.toString()
+	for (i = 0; i < hu_digraphs.length; i++) {
+		d = hu_digraphs[i]
+		n = d.length
+		if (left.length >= n
+		 && right.length >= n
+		 && left.slice(-n).toLowerCase() == d
+		 && right.slice(0, n).toLowerCase() == d)
+
+			// the digraph the left syllable ends with is left
+			// standing as its first letter alone
+			return left.slice(0, left.length - n + 1) + right
+	}
+	return left + right
+} // ly_glue()
 
 // install the words under a note
 // (this function is called during the generation)
@@ -379,21 +471,22 @@ function ly_set(s) {
 			wl = shift		// max left space
 
 		// A syllable is followed by room for whatever comes next: a
-		// space before the next word, and before a hyphen only what
-		// %%lyrichyphenmin asks for, which is nothing by default.
-		// The syllables themselves are what the notes are moved for -
-		// they may not be set one over another - and a hyphen is not:
-		// it is set in the room the spacing happens to leave, and
-		// where that is too little it is dropped and the two
-		// syllables pulled into one word rather than the noteheads
-		// pushed off their advance to hold it.  Justification is what
-		// most often leaves the room, and it runs after this and
-		// before the drawing, so a hyphen on a stretched line is kept
-		// even where the spacing here could not have paid for it.
-		// %%lyrichyphenmin is how a score buys the room outright: the
-		// notes are then spread for the hyphen too, and no hyphen is
-		// dropped, at the cost of fewer notes to the system.
-		w += ly.ln == 1 ? s.fmt.lyrichyphenmin : spw
+		// space before the next word, and before a hyphen nothing at
+		// all while %%lyrichyphenremove stands.  The syllables
+		// themselves are what the notes are moved for - they may not
+		// be set one over another - and a hyphen is not: it is set in
+		// the room the spacing happens to leave, and where that is too
+		// little it is dropped and the two syllables pulled into one
+		// word rather than the noteheads pushed off their advance to
+		// hold a stroke.  Justification is what most often leaves the
+		// room, and it runs after this and before the drawing, so a
+		// hyphen on a stretched line is kept even where the spacing
+		// here could not have paid for it.  %%lyrichyphenremove 0 is
+		// how a score buys the room outright: the notes are then
+		// spread for the hyphen too, and no hyphen is dropped, at the
+		// cost of fewer notes to the system. A hard lyric hyphen (\\-)
+		// makes the same bargain for that one word.
+		w += ly.ln == 1 ? hyphen_bought(s, ly) : spw
 		w -= shift			// right width
 		if (w > wx)
 			wx = w			// max width
@@ -439,7 +532,7 @@ function ly_set(s) {
 /* (the staves are not yet defined) */
 function draw_lyric_line(p_voice, j, y) {
     var	p, lastx, w, s, ly, lyl, ln,
-	lflag, x0, shift, hyw, gap,
+	lflag, x0, shift, hyw, hg, gap, glue, drop,
 	hyflag = {}
 
 	// output a syllable
@@ -533,26 +626,25 @@ function draw_lyric_line(p_voice, j, y) {
 			continue
 		if (hyflag.s) {
 
-			// The room a hyphen wants, which is what ly_set() has
-			// asked the spacing for: the two agree, so a line the
-			// page can hold keeps every hyphen.
+			// The room the shortest stroke wants, which is what
+			// ly_set() asked the spacing for where the score said
+			// no hyphen may go: the two agree, so a line the page
+			// can hold keeps every hyphen of such a score.
 			// (upstream compares against swfac here, a whole em and
 			//  more, which no syllabic setting ever leaves - which
 			//  is why its hyphens all but vanish under a large
 			//  lyric font)
-			hyw = hyphen_room(s)
+			hg = hyphen_geom(hyflag.s)
+			hyw = hg.min + hg.sp * 2
 			gap = x0 - hyflag.w - lastx
 
-			// Short of that, but the stroke itself would still be
-			// seen whole: the ink of a hyphen is about two thirds
-			// of the width it advances, the rest being the side
-			// bearings, so down to .6 of the room there is still
-			// air on either side of the stroke.  Gluing would take
-			// the syllable further from its note than closing that
-			// air does, so the gap is opened and the hyphen kept.
-			// (the band is aretino-chant's, from
-			//  emitAlignedSyllables())
-			if (gap < hyw && gap > hyw * .6) {
+			// Short of it, the hyphen goes - unless the score has
+			// said it may not, in which case the gap is opened to
+			// hold the shortest stroke.  That is normally already
+			// paid for by the spacing; it is not only where the
+			// page is too narrow for the lyrics at all.
+			if (gap < hyw && (!hyflag.s.fmt.lyrichyphenremove
+						 || hyflag.s.a_ly[j].hard_hyphen)) {
 				x0 = lastx + hyflag.w + hyw
 				gap = hyw
 			}
@@ -561,7 +653,7 @@ function draw_lyric_line(p_voice, j, y) {
 					lastx = x0 - ly.font.size
 				out_ly(hyflag.s, hyflag.w, hyflag.p)
 				lastx += hyflag.w
-				out_hyph(lastx, y, x0 - lastx)
+				out_hyph(lastx, y, x0 - lastx, hg)
 				set_hy(0)
 				lastx = x0
 			} else {
@@ -572,8 +664,19 @@ function draw_lyric_line(p_voice, j, y) {
 				// so the next hyphen of the word has more.
 				x0 = lastx
 			}
-			p = hyflag.p + p		// concatenate
-			w += hyflag.w
+			if (hyflag.p) {			// concatenate
+
+				// what is glued is one word, so a doubled
+				// digraph is written the once it is written
+				// in the word - and the word is then shorter
+				// than the two syllables measured apart
+				glue = ly_glue(hyflag.p, p)
+				w += hyflag.w
+				drop = hyflag.p.length + p.length - glue.length
+				if (drop)
+					w -= strwh(hyflag.p.slice(-drop))[0]
+				p = glue
+			}
 			set_hy(ln)			// (set or reset)
 			if (ln)
 				continue
@@ -588,7 +691,7 @@ function draw_lyric_line(p_voice, j, y) {
 		x0 = realwidth - 10
 		if (x0 < lastx + 10)
 			x0 = lastx + 10;
-		out_hyph(lastx, y, x0 - lastx)
+		out_hyph(lastx, y, x0 - lastx, hyphen_geom(hyflag.s))
 		if (p_voice.s_next && p_voice.s_next.fmt.hyphencont)
 			p_voice.hy_st |= (1 << j)
 	}
@@ -612,6 +715,7 @@ function draw_lyric_line(p_voice, j, y) {
 }
 
 var lyric_asc_tb = {},		// ascent per font
+	lyric_xh_tb = {},	// x-height per font
 
 // The beam geometry of draw_beams(), which the clearance between the music and
 // the lyrics is measured in: the deepest ink of a line sets the lyric plane for
@@ -671,6 +775,42 @@ function lyric_ascent(font, a_h) {
 	}
 	return r
 } // lyric_ascent()
+
+// -- baseline to the top of the lower-case letters --
+// Where the hyphen between two syllables is hung: %%lyrichyphenpos counts from
+// the baseline in x-heights, so .5 puts the stroke across the middle of the
+// letters it stands between and 1 on top of them.  A face's x-height is a real
+// measurement and not a fixed part of the body - .44 of it in Times, .55 in
+// Merriweather - so a hyphen reckoned in x-heights sits in the same place in
+// the letters of any face, where one reckoned in the body would ride up and
+// down with the face.
+// (measured in a browser - elsewhere, Times' own .45, which is the face the
+//  string widths fall back to as well)
+function lyric_xheight(font) {
+    var	c, m,
+	f = st_font(font),
+	r = lyric_xh_tb[f]
+
+	if (r != undefined)
+		return r
+	r = font.size * .45
+	if (typeof document != "undefined" && document.createElement) {
+	    try {
+		c = document.createElement("canvas").getContext("2d");
+		c.font = f;
+		m = c.measureText("x")
+		if (m.actualBoundingBoxAscent)
+			r = m.actualBoundingBoxAscent
+
+		// cache only a really loaded face, so that a render started
+		// while a webfont is in flight cannot pin the fallback metrics
+		if (document.fonts && document.fonts.check(f))
+			lyric_xh_tb[f] = r
+	    } catch (e) {
+	    }
+	}
+	return r
+} // lyric_xheight()
 
 function draw_lyrics(p_voice, nly, a_h, y,
 				incr,	/* 1: below, -1: above */

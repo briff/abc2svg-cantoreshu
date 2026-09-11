@@ -1,39 +1,42 @@
-// %%lyrichyphenmin, and the room a hyphen is given - see FORK.md.
+// The hyphen between two syllables of a word - see FORK.md.
+//
+// It is a stroke of its own rather than the font's hyphen glyph, so what is
+// asserted here is its geometry: where it stands, how long it is, how thick,
+// how high; and around that, what happens where the line has no room for it -
+// the syllables pulled into one word, and the Hungarian doubling undone with
+// them.
 //
 // The headless harness measures strings with abc2svg's own Times tables, so
-// the numbers here are the fallback ones; what is asserted is the shape of the
-// layout - which syllables and hyphens come out, and in what order - not the
-// widths of a particular face.
+// the widths of the syllables are the fallback ones; the hyphen's own numbers
+// are exact, being multiples of the lyric size and of the .45 x-height that is
+// Times' as well.
 
 import test from 'node:test'
 import assert from 'node:assert/strict'
 
 import { noteXs, syllables, syllableText } from './harness.mjs'
 
-/**
- * The advance of a hyphen at `size`, in the Times widths abc2svg measures
- * with when there is no DOM to ask: .333 of the body, times the 1.1 the
- * engine puts on every string of a face it has no real metrics for.
- */
-const hyphenWidth = (size) => .333 * 1.1 * size
+/** The defaults of the six parameters, as multiples of the lyric size. */
+const MINLEN = .22, MAXLEN = .44, WIDTH = .055, SPACE = .027, POS = .6
+
+/** What lyric_xheight() returns with no DOM to measure in: Times' own. */
+const XHEIGHT = .45
 
 /**
- * The room a hyphen is set in: its own width and a twentieth of it of air on
- * either side.  The glyph carries side bearings inside that width already, so
- * this is only what keeps them from reading as none.
+ * The room the shortest stroke wants: its own length and the air that keeps
+ * it off the letters on either side.
  */
-const hyphenRoom = (size) => hyphenWidth(size) * 1.1
+const hyphenRoom = (size) => (MINLEN + SPACE * 2) * size
 
 /** The vocal font at `size`, which is all most of these fixtures set. */
 const at = (size, family = 'serif') => `%%vocalfont "${family}" ${size}\n`
 
 /**
- * The directives of a score that buys the room outright, so that the spacing
- * spreads the notes for the hyphens and none of them is ever dropped.  A
- * hymnal is set this way.
+ * The directives of a score that never drops a hyphen: the spacing then buys
+ * the room outright and spreads the notes to give it.  A hymnal is set so.
  */
 const keepHyphens = (size, family = 'serif') =>
-	at(size, family) + `%%lyrichyphenmin ${hyphenRoom(size)}\n`
+	at(size, family) + '%%lyrichyphenremove 0\n'
 
 // The reported fault.  Its lyrics are wide enough to drive the spacing, which
 // is the case upstream's rule fails in: it asks for a whole em between the
@@ -57,7 +60,16 @@ const WORD = 'X:1\nK:Eb\nL:1/4\nC D E\nw: Meg-vál-tó\n'
 
 /** The syllables engraved, hyphens and line-break repeats dropped. */
 function syl(directives, tune = HYMN) {
-	return syllableText(directives, tune).filter((t) => !/^-+$/.test(t))
+	return syllableText(directives, tune).filter((t) => t != '-')
+}
+
+/**
+ * The syllables and hyphens engraved, a run of strokes - which a long gap
+ * gets, one every four bodies - counted as the one hyphen it reads as.
+ */
+function shape(directives, tune) {
+	return syllableText(directives, tune)
+		.filter((t, i, a) => t != '-' || a[i - 1] != '-')
 }
 
 test('every syllable of the hymn stands on its own', () => {
@@ -78,8 +90,8 @@ test('a hyphen is set between the syllables it joins', () => {
 })
 
 // The size of the lyrics is what upstream's threshold - a whole em and more -
-// is measured against, so the fault grows with it.  A score that has bought
-// the room keeps every hyphen at every size.
+// is measured against, so the fault grows with it.  A score that has said its
+// hyphens may not go keeps every one of them at every size.
 test('the room bought keeps the hyphens at any lyric size', () => {
 	for (const size of [10, 14, 24, 36, 48])
 		assert.deepEqual(syl(keepHyphens(size)), SYL, `at ${size}pt`)
@@ -100,13 +112,108 @@ test('a word broken over a system keeps its hyphen', () => {
 	assert.ok(broken > 0, 'the hymn does break a word over a system')
 })
 
+// -- the stroke itself --
+//
+// It is not the font's hyphen: nothing of the face decides how it looks, only
+// the lyric size and the five lengths that answer to it.
+
+/** The one hyphen of `tune`, with the geometry it was drawn with. */
+const hyphen = (directives, tune = WORD) =>
+	syllables(directives, tune).flat().find((s) => s.t == '-')
+
+test('the hyphen is a stroke, not a glyph of the lyric font', () => {
+	const texts = syllableText(keepHyphens(24, 'Liberation Serif'), WORD)
+
+	assert.deepEqual(texts, ['Meg', '-', 'vál', '-', 'tó'])
+	assert.ok(!syllables(keepHyphens(24, 'Liberation Serif'), WORD)[0]
+			.some((s) => s.t == '-' && s.w === undefined),
+		'every hyphen came back as a stroke with a length of its own')
+})
+
+test('its thickness is %%lyrichyphenwidth of the lyric size', () => {
+	for (const size of [12, 24, 48])
+		assert.ok(Math.abs(hyphen(keepHyphens(size)).th - WIDTH * size) < .06,
+			`at ${size}pt it is ${hyphen(keepHyphens(size)).th} thick`)
+
+	assert.ok(Math.abs(hyphen(keepHyphens(24) + '%%lyrichyphenwidth 0.25\n').th
+				- 6) < .06,
+		'and the directive is what sets it')
+})
+
+// The stroke hangs in the middle of the lower-case letters, which is where an
+// x-height puts it - a measurement of the face, not a fixed part of the body.
+test('its height is %%lyrichyphenpos of the x-height', () => {
+	const line = syllables(keepHyphens(24), WORD)[0]
+	const base = line.find((s) => s.t != '-').y
+	const dy = (d) => base - hyphen(keepHyphens(24) + d).y
+
+	assert.ok(Math.abs(base - line.find((s) => s.t == '-').y
+				- POS * XHEIGHT * 24) < .06,
+		'the default puts it .6 of an x-height over the baseline')
+	assert.ok(Math.abs(dy('%%lyrichyphenpos 0\n')) < .06,
+		'0 puts it on the baseline')
+	assert.ok(Math.abs(dy('%%lyrichyphenpos 1\n') - XHEIGHT * 24) < .06,
+		'1 puts it on top of the lower-case letters')
+})
+
+// The length is what gives way to the room there is: a stretched line draws a
+// long stroke and a tight one a short stroke, and neither moves a notehead.
+test('the length lies between the two bounds, and follows the room', () => {
+	const size = 24
+	const wide = hyphen('%%pagewidth 250px\n%%stretchlast 1\n' + at(size),
+			'X:1\nK:C\nL:1/4\ncc|\nw: la-la\n')
+	const tight = hyphen(keepHyphens(size))
+
+	assert.ok(Math.abs(wide.w - MAXLEN * size) < .06,
+		`a stretched line draws the longest stroke, ${wide.w} of`
+		+ ` ${MAXLEN * size}`)
+	assert.ok(tight.w >= MINLEN * size - .06 && tight.w < MAXLEN * size,
+		`a line at its own advance draws a shorter one: ${tight.w},`
+		+ ` between ${MINLEN * size} and ${MAXLEN * size}`)
+})
+
+test('and the bounds are what the directives say', () => {
+	const d = '%%lyrichyphenminlen 1\n%%lyrichyphenmaxlen 1\n'
+
+	assert.ok(Math.abs(hyphen(keepHyphens(24) + d).w - 24) < .06,
+		'a fixed length is drawn at any room')
+	assert.ok(Math.abs(hyphen(keepHyphens(24)
+				+ '%%lyrichyphenmaxlen 0.2\n').w
+			- MINLEN * 24) < .06,
+		'a maximum under the minimum gives way: the minimum is a floor')
+})
+
+// The air on either side is the parameter's, so the stroke never touches the
+// letters: what the gap leaves over the stroke is at least twice that.
+test('%%lyrichyphenspace is kept clear on either side', () => {
+	const size = 24
+	const gap = (d) => {
+		const line = syllables(keepHyphens(size, 'Liberation Serif') + d,
+					WORD)[0]
+		const i = line.findIndex((s) => s.t == '-')
+
+		return { air: line[i].x - line[i - 1].x, len: line[i].w }
+	}
+
+	// the stroke is centered, so the air on the left is what is left of
+	// the gap, halved - and the syllable's own width is in it too, which
+	// only makes the reading safer
+	for (const d of ['', '%%lyrichyphenspace 0.3\n']) {
+		const { air, len } = gap(d)
+		const sp = (d ? .3 : SPACE) * size
+
+		assert.ok(air > len + sp, `${d || 'the default'}: ${air} of air`)
+	}
+})
+
 // -- what the noteheads are moved for, and what they are not --
 //
 // The syllables: two of them may not be set one over another, so the spacing
-// carries them.  The hyphen between two of them: no.  It is set in the room
-// the spacing happens to leave, and where that is too little it goes and the
-// two syllables are pulled into one word - the setting giving in rather than
-// the noteheads coming off their advance to hold a stroke.
+// carries them.  The hyphen between two of them: no, while
+// %%lyrichyphenremove stands.  It is set in the room the spacing happens to
+// leave, and where that is too little it goes and the two syllables are pulled
+// into one word - the setting giving in rather than the noteheads coming off
+// their advance to hold a stroke.
 //
 // Four notes and two words on a page four times as wide as they need.  The
 // music's own advance carries `Áld-jad` up to about 15pt; past that the
@@ -132,10 +239,8 @@ test('a hyphen that would spread the noteheads is dropped first', () => {
 // The same four notes, the same sizes, on a line stretched to the page.
 test('a hyphen the line has room for is kept, however large the lyrics', () => {
 	for (const size of [12, 16, 20, 24, 36, 48])
-		assert.deepEqual(syllableText('%%stretchlast 1\n'
-						+ at(size, 'Liberation Serif'),
-					SHORT).flat()
-				.map((t) => /^-+$/.test(t) ? '-' : t),
+		assert.deepEqual(shape('%%stretchlast 1\n'
+					+ at(size, 'Liberation Serif'), SHORT),
 			['Áld', '-', 'jad', 'em', '-', 'ber'], `at ${size}pt`)
 })
 
@@ -154,14 +259,14 @@ test('the hyphen stands midway between the two noteheads', () => {
 		const tune = 'X:1\nK:C\nL:1/4\ncc|\nw: la-la\n'
 		const [notes] = noteXs(directives, tune)
 		const line = syllables(directives, tune)[0]
-		const hyphen = line.find((s) => s.t == '-')
+		const hy = line.find((s) => s.t == '-')
 
 		assert.equal(notes.length, 2, 'two noteheads')
-		assert.ok(hyphen, `at ${size}pt the hyphen is printed`)
-		assert.ok(Math.abs(hyphen.x + hyphenWidth(size) / 2
+		assert.ok(hy, `at ${size}pt the hyphen is printed`)
+		assert.ok(Math.abs(hy.x + hy.w / 2
 					- (notes[0] + notes[1]) / 2) < .11,
 			`at ${size}pt the hyphen is centered on`
-			+ ` ${hyphen.x + hyphenWidth(size) / 2},`
+			+ ` ${hy.x + hy.w / 2},`
 			+ ` the notes on ${(notes[0] + notes[1]) / 2}`)
 	}
 })
@@ -185,13 +290,11 @@ test('a syllable is centered on its notehead', () => {
 		'twice the letters, twice the overhang')
 })
 
-// -- %%lyrichyphenmin --
+// -- %%lyrichyphenremove --
 //
-// The one directive: it buys room between the syllables of a word, and the
-// spacing spreads the notes to give it.  What it buys is what the notes are
-// spread by, unit for unit, which is what makes it readable as a length of the
-// page rather than a knob.
-test('%%lyrichyphenmin buys the room, and the notes are spread by it', () => {
+// The one directive that moves a notehead: with it off, the spacing buys the
+// room the shortest stroke wants and the notes are spread by exactly that.
+test('%%lyrichyphenremove 0 buys the room, and the notes are spread by it', () => {
 	const size = 24
 	const spread = (directives) => {
 		const x = noteXs(at(size, 'Liberation Serif') + directives,
@@ -199,66 +302,134 @@ test('%%lyrichyphenmin buys the room, and the notes are spread by it', () => {
 
 		return x[1] - x[0]
 	}
+	const bought = spread('%%lyrichyphenremove 0\n') - spread('')
 
-	assert.ok(Math.abs(spread('%%lyrichyphenmin 40\n') - spread('') - 40) < .11,
-		`40 units bought spread the notes by`
-		+ ` ${spread('%%lyrichyphenmin 40\n') - spread('')}`)
+	assert.ok(Math.abs(bought - hyphenRoom(size)) < .11,
+		`the notes were spread by ${bought} for a stroke and its air`
+		+ ` of ${hyphenRoom(size)}`)
 })
 
-test('and it is what the hyphen is then set in', () => {
+test('and the bounds are what decide how much that is', () => {
 	const size = 24
-	const gap = (directives) => {
-		const line = syllables(at(size, 'Liberation Serif') + directives,
-					WORD)[0]
-		const hyphen = line.findIndex((s) => s.t == '-')
+	const spread = (directives) => {
+		const x = noteXs(at(size, 'Liberation Serif')
+				+ '%%lyrichyphenremove 0\n' + directives,
+				WORD)[0]
 
-		if (hyphen < 0)
-			return 0			// glued: no gap at all
-
-		// the hyphen is centered in the gap, so the gap is what is
-		// left of it on either side, twice
-		return (line[hyphen + 1].x - line[hyphen].x) * 2
-			- hyphenWidth(size)
+		return x[1] - x[0]
 	}
+	const wider = spread('%%lyrichyphenminlen 1\n') - spread('')
 
-	assert.equal(gap(''), 0, 'unbought at this size, the word is set whole')
-	assert.ok(gap('%%lyrichyphenmin 40\n') > 39.89,
-		`40 units bought, ${gap('%%lyrichyphenmin 40\n')} given`)
-
-	// below what the face's own hyphen wants, the face wins: the room is a
-	// floor under the stroke and its air, and cannot ask for less
-	assert.ok(gap(`%%lyrichyphenmin ${hyphenRoom(size)}\n`)
-			> hyphenRoom(size) - .11,
-		'the hyphen is set in the room the face wants for it')
+	assert.ok(Math.abs(wider - (1 - MINLEN) * size) < .11,
+		`a longer shortest stroke costs ${wider} more`)
 })
 
-test('%%lyrichyphenmin takes a unit, and refuses a negative', () => {
+test('the parameters take a number, and refuse a negative', () => {
 	const xs = (directives, errors) =>
 		syllables(at(24, 'Liberation Serif') + directives,
 				WORD, { errors })[0].map((s) => s.x)
 	const errors = []
 
-	assert.deepEqual(xs('%%lyrichyphenmin 0.5cm\n'), xs('%%lyrichyphenmin 18.9\n'),
-		'half a centimetre is 18.9 units')
-	assert.deepEqual(xs('%%lyrichyphenmin -1\n', errors), xs(''),
+	assert.deepEqual(xs('%%lyrichyphenminlen -1\n', errors), xs(''),
 		'a negative leaves the default standing')
 	assert.ok(errors.length, 'and is reported')
 })
 
-// The room bought is asked of the spacing, and the spacing has a page to fit
-// in.  When the page cannot give it - lyrics far too big for the width - the
-// hyphen is dropped and the syllables set as one word after all.  That gives
-// back the room it would have taken, so the next hyphen of the word may still
-// be printed.
-test('with no room at all the syllables are pulled together', () => {
-	const out = syllableText('%%pagewidth 300px\n' + keepHyphens(44), HYMN)
-	const glued = []
+/** Every run of 2 to 4 syllables of the hymn, set as one word. */
+const GLUED = []
 
-	for (let i = 0; i < SYL.length - 1; i++)		// runs of 2 to 4
-		for (let n = 2; n <= 4 && i + n <= SYL.length; n++)
-			glued.push(SYL.slice(i, i + n).join(''))
-	assert.ok(out.some((t) => glued.includes(t)),
+for (let i = 0; i < SYL.length - 1; i++)
+	for (let n = 2; n <= 4 && i + n <= SYL.length; n++)
+		GLUED.push(SYL.slice(i, i + n).join(''))
+
+// The default: lyrics too big for the width lose their hyphens one by one and
+// the syllables are set as one word.  Each dropped hyphen gives back the room
+// it would have taken, so the next hyphen of the word may still be printed.
+test('with no room at all the syllables are pulled together', () => {
+	const out = syllableText('%%pagewidth 300px\n' + at(44), HYMN)
+
+	assert.ok(out.some((t) => GLUED.includes(t)),
 		`no two syllables were set as one: ${out.join(' ')}`)
-	assert.ok(out.some((t) => /^-+$/.test(t)),
+	assert.ok(out.some((t) => t == '-'),
 		'and hyphens are still printed where there is room')
+})
+
+// With the directive off, nothing of that: the stroke is drawn whatever the
+// page, the gap being opened for it where the spacing could not pay.
+test('%%lyrichyphenremove 0 keeps the hyphen on any page', () => {
+	const out = syllableText('%%pagewidth 400px\n' + keepHyphens(36), HYMN)
+
+	assert.ok(!out.some((t) => GLUED.includes(t)),
+		`a word was set glued after all: ${out.join(' ')}`)
+})
+
+// -- what is glued back into one word --
+//
+// Hungarian writes a long consonant spelt with two or three letters out whole
+// on both sides of the hyphen that splits it - asz-szony for asszony,
+// pogy-gyász for poggyász - so pulling the two syllables together has to undo
+// that doubling as well, or the word comes back a letter too long.
+
+/** The word as it is engraved when the two notes leave no room for a hyphen. */
+const glued = (word, notes = 'C D', size = 16) =>
+	syllableText(at(size, 'Liberation Serif'),
+			`X:1\nK:C\nL:1/4\n${notes}\nw: ${word}\n`).join(' ')
+
+test('a doubled digraph is written the once in the glued word', () => {
+	assert.equal(glued('asz-szony'), 'asszony')
+	assert.equal(glued('pogy-gyász'), 'poggyász')
+	assert.equal(glued('brid-dzsel'), 'briddzsel',
+		"'dzs' is seen before the 'dz' inside it")
+	assert.equal(glued('ASZ-SZONY'), 'ASSZONY',
+		'the letter kept is the one the syllable had')
+})
+
+test('and only where the same digraph meets itself', () => {
+	assert.equal(glued('asz-tal', 'C D', 20), 'asztal',
+		'the syllable after it begins with something else')
+	assert.equal(glued('meg-gyet', 'C D', 20), 'meggyet',
+		'and the one before it ends with something else')
+	assert.equal(glued('nagy-sá-god', 'C D E', 20), 'nagyságod')
+})
+
+// The letter that goes is room given back, like the stroke's own: the next
+// hyphen of the word is then printed where it would not have been.
+test('the letter dropped is room the next hyphen may have', () => {
+	assert.equal(glued('asz-szony-nyal', 'C D E', 12), 'asszony - nyal')
+	assert.equal(glued('pogy-gyász-szal', 'C D E', 12), 'poggyász - szal')
+})
+
+// Nothing of this touches a word the line has room to hyphenate: the doubling
+// is the poet's, and it stands wherever the hyphen does.
+test('a word that keeps its hyphen keeps its doubling', () => {
+	assert.deepEqual(syllableText(keepHyphens(24, 'Liberation Serif'),
+					'X:1\nK:C\nL:1/4\nC D\nw: asz-szony\n'),
+		['asz', '-', 'szony'])
+})
+
+// -- keeping one hyphen --
+//
+// The doubling cannot be told from a compound whose two parts meet at the same
+// digraph - kulcscsomó is written with both of them and broken kulcs-cso-mó -
+// so the score has to say which it is. A backslash makes that one lyric
+// hyphen hard (kulcs\\-cso-mó), without affecting the next one.
+
+/** `kulcs\\-cso-mó` over three notes, the music given as written. */
+const seam = (music, size = 24, word = 'kulcs\\-cso-mó') =>
+	syllableText(at(size, 'Liberation Serif'),
+			`X:1\nK:C\nL:1/4\n${music}\nw: ${word}\n`).join(' ')
+
+test('a hard lyric hyphen is kept, and the compound keeps its letters', () => {
+	for (const size of [16, 24, 36, 48]) {
+		assert.equal(seam('C D E', size),
+			'kulcs - csomó',
+			`at ${size}pt the hard seam is kept whole`)
+	}
+})
+
+test('a hard hyphen only keeps its own seam', () => {
+	assert.equal(seam('C D E', 24, 'Meg\\-vál-tó'), 'Meg - váltó',
+		'the hard first seam is kept')
+	assert.equal(seam('C D E', 24, 'Meg-vál\\-tó'), 'Megvál - tó',
+		'the hard second seam is kept')
 })

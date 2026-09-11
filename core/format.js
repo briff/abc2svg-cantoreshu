@@ -78,7 +78,19 @@ H "History: "',
 	lineskipfac: 1.1,
 	linewarn: true,
 	lyricfirstskipfac: 1,
-	lyrichyphenmin: 0,
+
+	// the hyphen between two syllables of a word is a stroke of its own,
+	// not the font's hyphen: the lengths below are multiples of the lyric
+	// font size, and %%lyrichyphenpos is one of the face's x-height.
+	// The defaults are the engraver's - .8, .4, .1 and .05 of a staff
+	// space - reckoned against an 11pt body, which is the size a hymnal
+	// sings from: .8 * 6 / 11 and so on down
+	lyrichyphenmaxlen: .44,
+	lyrichyphenminlen: .22,
+	lyrichyphenpos: .6,
+	lyrichyphenremove: true,
+	lyrichyphenspace: .027,
+	lyrichyphenwidth: .055,
 	lyricskipfac: 1.2,
 	maxshrink: .65,		// nice scores
 	maxstaffsep: 2000,
@@ -155,6 +167,12 @@ gracedur: 1, //true
 gracespace: true,
 hyphencont: true,
 keywarn: true,
+lyrichyphenmaxlen: true,
+lyrichyphenminlen: true,
+lyrichyphenpos: true,
+lyrichyphenremove: true,
+lyrichyphenspace: true,
+lyrichyphenwidth: true,
 maxshrink: true,
 maxstaffsep: true,
 measrepnb: true,
@@ -563,6 +581,11 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "gracedur":
 	case "lineskipfac":
 	case "lyricfirstskipfac":
+	case "lyrichyphenmaxlen":
+	case "lyrichyphenminlen":
+	case "lyrichyphenpos":
+	case "lyrichyphenspace":
+	case "lyrichyphenwidth":
 	case "lyricskipfac":
 	case "maxshrink":
 	case "pagescale":
@@ -610,6 +633,7 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "hyphencont":
 	case "keywarn":
 	case "linewarn":
+	case "lyrichyphenremove":
 	case "squarebreve":
 	case "splittune":
 	case "straightflags":
@@ -645,7 +669,6 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "infospace":
 	case "maxstaffsep":
 	case "maxsysstaffsep":
-	case "lyrichyphenmin":
 	case "musicspace":
 	case "partsspace":
 	case "shrinksys":

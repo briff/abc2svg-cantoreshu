@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>abc2svg-cantoreshu hyphens</title>
+<!--
+  Open this straight off the disk - no server needed.  It loads the built
+  ../abc2svg-1.js, so run ./build first, and reload after every rebuild.
+
+  This page is about the `w:` line alone: how a word is broken into syllables
+  and set under its notes, what happens to a hyphen the line has no room for,
+  and what the hyphen itself looks like.
+
+  The hyphen is a stroke of its own rather than the font's hyphen glyph, so
+  nothing of the face decides how it looks: the sliders below are the six
+  %%lyrichyphen* parameters, five of them multiples of the lyric size and one -
+  the height - of the face's x-height.  Every case in the gallery is engraved
+  with whatever the sliders say, and prints the strings it came out with under
+  the music, so a glued word is readable as text and not only as a picture.
+
+  %%lyrichyphenremove is the one that moves a notehead.  With it on - the
+  default - the notes keep the advance the music gives them, the hyphen takes
+  whatever the spacing happens to leave, and where that is too little it goes
+  and the two syllables are pulled into one word: raise the size and watch the
+  hyphens drop one by one.  With it off, the spacing buys the room outright and
+  no hyphen is ever dropped, at the cost of fewer notes to the system.
+
+  Two things test/harness.mjs cannot do are worth the browser here as well.
+  One: lyric_xheight() and lyric_ascent() measure the real face with a canvas
+  instead of falling back to Times' .45 and .78.  Two: string widths - abc2svg
+  binds strwh() once, when the engine script runs, and measures the real face
+  only if abc2svg.el exists by then; otherwise it estimates every string from a
+  built-in Times table times 1.1, which is about a tenth too wide and throws
+  the note spacing, and with it every hyphen, out by as much.  The switch picks
+  which of the two the page loads with, and reloads to rebind.
+
+  The faces come from Google Fonts, so the page wants a network on first load.
+  Offline it falls back to a local serif and the metrics change accordingly.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Merriweather:ital,wght@0,300..900;1,300..900&family=Alegreya:ital,wght@0,400..900;1,400..900&family=Inter:wght@100..900&display=swap">
+<style>
+:root { color-scheme: light dark }
+body { margin: 0; font: 14px system-ui, sans-serif; display: grid;
+       grid-template-columns: 25rem 1fr; height: 100vh }
+#panel { padding: 1rem; overflow: auto; border-right: 1px solid #8888;
+         display: flex; flex-direction: column; gap: .6rem }
+#panel h1 { font-size: 1rem; margin: 0 }
+#panel p { margin: 0; opacity: .75; font-size: 12px }
+#gallery { padding: 1rem; overflow: auto; display: flex; flex-direction: column;
+           gap: 1rem }
+label { display: grid; grid-template-columns: 11rem 1fr auto; gap: .5rem;
+        align-items: center }
+label.sw { grid-template-columns: 11rem auto 1fr }
+input[type=range] { width: 100% }
+textarea { width: 100%; height: 7rem; font: 12px ui-monospace, monospace }
+/* flex items shrink by default, which squeezes every card's music to
+   nothing and hides it - the column is what scrolls, not the cards */
+.case { flex: none; border: 1px solid #8886; border-radius: .4rem;
+        overflow: hidden }
+.case > h2 { font-size: 13px; margin: 0; padding: .4rem .6rem;
+             background: #8881; display: flex; justify-content: space-between;
+             gap: 1rem; font-weight: 600 }
+.case > h2 > span { font-weight: 400; opacity: .8; text-align: right }
+.case .music { background: #fff; color: #000; overflow-x: auto }
+.case .out { font: 12px ui-monospace, monospace; padding: .35rem .6rem;
+             white-space: pre-wrap; border-top: 1px solid #8886 }
+.case .err { color: #c00 }
+#facts { font: 12px ui-monospace, monospace; opacity: .85; white-space: pre }
+svg { display: block }
+</style>
+
+<div id="panel">
+  <h1>lyrics: syllables, gluing, hyphens</h1>
+  <p>Every case below is engraved with these settings.  The line under each
+     shows the strings that came out, so a glued word reads as text.</p>
+
+  <label class="sw">%%lyrichyphenremove
+    <input type="checkbox" id="remove" checked>
+    <span>drop a hyphen with no room (and glue the syllables)</span></label>
+  <label>%%lyrichyphenminlen
+    <input type="range" id="minlen" min="0" max="2" step="0.01" value="0.17">
+    <output id="minlenv"></output></label>
+  <label>%%lyrichyphenmaxlen
+    <input type="range" id="maxlen" min="0" max="4" step="0.01" value="0.33">
+    <output id="maxlenv"></output></label>
+  <label>%%lyrichyphenwidth
+    <input type="range" id="width" min="0" max="0.5" step="0.005" value="0.041">
+    <output id="widthv"></output></label>
+  <label>%%lyrichyphenpos
+    <input type="range" id="pos" min="-0.5" max="2" step="0.05" value="0.55">
+    <output id="posv"></output></label>
+  <label>%%lyrichyphenspace
+    <input type="range" id="space" min="0" max="1" step="0.005" value="0.1">
+    <output id="spacev"></output></label>
+
+  <label>vocal font
+    <select id="font">
+      <option selected>Alegreya</option>
+      <option>EB Garamond</option>
+      <option>Merriweather</option>
+      <option>Inter</option>
+      <option>serif</option>
+    </select><span></span></label>
+  <label>vocal size
+    <input type="range" id="size" min="8" max="60" step="1" value="24">
+    <output id="sizev"></output></label>
+  <label>page width
+    <input type="range" id="pw" min="240" max="1200" step="10" value="643">
+    <output id="pwv"></output></label>
+  <label class="sw">justify the last line
+    <input type="checkbox" id="stretch">
+    <span>%%stretchlast - a stretched line keeps hyphens a squeezed one drops</span></label>
+  <label>string widths
+    <select id="metrics">
+      <option value="measured">measured (abc2svg.el is set)</option>
+      <option value="guessed">guessed (Times x 1.1)</option>
+    </select><span></span></label>
+
+  <p>A case of your own - it is engraved last, with the same settings:</p>
+  <textarea id="abc" spellcheck="false"></textarea>
+  <div id="facts"></div>
+</div>
+<div id="gallery"></div>
+
+<script>
+// strwh() binds once, below, and measures the real face only if this span is
+// already there - so it is made here, before the engine script, and left out
+// when the URL asks for the guessing path instead.
+if (!/[?&]guess\b/.test(location.search)) {
+  var abc2svg = {}
+  const e = document.createElement("span")
+  e.style.position = "absolute"
+  e.style.top = e.style.padding = 0
+  e.style.visibility = "hidden"
+  e.style.lineHeight = 1
+  document.body.appendChild(e)
+  abc2svg.el = e
+}
+</script>
+<script src="../abc2svg-1.js"></script>
+<script>
+const HYMN = 'E F G G | G A c2 | B4 | E F G G | G A B2 | G4 |'
+  + ' B B c B | A G F G | B A G2 | F4 | B B c B | A G F G | A G F2 | E4 |]\n'
+  + 'w: Áld-jad em-ber e nagy Jó-dat, Ke-nyér-szín-ben Meg-vál-tó-dat.'
+  + ' Itt je-len van szent tes-té-vel é-des Jé-zus, Je-len va-gyon szent'
+  + ' vé-ré-vel ál-dott Jé-zus.\n'
+
+// Each case is a tune body (the X:/K:/L: header is put on below) and a line
+// saying what it is there to show.
+const CASES = [
+  { t: 'one word, three notes',
+    w: 'the hyphens go one by one as the size grows, and the word is set'
+     + ' whole; each one dropped gives its room back to the next',
+    b: 'C D E\nw: Meg-vál-tó\n' },
+
+  { t: 'two words, four notes',
+    w: 'the same, with a word boundary between: a space is always bought,'
+     + ' a hyphen never is',
+    b: 'E F G G |\nw: Áld-jad em-ber\n' },
+
+  { t: 'two notes, one hyphen',
+    w: 'each syllable centered on its notehead, so the stroke stands exactly'
+     + ' midway between the two',
+    b: 'c c |\nw: la-la\n' },
+
+  { t: 'a wide gap',
+    w: 'the stroke grows with the room up to %%lyrichyphenmaxlen, and past'
+     + ' four bodies of gap it is repeated rather than stretched',
+    b: 'c8 c8 |\nw: la-la\n' },
+
+  { t: 'syllables of very different widths',
+    w: 'on a line at its own advance the noteheads follow the letters under'
+     + ' them; justified, they are spread evenly',
+    b: 'C D E F G |\nw: szent-sé-ges A-tya\n' },
+
+  { t: 'the doubling undone: asszony',
+    w: 'asz-szony glued is asszony, not aszszony - the long consonant is'
+     + ' written out on both sides of a hyphen and once in the word',
+    b: 'C D\nw: asz-szony\n' },
+
+  { t: 'the doubling undone: poggyász, briddzsel',
+    w: "the same for gy and for dzs, which is read before the dz inside it",
+    b: 'C D | E F |\nw: pogy-gyász brid-dzsel\n' },
+
+  { t: 'the doubling, and the hyphen after it',
+    w: 'the letter that goes is room given back, so asszony - nyal can keep'
+     + ' the second hyphen where three syllables apart would not',
+    b: 'C D E\nw: asz-szony-nyal\n' },
+
+  { t: 'not every digraph meeting',
+    w: 'asz-tal and meg-gyet are glued as they stand: it takes the same'
+     + ' digraph on both sides of the hyphen',
+    b: 'C D | E F | G A B |\nw: asz-tal meg-gyet nagy-sá-god\n' },
+
+  { t: 'the compound seam, unmarked',
+    w: 'kulcs-cso-mó is written with both digraphs, so gluing it takes a'
+     + ' letter it should have kept: kulccsomó',
+    b: 'C D E\nw: kulcs-cso-mó\n' },
+
+  { t: 'the compound seam, hard',
+    w: 'a backslash before the hyphen keeps that one seam, and the letters'
+     + ' with it - nothing else moves',
+    b: 'C D E\n'
+     + 'w: kulcs\\-cso-mó\n' },
+
+  { t: 'a melisma: the extender',
+    w: "an underscore draws a line to the end of the melisma, which is a"
+     + " different stroke from the hyphen",
+    b: 'c d e f | g a b c\' |\nw: Ky-ri-e_ _ e-lei-son\n' },
+
+  { t: 'a syllable skipped',
+    w: 'a star leaves a note without a syllable; the hyphen before it still'
+     + ' has to reach across',
+    b: 'c d e f g |\nw: al-le * lu-ia\n' },
+
+  { t: 'a verse number',
+    w: 'the prefix hangs to the left of the note and what follows it is what'
+     + ' gets centered',
+    b: 'C D E F |\nw: 1.~Áld-jad em-ber\n' },
+
+  { t: 'two stanzas',
+    w: 'both lines take the same hyphens, and the second is set a full'
+     + ' advance under the first',
+    b: 'C D E F G |\nw: Áld-jad em-ber most\nw: Így gyűjt-jük ösz-sze\n' },
+
+  { t: 'lyrics above the staff',
+    w: 'the same rules upside down',
+    b: '%%vocal above\nC D E F |\nw: Áld-jad em-ber\n' },
+
+  { t: 'a whole hymn',
+    w: 'the systems are justified, so they keep their hyphens far longer'
+     + ' than a single line at its own advance does; a word broken over a'
+     + ' system keeps a hyphen on both sides',
+    b: HYMN },
+]
+
+const $ = (id) => document.getElementById(id)
+
+/** The %% lines every case is engraved with. */
+function directives() {
+  const v = (id) => $(id).value
+
+  return `%%pagewidth ${v('pw')}px\n%%pagescale 1\n`
+    + '%%musicspace 0\n%%topspace 0\n%%vocalspace 0\n%%leftmargin 0.5cm\n'
+    + `%%vocalfont "${v('font')}" ${v('size')}\n`
+    + `%%lyrichyphenremove ${$('remove').checked ? 1 : 0}\n`
+    + `%%lyrichyphenminlen ${v('minlen')}\n`
+    + `%%lyrichyphenmaxlen ${v('maxlen')}\n`
+    + `%%lyrichyphenwidth ${v('width')}\n`
+    + `%%lyrichyphenpos ${v('pos')}\n`
+    + `%%lyrichyphenspace ${v('space')}\n`
+    + ($('stretch').checked ? '%%stretchlast 1\n' : '')
+}
+
+/** Engrave one case: its SVG, the errors, and the strings it came out with. */
+function engrave(body) {
+  let svg = ''
+  const errs = []
+  const abc = new abc2svg.Abc({
+    img_out: (s) => { svg += s },
+    errmsg: (m) => { errs.push(m) },
+    read_file: () => null,
+  })
+
+  try {
+    abc.tosvg('hyphens',
+      directives() + 'X:1\nK:C\nL:1/4\n' + body)
+  } catch (e) { errs.push(String(e)) }
+  return { svg, errs, out: laidOut(svg) }
+}
+
+// A syllable is a <text> of a lyric font class; a hyphen is the `lyhy` stroke
+// out_hyph() draws, and a run of them - which a long gap gets - is read back
+// as the one hyphen it stands for.
+const ITEM = new RegExp([
+  /<text class="f\d+" x="[\d.,]+" y="[-\d.]+"[^>]*>([^<]*)/.source,
+  /<path class="stroke lyhy" stroke-width="([\d.]+)"\s+d="m[-\d.]+ [-\d.]+h([-\d.]+)"/.source
+].join('|'), 'g')
+
+function laidOut(svg) {
+  const a = []
+
+  for (const m of svg.matchAll(ITEM)) {
+    if (m[1] === undefined) {
+      if (a[a.length - 1] != '-')
+        a.push('-')
+    } else if (m[1].trim()) {
+      a.push(m[1])
+    }
+  }
+  return a
+}
+
+// The geometry of the first stroke of an engraving, for the readout: its
+// thickness, its length, and how far over the baseline it was hung - which is
+// the baseline of the first syllable less the stroke's own y, both of them
+// inside the <g> the system's lyrics are drawn in.
+function firstStroke(svg) {
+  const p = /<path class="stroke lyhy" stroke-width="([\d.]+)"\s+d="m[-\d.]+ ([-\d.]+)h([-\d.]+)"/
+      .exec(svg)
+  const t = /<text class="f\d+" x="[\d.,]+" y="([-\d.]+)"/.exec(svg)
+
+  return p ? { th: +p[1], w: +p[3], dy: t ? +t[1] - +p[2] : undefined } : null
+}
+
+function card(c) {
+  const { svg, errs, out } = engrave(c.b)
+  const el = document.createElement('div')
+
+  el.className = 'case'
+  el.innerHTML = '<h2></h2><div class="music"></div><div class="out"></div>'
+  el.querySelector('h2').innerHTML =
+    '<b></b><span></span>'
+  el.querySelector('h2 b').textContent = c.t
+  el.querySelector('h2 span').textContent = c.w
+  el.querySelector('.music').innerHTML = svg
+  el.querySelector('.out').textContent = out.join(' ')
+  if (errs.length) {
+    const e = document.createElement('div')
+    e.className = 'out err'
+    e.textContent = errs.join('\n')
+    el.append(e)
+  }
+  return { el, svg }
+}
+
+function render() {
+  for (const id of ['minlen', 'maxlen', 'width', 'pos', 'space', 'size', 'pw'])
+    $(id + 'v').value = $(id).value
+
+  const g = $('gallery')
+  let first = null
+
+  g.textContent = ''
+  for (const c of CASES) {
+    const { el, svg } = card(c)
+
+    if (!first)
+      first = firstStroke(svg)
+    g.append(el)
+  }
+  if ($('abc').value.trim())
+    g.append(card({ t: 'your own', w: 'the textarea', b: $('abc').value }).el)
+
+  // what the engine measured with, and what it drew the first stroke as
+  const size = +$('size').value, family = $('font').value
+  const c = document.createElement('canvas').getContext('2d')
+  c.font = `${size}px "${family}"`
+  const m = c.measureText('x')
+  const xh = m.actualBoundingBoxAscent || size * .45
+  const n = (v) => (v == undefined ? '     -' : (+v).toFixed(2).padStart(6))
+
+  $('facts').textContent =
+      `x-height (used)  ${n(m.actualBoundingBoxAscent)}   ink of 'x'\n`
+    + `.45 fallback     ${n(size * .45)}   Times', headless only\n`
+    + `loaded face      ${document.fonts.check(c.font)}\n`
+    + `string widths    ${abc2svg.el ? 'measured in the real face'
+                          : 'guessed - Times x 1.1'}\n`
+    + `stroke: length   ${n(first && first.w)}`
+        + `   min ${(+$('minlen').value * size).toFixed(1)},`
+        + ` max ${(+$('maxlen').value * size).toFixed(1)}\n`
+    + `        width    ${n(first && first.th)}\n`
+    + `        height   ${n(first && first.dy)}`
+        + `   over the baseline, ${(+$('pos').value * xh).toFixed(2)} asked`
+}
+
+// A canvas measureText() does not pull a webfont in, so ask for it by hand
+// before rendering - otherwise the first render measures the fallback face.
+function reload() {
+  document.fonts.load(`${$('size').value}px "${$('font').value}"`)
+    .then(render, render)
+}
+
+// the strwh() binding is one-shot, so this one has to go round the page again
+$('metrics').value = abc2svg.el ? 'measured' : 'guessed'
+$('metrics').addEventListener('change', (e) => {
+  location.search = e.target.value == 'guessed' ? '?guess' : ''
+})
+
+$('font').addEventListener('change', reload)
+$('size').addEventListener('input', reload)
+for (const id of ['remove', 'minlen', 'maxlen', 'width', 'pos', 'space',
+                  'pw', 'stretch', 'abc'])
+  $(id).addEventListener('input', render)
+
+document.fonts.ready.then(reload)
+reload()
+</script>

@@ -58,12 +58,9 @@ export function lyricBaselines(directives, tune, opts) {
 
 	for (const [, body] of engrave(directives, tune, opts)
 				.matchAll(/<g transform="translate\(0,[\d.]+\)">([\s\S]*?)<\/g>/g)) {
-		// abc2svg lays the hyphens between syllables out as text of their
-		// own, a hundredth above the baseline they belong to - so drop
-		// them, or one can come back as a line's baseline
 		const ys = [...new Set([...body.matchAll(
 			/<text class="f\d+" x="[\d.]+" y="([-\d.]+)"[^>]*>([^<]*)/g)]
-				.filter((m) => m[2].trim() && m[2].trim() != '-')
+				.filter((m) => m[2].trim())
 				.map((m) => +m[1]))]
 		if (ys.length)
 			systems.push(ys)
@@ -77,22 +74,35 @@ export function firstBaselines(directives, tune, opts) {
 }
 
 /**
+ * A syllable <text>, or a hyphen stroke - the `lyhy` path out_hyph() draws
+ * between two syllables of a word.  Alternation keeps them in engraving order.
+ */
+const LY_ITEM = new RegExp([
+	/<text class="f\d+" x="([\d.,]+)" y="([-\d.]+)"[^>]*>([^<]*)/.source,
+	/<path class="stroke lyhy" stroke-width="([\d.]+)"\s+d="m([-\d.]+) ([-\d.]+)h([-\d.]+)"/.source
+].join('|'), 'g')
+
+/**
  * Per system, the lyric line's syllables and hyphens in engraving order.
  *
- * A hyphen is a <text> like any other, and a long gap gets a run of them in
- * one element with a comma-separated x list - the first x is taken for those.
+ * A syllable comes back as `{t, x, y}`; a hyphen - which is a stroke of its
+ * own since 2026-09-11, not the font's glyph - as `{t: '-', x, y, w, th}`,
+ * where `w` is the length of the stroke and `th` its thickness.  A long gap
+ * gets a run of strokes, and each of those is an item of its own.
  *
- * @return {Array<Array<{t: string, x: number}>>} one array per engraved system
+ * @return {Array<Array<{t: string, x: number, y: number}>>} one per system
  */
 export function syllables(directives, tune, opts) {
 	const systems = []
 
 	for (const [, body] of engrave(directives, tune, opts)
 				.matchAll(/<g transform="translate\(0,[\d.]+\)">([\s\S]*?)<\/g>/g)) {
-		const line = [...body.matchAll(
-			/<text class="f\d+" x="([\d.,]+)" y="[-\d.]+"[^>]*>([^<]*)/g)]
-			.filter((m) => m[2].trim())
-			.map((m) => ({ t: m[2], x: +m[1].split(',')[0] }))
+		const line = [...body.matchAll(LY_ITEM)]
+			.map((m) => m[1] !== undefined
+				? { t: m[3], x: +m[1].split(',')[0], y: +m[2] }
+				: { t: '-', x: +m[5], y: +m[6],
+				    w: +m[7], th: +m[4] })
+			.filter((s) => s.t.trim())
 		if (line.length)
 			systems.push(line)
 	}

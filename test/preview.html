@@ -18,13 +18,9 @@
   below picks which of the two the page loads with, and reloads to rebind, so
   a page of the application can be judged either way.
 
-  The %%lyrichyphenmin slider is the third thing worth seeing here.  At 0 the
-  notes keep the advance the music gives them and the hyphens take what is left
-  over, so raising the vocal size drops them one by one and sets the words
-  whole; raising the slider buys the room outright and spreads the notes to
-  give it, at the cost of fewer notes to the system.  A single-system fixture
-  is not stretched to the page, so what it shows is the unstretched case - the
-  hymn's own systems are justified and keep their hyphens far longer.
+  The hyphens have a page of their own now: open test/hyphens.html for the
+  syllabization, the gluing and the stroke between two syllables, with the six
+  %%lyrichyphen* parameters on sliders and a gallery of cases under them.
 
   The faces come from Google Fonts, so the page wants a network on first load.
   Offline it falls back to a local serif and the metrics change accordingly.
@@ -57,9 +53,6 @@ svg { display: block }
   <label>%%lyricskipfac
     <input type="range" id="skip" min="0" max="3" step="0.05" value="1.2">
     <output id="skipv">1.2</output></label>
-  <label>%%lyrichyphenmin
-    <input type="range" id="hymin" min="0" max="60" step="1" value="0">
-    <output id="hyminv">0</output></label>
   <label>string widths
     <select id="metrics">
       <option value="measured">measured (abc2svg.el is set)</option>
@@ -138,9 +131,7 @@ $('abc').value = TWO_STANZAS
 function render() {
   const first = $('first').value, skip = $('skip').value
   const size = $('size').value, family = $('font').value
-  const hymin = $('hymin').value
   $('firstv').value = first; $('skipv').value = skip; $('sizev').value = size
-  $('hyminv').value = hymin
 
   let svg = '', errs = []
   const abc = new abc2svg.Abc({
@@ -154,7 +145,6 @@ function render() {
       + '%%vocalspace 0\n'
       + `%%vocalfont "${family}" ${size}\n`
       + `%%lyricfirstskipfac ${first}\n%%lyricskipfac ${skip}\n`
-      + `%%lyrichyphenmin ${hymin}\n`
       + $('abc').value)
   } catch (e) { errs.push(String(e)) }
 
@@ -198,7 +188,7 @@ $('metrics').addEventListener('change', (e) => {
 
 $('font').addEventListener('change', reload)
 $('size').addEventListener('input', reload)
-for (const id of ['first', 'skip', 'hymin', 'abc'])
+for (const id of ['first', 'skip', 'abc'])
   $(id).addEventListener('input', render)
 
 document.fonts.ready.then(reload)

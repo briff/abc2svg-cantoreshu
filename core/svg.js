@@ -750,35 +750,43 @@ function out_wings(x, y, h, f) {
 function out_bracket(x, y, h) {
 	out_wings(x - 5, y + 2, h, 0)
 }
-// hyphen(s) between two syllables of a word
-// The hyphen is centered in the gap - it is a glyph of the lyric font, so its
-// own width is what it takes there, and the 8 units upstream reckons with are
-// only that width at about 14pt.  A long gap gets a run of them instead, one
-// every four bodies, which is upstream's own 56 units at that same size.
-function out_hyph(x, y, w) {
-    var	i,
-	hw = strwh('-')[0],			// the hyphen's own width
+// -- the hyphen between two syllables of a word --
+// A stroke of its own rather than the font's hyphen glyph, drawn in the middle
+// of the gap: `g` carries the geometry hyphen_geom() read off the lyric size -
+// the length it may take (g.min to g.max), the air it keeps from the letters
+// (g.sp), its thickness (g.th) and its height above the baseline (g.dy).
+// A gap wide enough - a word broken over a system, or a long melisma - gets a
+// run of them instead, one every four bodies, as upstream does.
+function out_hyph(x, y, w, g) {
+    var	i, l,
 	d = 0,
-	n = w / (gene.curfont.size * 4) |0	// number of hyphens less 1
+	n = w / (gene.curfont.size * 4) |0	// number of strokes less 1
 
-	if (!n) {				// if only one hyphen
-		x += (w - hw) / 2		// centered in the gap
+	if (!n) {
+
+		// one stroke, as long as the room allows between its two
+		// bounds, centered in the gap
+		l = w - g.sp * 2
+		if (l > g.max)
+			l = g.max
+		else if (l < g.min)
+			l = g.min
+		x += (w - l) / 2
 	} else {
 
-		// spread, keeping half a hyphen of air at each end
-		d = (w - hw * 2) / n
-		x += hw / 2
+		// spread, each at its full length, half a stroke of air at
+		// each end
+		l = g.max;
+		d = (w - l * 2) / n
+		x += l / 2
 	}
-
-	output += '<text class="' + font_class(gene.curfont)
-		+ '" x="' + sx(x).toFixed(2)
-	i = n
-	while (--n >= 0) {
+	y += g.dy				// hung in the lower-case letters
+	for (i = 0; i <= n; i++) {
+		out_XYAB('<path class="stroke lyhy" stroke-width="G"\n\
+	d="mX YhF"/>\n',
+			x, y, l, g.th);
 		x += d
-		output += "," + sx(x).toFixed(2)
 	}
-	output += '" y="' + sy(y).toFixed(2)
-		+ '">' + '-'.repeat(i + 1) + '</text>\n'
 }
 // stem [and flags]
 function out_stem(x, y, h, grace,
