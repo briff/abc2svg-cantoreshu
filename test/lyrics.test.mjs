@@ -7,8 +7,27 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 
 import { FALLBACK_ASCENT, fakeDocument, firstBaselines, lyricBaselines, near,
-	noteXs, syllables }
+	noteXs, syllables, engrave }
 	from './harness.mjs'
+
+test('a final slurred syllable has a valid position at its notehead', () => {
+	for (const scale of [1, 0.7, 1.5]) {
+		const errors = []
+		const svg = engrave(`%%staffscale ${scale}\n`,
+			'X:1\nK:F\nC D (E F)\nw: One to three\n', { errors })
+		assert.deepEqual(errors, [])
+		assert.doesNotMatch(svg, /NaN|Infinity/)
+		const lyrics = [...svg.matchAll(/<text class="f\d+" x="([\d.]+)"[^>]*>(One|to|three)<\/text>/g)]
+		assert.deepEqual(lyrics.map(m => m[2]), ['One', 'to', 'three'])
+		assert.ok(+lyrics[2][1] > +lyrics[1][1], 'three follows to')
+		if (scale == 1) {
+			const stems = [...svg.matchAll(/class="sW" d="([^"]+)"/g)]
+				.flatMap(m => [...m[1].matchAll(/M([\d.]+) /g)])
+			near(+lyrics[2][1], +stems[2][1] - 3.5 - 3.7,
+				'three starts at the left edge of E with its stem up')
+		}
+	}
+})
 
 for (const music of ['(cd)e', 'c-ce', '(cde)', 'c-c-c', '(c2d)e', 'c2-c2e']) {
 	test(`lyrics start at the left note of ${music}`, () => {

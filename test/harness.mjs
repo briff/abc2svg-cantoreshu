@@ -166,6 +166,7 @@ export function fakeDocument(metrics, loaded = true) {
 
 /** Baselines are sums of float text heights, so compare them as such. */
 export function near(actual, expected, what) {
-	if (Math.abs(actual - expected) >= 0.11)
+	if (!Number.isFinite(actual) || !Number.isFinite(expected)
+	 || Math.abs(actual - expected) >= 0.11)
 		throw new Error(`${what}: ${actual} vs ${expected}`)
 }

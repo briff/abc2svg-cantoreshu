@@ -400,7 +400,8 @@ function ly_set(s) {
 	leftshift = left ? ([3.7, 3.8, 5.2, 7, 6][s.head]
 		- Math.min.apply(null, s.notes.map(function(nt) {
 			return nt.shhd || 0
-		}))) * s.p_v.scale * staff_tb[s.st].staffscale : 0,
+		}))) * s.p_v.scale
+		* (staff_tb[s.st].staffscale || cur_sy.staves[s.st].staffscale) : 0,
 	align = 0
 
 	// get the available horizontal space before the next lyric words
