@@ -159,6 +159,8 @@ function parse_gchord(type) {
 			i++
 			break
 		}
+		if (cfmt.huchords && gch.type == 'g')
+			gch.text = abc2svg.huchords.hu2en(gch.text)
 		gch.otext = gch.text	// save for play accompaniment
 		if (!a_gch)
 			a_gch = []
@@ -234,8 +236,10 @@ function csan_add(s) {
 			if (gch.type == 'g') {
 				if (curvoice.tr_snd40)
 					gch.otext = gch_tr1(gch.text, curvoice.tr_snd40)
-				if (curvoice.tr_sco)
+				if (curvoice.tr_sco) {
 					gch.text = gch_tr1(gch.text, curvoice.tr_sco)
+					gch.trsp = 1	// root spelt by transposition
+				}
 			}
 		}
 	}

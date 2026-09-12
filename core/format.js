@@ -62,6 +62,7 @@ var cfmt = {
 	graceslurs: true,
 	headerfont: { name: txt_ff, size: 16 },
 	historyfont: { name: txt_ff, size: 16 },
+//	huchords: false,		// chord symbols written in Hungarian
 	hyphencont: true,
 	indent: 0,
 	infofont: {name: txt_ff, style: "italic", size: 14 },
@@ -166,6 +167,7 @@ dynalign: true,
 flatbeams: true,
 gracedur: 1, //true
 gracespace: true,
+huchords: true,
 hyphencont: true,
 keywarn: true,
 lyrichyphenmaxlen: true,
@@ -631,6 +633,7 @@ Abc.prototype.set_format = function(cmd, param) {
 	case "flatbeams":
 	case "graceslurs":
 	case "graceword":
+	case "huchords":
 	case "hyphencont":
 	case "keywarn":
 	case "linewarn":

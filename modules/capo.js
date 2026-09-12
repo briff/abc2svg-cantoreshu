@@ -52,6 +52,7 @@ abc2svg.capo = {
 		gch2 = Object.create(gch)
 		gch2.capo = false	// (would be erased when setting gch)
 		gch2.text = abc.gch_tr1(gch2.text, -abc2svg.capo.icb40[t % 12])
+		gch2.trsp = 1		// root spelt by transposition
 		if (!p_v.capo_first) {		// if new voice
 			p_v.capo_first = true
 			gch2.text += "  (capo: " + t.toString() + ")"

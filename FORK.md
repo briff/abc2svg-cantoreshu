@@ -61,12 +61,46 @@ font metrics.
 
 ## Hungarian chord symbols
 
-`modules/huchords.js` uses Hungarian chord-root spelling: B natural is `H` and
-B flat is `B`. It rewrites generated roots and slash bass notes to
-`C Db D Eb E F Gb G Ab A Bb H` after upstream transposition. The module is
-linked into the core build, rather than loaded with a `%%` directive. Input
-normalization from `H` to upstream's English `B` belongs to the calling
-application.
+`modules/huchords.js` engraves chord roots the Hungarian way: B natural is `H`,
+in the root and in the slash bass note alike. B flat is engraved `B♭` rather
+than the bare `B` of a Hungarian chart, an explicit spelling either notation
+reads the same way. What a tune spells is otherwise kept as written — `F#` stays
+`F#`, and so does a `Cb`.
+
+A root abc2svg has transposed is not the tune's spelling, and that one is
+renamed by pitch class, on the side its accidentals came from
+(`C C# D D# E F F# G G# A A# H`, or `C Db D Eb E F Gb G Ab A Bb H`). Upstream
+transposes along the line of fifths, so it writes roots no chart carries — a
+semitone up from B it writes `B#`, which is engraved here as `C`. A transposed
+root a chart can carry is engraved as upstream spelt it. The chord symbols
+upstream respells are marked with `gch.trsp`: in `csan_add` (`core/gchord.js`)
+for a transposition, and in `modules/capo.js` for a capo line.
+
+### Input in Hungarian notation
+
+Chord symbols are read as English names, so `B` is B natural and `H` is no note
+name at all — upstream engraves it verbatim, never transposes it, and the play
+accompaniment (`util/chord.js`) cannot sound it.
+
+`%%huchords` says the tune writes its chord symbols in Hungarian: an `H` is then
+read as B natural, and a `B` carrying no accidental as B flat (a `B♭` or `B#` is
+unambiguous as it stands and is left alone). The root and the slash bass note
+are both read. The rewrite happens in `parse_gchord` (`core/gchord.js`) as the
+symbol is parsed — before transposition, and before the text is saved for the
+accompaniment — so the whole engine sees the English name, and only the
+engraved spelling is Hungarian. It is a boolean format parameter like any
+other: off by default, settable per tune or inside one.
+
+```abc
+%%huchords 1
+X:1
+K:C
+"H"C "B"C "H7/D"C	% engraved H, B♭, H7/D; played B, Bb, B7/D
+```
+
+The module is linked into the core build, rather than loaded on demand. The
+directive only says how to read the input: the engraved spelling is Hungarian
+either way.
 
 ## Distribution and build
 

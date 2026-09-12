@@ -23,6 +23,11 @@ export const FALLBACK_ASCENT = LYRIC_SIZE * .78		// 28.08
 
 /** Engrave `directives + tune` and return the whole SVG. */
 export function engrave(directives, tune, opts = {}) {
+	return render(directives, tune, opts).svg
+}
+
+/** Engrave `directives + tune`, keeping the engine that did it. */
+export function render(directives, tune, opts = {}) {
 	const sandbox = { abc2svg: {} }
 
 	if (opts.document)
@@ -41,7 +46,29 @@ export function engrave(directives, tune, opts = {}) {
 		+ `%%vocalfont "Merriweather" ${LYRIC_SIZE}\n`
 		+ '%%musicspace 0\n%%topspace 0\n%%vocalspace 0\n'
 		+ directives + tune)
-	return svg
+	return { svg, abc }
+}
+
+/**
+ * The chord symbols of a tune in engraving order, each as it is engraved and
+ * as the play accompaniment reads it - `util/chord.js` sounds `otext`, and
+ * only ever in English names.
+ *
+ * abc.tunes holds `[tsfirst, voice_tb, info, cfmt]` per tune, which is what
+ * the players walk; the symbols are gone from the engine itself by then.
+ *
+ * @return {Array<{text: string, otext: string}>}
+ */
+export function chordSymbols(directives, tune, ix = 0) {
+	const { abc } = render(directives, tune)
+	const gchs = []
+
+	for (let s = abc.tunes[ix][0]; s; s = s.ts_next) {
+		for (const gch of s.a_gch || [])
+			if (gch.type == 'g')
+				gchs.push({ text: gch.text, otext: gch.otext })
+	}
+	return gchs
 }
 
 /**
