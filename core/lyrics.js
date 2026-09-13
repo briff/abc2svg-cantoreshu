@@ -443,6 +443,15 @@ function ly_set(s) {
 		spw = cwid(' ') * ly.font.swfac
 		w = ly.t.wh[0]
 		r = abc2svg.lypre.exec(p)
+
+		// A prefix is what stands *before* a syllable - a verse
+		// number, a part name, a bracket - so a match that eats the
+		// whole word is not one.  `jad:` is a syllable that happens to
+		// end in a colon, not a label with nothing left to label, and
+		// hanging it to the left of the note would set the letters to
+		// the right of the notehead instead of over it.
+		if (r && r[0].length >= p.length)
+			r = null
 		if (s.type == C.GRACE) {		// %%graceword
 			shift = s.wl
 		} else if (r) {

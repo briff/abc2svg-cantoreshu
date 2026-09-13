@@ -51,6 +51,32 @@ test('a syllable after a slur or tie remains centered', () => {
 	}
 })
 
+// A lyric prefix - a verse number, a part name, a bracket - hangs to the left
+// of the note, so that what follows it is what sits over the notehead.  A
+// syllable that merely ends in a colon is none of those: read as a prefix it
+// would be set entirely to the left of its note, its last letter on the head.
+test('punctuation at the end of a syllable is not a prefix', () => {
+	const shift = (words) => {
+		const tune = `X:1\nK:C\nL:1/4\nc c|\nw: la ${words}\n`
+		const [line] = syllables('', tune)
+		const [notes] = noteXs('', tune)
+		return notes[1] - line[1].x
+	}
+
+	// centered is half the syllable to the left of the note, so a colon at
+	// its end moves the letters left by half a colon and by nothing more
+	// (widths are added up character by character, so this is exact)
+	near(shift('jad:') - shift('jad'), shift(':'), 'a trailing colon')
+	near(shift('jad.') - shift('jad'), shift('.'), 'a trailing period')
+	near(shift('jad)') - shift('jad'), shift(')'), 'a trailing bracket')
+
+	// what a prefix does, for comparison: all of `1.` stands left of the
+	// note, and only the syllable behind it is centered
+	assert.ok(shift('1.~jad') > shift('jad') * 2, 'a verse number hangs left')
+	assert.ok(shift('Sop:~jad') > shift('jad') * 2, 'a part name hangs left')
+	assert.ok(shift('(jad') > shift('jad'), 'an opening bracket hangs left')
+})
+
 /** The gap between two beams, the unit the clearance is counted in. */
 const BEAM_GAP = 1.7
 
