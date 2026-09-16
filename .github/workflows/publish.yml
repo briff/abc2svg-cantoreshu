@@ -35,24 +35,7 @@ jobs:
       - run: npm install -g npm@latest
       - run: npm install --no-audit --no-fund
       - run: npm test
-      - name: Debug OIDC claims
-        run: |
-          node --input-type=module -e '
-            const url = `${process.env.ACTIONS_ID_TOKEN_REQUEST_URL}&audience=npm:registry.npmjs.org`;
-            const res = await fetch(url, {
-              headers: { authorization: `bearer ${process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN}` },
-            });
-            const { value } = await res.json();
-            const claims = JSON.parse(Buffer.from(value.split(".")[1], "base64url"));
-            const interesting = ["sub", "repository", "repository_owner", "repository_owner_id",
-              "repository_id", "workflow_ref", "job_workflow_ref", "ref", "environment", "aud"];
-            console.log(JSON.stringify(Object.fromEntries(
-              interesting.map((k) => [k, claims[k]])), null, 2));
-          '
       - name: Publish if version was bumped
+        # The npm trusted publisher for this package must allow the direct
+        # `npm publish` action; a stage-only publisher answers with a 403.
         run: node scripts/publish-if-bumped.mjs ${{ inputs.dry-run && '--dry-run' || '' }}
-        env:
-          NPM_CONFIG_LOGLEVEL: verbose
-      - name: Dump npm debug log
-        if: failure()
-        run: cat ~/.npm/_logs/*-debug-0.log
